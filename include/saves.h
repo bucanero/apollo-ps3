@@ -8,16 +8,15 @@
 #define dbglogger_init(...)
 #endif
 
-#define APOLLO_PATH     "/dev_hdd0/game/NP0APOLLO/USRDIR/"
+#define APOLLO_PATH				"/dev_hdd0/game/NP0APOLLO/USRDIR/"
+#define APOLLO_DATA_PATH		APOLLO_PATH "DATA/"
 
 #define SAVES_PATH_USB0			"/dev_usb000/apollo/PS3/SAVEDATA/"
 #define SAVES_PATH_USB1			"/dev_usb001/apollo/PS3/SAVEDATA/"
 #define SAVES_PATH_HDD			"/dev_hdd0/tmp/apollo/"   // /dev_hdd0/home/0000000x/savedata
-#define USERLIST_PATH_HDD		APOLLO_PATH "USERLIST/"
 
-#define ONLINE_URL				"http://apollo.nerv.gq/"
+#define ONLINE_URL				"http://apollo.psdev.tk/"
 #define ONLINE_LOCAL_CACHE		APOLLO_PATH "CACHE/"
-
 #define ONLINE_CACHE_TIMEOUT    24*3600     // 1-day local cache
 
 #define CODE_RESIGN_SAVE        "RESIGN_SAVE"

@@ -408,7 +408,7 @@ int pfd_util_init(char* game_id, char* db_path, int partial) {
 		return result;
 	}
 
-	if ((result = parse_config_file(APOLLO_PATH PFDTOOL_CONFIG_GAMES, &games_config_handler, NULL)) != 0) {
+	if ((result = parse_config_file(APOLLO_DATA_PATH PFDTOOL_CONFIG_GAMES, &games_config_handler, NULL)) != 0) {
 		if (result < 0)
 			LOG("[*] Error: Unable to read a games config file.");
 		else

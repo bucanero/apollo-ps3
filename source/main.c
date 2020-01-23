@@ -938,7 +938,7 @@ void update_callback(int index, int sel)
 	{
 		if (http_download(ONLINE_URL, "cheatdb.zip", ONLINE_LOCAL_CACHE "tmp.zip", 1))
 		{
-			if (extract_zip(ONLINE_LOCAL_CACHE "tmp.zip", USERLIST_PATH_HDD))
+			if (extract_zip(ONLINE_LOCAL_CACHE "tmp.zip", APOLLO_DATA_PATH))
 				show_dialog(0, "Successfully updated local cheat database");
 
 			unlink_secure(ONLINE_LOCAL_CACHE "tmp.zip");

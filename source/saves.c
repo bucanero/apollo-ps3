@@ -535,7 +535,7 @@ code_entry_t * ReadCodes(const char * title_id, int * _code_count)
 */
 
 	char filePath[256];
-	snprintf(filePath, sizeof(filePath)-1, USERLIST_PATH_HDD "%s.ps3savepatch", title_id);
+	snprintf(filePath, sizeof(filePath)-1, APOLLO_DATA_PATH "%s.ps3savepatch", title_id);
 	int fileSize = getFileSize(filePath);
 
 	if (fileSize > 0)
