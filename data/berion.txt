@@ -1,0 +1,30 @@
+Anyway, I have already finished whole GUI. In attachment You can find all graphics. I hope filenames are intuitive enough (compare to preview files). There are two "schools" naming files which programmers prefered in firm which I worked. One is: "fileName" and other, in my opinion more readable: "file_name".
+
+All graphics are maximum compressed, cleaned from useless meta data and optimized (i.e for OGL bleeding - I don't know if this problem exist only on official SDK or also on PSL1GHT but even if not, the VRAM loss is marginal), so please, don't edit them. ;] All are 24bit PNG with 24bit clut. If YOU want POT files ("power of two" huge bitmaps, those could be two or three) let me know. It's more efficient etc. but I hate creating atlas scripts for them. ;p
+
+BTW:
+
+1. Some bitmaps I attachted on the same high or width for making your life easier. ;] We loss some memory in such way, but it's marginal and more conviniet for You during building GUI.
+
+2. "edit_shadow.png" is shadow with 1px border for background duplication. This is should be used for "edit menus" (i.e "add cheats", "add games", "remove" etc.).
+
+3. All files: "footer_ico_*.png" (excluded triangle) are not used. In my opinion we shoudn't constant show all button navigation on screen - for this is help menu. Have you seen a game when user always must lokking on buttons info? 
+
+4. I have also propose making navigation easier. Why so many buttons in use? "X" is enough for confirm, enter somewhere and turning on options, even it's better to replace "toggle" (once/constant). So I leave triangle for help, "circle" for backward and cancel, "square" for view codes, "start" for shortcut to XMB instead of backing to title screen and choosing "Start game", "Select" for delete because it's hard to press it accidentaly, "L and R1/2/3" for add/edit.
+
+5. "scroll_bg" is 512px height but this should be stretch to aropund 910px for 1080p.
+
+6. "header_line.png" is a line under category header (About, Cheats, Options). Should be multiplicated by x1 to the near of screen. "header_dot.png" end it.
+
+7. "mark_line.png" is also for multiplication.
+
+8. For "help.png" use alpha controlling. In Photoshop is 95%, in alpha should be as I remember around 250/FA.
+
+9. For loading, read "circle_loading_bg.png" and right obove it place "circle_loading_seek.png". They are scrared so You can turning it by center of this bitmap.
+
+10. For error, just replace all of them by red ones. The ligther red one should be fade in and fade out for pulsing effect. 
+
+11. In "font informations.txt" I attached all font colours and sizes. I hope we can use TTF files instead of bitmap fonts. Comfortaa has all latin/non-latin letters, which could be very handy if You implement language support. ;}
+
+
+12... I hope You know that's all above stuff is my propositions. Don't threat this like my dictators vision. Game dev (and scene) is an art of compromise and I understand it. 
