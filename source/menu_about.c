@@ -3,7 +3,6 @@
 #include <pngdec/pngdec.h>
 
 #include "saves.h"
-
 #include "menu.h"
 #include "menu_about.h"
 
@@ -25,7 +24,7 @@ void Draw_AboutMenu_Ani()
 
 		tiny3d_Project2D();
 
-		DrawHeader_Ani(menu_textures[header_ico_abt_png_index], (char*)"About", (char*)VERSION, 0, 0xffffffff, ani, div);
+		DrawHeader_Ani(menu_textures[header_ico_abt_png_index], "About", APOLLO_VERSION, 0, 0xffffffff, ani, div);
 
 		//------------- About Menu Contents
 
@@ -109,7 +108,7 @@ void Draw_AboutMenu_Ani__()
         
         tiny3d_Project2D();
         
-		DrawHeader_Ani(menu_textures[header_ico_opt_png_index], "About", (char*)VERSION, 0x00000000, 0xffffffff, ani, div);
+		DrawHeader_Ani(menu_textures[header_ico_opt_png_index], "About", APOLLO_VERSION, 0x00000000, 0xffffffff, ani, div);
         
         //------------- About Menu Contents
         
@@ -180,7 +179,7 @@ void Draw_AboutMenu()
 {
 	int cnt = 0;
 
-	DrawHeader(menu_textures[header_ico_abt_png_index], 0, "About", (char*)VERSION, 0x000000ff, 0xffffffff, 0);
+	DrawHeader(menu_textures[header_ico_abt_png_index], 0, "About", APOLLO_VERSION, 0x000000ff, 0xffffffff, 0);
     
     //------------- About Menu Contents
     SetFontSize(20, 20);

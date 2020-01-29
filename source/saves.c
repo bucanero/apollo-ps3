@@ -508,7 +508,7 @@ option_entry_t * ReadOptions(code_entry_t code, int * count)
  */
 code_entry_t * ReadCodes(const char * title_id, int * _code_count)
 {
-    int name_length, code_len = 0, code_count = 2, cur_count = 0;
+    int name_length, code_len = 0, code_count = 3, cur_count = 0;
 //	int cur_count = 0, code_count = 2;
 	int lockd = 1;
 
@@ -558,7 +558,7 @@ code_entry_t * ReadCodes(const char * title_id, int * _code_count)
 
 		ret = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (code_count));
 	
-	    if (code_count > (1 + lockd))
+	    if (code_count > (2 + lockd))
 		{
 			for (x = 0; x < bufferLen; x++)
 		    {
@@ -620,7 +620,7 @@ code_entry_t * ReadCodes(const char * title_id, int * _code_count)
 	*_code_count = code_count;
 
 	ret[cur_count].activated = 0;
-//	ret[cur_count].options = NULL;
+	ret[cur_count].options = NULL;
 	ret[cur_count].name = (char *)malloc(12);
 	ret[cur_count].codes = (char *)malloc(strlen(CODE_RESIGN_SAVE)+1);
 	strcpy(ret[cur_count].name, "Resign save");
@@ -628,11 +628,19 @@ code_entry_t * ReadCodes(const char * title_id, int * _code_count)
 
 	cur_count++;
 	ret[cur_count].activated = 0;
-//	ret[cur_count].options = NULL;
+	ret[cur_count].options = NULL;
 	ret[cur_count].name = (char *)malloc(23);
 	ret[cur_count].codes = (char *)malloc(strlen(CODE_UNLOCK_COPY)+1);
 	strcpy(ret[cur_count].name, "Remove copy protection");
 	strcpy(ret[cur_count].codes, CODE_UNLOCK_COPY);
+
+	cur_count++;
+	ret[cur_count].activated = 0;
+	ret[cur_count].options = NULL;
+	ret[cur_count].name = (char *)malloc(18);
+	ret[cur_count].codes = (char *)malloc(strlen(CODE_REMOVE_ACCOUNT_ID)+1);
+	strcpy(ret[cur_count].name, "Remove Account ID");
+	strcpy(ret[cur_count].codes, CODE_REMOVE_ACCOUNT_ID);
 
 	LOG("cur_count=%d,code_count=%d", cur_count, code_count);
 
@@ -912,22 +920,14 @@ void BubbleSortGameList(save_entry_t * games, int count)
  *	gmc:			Set as the number of games read
  * Return:			Pointer to array of game_entry, null if failed
  */
-save_entry_t * ReadUserList(int * gmc)
+save_entry_t * ReadUserList(const char* userPath, int * gmc)
 {
-	char * userPath;
-	if (dir_exists(SAVES_PATH_USB0) == SUCCESS)
-		userPath = (char*)SAVES_PATH_USB0;
-	else if (dir_exists(SAVES_PATH_USB1) == SUCCESS)
-		userPath = (char*)SAVES_PATH_USB1;
-	else
-		userPath = (char*)SAVES_PATH_HDD;
-	
 	int save_count = getDirListSize(userPath);
+	*gmc = save_count;
+
 	if (!save_count)
 		return NULL;
 
-	*gmc = save_count;
-	
 	DIR *d;
 	struct dirent *dir;
 	d = opendir(userPath);

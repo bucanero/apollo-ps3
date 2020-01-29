@@ -11,9 +11,9 @@
 #define APOLLO_PATH				"/dev_hdd0/game/NP0APOLLO/USRDIR/"
 #define APOLLO_DATA_PATH		APOLLO_PATH "DATA/"
 
-#define SAVES_PATH_USB0			"/dev_usb000/apollo/PS3/SAVEDATA/"
-#define SAVES_PATH_USB1			"/dev_usb001/apollo/PS3/SAVEDATA/"
-#define SAVES_PATH_HDD			"/dev_hdd0/tmp/apollo/"   // /dev_hdd0/home/0000000x/savedata
+#define SAVES_PATH_USB0			"/dev_usb000/tmp/PS3/SAVEDATA/"
+#define SAVES_PATH_USB1			"/dev_usb001/tmp/PS3/SAVEDATA/"
+#define SAVES_PATH_HDD			"/dev_hdd0/tmp/home/%08d/savedata/"
 
 #define ONLINE_URL				"http://apollo.psdev.tk/"
 #define ONLINE_LOCAL_CACHE		APOLLO_PATH "CACHE/"
@@ -21,6 +21,7 @@
 
 #define CODE_RESIGN_SAVE        "RESIGN_SAVE"
 #define CODE_UNLOCK_COPY        "UNLOCK_COPY"
+#define CODE_REMOVE_ACCOUNT_ID  "REMOVE_ACCT"
 
 typedef struct option_entry
 {
@@ -64,7 +65,13 @@ typedef struct game_entry_s
     save_entry_t * saves;
 } game_entry_t;
 
-save_entry_t * ReadUserList(int * gmc);
+typedef struct {
+    save_entry_t * list;
+    int count;
+    char path[128];
+} save_list_t;
+
+save_entry_t * ReadUserList(const char* userPath, int * gmc);
 save_entry_t * ReadOnlineList(int * gmc);
 void UnloadGameList(save_entry_t * list, int count);
 int isGameActivated(save_entry_t game);

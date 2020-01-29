@@ -4,7 +4,6 @@
 #include <pngdec/pngdec.h>
 
 #include "saves.h"
-
 #include "menu.h"
 #include "menu_cheats.h"
 

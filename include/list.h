@@ -19,6 +19,7 @@ void list_free(list_t *list);
 list_node_t * list_append(list_t *list, void *value);
 
 list_node_t * list_head(list_t *list);
+list_node_t * list_tail(list_t *list);
 size_t list_count(list_t *list);
 
 list_node_t * list_next(list_node_t *node);

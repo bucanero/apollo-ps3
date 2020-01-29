@@ -67,6 +67,16 @@ list_node_t * list_head(list_t *list) {
 	return list->head;
 }
 
+list_node_t * list_tail(list_t *list) {
+	list_node_t *node = list->head;
+
+	while (node && node->next) {
+		node = node->next;
+	}
+
+	return node;
+}
+
 size_t list_count(list_t *list) {
 	if (!list)
 		return 0;

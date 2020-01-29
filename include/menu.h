@@ -38,6 +38,8 @@
 #define	 titlescr_ico_net_png_index							32
 #define	 titlescr_logo_png_index							33
 
+#define	 TOTAL_MENU_TEXTURES								34
+
 //Fonts
 #define  font_comfortaa_regular								0
 #define  font_comfortaa_bold								1
@@ -53,10 +55,6 @@ typedef struct t_png_texture
 
 u32 * texture_mem;      // Pointers to texture memory
 u32 * font_mem;         // Pointer after font
-
-
-//Options
-extern const char * options_path;
 
 typedef struct
 {
@@ -82,16 +80,16 @@ extern int menu_options_maxopt;
 extern int * menu_options_maxsel;
 extern int * menu_options_selections;
 
-extern const char * VERSION;                //Artemis PS3 version (about menu)
-extern const int MENU_TITLE_OFF;            //Offset of menu title text from menu mini icon
-extern const int MENU_ICON_OFF;             //X Offset to start printing menu mini icon
-extern const int MENU_ANI_MAX;              //Max animation number
-extern const int MENU_SPLIT_OFF;			//Offset from left of sub/split menu to start drawing
+#define APOLLO_VERSION			"v0.0.1"	//Apollo PS3 version (about menu)
+#define MENU_TITLE_OFF			30			//Offset of menu title text from menu mini icon
+#define MENU_ICON_OFF 			70          //X Offset to start printing menu mini icon
+#define MENU_ANI_MAX 			0x80        //Max animation number
+#define MENU_SPLIT_OFF			200			//Offset from left of sub/split menu to start drawing
+#define MENU_MAIN_ICON_WIDTH 	80			//Width of main menu icons
 
-extern int close_art;
+extern int close_app;
 
 extern png_texture * menu_textures;				// png_texture array for main menu, initialized in LoadTexture
-extern const int menu_size;						// Size of menu png_texture array
 
 extern int screen_width, screen_height;			// Set to dimensions of the screen in main()
 

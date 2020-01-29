@@ -42,6 +42,16 @@
 #include "menu_options.h"
 #include "menu_cheats.h"
 
+#define MENU_MAIN_SCREEN    0
+#define MENU_USB_SAVES      1
+#define MENU_HDD_SAVES      2
+#define MENU_ONLINE_DB      3
+#define MENU_OPTIONS        4
+#define MENU_CREDITS        5
+#define MENU_PATCHES        6
+#define MENU_PATCH_VIEW     7
+#define MENU_CODE_OPTIONS   8
+
 //Font
 #include "comfortaa_bold_ttf.h"
 #include "comfortaa_light_ttf.h"
@@ -79,7 +89,7 @@ padData padA[MAX_PADS];
 padData padB[MAX_PADS];
 
 //Options
-const char * options_path = APOLLO_PATH "opt.ini";
+#define APOLLO_OPTIONS_FILE      APOLLO_PATH "opt.ini"
 
 void music_callback(int index, int sel);
 void sort_callback(int index, int sel);
@@ -87,6 +97,7 @@ void ani_callback(int index, int sel);
 void horm_callback(int index, int sel);
 void verm_callback(int index, int sel);
 void update_callback(int index, int sel);
+void uid_callback(int index, int sel);
 
 const option menu_options_options[] = {
 	{ .name = "Music", .options = NULL, .type = ARTEMIS_OPTION_BOOL, .callback = music_callback },
@@ -94,9 +105,12 @@ const option menu_options_options[] = {
 	{ .name = "Menu Animations", .options = NULL, .type = ARTEMIS_OPTION_BOOL, .callback = ani_callback },
 	{ .name = "Horizontal Margin", .options = NULL, .type = ARTEMIS_OPTION_INC, .callback = horm_callback },
 	{ .name = "Vertical Margin", .options = NULL, .type = ARTEMIS_OPTION_INC, .callback = verm_callback },
-	{ .name = "Update Local Cheats", .options = NULL, .type = ARTEMIS_OPTION_CALL, .callback = update_callback },
+	{ .name = "User ID Number", .options = NULL, .type = ARTEMIS_OPTION_INC, .callback = uid_callback },
+//	{ .name = "Update Local Cheats", .options = NULL, .type = ARTEMIS_OPTION_CALL, .callback = update_callback },
 	{ .name = NULL }
 };
+
+int opt_user_id = 0;
 
 int doSort = 1;
 int doAni = 1;
@@ -107,17 +121,9 @@ int menu_options_maxopt = 0;
 int * menu_options_maxsel;
 int * menu_options_selections;
 
-const char * VERSION = "v0.5.0";            //Apollo PS3 version (about menu)
-const int MENU_TITLE_OFF = 30;              //Offset of menu title text from menu mini icon
-const int MENU_ICON_OFF = 70;               //X Offset to start printing menu mini icon
-const int MENU_ANI_MAX = 0x80;              //Max animation number
-const int MENU_MAIN_ICON_WIDTH = 80;		//Width of main menu icons
-const int MENU_SPLIT_OFF = 200;				//Offset from left of sub/split menu to start drawing
+int close_app = 0;
 
-int close_art = 0;
-
-png_texture * menu_textures;           // png_texture array for main menu, initialized in LoadTexture
-const int menu_size = 34;              // Size of menu png_texture array
+png_texture * menu_textures;                // png_texture array for main menu, initialized in LoadTexture
 
 int screen_width = 0, screen_height = 0;    // Set to dimensions of the screen in main()
 
@@ -127,7 +133,8 @@ int highlight_amount = 6;                   // Amount of alpha to inc/dec each t
 int pause_pulse = 0;                        // Counter that holds how long alpha is held in place
 int idle_time = 0;                          // Set by readPad
 
-const char * menu_main_description = "PlayStation 3 Save Game Tool";
+#define MENU_MAIN_DESCRIPTION   "PlayStation 3 Save Game Tool"
+#define MENU_MAIN_FOOTER        "www.bucanero.com.ar"
 
 const char * menu_about_strings[] = { "Bucanero", "Developer",
 									"Dnawrkshp", "GUI code",
@@ -135,53 +142,69 @@ const char * menu_about_strings[] = { "Bucanero", "Developer",
 									"flatz", "PFD/SFO tools",
 									NULL, NULL };
 
+#define OFFSET_2_PSID_484C         0x8000000000474AF4ULL + 0x18ULL
+
+u8 PSID[0x10];
+char psid_str1[17] = "0000000000000000";
+char psid_str2[17] = "0000000000000000";
+
 const char * menu_about_strings_project[] = { "WebSite", "http://apollo.psdev.tk/",
-											"GitHub", "github.com/bucanero/apollo-ps3",
+											psid_str1, psid_str2,
 											NULL, NULL };
-
-//Game filtering
-#define GAMES_MOUNT_PATH		"/dev_hdd0/GAMES/"
-#define GAMES_PSN_PATH			"/dev_hdd0/game/"
-#define GAMES_DISC_PATH			"/app_home/PS3_GAME/PARAM.SFO"
-
-char * * user_installed_titleids;
-int user_installed_titleids_count = 0;
 
 /*
 * 0 - Main Menu
-* 1 - Code Menu (User List)
-* 2 - Code Menu (Online List)
-* 3 - About Menu
+* 1 - USB Menu (User List)
+* 2 - HDD Menu (User List)
+* 3 - Online Menu (Online List)
 * 4 - Options Menu
-* 5 - Code Menu (Select Cheats)
-* 6 - Code Menu (View Cheat)
-* 7 - Code Menu (View Cheat Options)
+* 5 - About Menu
+* 6 - Code Menu (Select Cheats)
+* 7 - Code Menu (View Cheat)
+* 8 - Code Menu (View Cheat Options)
 */
-int menu_id = 0;																					// Menu currently in
-int menu_sel = 0;																					// Index of selected item (use varies per menu)
-int menu_old_sel[] = { 0, 0, 0, 0, 0, 0, 0, 0 };													// Previous menu_sel for each menu
-int last_menu_id[] = { 0, 0, 0, 0, 0, 0, 0, 0 };													// Last menu id called (for returning)
+int menu_id = 0;												// Menu currently in
+int menu_sel = 0;												// Index of selected item (use varies per menu)
+int menu_old_sel[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };				// Previous menu_sel for each menu
+int last_menu_id[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };				// Last menu id called (for returning)
+
 const char * menu_pad_help[] = { NULL,																//Main
-								"\x10 Select    \x13 Back    \x11 Refresh",							//User list   
+								"\x10 Select    \x13 Back    \x11 Refresh",							//USB list
+								"\x10 Select    \x13 Back    \x11 Refresh",							//HDD list
 								"\x10 Select    \x13 Back    \x11 Refresh",							//Online list
-								"\x13 Back",														//About
 								"\x10 Select    \x13 Back",											//Options
+								"\x13 Back",														//About
 								"\x10 Enable    \x11 Toggle Mode    \x12 View Code    \x13 Back",	//Select Cheats
 								"\x13 Back",														//View Cheat
 								"\x10 Select    \x13 Back"											//Cheat Option
 								};
 
 /*
-* User code list
+* HDD save list
 */
-save_entry_t * user_game_list = NULL;
-int user_game_count = 0;
+save_list_t hdd_saves = {
+    .list = NULL,
+    .count = 0,
+    .path = "",
+};
+
+/*
+* USB save list
+*/
+save_list_t usb_saves = {
+    .list = NULL,
+    .count = 0,
+    .path = "",
+};
 
 /*
 * Online code list
 */
-save_entry_t * online_game_list = NULL;
-int online_game_count = 0;
+save_list_t online_saves = {
+    .list = NULL,
+    .count = 0,
+    .path = ONLINE_URL,
+};
 
 save_entry_t selected_entry;
 code_entry_t selected_centry;
@@ -238,101 +261,6 @@ static void sys_callback(uint64_t status, uint64_t param, void* userdata) {
 	}
 }
 
-char ** LoadGames_ReadDirectory(char * path, const char * param, int * ret_count)
-{
-	DIR *d;
-	struct dirent *dir;
-
-	char fullPath[1024];
-
-	char * * files = (char**)malloc(1000 * sizeof(char*));
-
-	int count = 0;
-
-	if ((d = opendir(path)))
-	{
-		while ((dir = readdir(d)) != NULL && dir->d_name != NULL)
-		{
-			if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
-			{
-				snprintf(fullPath, sizeof(fullPath)-1, "%s%s%s", path, dir->d_name, param);
-				if (file_exists(fullPath) == SUCCESS)
-				{
-					files[count] = (char*)malloc(strlen(fullPath));
-					strcpy(files[count], (char*)fullPath);
-					count++;
-				}
-			}
-		}
-		closedir(d);
-	}
-
-	*ret_count = count;
-	return files;
-}
-
-void LoadGames()
-{
-	int id_count[3];
-	char ** id_path[3];
-	int count = 0, x = 0, y = 0;
-
-	//Free old array if exists
-	if (user_installed_titleids)
-	{
-		for (x = 0; x < user_installed_titleids_count; x++)
-			if (user_installed_titleids[x])
-				free(user_installed_titleids);
-
-		free(user_installed_titleids);
-	}
-	user_installed_titleids_count = 0;
-	
-	id_path[0] = LoadGames_ReadDirectory(GAMES_MOUNT_PATH, "/PS3_GAME/PARAM.SFO", &id_count[0]);
-	id_path[1] = LoadGames_ReadDirectory(GAMES_PSN_PATH, "/PARAM.SFO", &id_count[1]);
-	id_path[2] = (char **)malloc(1 * sizeof(char*));
-	id_path[2][0] = (char*)malloc(512);
-	strcpy(id_path[2][0], GAMES_DISC_PATH);
-	if (file_exists(id_path[2][0]) == SUCCESS)
-		id_count[2] = 1;
-	else
-	{
-		id_count[2] = 0;
-		free(id_path[2][0]);
-		id_path[2][0] = NULL;
-	}
-
-	count = id_count[0] + id_count[1] + id_count[2];
-	if (count > 0)
-	{
-		user_installed_titleids = (char **)malloc(count * sizeof(char*));
-		for (x = 0; x < 3; x++)
-		{
-			if (id_path[x])
-			{
-				for (y = 0; y < id_count[x]; y++)
-				{
-					if (id_path[x][y])
-					{
-						user_installed_titleids[user_installed_titleids_count] = (char*)malloc(10);
-
-						int fSize = getFileSize(id_path[x][y]);
-						char * fullFile = readFile(id_path[x][y]);
-						strcpy((char*)user_installed_titleids[user_installed_titleids_count], (char*)&fullFile[fSize - 0x18]);
-						free(fullFile);
-						fullFile = NULL;
-						user_installed_titleids_count++;
-
-						free(id_path[x][y]);
-					}
-				}
-				free(id_path[x]);
-			}
-		}
-	}
-
-}
-
 char * ParseOptionName(char * buffer, char * ret)
 {
 	strcpy(ret, buffer);
@@ -346,10 +274,10 @@ char * ParseOptionName(char * buffer, char * ret)
 
 void LoadOptions()
 {
-	int fsize = getFileSize(options_path);
+	int fsize = getFileSize(APOLLO_OPTIONS_FILE);
 	if (fsize > 0)
 	{
-		FILE *f = fopen(options_path, "rb");
+		FILE *f = fopen(APOLLO_OPTIONS_FILE, "rb");
 		if (f == NULL)
 			return;
 		fseek(f, 0, SEEK_SET);
@@ -382,7 +310,7 @@ void LoadOptions()
 
 void SaveOptions()
 {
-	FILE * fp = fopen(options_path, "w");
+	FILE * fp = fopen(APOLLO_OPTIONS_FILE, "w");
 	if(fp == NULL)
 		return;
 	
@@ -462,7 +390,6 @@ int readPad(int port)
 		//memcpy(&_paddata[port].zeroes + off, &paddata[port].zeroes + off, size);
 		memcpy(paddata, padA, sizeof(padData));
 		memcpy(padB, padA, sizeof(padData));
-		
 		
 		//DPad has 3 mode input delay
 		if (dpad == _dpad && dpad != 0)
@@ -588,21 +515,19 @@ void Draw_MainMenu_Ani()
 			logo_a_t = 0xFF;
 		u8 logo_a = (u8)logo_a_t;
 		
-		
-		
 		//Background
 		DrawBackgroundTexture(0, bg_a);
 		
 		//Artemis logo
 		w = 500, h = 140;
-		DrawTexture(menu_textures[titlescr_logo_png_index], 424 - (w / 2), 256 - (h / 2) - 100, 0, w, h, 0xFFFFFF00 | logo_a);
+		DrawTexture(menu_textures[titlescr_logo_png_index], 424 - (w / 2), 256 - (h / 2) - 120, 0, w, h, 0xFFFFFF00 | logo_a);
 		
 		//Artemis description
 		SetFontAlign(1);
 		SetCurrentFont(font_comfortaa_light);
 		SetFontSize(18, 16);
 		SetFontColor(0x00000000 | logo_a, 0x00000000);
-		DrawString(screen_width / 2, 210, (char*)menu_main_description);
+		DrawString(screen_width / 2, 210, MENU_MAIN_DESCRIPTION);
 		
 		tiny3d_Flip();
 	}
@@ -632,23 +557,19 @@ void Draw_MainMenu_Ani()
 		
 		//Artemis logo
 		w = 500; h = 140;
-		DrawTexture(menu_textures[titlescr_logo_png_index], 424 - (w / 2), 256 - (h / 2) - 100, 0, w, h, 0xFFFFFFFF);
+		DrawTexture(menu_textures[titlescr_logo_png_index], 424 - (w / 2), 256 - (h / 2) - 120, 0, w, h, 0xFFFFFFFF);
 
 		//Artemis description
 		SetFontAlign(1);
 		SetCurrentFont(font_comfortaa_light);
 		SetFontSize(18, 16);
 		SetFontColor(0x000000FF, 0x00000000);
-		DrawString(screen_width / 2, 210, (char*)menu_main_description);
+		DrawString(screen_width / 2, 210, MENU_MAIN_DESCRIPTION);
 
 		SetFontSize(12, 12);
-		DrawString(screen_width / 2, 480, "apollo.psdev.tk");
+		DrawString(screen_width / 2, 480, MENU_MAIN_FOOTER);
 		
 		DrawTextureRotated(menu_textures[circle_loading_seek_png_index], screen_width / 2, screen_height / 2, 1, 89, 89, 0xFFFFFFFF, ani);
-		//------------ Info
-		//c = 11;
-		//w = (2 * menu_textures[c].texture.width) / 4; h = (2 * menu_textures[c].texture.height) / 4;
-		//DrawTexture(menu_textures[c], 424 - (w / 2), 450, 0, w, h, 0xffffff00 | icon_a);
 		
 		//------------ Icons
 		
@@ -688,23 +609,18 @@ void Draw_MainMenu()
 	//Artemis logo
 	c = titlescr_logo_png_index;
 	w = 500; h = 140;
-	DrawTexture(menu_textures[c], 424 - (w / 2), 256 - (h / 2) - 100, 0, w, h, 0xffffffff);
+	DrawTexture(menu_textures[c], 424 - (w / 2), 256 - (h / 2) - 120, 0, w, h, 0xffffffff);
 	
 	//Artemis description
 	SetFontAlign(1);
 	SetCurrentFont(font_comfortaa_light);
 	SetFontSize(18, 16);
 	SetFontColor(0x000000FF, 0x00000000);
-	DrawString(screen_width / 2, 210, (char*)menu_main_description);
+	DrawString(screen_width / 2, 210, MENU_MAIN_DESCRIPTION);
 
 	SetFontSize(12, 12);
-	DrawString(screen_width / 2, 480, "apollo.psdev.tk");
+	DrawString(screen_width / 2, 480, MENU_MAIN_FOOTER);
 
-	//------------ Info
-	//c = 11;
-	//w = (2 * menu_textures[c].texture.width) / 4; h = (2 * menu_textures[c].texture.height) / 4;
-	//DrawTexture(menu_textures[c], 424 - (w / 2), 450, 0, w, h, 0xffffffff);
-	
 	//------------ Icons
 	SetFontAlign(3);
 	SetFontSize(12, 12);
@@ -714,13 +630,13 @@ void Draw_MainMenu()
 	c = titlescr_ico_xmb_png_index;
 	DrawTexture(menu_textures[c], 50 + 150, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 0) ? 0xFF : 32));
 	SetFontColor(0x00000000 | ((menu_sel == 0) ? 0xFF : 32), 0x00000000);
-	DrawString(50 + 150 + (MENU_MAIN_ICON_WIDTH / 2), 390, "Start game");
+	DrawString(50 + 150 + (MENU_MAIN_ICON_WIDTH / 2), 390, "USB Saves");
 
 	//Cheats
 	c = titlescr_ico_cht_png_index;
 	DrawTexture(menu_textures[c], 150 + 150, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 1) ? 0xFF : 32));
 	SetFontColor(0x00000000 | ((menu_sel == 1) ? 0xFF : 32), 0x00000000);
-	DrawString(150 + 150 + (MENU_MAIN_ICON_WIDTH / 2) + 5, 390, "Saves");
+	DrawString(150 + 150 + (MENU_MAIN_ICON_WIDTH / 2) + 5, 390, "HDD Saves");
 
 	//Online Cheats
 	c = titlescr_ico_net_png_index;
@@ -768,8 +684,8 @@ void LoadTexture()
 	
 	TTFUnloadFont();
 	
-	if (!menu_textures && menu_size)
-		menu_textures = (png_texture *)malloc(sizeof(png_texture) * menu_size);
+	if (!menu_textures && TOTAL_MENU_TEXTURES)
+		menu_textures = (png_texture *)malloc(sizeof(png_texture) * TOTAL_MENU_TEXTURES);
 	
 	//Init Main Menu textures
 	load_menu_texture(bgimg, png);
@@ -819,7 +735,7 @@ void LoadTextures_Menu()
 	int cnt = 0;
 
 	//Main Menu
-	for (cnt = 0; cnt < menu_size; cnt++)
+	for (cnt = 0; cnt < TOTAL_MENU_TEXTURES; cnt++)
 	{
 		pngLoadFromBuffer(menu_textures[cnt].buffer, menu_textures[cnt].size, &menu_textures[cnt].texture);
 
@@ -947,121 +863,146 @@ void update_callback(int index, int sel)
 	}
 }
 
-void ReloadUserCheats()
+void uid_callback(int index, int sel)
 {
-	if (user_game_list)
+	if (sel < 0)
+		sel = 0;
+	if (sel > 100)
+		sel = 100;
+	opt_user_id = sel;
+	menu_options_selections[index] = sel;
+}
+
+void set_usb_path(save_list_t* save_list)
+{
+	if (dir_exists(SAVES_PATH_USB0) == SUCCESS)
+		strcpy(save_list->path, SAVES_PATH_USB0);
+	else if (dir_exists(SAVES_PATH_USB1) == SUCCESS)
+		strcpy(save_list->path, SAVES_PATH_USB1);
+	else
+		strcpy(save_list->path, "");
+}
+
+void ReloadUserSaves(save_list_t* save_list)
+{
+	if (save_list->list)
 	{
-		UnloadGameList(user_game_list, user_game_count);
-		user_game_count = 0;
-		user_game_list = NULL;
+		UnloadGameList(save_list->list, save_list->count);
+		save_list->count = 0;
+		save_list->list = NULL;
 	}
 	
-	int gmc[1];
-	user_game_list = ReadUserList((int *)gmc);
-	user_game_count = *gmc;
+	save_list->list = ReadUserList(save_list->path, &(save_list->count));
 	if (doSort)
-		BubbleSortGameList(user_game_list, user_game_count);
+		BubbleSortGameList(save_list->list, save_list->count);
 }
 
 void ReloadOnlineCheats()
 {
-	if (online_game_list)
+	if (online_saves.list)
 	{
-		UnloadGameList(online_game_list, online_game_count);
-		online_game_count = 0;
-		online_game_list = NULL;
+		UnloadGameList(online_saves.list, online_saves.count);
+		online_saves.count = 0;
+		online_saves.list = NULL;
 	}
 
-	int gmc[1];
-	online_game_list = ReadOnlineList((int *)gmc);
-	online_game_count = *gmc;
+	online_saves.list = ReadOnlineList(&online_saves.count);
 	if (doSort)
-		BubbleSortGameList(online_game_list, online_game_count);
+		BubbleSortGameList(online_saves.list, online_saves.count);
 }
 
 void SetMenu(int id)
 {   
 	switch (menu_id) //Leaving menu
 	{
-		case 0: //Main Menu
-			
+		case MENU_MAIN_SCREEN: //Main Menu
+		case MENU_USB_SAVES: //USB Saves Menu
+		case MENU_HDD_SAVES: //HHD Saves Menu
+		case MENU_ONLINE_DB: //Cheats Online Menu
+		case MENU_OPTIONS: //Options Menu
+		case MENU_CREDITS: //About Menu
+		case MENU_PATCHES: //Cheat Selection Menu			
 			break;
-		case 1: //Cheats Offline Menu
-			
-			break;
-		case 2: //Cheats Online Menu
-			
-			break;
-		case 3: //About Menu
-			
-			break;
-		case 4: //Options Menu
-			
-			break;
-		case 5: //Cheat Selection Menu
-			
-			break;
-		case 6: //Cheat View Menu
+
+		case MENU_PATCH_VIEW: //Cheat View Menu
 			Draw_CheatsMenu_View_Ani_Exit();
 			break;
-		case 7: //Cheat Option Menu
+
+		case MENU_CODE_OPTIONS: //Cheat Option Menu
 			Draw_CheatsMenu_Options_Ani_Exit();
 			break;
 	}
 	
 	switch (id) //going to menu
 	{
-		case 0: //Main Menu
-			if (doAni || menu_id == 0) //if load animation
+		case MENU_MAIN_SCREEN: //Main Menu
+			if (doAni || menu_id == MENU_MAIN_SCREEN) //if load animation
 				Draw_MainMenu_Ani();
 			break;
-		case 1: //Cheats Offline Menu
-			if (!user_game_list)
+
+		case MENU_USB_SAVES: //USB saves Menu
+			if (!usb_saves.list)
 			{
-				int gmc[1];
-				user_game_list = ReadUserList((int *)gmc);
-				user_game_count = *gmc;
+			    set_usb_path(&usb_saves);
+				usb_saves.list = ReadUserList(usb_saves.path, &(usb_saves.count));
 				if (doSort)
-					BubbleSortGameList(user_game_list, user_game_count);
+					BubbleSortGameList(usb_saves.list, usb_saves.count);
 			}
 			
 			if (doAni)
-				Draw_UserCheatsMenu_Ani(user_game_list, user_game_count);
+				Draw_UserCheatsMenu_Ani(usb_saves.list, usb_saves.count);
 			break;
-		case 2: //Cheats Online Menu
-			if (!online_game_list)
+
+		case MENU_HDD_SAVES: //HDD saves Menu
+			if (!hdd_saves.list)
 			{
-				int gmc[1];
-				online_game_list = ReadOnlineList((int *)gmc);
-				online_game_count = *gmc;
+				sprintf(hdd_saves.path, SAVES_PATH_HDD, opt_user_id);
+				hdd_saves.list = ReadUserList(hdd_saves.path, &(hdd_saves.count));
 				if (doSort)
-					BubbleSortGameList(online_game_list, online_game_count);
+					BubbleSortGameList(hdd_saves.list, hdd_saves.count);
+			}
+			
+			if (doAni)
+				Draw_UserCheatsMenu_Ani(hdd_saves.list, hdd_saves.count);
+			break;
+
+		case MENU_ONLINE_DB: //Cheats Online Menu
+			if (!online_saves.list)
+			{
+				online_saves.list = ReadOnlineList(&online_saves.count);
+				if (doSort)
+					BubbleSortGameList(online_saves.list, online_saves.count);
 			}
 
 			if (doAni)
-				Draw_UserCheatsMenu_Ani(online_game_list, online_game_count);
+				Draw_UserCheatsMenu_Ani(online_saves.list, online_saves.count);
 			break;
-		case 3: //About Menu
+
+		case MENU_CREDITS: //About Menu
 			if (doAni)
 				Draw_AboutMenu_Ani();
 			break;
-		case 4: //Options Menu
+
+		case MENU_OPTIONS: //Options Menu
 			if (doAni)
 				Draw_OptionsMenu_Ani();
 			break;
-		case 5: //Cheat Selection Menu
-			if (menu_id == 1 || menu_id == 2) //if entering from game list, don't keep index, otherwise keep
-				menu_old_sel[5] = 0;
-			if (doAni && menu_id != 7 && menu_id != 6)
+
+		case MENU_PATCHES: //Cheat Selection Menu
+			if (menu_id == MENU_USB_SAVES || menu_id == MENU_HDD_SAVES) //if entering from game list, don't keep index, otherwise keep
+				menu_old_sel[MENU_PATCHES] = 0;
+			if (doAni && menu_id != MENU_PATCH_VIEW && menu_id != MENU_CODE_OPTIONS)
 				Draw_CheatsMenu_Selection_Ani();
 			break;
-		case 6: //Cheat View Menu
-			menu_old_sel[6] = 0;
+
+		case MENU_PATCH_VIEW: //Cheat View Menu
+			menu_old_sel[MENU_PATCH_VIEW] = 0;
 			if (doAni)
 				Draw_CheatsMenu_View_Ani();
 			break;
-		case 7: //Cheat Option Menu
-			menu_old_sel[7] = 0;
+
+		case MENU_CODE_OPTIONS: //Cheat Option Menu
+			menu_old_sel[MENU_CODE_OPTIONS] = 0;
 			if (doAni)
 				Draw_CheatsMenu_Options_Ani();
 			break;
@@ -1125,36 +1066,97 @@ void move_selection_fwd(int game_count, int steps)
 		menu_sel = game_count - 1;
 }
 
-u8 IDPS[0x10];
 
-u8 lv2peek8(u64 addr) {
-	u8 ret = (u8) (lv2peek(addr) >> 56ULL);
-	return ret;
-}
-
-#define OFFSET_2_IDPS_484C         0x8000000000474AF4ULL
-void peek_IDPS()
+void peek_PSID(void)
 {
-	u8 i;
-	u64 OFFSET_2_IDPS = OFFSET_2_IDPS_484C;
-	for(i=0; i<0x10; i++) {
-		IDPS[i]=lv2peek8(OFFSET_2_IDPS + i);
-	}
+    uint64_t* tmp = (uint64_t*) &PSID;
+
+	tmp[0] = lv2peek(OFFSET_2_PSID_484C);
+	tmp[1] = lv2peek(OFFSET_2_PSID_484C + 8);
+
+	sprintf(psid_str1, "%016lX", tmp[0]);
+	sprintf(psid_str2, "%016lX", tmp[1]);
+
+    LOG("PSID 0x %016llX 0x %016llX", tmp[0], tmp[1]);
 }
 
+int moveMenuSelection(padData pad_data, save_list_t * save_list)
+{
+	if(pad_data.BTN_UP)
+	{
+		move_selection_back(save_list->count, 1);
+	}
+	else if(pad_data.BTN_DOWN)
+	{
+		move_selection_fwd(save_list->count, 1);
+	}
+	else if (pad_data.BTN_LEFT)
+	{
+		move_selection_back(save_list->count, 5);
+	}
+	else if (pad_data.BTN_L1)
+	{
+		move_selection_back(save_list->count, 25);
+	}
+	else if (pad_data.BTN_L2)
+	{
+		move_letter_back(save_list->list, save_list->count);
+	}
+	else if (pad_data.BTN_RIGHT)
+	{
+		move_selection_fwd(save_list->count, 5);
+	}
+	else if (pad_data.BTN_R1)
+	{
+		move_selection_fwd(save_list->count, 25);
+	}
+	else if (pad_data.BTN_R2)
+	{
+		move_letter_fwd(save_list->list, save_list->count);
+	}
+	else if (pad_data.BTN_CIRCLE)
+	{
+		SetMenu(MENU_MAIN_SCREEN);
+		return 1;
+	}
 
+	return 0;
+}
+/*
+		else if (paddata[0].BTN_CROSS)
+		{
+			if (!save_list->list[menu_sel].codes)
+			{
+				int sz = 0;
+				save_list->list[menu_sel].codes = ReadCodes(save_list->list[menu_sel].title_id, &sz);
+				save_list->list[menu_sel].code_count = sz;
+			}
+			if (doSort)
+				save_list->list[menu_sel] = BubbleSortCodeList(save_list->list[menu_sel]);
+			selected_entry = save_list->list[menu_sel];
+			SetMenu(MENU_PATCHES);
+			return;
+		}
+		else if (paddata[0].BTN_SQUARE)
+		{
+			ReloadUserSaves(save_list);
+		}
+	}
+	
+	Draw_UserCheatsMenu(save_list->list, save_list->count, menu_sel, 0xFF);
+	*/
 
 // Resets new frame
 void drawScene()
 {   
 	tiny3d_Project2D(); // change to 2D context (remember you it works with 848 x 512 as virtual coordinates)
 	
-	char * userc, * onlinec;
+//	char * userc, * onlinec;
 	int max = 0;
 	
 	switch (menu_id)
 	{
-		case 0:
+		case MENU_MAIN_SCREEN:
 			
 			// Check the pads.
 			if (readPad(0))
@@ -1169,189 +1171,117 @@ void drawScene()
 				}
 				else if (paddata[0].BTN_CROSS)
 				{
-					switch (menu_sel)
-					{
-						case 0: //start (install MAMBA, load artemis_ps3.sprx, write cheats to /dev_hdd0/tmp/art.txt)
-							userc = ParseActivatedGameList(user_game_list, user_game_count);
-							onlinec = ParseActivatedGameList(online_game_list, online_game_count);
-							
-							writeFile("/dev_hdd0/tmp/art.txt", userc, onlinec);
-							
-							free (userc);
-							free (onlinec);
-							
-							//
-							char plugin_name[30];
-							char plugin_filename[256];
-							memset(plugin_name, 0, sizeof(plugin_name));
-							memset(plugin_filename, 0, sizeof(plugin_filename));
-							
-							
-							//So we know art is loaded if we boot up later
-							writeFile("/dev_hdd0/tmp/artstate", "on", "");
-							
-							//Clear boot history
-							DeleteBootHistory();
-							
-							close_art = 1;
-							return;
-						case 1: //Cheats menu
-							SetMenu(1);
-							return;
-						case 2: //Online Cheats menu
-							SetMenu(2);
-							return;
-						case 3: //Options menu
-							SetMenu(4);
-							return;
-						case 4: //About menu
-							SetMenu(3);
-							return;
-					}
+				    SetMenu(menu_sel+1);
 				}
-/*
+				else if(paddata[0].BTN_CIRCLE && show_dialog(1, "Exit to XMB?"))
+				{
+					close_app = 1;
+				}
+
 				else if(paddata[0].BTN_SELECT)
 				{
 					LOG("Screen");
-					dbglogger_screenshot_tmp(0);
+					main_loop_iterate(1);
+//					dbglogger_screenshot_tmp(0);
 					LOG("Shot");
 				}
-*/
-				else if(paddata[0].BTN_CIRCLE && show_dialog(1, "Exit to XMB?"))
+				else if(paddata[0].BTN_START)
 				{
-					close_art = 1;
+					LOG("Screen");
+					main_loop_iterate(2);
+//					dbglogger_screenshot_tmp(0);
+					LOG("Shot");
 				}
-				else if(paddata[0].BTN_SQUARE && show_dialog(1, "Remove Artemis plugin from memory?"))
-				{
-					//
-					char plugin_name[30];
-					char plugin_filename[256];
-					memset(plugin_name, 0, sizeof(plugin_name));
-					memset(plugin_filename, 0, sizeof(plugin_filename));
-				}
+
 			}
 			
 			Draw_MainMenu();
-			
 			break;
-		case 1: //Offline Cheats Menu
-			
+
+		case MENU_USB_SAVES: //USB Saves Menu
 			// Check the pads.
 			if (readPad(0))
 			{
-				if(paddata[0].BTN_UP)
+				if(moveMenuSelection(paddata[0], &usb_saves))
 				{
-					move_selection_back(user_game_count, 1);
-				}
-				else if(paddata[0].BTN_DOWN)
-				{
-					move_selection_fwd(user_game_count, 1);
-				}
-				else if (paddata[0].BTN_LEFT)
-				{
-					move_selection_back(user_game_count, 5);
-				}
-				else if (paddata[0].BTN_L1)
-				{
-					move_selection_back(user_game_count, 25);
-				}
-				else if (paddata[0].BTN_L2)
-				{
-					move_letter_back(user_game_list, user_game_count);
-				}
-				else if (paddata[0].BTN_RIGHT)
-				{
-					move_selection_fwd(user_game_count, 5);
-				}
-				else if (paddata[0].BTN_R1)
-				{
-					move_selection_fwd(user_game_count, 25);
-				}
-				else if (paddata[0].BTN_R2)
-				{
-					move_letter_fwd(user_game_list, user_game_count);
-				}
-				else if (paddata[0].BTN_CIRCLE)
-				{
-					SetMenu(0);
 					return;
 				}
 				else if (paddata[0].BTN_CROSS)
 				{
-					if (!user_game_list[menu_sel].codes)
+					if (!usb_saves.list[menu_sel].codes)
 					{
 						int sz = 0;
-						user_game_list[menu_sel].codes = ReadCodes(user_game_list[menu_sel].title_id, &sz);
-						user_game_list[menu_sel].code_count = sz;
+						usb_saves.list[menu_sel].codes = ReadCodes(usb_saves.list[menu_sel].title_id, &sz);
+						usb_saves.list[menu_sel].code_count = sz;
 					}
 					if (doSort)
-						user_game_list[menu_sel] = BubbleSortCodeList(user_game_list[menu_sel]);
-					selected_entry = user_game_list[menu_sel];
-					SetMenu(5);
+						usb_saves.list[menu_sel] = BubbleSortCodeList(usb_saves.list[menu_sel]);
+					selected_entry = usb_saves.list[menu_sel];
+					SetMenu(MENU_PATCHES);
 					return;
 				}
 				else if (paddata[0].BTN_SQUARE)
 				{
-					ReloadUserCheats();
+				    set_usb_path(&usb_saves);
+					ReloadUserSaves(&usb_saves);
 				}
 			}
 			
-			Draw_UserCheatsMenu(user_game_list, user_game_count, menu_sel, 0xFF);
+			Draw_UserCheatsMenu(usb_saves.list, usb_saves.count, menu_sel, 0xFF);
 			break;
-		case 2: //Online Cheats Menu
-			
+
+		case MENU_HDD_SAVES: //HDD Saves Menu
 			// Check the pads.
 			if (readPad(0))
 			{
-				if(paddata[0].BTN_UP)
+				if(moveMenuSelection(paddata[0], &hdd_saves))
 				{
-					move_selection_back(online_game_count, 1);
-				}
-				else if(paddata[0].BTN_DOWN)
-				{
-					move_selection_fwd(online_game_count, 1);
-				}
-				else if (paddata[0].BTN_LEFT)
-				{
-					move_selection_back(online_game_count, 5);
-				}
-				else if (paddata[0].BTN_L1)
-				{
-					move_selection_back(online_game_count, 25);
-				}
-				else if (paddata[0].BTN_L2)
-				{
-					move_letter_back(online_game_list, online_game_count);
-				}
-				else if (paddata[0].BTN_RIGHT)
-				{
-					move_selection_fwd(online_game_count, 5);
-				}
-				else if (paddata[0].BTN_R1)
-				{
-					move_selection_fwd(online_game_count, 25);
-				}
-				else if (paddata[0].BTN_R2)
-				{
-					move_letter_fwd(online_game_list, online_game_count);
-				}
-				else if (paddata[0].BTN_CIRCLE)
-				{
-					SetMenu(0);
 					return;
 				}
 				else if (paddata[0].BTN_CROSS)
 				{
-					if (!online_game_list[menu_sel].codes)
+					if (!hdd_saves.list[menu_sel].codes)
 					{
 						int sz = 0;
-						online_game_list[menu_sel].codes = ReadOnlineNCL(online_game_list[menu_sel].path, &sz);
-						online_game_list[menu_sel].code_count = sz;
+						hdd_saves.list[menu_sel].codes = ReadCodes(hdd_saves.list[menu_sel].title_id, &sz);
+						hdd_saves.list[menu_sel].code_count = sz;
 					}
 					if (doSort)
-						online_game_list[menu_sel] = BubbleSortCodeList(online_game_list[menu_sel]);
-					selected_entry = online_game_list[menu_sel];
-					SetMenu(5);
+						hdd_saves.list[menu_sel] = BubbleSortCodeList(hdd_saves.list[menu_sel]);
+					selected_entry = hdd_saves.list[menu_sel];
+					SetMenu(MENU_PATCHES);
+					return;
+				}
+				else if (paddata[0].BTN_SQUARE)
+				{
+					sprintf(hdd_saves.path, SAVES_PATH_HDD, opt_user_id);
+					ReloadUserSaves(&hdd_saves);
+				}
+			}
+			
+			Draw_UserCheatsMenu(hdd_saves.list, hdd_saves.count, menu_sel, 0xFF);
+			break;
+
+		case MENU_ONLINE_DB: //Online Cheats Menu
+			// Check the pads.
+			if (readPad(0))
+			{
+				if(moveMenuSelection(paddata[0], &online_saves))
+				{
+					return;
+				}
+				else if (paddata[0].BTN_CROSS)
+				{
+					if (!online_saves.list[menu_sel].codes)
+					{
+						int sz = 0;
+						online_saves.list[menu_sel].codes = ReadOnlineNCL(online_saves.list[menu_sel].path, &sz);
+						online_saves.list[menu_sel].code_count = sz;
+					}
+					if (doSort)
+						online_saves.list[menu_sel] = BubbleSortCodeList(online_saves.list[menu_sel]);
+					selected_entry = online_saves.list[menu_sel];
+					SetMenu(MENU_PATCHES);
 					return;
 				}
 				else if (paddata[0].BTN_SQUARE)
@@ -1360,24 +1290,24 @@ void drawScene()
 				}
 			}
 
-			Draw_UserCheatsMenu(online_game_list, online_game_count, menu_sel, 0xFF);
+			Draw_UserCheatsMenu(online_saves.list, online_saves.count, menu_sel, 0xFF);
 			break;
-		case 3: //About Menu
-			
+
+		case MENU_CREDITS: //About Menu
 			// Check the pads.
 			if (readPad(0))
 			{
 				if (paddata[0].BTN_CIRCLE)
 				{
-					SetMenu(0);
+					SetMenu(MENU_MAIN_SCREEN);
 					return;
 				}
 			}
 			
 			Draw_AboutMenu();
 			break;
-		case 4: //Options Menu
-			
+
+		case MENU_OPTIONS: //Options Menu
 			// Check the pads.
 			if (readPad(0))
 			{
@@ -1392,7 +1322,7 @@ void drawScene()
 				else if (paddata[0].BTN_CIRCLE)
 				{
 					SaveOptions();
-					SetMenu(0);
+					SetMenu(MENU_MAIN_SCREEN);
 					return;
 				}
 				else if (paddata[0].BTN_LEFT)
@@ -1434,8 +1364,8 @@ void drawScene()
 			
 			Draw_OptionsMenu();
 			break;
-		case 5: //Cheats Selection Menu
-			
+
+		case MENU_PATCHES: //Cheats Selection Menu
 			// Check the pads.
 			if (readPad(0))
 			{
@@ -1457,7 +1387,7 @@ void drawScene()
 				}
 				else if (paddata[0].BTN_CIRCLE)
 				{
-					SetMenu(last_menu_id[5]);
+					SetMenu(last_menu_id[MENU_PATCHES]);
 					return;
 				}
 				else if (paddata[0].BTN_CROSS)
@@ -1475,36 +1405,54 @@ void drawScene()
 
 						if (strcmp(selected_entry.codes[menu_sel].codes, CODE_RESIGN_SAVE) == 0)
 						{
-							LOG("Resigning save '%s'...", selected_entry.path);
-							if (pfd_util_init(selected_entry.title_id, selected_entry.path, 0) != 0)
-								LOG("ERROR INIT!");
+                            char uid[9];
+                            sprintf(uid, "%08d", opt_user_id);
 
-							LOG("init OK");
-							
-							if (pfd_util_process(PFD_CMD_UPDATE) != 0)
-								LOG("ERROR PROCESS");
+							LOG("Resigning save '%s'...", selected_entry.name);
+							if (pfd_util_init(uid, selected_entry.title_id, selected_entry.path))
+							{
+//    							if (pfd_util_process(PFD_CMD_CHECK, 0) == SUCCESS)
+    							if (pfd_util_process(PFD_CMD_UPDATE, 0) == SUCCESS)
+	    		                    show_dialog(0, "Save file successfully resigned!");
+		    	                else
+			                        show_dialog(0, "Error! Save file couldn't be resigned");
 
-							LOG("PFD process OK");
-							
+    							pfd_util_process(PFD_CMD_CHECK, 0);
+							}
+                            else
+                            {
+			                    show_dialog(0, "Error! Save file couldn't be resigned");
+                            }
+
 							pfd_util_end();
-
-							LOG("PFD end OK");
 
 							selected_entry.codes[menu_sel].activated = !selected_entry.codes[menu_sel].activated;
 						}
 
 						if (strcmp(selected_entry.codes[menu_sel].codes, CODE_UNLOCK_COPY) == 0)
 						{
-							unsigned int patch_flags = 0;
 							char in_file_path[256];
 							snprintf(in_file_path, sizeof(in_file_path)-1, "%s" "PARAM.SFO", selected_entry.path);
 
 							LOG("Unlocking save '%s'...", in_file_path);
-							patch_flags |= SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION;
-			                if (patch_sfo(in_file_path, in_file_path, patch_flags) == 0)
+			                if (patch_sfo(in_file_path, in_file_path, SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION, NULL) == SUCCESS)
 			                    show_dialog(0, "Save file successfully unlocked!");
 			                else
 			                    show_dialog(0, "Error! Save file couldn't be unlocked");
+
+							selected_entry.codes[menu_sel].activated = !selected_entry.codes[menu_sel].activated;
+						}
+
+						if (strcmp(selected_entry.codes[menu_sel].codes, CODE_REMOVE_ACCOUNT_ID) == 0)
+						{
+							char in_file_path[256];
+							snprintf(in_file_path, sizeof(in_file_path)-1, "%s" "PARAM.SFO", selected_entry.path);
+
+							LOG("Removing Account ID '%s'...", in_file_path);
+			                if (patch_sfo(in_file_path, in_file_path, 0, "0000000000000000") == SUCCESS)
+			                    show_dialog(0, "Account ID successfully removed!");
+			                else
+			                    show_dialog(0, "Error! Save file couldn't be modified");
 
 							selected_entry.codes[menu_sel].activated = !selected_entry.codes[menu_sel].activated;
 						}
@@ -1521,7 +1469,7 @@ void drawScene()
 						{
 							selected_centry = selected_entry.codes[menu_sel];
 							option_index = 0;
-							SetMenu(7);
+							SetMenu(MENU_CODE_OPTIONS);
 							return;
 						}
 					}
@@ -1536,15 +1484,15 @@ void drawScene()
 				else if (paddata[0].BTN_TRIANGLE)
 				{
 					selected_centry = selected_entry.codes[menu_sel];
-					SetMenu(6);
+					SetMenu(MENU_PATCH_VIEW);
 					return;
 				}
 			}
 			
 			Draw_CheatsMenu_Selection(menu_sel, 0xFFFFFFFF);
 			break;
-		case 6: //Cheat View Menu
-			
+
+		case MENU_PATCH_VIEW: //Cheat View Menu
 			//Calc max
 			max = 0;
 			const char * str;
@@ -1567,15 +1515,15 @@ void drawScene()
 				}
 				else if (paddata[0].BTN_CIRCLE)
 				{
-					SetMenu(last_menu_id[6]);
+					SetMenu(last_menu_id[MENU_PATCH_VIEW]);
 					return;
 				}
 			}
 			
 			Draw_CheatsMenu_View();
 			break;
-		case 7: //Cheat Option Menu
-			
+
+		case MENU_CODE_OPTIONS: //Cheat Option Menu
 			//Calc max
 			max = selected_centry.options[option_index].size;
 			
@@ -1592,18 +1540,18 @@ void drawScene()
 				}
 				else if (paddata[0].BTN_CIRCLE)
 				{
-					selected_entry.codes[menu_old_sel[last_menu_id[7]]].activated = 0;
-					SetMenu(last_menu_id[7]);
+					selected_entry.codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]].activated = 0;
+					SetMenu(last_menu_id[MENU_CODE_OPTIONS]);
 					return;
 				}
 				else if (paddata[0].BTN_CROSS)
 				{
-					selected_entry.codes[menu_old_sel[last_menu_id[7]]].options[option_index].sel = menu_sel;
+					selected_entry.codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]].options[option_index].sel = menu_sel;
 					option_index++;
 					
-					if (option_index >= selected_entry.codes[menu_old_sel[last_menu_id[7]]].options_count)
+					if (option_index >= selected_entry.codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]].options_count)
 					{
-						SetMenu(last_menu_id[7]);
+						SetMenu(last_menu_id[MENU_CODE_OPTIONS]);
 						return;
 					}
 					else
@@ -1627,9 +1575,14 @@ void exiting()
 */
 s32 main(s32 argc, const char* argv[])
 {
-	dbglogger_init_str("tcp:192.168.1.102:18999");
+	dbglogger_init_str("file:/dev_hdd0/tmp/apollo.log");
 
 	http_init();
+
+    peek_PSID();
+
+	pfd_util_setup_keys(PSID);
+
 
 	tiny3d_Init(1024*1024);
 
@@ -1710,14 +1663,13 @@ s32 main(s32 argc, const char* argv[])
 	screen_width = res.width;
 	screen_height = res.height;
 	
-	//SND_SetVoice( 2, (effect_is_stereo) ? VOICE_STEREO_16BIT : VOICE_MONO_16BIT, effect_freq, 0, background_music, background_music_size, 255, 255, NULL);
 	SND_SetInfiniteVoice(2, (effect_is_stereo) ? VOICE_STEREO_16BIT : VOICE_MONO_16BIT, effect_freq, 0, background_music, background_music_size, 255, 255);
 	
 	//Set options
 	for (i = 0; i < menu_options_maxopt; i++)
 		menu_options_options[i].callback(i, menu_options_selections[i]);
 
-	SetMenu(0);
+	SetMenu(MENU_MAIN_SCREEN);
 	
 	while (1)
 	{       
@@ -1732,7 +1684,7 @@ s32 main(s32 argc, const char* argv[])
 			TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
 					
 		// Check the pads.
-		if (close_art)
+		if (close_app)
 			return 0;
 		
 		drawScene();

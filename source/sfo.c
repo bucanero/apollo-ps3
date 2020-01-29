@@ -315,7 +315,7 @@ void sfo_grab(sfo_context_t *inout, sfo_context_t *tpl, int num_keys, const sfo_
 	}
 }
 
-void sfo_patch(sfo_context_t *inout, unsigned int flags) {
+void sfo_patch_lock(sfo_context_t *inout, unsigned int flags) {
 	sfo_context_param_t *p;
 
 	if ((flags & SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION) != 0) {
@@ -323,6 +323,17 @@ void sfo_patch(sfo_context_t *inout, unsigned int flags) {
 		if (p != NULL && p->actual_length == 4) {
 			u32 *flag = (u32 *)p->value;
 			*flag = ES32(0);
+		}
+	}
+}
+
+void sfo_patch_account(sfo_context_t *inout, const char* account) {
+	sfo_context_param_t *p;
+
+	if (account != NULL) {
+		p = sfo_context_get_param(inout, "ACCOUNT_ID");
+		if (p != NULL && p->actual_length == 16) {
+			memcpy(p->value, account, 16);
 		}
 	}
 }
@@ -338,7 +349,7 @@ u8* sfo_get_param_value(sfo_context_t *in, const char* param) {
 	return NULL;
 }
 
-int patch_sfo(const char *in_file_path, const char *out_file_path, unsigned int flags) {
+int patch_sfo(const char *in_file_path, const char *out_file_path, unsigned int flags, const char* account_id) {
 	sfo_context_t *sfo;
 
 	sfo = sfo_alloc();
@@ -347,7 +358,8 @@ int patch_sfo(const char *in_file_path, const char *out_file_path, unsigned int 
 		return -1;
 	}
 
-	sfo_patch(sfo, flags);
+	sfo_patch_lock(sfo, flags);
+	sfo_patch_account(sfo, account_id);
 	if (sfo_write(sfo, out_file_path) < 0) {
 		LOG("Unable to write to '%s'", out_file_path);
 		return -1;
