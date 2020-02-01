@@ -46,6 +46,9 @@
 #define  font_comfortaa_bold								1
 #define  font_comfortaa_light								2
 
+#define APP_FONT_COLOR						0x00000000
+#define APP_FONT_TAG_COLOR					0xFFFFFF00
+
 typedef struct t_png_texture
 {
 	const void *buffer;

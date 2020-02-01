@@ -221,18 +221,11 @@ void release_all() {
 		SND_End();
 
 	if(inited & INITED_SPU) {
-		//tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
-		//SetFontSize(12, 24);
-		//SetFontColor(0xffffffff, 0x00000000);
-		//DrawFormatString(0, 0, "Destroying SPU... ");
-		//tiny3d_Flip();
-		//sleep(1);
 		sysSpuRawDestroy(spu);
 		sysSpuImageClose(&spu_image);
 	}
 
 	inited=0;
-	
 }
 
 static void sys_callback(uint64_t status, uint64_t param, void* userdata) {
@@ -458,7 +451,7 @@ void Draw_MainMenu_Ani()
 		SetFontAlign(1);
 		SetCurrentFont(font_comfortaa_light);
 		SetFontSize(18, 16);
-		SetFontColor(0x00000000 | logo_a, 0x00000000);
+		SetFontColor(APP_FONT_COLOR | logo_a, 0);
 		DrawString(screen_width / 2, 210, MENU_MAIN_DESCRIPTION);
 		
 		tiny3d_Flip();
@@ -495,7 +488,7 @@ void Draw_MainMenu_Ani()
 		SetFontAlign(1);
 		SetCurrentFont(font_comfortaa_light);
 		SetFontSize(18, 16);
-		SetFontColor(0x000000FF, 0x00000000);
+		SetFontColor(APP_FONT_COLOR | 0xFF, 0);
 		DrawString(screen_width / 2, 210, MENU_MAIN_DESCRIPTION);
 
 		SetFontSize(12, 12);
@@ -547,7 +540,7 @@ void Draw_MainMenu()
 	SetFontAlign(1);
 	SetCurrentFont(font_comfortaa_light);
 	SetFontSize(18, 16);
-	SetFontColor(0x000000FF, 0x00000000);
+	SetFontColor(APP_FONT_COLOR | 0xFF, 0);
 	DrawString(screen_width / 2, 210, MENU_MAIN_DESCRIPTION);
 
 	SetFontSize(12, 12);
@@ -561,31 +554,31 @@ void Draw_MainMenu()
 	//Start game
 	c = titlescr_ico_xmb_png_index;
 	DrawTexture(menu_textures[c], 50 + 150, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 0) ? 0xFF : 32));
-	SetFontColor(0x00000000 | ((menu_sel == 0) ? 0xFF : 32), 0x00000000);
+	SetFontColor(APP_FONT_COLOR | ((menu_sel == 0) ? 0xFF : 32), 0);
 	DrawString(50 + 150 + (MENU_MAIN_ICON_WIDTH / 2), 390, "USB Saves");
 
 	//Cheats
 	c = titlescr_ico_cht_png_index;
 	DrawTexture(menu_textures[c], 150 + 150, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 1) ? 0xFF : 32));
-	SetFontColor(0x00000000 | ((menu_sel == 1) ? 0xFF : 32), 0x00000000);
+	SetFontColor(APP_FONT_COLOR | ((menu_sel == 1) ? 0xFF : 32), 0);
 	DrawString(150 + 150 + (MENU_MAIN_ICON_WIDTH / 2) + 5, 390, "HDD Saves");
 
 	//Online Cheats
 	c = titlescr_ico_net_png_index;
 	DrawTexture(menu_textures[c], 250 + 150, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 2) ? 0xFF : 32));
-	SetFontColor(0x00000000 | ((menu_sel == 2) ? 0xFF : 32), 0x00000000);
+	SetFontColor(APP_FONT_COLOR | ((menu_sel == 2) ? 0xFF : 32), 0);
 	DrawString(250 + 150 + (MENU_MAIN_ICON_WIDTH / 2) + 5, 390, "Online DB");
 
 	//Options
 	c = titlescr_ico_opt_png_index;
 	DrawTexture(menu_textures[c], 350 + 150 + 5, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 3) ? 0xFF : 32));
-	SetFontColor(0x00000000 | ((menu_sel == 3) ? 0xFF : 32), 0x00000000);
+	SetFontColor(APP_FONT_COLOR | ((menu_sel == 3) ? 0xFF : 32), 0);
 	DrawString(350 + 150 + (MENU_MAIN_ICON_WIDTH / 2) + 14, 390, "Options");
 
 	//About
 	c = titlescr_ico_abt_png_index;
 	DrawTexture(menu_textures[c], 450 + 150, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 4) ? 0xFF : 32));
-	SetFontColor(0x00000000 | ((menu_sel == 4) ? 0xFF : 32), 0x00000000);
+	SetFontColor(APP_FONT_COLOR | ((menu_sel == 4) ? 0xFF : 32), 0);
 	DrawString(450 + 150 + (MENU_MAIN_ICON_WIDTH / 2), 390, "About");
 
 	SetFontAlign(0);
@@ -1614,7 +1607,7 @@ s32 main(s32 argc, const char* argv[])
 			SetFontSize(18, 16);
 			SetCurrentFont(0);
 			SetFontAlign(1);
-			SetFontColor(0x00000000 | alpha, 0);
+			SetFontColor(APP_FONT_COLOR | alpha, 0);
 			DrawString(0, 480, (char *)menu_pad_help[menu_id]);
 			SetFontAlign(0);
 		}

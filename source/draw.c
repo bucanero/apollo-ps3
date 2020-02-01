@@ -114,7 +114,7 @@ void DrawHeader_Ani(png_texture icon, char * headerTitle, char * headerSubTitle,
 	DrawTextureCenteredX(icon, MENU_ICON_OFF - 20, 32, 0, 48, 48, 0xffffff00 | icon_a);
 
 	//header title string
-	SetFontColor(rgba | icon_a, 0x00000000);
+	SetFontColor(rgba | icon_a, 0);
 	SetCurrentFont(font_comfortaa_regular);
 	if (headerTitle)
 	{
@@ -164,7 +164,7 @@ void DrawHeader(png_texture icon, int xOff, char * headerTitle, char * headerSub
 		DrawTextureCenteredX(icon, xOff + MENU_ICON_OFF - 20, 32, 0, 48, 48, 0xffffffff);
 
 	//header title string
-	SetFontColor(rgba, 0x00000000);
+	SetFontColor(rgba, 0);
 	SetCurrentFont(font_comfortaa_regular);
 	if (mode)
 	{

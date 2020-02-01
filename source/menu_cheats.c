@@ -68,7 +68,7 @@ void DrawOptions(option_entry_t option, u8 alpha, int y_inc, int selIndex)
     {
         if (c >= 0 && c < option.size)
         {
-            SetFontColor(0x00000000 | ((alpha * CalculateAlphaList(c, selIndex, maxPerPage)) / 0xFF), 0);
+            SetFontColor(APP_FONT_COLOR | ((alpha * CalculateAlphaList(c, selIndex, maxPerPage)) / 0xFF), 0);
             
             if (option.name[c])
                 DrawString(MENU_SPLIT_OFF + MENU_ICON_OFF, yOff, option.name[c]);
@@ -315,7 +315,7 @@ int DrawCodes(code_entry_t code, u8 alpha, int y_inc, int xOff, int selIndex)
                 {
                     if (c >= 0 && c < numOfLines)
                     {
-                        SetFontColor(0x00000000 | ((alpha * CalculateAlphaList(c, selIndex, maxPerPage)) / 0xFF), 0);
+                        SetFontColor(APP_FONT_COLOR | ((alpha * CalculateAlphaList(c, selIndex, maxPerPage)) / 0xFF), 0);
                         
                         //Draw line
 						float cX = DrawString(xOff + MENU_ICON_OFF, yOff, lines[c]);
@@ -475,7 +475,7 @@ void DrawGameList(int selIndex, save_entry_t * games, int glen, u8 alpha)
 			{
 				DrawTextureCentered(menu_textures[mark_arrow_png_index], MENU_ICON_OFF + (MENU_TITLE_OFF / 2), game_y + (y_inc / 2), 0, MENU_TITLE_OFF / 3, y_inc / 2, 0xFFFFFF00 | a);
 			}
-            SetFontColor(0x00000000 | a, 0x00000000);
+            SetFontColor(APP_FONT_COLOR | a, 0);
 			if (games[x].name)
 			{
 				char * nBuffer = (char*)malloc(strlen(games[x].name));
@@ -529,7 +529,7 @@ void DrawCheatsList(int selIndex, save_entry_t game, u8 alpha)
         {
             //u32 color = game.codes[x].activated ? 0x4040C000 : 0x00000000;
 			u8 a = (u8)((alpha * CalculateAlphaList(x, selIndex, maxPerPage)) / 0xFF);
-            SetFontColor(0x00000000 | a, 0x00000000);
+            SetFontColor(APP_FONT_COLOR | a, 0);
             //printf ("Drawing code name %d\n", x);
 			SetCurrentFont(font_comfortaa_regular);
             float dx = DrawString(MENU_ICON_OFF + (MENU_TITLE_OFF * 3) - xo, game_y, game.codes[x].name);
@@ -542,7 +542,7 @@ void DrawCheatsList(int selIndex, save_entry_t game, u8 alpha)
 				SetFontSize((int)(y_inc * 0.6), (int)(y_inc * 0.6));
                 SetFontAlign(3);
 				//SetCurrentFont(font_comfortaa_light);
-				SetFontColor(0xFFFFFF00 | a, 0);
+				SetFontColor(APP_FONT_TAG_COLOR | a, 0);
 				DrawString(MENU_ICON_OFF + ((MENU_TITLE_OFF * 3) - 15) / 2, game_y + 2, "apply");
                 SetFontAlign(0);
                 SetFontSize(14, 16);
@@ -566,7 +566,7 @@ void DrawCheatsList(int selIndex, save_entry_t game, u8 alpha)
                             if (od == (game.codes[x].options_count - 1))
                                 option[strlen(option)] = ')';
                             
-							SetFontColor(0x00000000 | a, 0x00000000);
+							SetFontColor(APP_FONT_COLOR | a, 0);
                             dx = DrawString(dx, game_y, option);
                             
                             free (option);

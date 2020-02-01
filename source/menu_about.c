@@ -34,7 +34,7 @@ void Draw_AboutMenu_Ani()
 			about_a = 0;
 
 		SetFontSize(20, 20);
-		SetFontColor(0x00000000 | about_a, 0x00000000);
+		SetFontColor(APP_FONT_COLOR | about_a, 0);
 		SetFontAlign(1);
 		SetCurrentFont(font_comfortaa_bold);
 		DrawString(848 / 2, 70, "Thank you for using Apollo!");
@@ -118,7 +118,7 @@ void Draw_AboutMenu_Ani__()
             about_a = 0;
         
 		SetFontSize(20, 20);
-		SetFontColor(0x00000000 | about_a, 0x00000000);
+		SetFontColor(APP_FONT_COLOR | about_a, 0);
 		SetFontAlign(1);
 		SetCurrentFont(font_comfortaa_bold);
 		DrawString(848 / 2, 70, "Thank you for using Apollo!");
@@ -183,7 +183,7 @@ void Draw_AboutMenu()
     
     //------------- About Menu Contents
     SetFontSize(20, 20);
-    SetFontColor(0x000000FF, 0x00000000);
+    SetFontColor(APP_FONT_COLOR | 0xFF, 0);
     SetFontAlign(1);
 	SetCurrentFont(font_comfortaa_bold);
 	DrawString(848 / 2, 70, "Thank you for using Apollo!");

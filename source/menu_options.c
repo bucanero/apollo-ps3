@@ -43,7 +43,7 @@ void Draw_OptionsMenu_Ani()
 			SetCurrentFont(font_comfortaa_regular);
             while (menu_options[ind].name)
             {
-                SetFontColor(0x00000000 | game_a, 0x00000000);
+                SetFontColor(APP_FONT_COLOR | game_a, 0);
                 float dx = DrawString(MENU_ICON_OFF + MENU_TITLE_OFF, y_off, menu_options[ind].name);
                 
 				switch (menu_options[ind].type)
