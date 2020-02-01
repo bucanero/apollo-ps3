@@ -180,10 +180,10 @@ int pfd_get_file_path(pfd_context_t *ctx, const char *file_name, char *file_path
 /*! */
 int pfd_enumerate(pfd_context_t *ctx);
 
-int pfd_util_init(const char* user_id, const char* game_id, const char* db_path);
+int pfd_util_init(const char* game_id, const char* db_path);
 int pfd_util_process(pfd_cmd_t cmd, int partial_process);
 void pfd_util_end(void);
-int pfd_util_setup_keys(const u8* cid);
+int pfd_util_setup_keys(const u8* psid, u32 user_id);
 
 
 #ifdef __cplusplus

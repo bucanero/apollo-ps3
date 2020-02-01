@@ -46,7 +46,7 @@
 #define MENU_USB_SAVES      1
 #define MENU_HDD_SAVES      2
 #define MENU_ONLINE_DB      3
-#define MENU_OPTIONS        4
+#define MENU_SETTINGS       4
 #define MENU_CREDITS        5
 #define MENU_PATCHES        6
 #define MENU_PATCH_VIEW     7
@@ -88,38 +88,36 @@ padData paddata[MAX_PADS];
 padData padA[MAX_PADS];
 padData padB[MAX_PADS];
 
-//Options
-#define APOLLO_OPTIONS_FILE      APOLLO_PATH "opt.ini"
-
 void music_callback(int index, int sel);
 void sort_callback(int index, int sel);
 void ani_callback(int index, int sel);
 void horm_callback(int index, int sel);
 void verm_callback(int index, int sel);
 void update_callback(int index, int sel);
-void uid_callback(int index, int sel);
 
-const option menu_options_options[] = {
-	{ .name = "Music", .options = NULL, .type = ARTEMIS_OPTION_BOOL, .callback = music_callback },
-	{ .name = "Sort Saves", .options = NULL, .type = ARTEMIS_OPTION_BOOL, .callback = sort_callback },
-	{ .name = "Menu Animations", .options = NULL, .type = ARTEMIS_OPTION_BOOL, .callback = ani_callback },
-	{ .name = "Horizontal Margin", .options = NULL, .type = ARTEMIS_OPTION_INC, .callback = horm_callback },
-	{ .name = "Vertical Margin", .options = NULL, .type = ARTEMIS_OPTION_INC, .callback = verm_callback },
-	{ .name = "User ID Number", .options = NULL, .type = ARTEMIS_OPTION_INC, .callback = uid_callback },
-//	{ .name = "Update Local Cheats", .options = NULL, .type = ARTEMIS_OPTION_CALL, .callback = update_callback },
+app_config_t apollo_config = {
+    .music = 1,
+    .doSort = 1,
+    .doAni = 1,
+    .marginH = 0,
+    .marginV = 0,
+    .user_id = 0,
+    .psid = {0, 0},
+    .account_id = 0,
+};
+
+const menu_option_t menu_options[] = {
+	{ .name = "Music", .options = NULL, .type = APP_OPTION_BOOL, .value = &apollo_config.music, .callback = music_callback },
+	{ .name = "Sort Saves", .options = NULL, .type = APP_OPTION_BOOL, .value = &apollo_config.doSort, .callback = sort_callback },
+	{ .name = "Menu Animations", .options = NULL, .type = APP_OPTION_BOOL, .value = &apollo_config.doAni, .callback = ani_callback },
+	{ .name = "Horizontal Margin", .options = NULL, .type = APP_OPTION_INC, .value = &apollo_config.marginH, .callback = horm_callback },
+	{ .name = "Vertical Margin", .options = NULL, .type = APP_OPTION_INC, .value = &apollo_config.marginV, .callback = verm_callback },
+//	{ .name = "Update Check", .options = NULL, .type = APP_OPTION_CALL, .callback = update_callback },
 	{ .name = NULL }
 };
 
-int opt_user_id = 0;
-
-int doSort = 1;
-int doAni = 1;
-int marginHorizontal = 0;
-int marginVertical = 0;
-
 int menu_options_maxopt = 0;
 int * menu_options_maxsel;
-int * menu_options_selections;
 
 int close_app = 0;
 
@@ -142,9 +140,6 @@ const char * menu_about_strings[] = { "Bucanero", "Developer",
 									"flatz", "PFD/SFO tools",
 									NULL, NULL };
 
-#define OFFSET_2_PSID_484C         0x8000000000474AF4ULL + 0x18ULL
-
-u8 PSID[0x10];
 char psid_str1[17] = "0000000000000000";
 char psid_str2[17] = "0000000000000000";
 
@@ -174,7 +169,7 @@ const char * menu_pad_help[] = { NULL,																//Main
 								"\x10 Select    \x13 Back    \x11 Refresh",							//Online list
 								"\x10 Select    \x13 Back",											//Options
 								"\x13 Back",														//About
-								"\x10 Enable    \x11 Toggle Mode    \x12 View Code    \x13 Back",	//Select Cheats
+								"\x10 Enable    \x12 View Code    \x13 Back",						//Select Cheats
 								"\x13 Back",														//View Cheat
 								"\x10 Select    \x13 Back"											//Cheat Option
 								};
@@ -259,69 +254,6 @@ static void sys_callback(uint64_t status, uint64_t param, void* userdata) {
 		   break;
 		 
 	}
-}
-
-char * ParseOptionName(char * buffer, char * ret)
-{
-	strcpy(ret, buffer);
-	int i = 0;
-	for (i = 0; i < strlen(ret); i++)
-		if (ret[i] == ' ')
-			ret[i] = '_';
-	
-	return ret;
-}
-
-void LoadOptions()
-{
-	int fsize = getFileSize(APOLLO_OPTIONS_FILE);
-	if (fsize > 0)
-	{
-		FILE *f = fopen(APOLLO_OPTIONS_FILE, "rb");
-		if (f == NULL)
-			return;
-		fseek(f, 0, SEEK_SET);
-		
-		char * name = malloc(256);
-		int val = 0, i = 0, r = 0, line = 0;
-		
-		r = fscanf(f, " %s %d\n", name, &val);
-		while (r != EOF)
-		{
-			line++;
-			for (i = 0; i < menu_options_maxopt; i++)
-			{
-				char tName[strlen(menu_options_options[i].name) + 1];
-				if (strcmp(ParseOptionName(menu_options_options[i].name, (char *)tName), name) == 0)
-				{
-					LOG("LoadOptions() :: %s = %d", name, val);
-					menu_options_selections[i] = val;
-					break;
-				}
-			}
-			
-			r = fscanf(f, " %s %d\n", name, &val);
-		}
-		
-		free(name);
-		fclose(f);
-	}
-}
-
-void SaveOptions()
-{
-	FILE * fp = fopen(APOLLO_OPTIONS_FILE, "w");
-	if(fp == NULL)
-		return;
-	
-	int i = 0;
-	for (i = 0; i < menu_options_maxopt; i++)
-	{
-		char tName[strlen(menu_options_options[i].name) + 1];
-		fprintf(fp, "%s %d\n", ParseOptionName(menu_options_options[i].name, (char *)tName), menu_options_selections[i]);
-	}
-	
-	fclose(fp);
 }
 
 int isArtemisLoaded()
@@ -757,6 +689,7 @@ short *background_music = NULL;
 int background_music_size = 48000*72*4; // initial size of buffer to decode (for 48000 samples x 72 seconds and 16 bit stereo as reference)
 int effect_freq;
 int effect_is_stereo;
+
 void LoadSounds()
 {
 	//Initialize SPU
@@ -773,9 +706,7 @@ void LoadSounds()
 	memset(segments, 0, segmentsize);
 
 	sysSpuElfGetSegments(spu_soundmodule_bin, segments, segmentcount);
-
 	sysSpuImageImport(&spu_image, spu_soundmodule_bin, 0);
-
 	sysSpuRawImageLoad(spu, &spu_image);
 	
 	inited |= INITED_SPU;
@@ -783,7 +714,6 @@ void LoadSounds()
 		inited |= INITED_SOUNDLIB;
 	
 	background_music   = (short *) malloc(background_music_size);
-
 
 	//printf("Decoding Effect\n");
 
@@ -793,14 +723,11 @@ void LoadSounds()
 	// adjust the sound buffer sample correctly to the background_music_size
 	{
 		// SPU dma works aligned to 128 bytes. SPU module is designed to read unaligned buffers and it is better thing aligned buffers)
-
 		short *temp = (short *)memalign(128, SPU_SIZE(background_music_size));
-
 		memcpy((void *) temp, (void *) background_music, background_music_size);
-
 		free(background_music);
 
-		background_music =  temp;
+		background_music = temp;
 	}
 	
 	SND_Pause(0);
@@ -808,24 +735,24 @@ void LoadSounds()
 
 void music_callback(int index, int sel)
 {
-	switch (sel)
-	{
-		case 0: //on
-			SND_PauseVoice(2, 0);
-			break;
-		case 1: //off
-			SND_PauseVoice(2, 1);
-	}
+	apollo_config.music = !sel;
+
+	if (apollo_config.music)
+		//on
+		SND_PauseVoice(2, 0);
+	else
+		//off
+		SND_PauseVoice(2, 1);
 }
 
 void sort_callback(int index, int sel)
 {
-	doSort = !sel;
+	apollo_config.doSort = !sel;
 }
 
 void ani_callback(int index, int sel)
 {
-	doAni = !sel;
+	apollo_config.doAni = !sel;
 }
 
 void horm_callback(int index, int sel)
@@ -834,8 +761,7 @@ void horm_callback(int index, int sel)
 		sel = 0;
 	if (sel > 100)
 		sel = 100;
-	marginHorizontal = sel;
-	menu_options_selections[index] = sel;
+	apollo_config.marginH = sel;
 }
 
 void verm_callback(int index, int sel)
@@ -844,8 +770,7 @@ void verm_callback(int index, int sel)
 		sel = 0;
 	if (sel > 100)
 		sel = 100;
-	marginVertical = sel;
-	menu_options_selections[index] = sel;
+	apollo_config.marginV = sel;
 }
 
 void update_callback(int index, int sel)
@@ -859,18 +784,7 @@ void update_callback(int index, int sel)
 
 			unlink_secure(ONLINE_LOCAL_CACHE "tmp.zip");
 		}
-		menu_options_selections[index] = 0;
 	}
-}
-
-void uid_callback(int index, int sel)
-{
-	if (sel < 0)
-		sel = 0;
-	if (sel > 100)
-		sel = 100;
-	opt_user_id = sel;
-	menu_options_selections[index] = sel;
 }
 
 void set_usb_path(save_list_t* save_list)
@@ -893,7 +807,7 @@ void ReloadUserSaves(save_list_t* save_list)
 	}
 	
 	save_list->list = ReadUserList(save_list->path, &(save_list->count));
-	if (doSort)
+	if (apollo_config.doSort)
 		BubbleSortGameList(save_list->list, save_list->count);
 }
 
@@ -907,7 +821,7 @@ void ReloadOnlineCheats()
 	}
 
 	online_saves.list = ReadOnlineList(&online_saves.count);
-	if (doSort)
+	if (apollo_config.doSort)
 		BubbleSortGameList(online_saves.list, online_saves.count);
 }
 
@@ -919,7 +833,7 @@ void SetMenu(int id)
 		case MENU_USB_SAVES: //USB Saves Menu
 		case MENU_HDD_SAVES: //HHD Saves Menu
 		case MENU_ONLINE_DB: //Cheats Online Menu
-		case MENU_OPTIONS: //Options Menu
+		case MENU_SETTINGS: //Options Menu
 		case MENU_CREDITS: //About Menu
 		case MENU_PATCHES: //Cheat Selection Menu			
 			break;
@@ -936,7 +850,7 @@ void SetMenu(int id)
 	switch (id) //going to menu
 	{
 		case MENU_MAIN_SCREEN: //Main Menu
-			if (doAni || menu_id == MENU_MAIN_SCREEN) //if load animation
+			if (apollo_config.doAni || menu_id == MENU_MAIN_SCREEN) //if load animation
 				Draw_MainMenu_Ani();
 			break;
 
@@ -945,24 +859,24 @@ void SetMenu(int id)
 			{
 			    set_usb_path(&usb_saves);
 				usb_saves.list = ReadUserList(usb_saves.path, &(usb_saves.count));
-				if (doSort)
+				if (apollo_config.doSort)
 					BubbleSortGameList(usb_saves.list, usb_saves.count);
 			}
 			
-			if (doAni)
+			if (apollo_config.doAni)
 				Draw_UserCheatsMenu_Ani(usb_saves.list, usb_saves.count);
 			break;
 
 		case MENU_HDD_SAVES: //HDD saves Menu
 			if (!hdd_saves.list)
 			{
-				sprintf(hdd_saves.path, SAVES_PATH_HDD, opt_user_id);
+				sprintf(hdd_saves.path, SAVES_PATH_HDD, apollo_config.user_id);
 				hdd_saves.list = ReadUserList(hdd_saves.path, &(hdd_saves.count));
-				if (doSort)
+				if (apollo_config.doSort)
 					BubbleSortGameList(hdd_saves.list, hdd_saves.count);
 			}
 			
-			if (doAni)
+			if (apollo_config.doAni)
 				Draw_UserCheatsMenu_Ani(hdd_saves.list, hdd_saves.count);
 			break;
 
@@ -970,40 +884,40 @@ void SetMenu(int id)
 			if (!online_saves.list)
 			{
 				online_saves.list = ReadOnlineList(&online_saves.count);
-				if (doSort)
+				if (apollo_config.doSort)
 					BubbleSortGameList(online_saves.list, online_saves.count);
 			}
 
-			if (doAni)
+			if (apollo_config.doAni)
 				Draw_UserCheatsMenu_Ani(online_saves.list, online_saves.count);
 			break;
 
 		case MENU_CREDITS: //About Menu
-			if (doAni)
+			if (apollo_config.doAni)
 				Draw_AboutMenu_Ani();
 			break;
 
-		case MENU_OPTIONS: //Options Menu
-			if (doAni)
+		case MENU_SETTINGS: //Options Menu
+			if (apollo_config.doAni)
 				Draw_OptionsMenu_Ani();
 			break;
 
 		case MENU_PATCHES: //Cheat Selection Menu
 			if (menu_id == MENU_USB_SAVES || menu_id == MENU_HDD_SAVES) //if entering from game list, don't keep index, otherwise keep
 				menu_old_sel[MENU_PATCHES] = 0;
-			if (doAni && menu_id != MENU_PATCH_VIEW && menu_id != MENU_CODE_OPTIONS)
+			if (apollo_config.doAni && menu_id != MENU_PATCH_VIEW && menu_id != MENU_CODE_OPTIONS)
 				Draw_CheatsMenu_Selection_Ani();
 			break;
 
 		case MENU_PATCH_VIEW: //Cheat View Menu
 			menu_old_sel[MENU_PATCH_VIEW] = 0;
-			if (doAni)
+			if (apollo_config.doAni)
 				Draw_CheatsMenu_View_Ani();
 			break;
 
 		case MENU_CODE_OPTIONS: //Cheat Option Menu
 			menu_old_sel[MENU_CODE_OPTIONS] = 0;
-			if (doAni)
+			if (apollo_config.doAni)
 				Draw_CheatsMenu_Options_Ani();
 			break;
 	}
@@ -1066,20 +980,6 @@ void move_selection_fwd(int game_count, int steps)
 		menu_sel = game_count - 1;
 }
 
-
-void peek_PSID(void)
-{
-    uint64_t* tmp = (uint64_t*) &PSID;
-
-	tmp[0] = lv2peek(OFFSET_2_PSID_484C);
-	tmp[1] = lv2peek(OFFSET_2_PSID_484C + 8);
-
-	sprintf(psid_str1, "%016lX", tmp[0]);
-	sprintf(psid_str2, "%016lX", tmp[1]);
-
-    LOG("PSID 0x %016llX 0x %016llX", tmp[0], tmp[1]);
-}
-
 int moveMenuSelection(padData pad_data, save_list_t * save_list)
 {
 	if(pad_data.BTN_UP)
@@ -1131,7 +1031,7 @@ int moveMenuSelection(padData pad_data, save_list_t * save_list)
 				save_list->list[menu_sel].codes = ReadCodes(save_list->list[menu_sel].title_id, &sz);
 				save_list->list[menu_sel].code_count = sz;
 			}
-			if (doSort)
+			if (apollo_config.doSort)
 				save_list->list[menu_sel] = BubbleSortCodeList(save_list->list[menu_sel]);
 			selected_entry = save_list->list[menu_sel];
 			SetMenu(MENU_PATCHES);
@@ -1181,18 +1081,9 @@ void drawScene()
 				else if(paddata[0].BTN_SELECT)
 				{
 					LOG("Screen");
-					main_loop_iterate(1);
 //					dbglogger_screenshot_tmp(0);
 					LOG("Shot");
 				}
-				else if(paddata[0].BTN_START)
-				{
-					LOG("Screen");
-					main_loop_iterate(2);
-//					dbglogger_screenshot_tmp(0);
-					LOG("Shot");
-				}
-
 			}
 			
 			Draw_MainMenu();
@@ -1214,7 +1105,7 @@ void drawScene()
 						usb_saves.list[menu_sel].codes = ReadCodes(usb_saves.list[menu_sel].title_id, &sz);
 						usb_saves.list[menu_sel].code_count = sz;
 					}
-					if (doSort)
+					if (apollo_config.doSort)
 						usb_saves.list[menu_sel] = BubbleSortCodeList(usb_saves.list[menu_sel]);
 					selected_entry = usb_saves.list[menu_sel];
 					SetMenu(MENU_PATCHES);
@@ -1246,7 +1137,7 @@ void drawScene()
 						hdd_saves.list[menu_sel].codes = ReadCodes(hdd_saves.list[menu_sel].title_id, &sz);
 						hdd_saves.list[menu_sel].code_count = sz;
 					}
-					if (doSort)
+					if (apollo_config.doSort)
 						hdd_saves.list[menu_sel] = BubbleSortCodeList(hdd_saves.list[menu_sel]);
 					selected_entry = hdd_saves.list[menu_sel];
 					SetMenu(MENU_PATCHES);
@@ -1254,7 +1145,7 @@ void drawScene()
 				}
 				else if (paddata[0].BTN_SQUARE)
 				{
-					sprintf(hdd_saves.path, SAVES_PATH_HDD, opt_user_id);
+					sprintf(hdd_saves.path, SAVES_PATH_HDD, apollo_config.user_id);
 					ReloadUserSaves(&hdd_saves);
 				}
 			}
@@ -1278,7 +1169,7 @@ void drawScene()
 						online_saves.list[menu_sel].codes = ReadOnlineNCL(online_saves.list[menu_sel].path, &sz);
 						online_saves.list[menu_sel].code_count = sz;
 					}
-					if (doSort)
+					if (apollo_config.doSort)
 						online_saves.list[menu_sel] = BubbleSortCodeList(online_saves.list[menu_sel]);
 					selected_entry = online_saves.list[menu_sel];
 					SetMenu(MENU_PATCHES);
@@ -1307,7 +1198,7 @@ void drawScene()
 			Draw_AboutMenu();
 			break;
 
-		case MENU_OPTIONS: //Options Menu
+		case MENU_SETTINGS: //Options Menu
 			// Check the pads.
 			if (readPad(0))
 			{
@@ -1321,44 +1212,43 @@ void drawScene()
 				}
 				else if (paddata[0].BTN_CIRCLE)
 				{
-					SaveOptions();
+					save_app_settings(&apollo_config);
 					SetMenu(MENU_MAIN_SCREEN);
 					return;
 				}
 				else if (paddata[0].BTN_LEFT)
 				{
-					if (menu_options_options[menu_sel].type == ARTEMIS_OPTION_BOOL)
-						menu_options_selections[menu_sel] = !menu_options_selections[menu_sel];
-					else if (menu_options_options[menu_sel].type == ARTEMIS_OPTION_LIST)
+					if (menu_options[menu_sel].type == APP_OPTION_LIST)
 					{
-						if (menu_options_selections[menu_sel] > 0)
-							menu_options_selections[menu_sel]--;
+						if (*menu_options[menu_sel].value > 0)
+							(*menu_options[menu_sel].value)--;
 						else
-							menu_options_selections[menu_sel] = menu_options_maxsel[menu_sel] - 1;
+							*menu_options[menu_sel].value = menu_options_maxsel[menu_sel] - 1;
 					}
-					else if (menu_options_options[menu_sel].type == ARTEMIS_OPTION_INC)
-						menu_options_selections[menu_sel]--;
+					else if (menu_options[menu_sel].type == APP_OPTION_INC)
+						(*menu_options[menu_sel].value)--;
 					
-					menu_options_options[menu_sel].callback(menu_sel, menu_options_selections[menu_sel]);
+					menu_options[menu_sel].callback(menu_sel, *menu_options[menu_sel].value);
 				}
-				else if (paddata[0].BTN_CROSS || paddata[0].BTN_RIGHT)
+				else if (paddata[0].BTN_RIGHT)
 				{
-					if (menu_options_options[menu_sel].type == ARTEMIS_OPTION_BOOL)
-						menu_options_selections[menu_sel] = !menu_options_selections[menu_sel];
-					else if (menu_options_options[menu_sel].type == ARTEMIS_OPTION_LIST)
+					if (menu_options[menu_sel].type == APP_OPTION_LIST)
 					{
-						if (menu_options_selections[menu_sel] < (menu_options_maxsel[menu_sel] - 1))
-							menu_options_selections[menu_sel]++;
+						if (*menu_options[menu_sel].value < (menu_options_maxsel[menu_sel] - 1))
+							*menu_options[menu_sel].value += 1;
 						else
-							menu_options_selections[menu_sel] = 0;
+							*menu_options[menu_sel].value = 0;
 					}
-					else if (menu_options_options[menu_sel].type == ARTEMIS_OPTION_INC)
-						menu_options_selections[menu_sel]++;
-					else if (menu_options_options[menu_sel].type == ARTEMIS_OPTION_CALL)
-						menu_options_selections[menu_sel] = 1;
-					
+					else if (menu_options[menu_sel].type == APP_OPTION_INC)
+						*menu_options[menu_sel].value += 1;
 
-					menu_options_options[menu_sel].callback(menu_sel, menu_options_selections[menu_sel]);
+					menu_options[menu_sel].callback(menu_sel, *menu_options[menu_sel].value);
+				}
+				else if (paddata[0].BTN_CROSS)
+				{
+					if ((menu_options[menu_sel].type == APP_OPTION_BOOL) || (menu_options[menu_sel].type == APP_OPTION_CALL))
+						menu_options[menu_sel].callback(menu_sel, *menu_options[menu_sel].value);
+//						*menu_options[menu_sel].value = 1;
 				}
 			}
 			
@@ -1405,11 +1295,8 @@ void drawScene()
 
 						if (strcmp(selected_entry.codes[menu_sel].codes, CODE_RESIGN_SAVE) == 0)
 						{
-                            char uid[9];
-                            sprintf(uid, "%08d", opt_user_id);
-
 							LOG("Resigning save '%s'...", selected_entry.name);
-							if (pfd_util_init(uid, selected_entry.title_id, selected_entry.path))
+							if (pfd_util_init(selected_entry.title_id, selected_entry.path))
 							{
 //    							if (pfd_util_process(PFD_CMD_CHECK, 0) == SUCCESS)
     							if (pfd_util_process(PFD_CMD_UPDATE, 0) == SUCCESS)
@@ -1431,11 +1318,17 @@ void drawScene()
 
 						if (strcmp(selected_entry.codes[menu_sel].codes, CODE_UNLOCK_COPY) == 0)
 						{
+						    sfo_patch_t patch = {
+						        .flags = SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION,
+						        .user_id = 0,
+						        .account_id = NULL,
+						        .psid = NULL,
+						       };
 							char in_file_path[256];
-							snprintf(in_file_path, sizeof(in_file_path)-1, "%s" "PARAM.SFO", selected_entry.path);
+							snprintf(in_file_path, sizeof(in_file_path), "%s" "PARAM.SFO", selected_entry.path);
 
 							LOG("Unlocking save '%s'...", in_file_path);
-			                if (patch_sfo(in_file_path, in_file_path, SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION, NULL) == SUCCESS)
+			                if (patch_sfo(in_file_path, &patch) == SUCCESS)
 			                    show_dialog(0, "Save file successfully unlocked!");
 			                else
 			                    show_dialog(0, "Error! Save file couldn't be unlocked");
@@ -1445,12 +1338,38 @@ void drawScene()
 
 						if (strcmp(selected_entry.codes[menu_sel].codes, CODE_REMOVE_ACCOUNT_ID) == 0)
 						{
+						    sfo_patch_t patch = {
+						        .flags = 0,
+						        .user_id = 0,
+						        .account_id = "0000000000000000",
+						        .psid = NULL,
+						       };
 							char in_file_path[256];
-							snprintf(in_file_path, sizeof(in_file_path)-1, "%s" "PARAM.SFO", selected_entry.path);
+							snprintf(in_file_path, sizeof(in_file_path), "%s" "PARAM.SFO", selected_entry.path);
 
 							LOG("Removing Account ID '%s'...", in_file_path);
-			                if (patch_sfo(in_file_path, in_file_path, 0, "0000000000000000") == SUCCESS)
+			                if (patch_sfo(in_file_path, &patch) == SUCCESS)
 			                    show_dialog(0, "Account ID successfully removed!");
+			                else
+			                    show_dialog(0, "Error! Save file couldn't be modified");
+
+							selected_entry.codes[menu_sel].activated = !selected_entry.codes[menu_sel].activated;
+						}
+
+						if (strcmp(selected_entry.codes[menu_sel].codes, CODE_UPDATE_PSID) == 0)
+						{
+						    sfo_patch_t patch = {
+						        .flags = 0,
+						        .user_id = 0,
+						        .account_id = NULL,
+						        .psid = (u8*) &(apollo_config.psid[0]),
+						       };
+							char in_file_path[256];
+							snprintf(in_file_path, sizeof(in_file_path), "%s" "PARAM.SFO", selected_entry.path);
+
+							LOG("Setting Console ID '%s'...", in_file_path);
+			                if (patch_sfo(in_file_path, &patch) == SUCCESS)
+			                    show_dialog(0, "Console ID successfully updated!");
 			                else
 			                    show_dialog(0, "Error! Save file couldn't be modified");
 
@@ -1472,13 +1391,6 @@ void drawScene()
 							SetMenu(MENU_CODE_OPTIONS);
 							return;
 						}
-					}
-				}
-				else if (paddata[0].BTN_SQUARE)
-				{
-					if (selected_entry.codes[menu_sel].activated)
-					{
-						selected_entry.codes[menu_sel].cwrite = !selected_entry.codes[menu_sel].cwrite;
 					}
 				}
 				else if (paddata[0].BTN_TRIANGLE)
@@ -1575,14 +1487,18 @@ void exiting()
 */
 s32 main(s32 argc, const char* argv[])
 {
-	dbglogger_init_str("file:/dev_hdd0/tmp/apollo.log");
+	dbglogger_init_str("tcp:192.168.1.102:18999");
+//	dbglogger_init_str("file:/dev_hdd0/tmp/apollo.log");
 
 	http_init();
 
-    peek_PSID();
+	load_app_settings(&apollo_config);
 
-	pfd_util_setup_keys(PSID);
+	// set to display the PSID on the About menu
+    sprintf(psid_str1, "%016lX", apollo_config.psid[0]);
+    sprintf(psid_str2, "%016lX", apollo_config.psid[1]);
 
+	pfd_util_setup_keys((u8*) &(apollo_config.psid[0]), apollo_config.user_id);
 
 	tiny3d_Init(1024*1024);
 
@@ -1629,27 +1545,22 @@ s32 main(s32 argc, const char* argv[])
 		menu_textures[footer_ico_circle_png_index]);
 
 	menu_options_maxopt = 0;
-	while (menu_options_options[menu_options_maxopt].name)
+	while (menu_options[menu_options_maxopt].name)
 		menu_options_maxopt++;
 	
 	int selSize = menu_options_maxopt * sizeof(int);
 	menu_options_maxsel = (int *)calloc(1, selSize);
-	menu_options_selections = (int *)calloc(1, selSize);
 	
 	int i = 0;
 	for (i = 0; i < menu_options_maxopt; i++)
 	{
 		menu_options_maxsel[i] = 0;
-		if (menu_options_options[i].type == ARTEMIS_OPTION_LIST)
+		if (menu_options[i].type == APP_OPTION_LIST)
 		{
-			while (menu_options_options[i].options[menu_options_maxsel[i]])
+			while (menu_options[i].options[menu_options_maxsel[i]])
 				menu_options_maxsel[i]++;
 		}
 	}
-	
-	LoadOptions();
-
-	//LoadGames();
 	
 	//texture_mem = tiny3d_AllocTexture(64*1024*1024);
 
@@ -1666,8 +1577,7 @@ s32 main(s32 argc, const char* argv[])
 	SND_SetInfiniteVoice(2, (effect_is_stereo) ? VOICE_STEREO_16BIT : VOICE_MONO_16BIT, effect_freq, 0, background_music, background_music_size, 255, 255);
 	
 	//Set options
-	for (i = 0; i < menu_options_maxopt; i++)
-		menu_options_options[i].callback(i, menu_options_selections[i]);
+	music_callback(0, !apollo_config.music);
 
 	SetMenu(MENU_MAIN_SCREEN);
 	

@@ -296,9 +296,12 @@ static int games_config_handler(void *user, const char *section, const char *nam
 	return 0;
 }
 
-int pfd_util_setup_keys(const u8* console_id) {
+int pfd_util_setup_keys(const u8* console_id, u32 user_id) {
 	int result = 0;
+	char uid[9];
 
+	sprintf(uid, "%08d", user_id);
+	memcpy(config.user_id, uid, PFD_USER_ID_SIZE);
 	memcpy(config.console_id, console_id, PFD_CONSOLE_ID_SIZE);
 
 	setup_key(config.authentication_id, PFD_AUTHENTICATION_ID_SIZE);
@@ -325,12 +328,10 @@ int pfd_util_setup_keys(const u8* console_id) {
 	return result;
 }
 
-int pfd_util_init(const char* user_id, const char* game_id, const char* database_path) {
+int pfd_util_init(const char* game_id, const char* database_path) {
 	u8 *disc_hash_key = NULL;
 	list_t *secure_file_ids = NULL;
 	game_keys_t *game_key = NULL;
-
-	memcpy(config.user_id, user_id, PFD_USER_ID_SIZE);
 
 //	file_names = list_alloc();
 

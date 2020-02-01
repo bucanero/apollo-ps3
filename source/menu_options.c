@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 #include "saves.h"
-
 #include "menu.h"
 #include "menu_options.h"
 
@@ -14,7 +13,7 @@
 void Draw_OptionsMenu_Ani()
 {
     int c = 0, w = 0, h = 0;
-	char ARTEMIS_OPTION_INC_TEMP[24];
+	char APP_OPTION_INC_TEMP[24];
     
     int div = 12, max = MENU_ANI_MAX, ani = 0;
     for (ani = 0; ani < max; ani++)
@@ -42,34 +41,34 @@ void Draw_OptionsMenu_Ani()
             SetFontSize(14, 16);
             int ind = 0, y_off = 120;
 			SetCurrentFont(font_comfortaa_regular);
-            while (menu_options_options[ind].name)
+            while (menu_options[ind].name)
             {
                 SetFontColor(0x00000000 | game_a, 0x00000000);
-                float dx = DrawString(MENU_ICON_OFF + MENU_TITLE_OFF, y_off, menu_options_options[ind].name);
+                float dx = DrawString(MENU_ICON_OFF + MENU_TITLE_OFF, y_off, menu_options[ind].name);
                 
-				switch (menu_options_options[ind].type)
+				switch (menu_options[ind].type)
 				{
-					case ARTEMIS_OPTION_BOOL:
-						c = menu_options_selections[ind] == 0 ? opt_on_png_index : opt_off_png_index;
+					case APP_OPTION_BOOL:
+						c = (*menu_options[ind].value == 1) ? opt_on_png_index : opt_off_png_index;
 						w = (int)(menu_textures[c].texture.width / 1.8);
 						h = (int)(menu_textures[c].texture.height / 1.8);
 						DrawTexture(menu_textures[c], MENU_ICON_OFF - 29, y_off - 3, 0, w, h, 0xFFFFFF00 | game_a);
 						break;
-					case ARTEMIS_OPTION_CALL:
+					case APP_OPTION_CALL:
 						w = (int)(menu_textures[mark_arrow_png_index].texture.width / 1.8);
 						h = (int)(menu_textures[mark_arrow_png_index].texture.height / 1.8);
 						DrawTexture(menu_textures[mark_arrow_png_index], MENU_ICON_OFF - 26, y_off-3, 0, w, h, 0xFFFFFF00 | game_a);
 						break;
-					case ARTEMIS_OPTION_LIST:
+					case APP_OPTION_LIST:
 						SetFontAlign(2);
-						DrawString(dx + 40, y_off, menu_options_options[ind].options[menu_options_selections[ind]]);
+						DrawString(dx + 40, y_off, menu_options[ind].options[*menu_options[ind].value]);
 						SetFontAlign(0);
 						break;
-					case ARTEMIS_OPTION_INC:
+					case APP_OPTION_INC:
 						SetFontAlign(0);
-						sprintf((char*)ARTEMIS_OPTION_INC_TEMP, "%d", menu_options_selections[ind]);
-						int inc_width = WidthFromStr((u8*)ARTEMIS_OPTION_INC_TEMP);
-						DrawString((MENU_ICON_OFF - 18) - (inc_width / 2), y_off, (char*)ARTEMIS_OPTION_INC_TEMP);
+						sprintf((char*)APP_OPTION_INC_TEMP, "%d", *menu_options[ind].value);
+						int inc_width = WidthFromStr((u8*)APP_OPTION_INC_TEMP);
+						DrawString((MENU_ICON_OFF - 18) - (inc_width / 2), y_off, (char*)APP_OPTION_INC_TEMP);
 						break;
 				}
                 
@@ -95,7 +94,7 @@ void Draw_OptionsMenu_Ani()
 void Draw_OptionsMenu()
 {
 	int c = 0, w = 0, h = 0;
-	char ARTEMIS_OPTION_INC_TEMP[24];
+	char APP_OPTION_INC_TEMP[24];
 
 	DrawHeader(menu_textures[header_ico_opt_png_index], 0, "Options", NULL, 0x000000ff, 0xffffffff, 0);
     
@@ -103,33 +102,33 @@ void Draw_OptionsMenu()
     SetFontSize(14, 16);
     int ind = 0, y_off = 120;
 	SetCurrentFont(font_comfortaa_regular);
-    while (menu_options_options[ind].name)
+    while (menu_options[ind].name)
     {
-        float dx = DrawString(MENU_ICON_OFF + MENU_TITLE_OFF, y_off, menu_options_options[ind].name);
+        float dx = DrawString(MENU_ICON_OFF + MENU_TITLE_OFF, y_off, menu_options[ind].name);
         
-		switch (menu_options_options[ind].type)
+		switch (menu_options[ind].type)
 		{
-			case ARTEMIS_OPTION_BOOL:
-				c = menu_options_selections[ind] == 0 ? opt_on_png_index : opt_off_png_index;
+			case APP_OPTION_BOOL:
+				c = (*menu_options[ind].value == 1) ? opt_on_png_index : opt_off_png_index;
 				w = (int)(menu_textures[c].texture.width / 1.8);
 				h = (int)(menu_textures[c].texture.height / 1.8);
 				DrawTexture(menu_textures[c], MENU_ICON_OFF - 29, y_off-3, 0, w, h, 0xFFFFFFFF);
 				break;
-			case ARTEMIS_OPTION_CALL:
+			case APP_OPTION_CALL:
 				w = (int)(menu_textures[mark_arrow_png_index].texture.width / 1.8);
 				h = (int)(menu_textures[mark_arrow_png_index].texture.height / 1.8);
 				DrawTexture(menu_textures[mark_arrow_png_index], MENU_ICON_OFF - 26, y_off-3, 0, w, h, 0xFFFFFFFF);
 				break;
-			case ARTEMIS_OPTION_LIST:
+			case APP_OPTION_LIST:
 				SetFontAlign(2);
-				DrawString(dx + 40, y_off, menu_options_options[ind].options[menu_options_selections[ind]]);
+				DrawString(dx + 40, y_off, menu_options[ind].options[*menu_options[ind].value]);
 				SetFontAlign(0);
 				break;
-			case ARTEMIS_OPTION_INC:
+			case APP_OPTION_INC:
 				SetFontAlign(0);
-				sprintf((char*)ARTEMIS_OPTION_INC_TEMP, "%d", menu_options_selections[ind]);
-				int inc_width = WidthFromStr((u8*)ARTEMIS_OPTION_INC_TEMP);
-				DrawString((MENU_ICON_OFF - 18) - (inc_width / 2), y_off, (char*)ARTEMIS_OPTION_INC_TEMP);
+				sprintf((char*)APP_OPTION_INC_TEMP, "%d", *menu_options[ind].value);
+				int inc_width = WidthFromStr((u8*)APP_OPTION_INC_TEMP);
+				DrawString((MENU_ICON_OFF - 18) - (inc_width / 2), y_off, (char*)APP_OPTION_INC_TEMP);
 				break;
 		}
         

@@ -508,7 +508,7 @@ option_entry_t * ReadOptions(code_entry_t code, int * count)
  */
 code_entry_t * ReadCodes(const char * title_id, int * _code_count)
 {
-    int name_length, code_len = 0, code_count = 3, cur_count = 0;
+    int name_length, code_len = 0, code_count = 5, cur_count = 0;
 //	int cur_count = 0, code_count = 2;
 	int lockd = 1;
 
@@ -622,7 +622,7 @@ code_entry_t * ReadCodes(const char * title_id, int * _code_count)
 	ret[cur_count].activated = 0;
 	ret[cur_count].options = NULL;
 	ret[cur_count].name = (char *)malloc(12);
-	ret[cur_count].codes = (char *)malloc(strlen(CODE_RESIGN_SAVE)+1);
+	ret[cur_count].codes = (char *)malloc(12);
 	strcpy(ret[cur_count].name, "Resign save");
 	strcpy(ret[cur_count].codes, CODE_RESIGN_SAVE);
 
@@ -630,7 +630,7 @@ code_entry_t * ReadCodes(const char * title_id, int * _code_count)
 	ret[cur_count].activated = 0;
 	ret[cur_count].options = NULL;
 	ret[cur_count].name = (char *)malloc(23);
-	ret[cur_count].codes = (char *)malloc(strlen(CODE_UNLOCK_COPY)+1);
+	ret[cur_count].codes = (char *)malloc(12);
 	strcpy(ret[cur_count].name, "Remove copy protection");
 	strcpy(ret[cur_count].codes, CODE_UNLOCK_COPY);
 
@@ -638,9 +638,25 @@ code_entry_t * ReadCodes(const char * title_id, int * _code_count)
 	ret[cur_count].activated = 0;
 	ret[cur_count].options = NULL;
 	ret[cur_count].name = (char *)malloc(18);
-	ret[cur_count].codes = (char *)malloc(strlen(CODE_REMOVE_ACCOUNT_ID)+1);
+	ret[cur_count].codes = (char *)malloc(12);
 	strcpy(ret[cur_count].name, "Remove Account ID");
 	strcpy(ret[cur_count].codes, CODE_REMOVE_ACCOUNT_ID);
+
+	cur_count++;
+	ret[cur_count].activated = 0;
+	ret[cur_count].options = NULL;
+	ret[cur_count].name = (char *)malloc(18);
+	ret[cur_count].codes = (char *)malloc(12);
+	strcpy(ret[cur_count].name, "Update Account ID");
+	strcpy(ret[cur_count].codes, CODE_UPDATE_ACCOUNT_ID);
+
+	cur_count++;
+	ret[cur_count].activated = 0;
+	ret[cur_count].options = NULL;
+	ret[cur_count].name = (char *)malloc(18);
+	ret[cur_count].codes = (char *)malloc(12);
+	strcpy(ret[cur_count].name, "Update Console ID");
+	strcpy(ret[cur_count].codes, CODE_UPDATE_PSID);
 
 	LOG("cur_count=%d,code_count=%d", cur_count, code_count);
 
@@ -1479,7 +1495,7 @@ void AppendCode(char * buffer, code_entry_t code)
 	len += 1;
 	
 	//Constant write
-	memcpy(&buffer[len], code.cwrite ? "1\n" : "0\n", 2);
+//	memcpy(&buffer[len], code.cwrite ? "1\n" : "0\n", 2);
 	len += 2;
 	
 	//Codes

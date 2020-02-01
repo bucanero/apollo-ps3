@@ -330,11 +330,45 @@ void sfo_patch_lock(sfo_context_t *inout, unsigned int flags) {
 void sfo_patch_account(sfo_context_t *inout, const char* account) {
 	sfo_context_param_t *p;
 
-	if (account != NULL) {
-		p = sfo_context_get_param(inout, "ACCOUNT_ID");
-		if (p != NULL && p->actual_length == 16) {
-			memcpy(p->value, account, 16);
-		}
+	if (!account)
+		return;
+
+	p = sfo_context_get_param(inout, "ACCOUNT_ID");
+	if (p != NULL && p->actual_length == SFO_ACCOUNT_ID_SIZE) {
+		memcpy(p->value, account, SFO_ACCOUNT_ID_SIZE);
+	}
+
+	p = sfo_context_get_param(inout, "PARAMS");
+	if (p != NULL) {
+		sfo_param_params_t *params = (sfo_param_params_t *)p->value;
+		memcpy(params->account_id, account, SFO_ACCOUNT_ID_SIZE);
+	}
+}
+
+void sfo_patch_user_id(sfo_context_t *inout, u32 userid) {
+	sfo_context_param_t *p;
+
+	if (userid == 0)
+		return;
+
+	p = sfo_context_get_param(inout, "PARAMS");
+	if (p != NULL) {
+		sfo_param_params_t *params = (sfo_param_params_t *)p->value;
+		params->user_id_1 = userid;
+		params->user_id_2 = userid;
+	}
+}
+
+void sfo_patch_psid(sfo_context_t *inout, u8* psid) {
+	sfo_context_param_t *p;
+
+	if (!psid)
+		return;
+
+	p = sfo_context_get_param(inout, "PARAMS");
+	if (p != NULL) {
+		sfo_param_params_t *params = (sfo_param_params_t *)p->value;
+		memcpy(params->psid, psid, SFO_PSID_SIZE);
 	}
 }
 
@@ -349,8 +383,9 @@ u8* sfo_get_param_value(sfo_context_t *in, const char* param) {
 	return NULL;
 }
 
-int patch_sfo(const char *in_file_path, const char *out_file_path, unsigned int flags, const char* account_id) {
+int patch_sfo(const char *in_file_path, sfo_patch_t* patches) {
 	sfo_context_t *sfo;
+	const char *out_file_path = in_file_path;
 
 	sfo = sfo_alloc();
 	if (sfo_read(sfo, in_file_path) < 0) {
@@ -358,8 +393,11 @@ int patch_sfo(const char *in_file_path, const char *out_file_path, unsigned int 
 		return -1;
 	}
 
-	sfo_patch_lock(sfo, flags);
-	sfo_patch_account(sfo, account_id);
+	sfo_patch_lock(sfo, patches->flags);
+	sfo_patch_account(sfo, patches->account_id);
+	sfo_patch_user_id(sfo, patches->user_id);
+	sfo_patch_psid(sfo, patches->psid);
+
 	if (sfo_write(sfo, out_file_path) < 0) {
 		LOG("Unable to write to '%s'", out_file_path);
 		return -1;

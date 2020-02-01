@@ -16,6 +16,13 @@ typedef struct sfo_key_pair_s {
 	int flag;
 } sfo_key_pair_t;
 
+typedef struct {
+	u32 flags;
+	u32 user_id;
+	char* account_id;
+	u8* psid;
+} sfo_patch_t;
+
 sfo_context_t * sfo_alloc(void);
 void sfo_free(sfo_context_t *context);
 
@@ -27,7 +34,7 @@ void sfo_patch(sfo_context_t *inout, unsigned int flags);
 
 u8* sfo_get_param_value(sfo_context_t *in, const char* param);
 
-int patch_sfo(const char *in_file_path, const char *out_file_path, unsigned int flags, const char* account_id);
+int patch_sfo(const char *in_file_path, sfo_patch_t* patches);
 int build_sfo(const char *in_file_path, const char *out_file_path, const char *tpl_file_path, int num_keys, const sfo_key_pair_t *keys);
 
 #ifdef __cplusplus

@@ -15,14 +15,14 @@ void DrawBackground2D(u32 rgba)
 {
 	tiny3d_SetPolygon(TINY3D_QUADS);
 
-	tiny3d_VertexPos(-marginHorizontal, -marginVertical, 65535);
+	tiny3d_VertexPos(-apollo_config.marginH, -apollo_config.marginV, 65535);
 	tiny3d_VertexColor(rgba);
 
-	tiny3d_VertexPos(847 + marginHorizontal, -marginVertical, 65535);
+	tiny3d_VertexPos(847 + apollo_config.marginH, -apollo_config.marginV, 65535);
 
-	tiny3d_VertexPos(847 + marginHorizontal, 511 + marginVertical, 65535);
+	tiny3d_VertexPos(847 + apollo_config.marginH, 511 + apollo_config.marginV, 65535);
 
-	tiny3d_VertexPos(-marginHorizontal, 511 + marginVertical, 65535);
+	tiny3d_VertexPos(-apollo_config.marginH, 511 + apollo_config.marginV, 65535);
 	tiny3d_End();
 }
 
@@ -200,9 +200,9 @@ void DrawHeader(png_texture icon, int xOff, char * headerTitle, char * headerSub
 void DrawBackgroundTexture(int x, u8 alpha)
 {
 	if (x == 0)
-		DrawTexture(menu_textures[bgimg_png_index], x - marginHorizontal, -marginVertical, 0, 848 - x + (marginHorizontal * 2), 512 + (marginVertical * 2), 0xFFFFFF00 | alpha);
+		DrawTexture(menu_textures[bgimg_png_index], x - apollo_config.marginH, -apollo_config.marginV, 0, 848 - x + (apollo_config.marginH * 2), 512 + (apollo_config.marginV * 2), 0xFFFFFF00 | alpha);
 	else
-		DrawTexture(menu_textures[bgimg_png_index], x, -marginVertical, 0, 848 - x + marginHorizontal, 512 + (marginVertical * 2), 0xFFFFFF00 | alpha);
+		DrawTexture(menu_textures[bgimg_png_index], x, -apollo_config.marginV, 0, 848 - x + apollo_config.marginH, 512 + (apollo_config.marginV * 2), 0xFFFFFF00 | alpha);
 }
 
 void DrawTexture(png_texture tex, int x, int y, int z, int w, int h, u32 rgba)

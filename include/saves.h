@@ -13,7 +13,7 @@
 
 #define SAVES_PATH_USB0			"/dev_usb000/tmp/PS3/SAVEDATA/"
 #define SAVES_PATH_USB1			"/dev_usb001/tmp/PS3/SAVEDATA/"
-#define SAVES_PATH_HDD			"/dev_hdd0/tmp/home/%08d/savedata/"
+#define SAVES_PATH_HDD			"/dev_hdd0/home/%08d/savedata/"
 
 #define ONLINE_URL				"http://apollo.psdev.tk/"
 #define ONLINE_LOCAL_CACHE		APOLLO_PATH "CACHE/"
@@ -22,6 +22,8 @@
 #define CODE_RESIGN_SAVE        "RESIGN_SAVE"
 #define CODE_UNLOCK_COPY        "UNLOCK_COPY"
 #define CODE_REMOVE_ACCOUNT_ID  "REMOVE_ACCT"
+#define CODE_UPDATE_ACCOUNT_ID  "UPDATE_ACCT"
+#define CODE_UPDATE_PSID        "UPDATE_PSID"
 
 typedef struct option_entry
 {
@@ -37,7 +39,6 @@ typedef struct code_entry
 {
     char * name;
     char * file;
-    int cwrite;
     int activated;
     int options_count;
     char * codes;

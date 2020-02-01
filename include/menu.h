@@ -1,6 +1,7 @@
 #ifndef __ARTEMIS_MENU_H__
 #define __ARTEMIS_MENU_H__
 
+#include "settings.h"
 
 //Textures
 #define	 bgimg_png_index									0
@@ -56,42 +57,10 @@ typedef struct t_png_texture
 u32 * texture_mem;      // Pointers to texture memory
 u32 * font_mem;         // Pointer after font
 
-typedef struct
-{
-	char * name;
-	char * * options;
-	int type;
-	void(*callback)(int,int);
-} option;
-
-#define ARTEMIS_OPTION_BOOL				1
-#define ARTEMIS_OPTION_LIST				2
-#define ARTEMIS_OPTION_INC				3
-#define ARTEMIS_OPTION_CALL				4
-
-extern const option menu_options_options[];
-
-extern int doSort;
-extern int doAni;
-extern int marginHorizontal;
-extern int marginVertical;
-
-extern int menu_options_maxopt;
-extern int * menu_options_maxsel;
-extern int * menu_options_selections;
-
-#define APOLLO_VERSION			"v0.0.1"	//Apollo PS3 version (about menu)
-#define MENU_TITLE_OFF			30			//Offset of menu title text from menu mini icon
-#define MENU_ICON_OFF 			70          //X Offset to start printing menu mini icon
-#define MENU_ANI_MAX 			0x80        //Max animation number
-#define MENU_SPLIT_OFF			200			//Offset from left of sub/split menu to start drawing
-#define MENU_MAIN_ICON_WIDTH 	80			//Width of main menu icons
-
-extern int close_app;
-
 extern png_texture * menu_textures;				// png_texture array for main menu, initialized in LoadTexture
 
-extern int screen_width, screen_height;			// Set to dimensions of the screen in main()
+extern int screen_width;						// Set to dimensions of the screen in main()
+extern int screen_height;
 
 extern int highlight_alpha;						// Alpha of the selected
 extern int highlight_pulse;						// Whether the increment the highlight
@@ -108,25 +77,9 @@ extern int menu_old_sel[];
 extern int last_menu_id[];
 extern const char * menu_pad_help[];
 
-/*
-* User code list
-*/
-extern struct save_entry * user_game_list;
-extern int user_game_count;
-
-/*
-* Online code list
-*/
-extern struct save_entry * online_game_list;
-extern int online_game_count;
-
 extern struct save_entry selected_entry;
 extern struct code_entry selected_centry;
 extern int option_index;
-
-// Set to dimensions of the screen in main()
-extern int screen_width;
-extern int screen_height;
 
 extern void DrawBackground2D(u32 rgba);
 extern void DrawTexture(png_texture tex, int x, int y, int z, int w, int h, u32 rgba);
@@ -142,5 +95,8 @@ extern void DrawTextureRotated(png_texture tex, int x, int y, int z, int w, int 
 extern int TTFLoadFont(char * path, void * from_memory, int size_from_memory);
 extern void TTF_to_Bitmap(uint8_t chr, uint8_t * bitmap, short *w, short *h, short *y_correction);
 extern void TTFUnloadFont();
+
+int load_app_settings(app_config_t* config);
+int save_app_settings(app_config_t* config);
 
 #endif

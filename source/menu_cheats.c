@@ -113,7 +113,7 @@ void Draw_CheatsMenu_Options_Ani_Exit(void)
 			rgbVal = 0xD0;
 		Draw_CheatsMenu_Selection(menu_old_sel[5], (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
-		DrawTexture(menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -marginVertical, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (marginVertical * 2), icon_a);
+		DrawTexture(menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
 		DrawHeader(menu_textures[header_ico_opt_png_index], left, "Cheat Option", selected_centry.name, 0x00000000 | icon_a, 0xffffffff, 1);
 /*
 		int _game_a = (int)(icon_a - (max / 2)) * 2;
@@ -158,7 +158,7 @@ void Draw_CheatsMenu_Options_Ani(void)
 			rgbVal = 0xD0;
 		Draw_CheatsMenu_Selection(menu_sel, (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
-		DrawTexture(menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -marginVertical, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (marginVertical * 2), icon_a);
+		DrawTexture(menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
 		DrawHeader(menu_textures[header_ico_opt_png_index], left, "Cheat Option", selected_centry.name, 0x00000000 | icon_a, 0xffffffff, 1);
         
 		u8 game_a = (u8)(icon_a < 0x8F ? 0 : icon_a);
@@ -178,7 +178,7 @@ void Draw_CheatsMenu_Options(void)
 
 	Draw_CheatsMenu_Selection(menu_old_sel[5], 0xD0D0D0FF);
 
-	DrawTexture(menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -marginVertical, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (marginVertical * 2), 0x000000FF);
+	DrawTexture(menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), 0x000000FF);
 	DrawHeader(menu_textures[header_ico_opt_png_index], MENU_SPLIT_OFF, "Cheat Option", selected_centry.name, 0x000000ff, 0xffffffff, 1);
 
 	DrawOptions(selected_centry.options[option_index], 0xFF, 20, menu_sel);
@@ -376,7 +376,7 @@ void Draw_CheatsMenu_View_Ani_Exit(void)
 			rgbVal = 0xD0;
 		Draw_CheatsMenu_Selection(menu_old_sel[5], (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
-		DrawTexture(menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -marginVertical, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (marginVertical * 2), icon_a);
+		DrawTexture(menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
 		DrawHeader(menu_textures[header_ico_opt_png_index], left, "Patch View", selected_centry.name, 0x00000000 | icon_a, 0xffffffff, 1);
 /*
 		int _game_a = (int)(icon_a - (max / 2)) * 2;
@@ -418,7 +418,7 @@ void Draw_CheatsMenu_View_Ani(void)
 			rgbVal = 0xD0;
 		Draw_CheatsMenu_Selection(menu_sel, (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
-		DrawTexture(menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -marginVertical, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (marginVertical * 2), icon_a);
+		DrawTexture(menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
 		DrawHeader(menu_textures[header_ico_opt_png_index], left, "Patch View", selected_centry.name, 0x00000000 | icon_a, 0xffffffff, 1);
 
 		u8 game_a = (u8)(icon_a < 0x8F ? 0 : icon_a);
@@ -438,7 +438,7 @@ void Draw_CheatsMenu_View(void)
     
 	Draw_CheatsMenu_Selection(menu_old_sel[5], 0xD0D0D0FF);
 
-	DrawTexture(menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -marginVertical, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (marginVertical * 2), 0x000000FF);
+	DrawTexture(menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), 0x000000FF);
 	DrawHeader(menu_textures[header_ico_opt_png_index], MENU_SPLIT_OFF, "Patch View", selected_centry.name, 0x000000ff, 0xffffffff, 1);
 
     int nlines = DrawCodes(selected_centry, 0xFF, 20, MENU_SPLIT_OFF, menu_sel);
@@ -543,7 +543,7 @@ void DrawCheatsList(int selIndex, save_entry_t game, u8 alpha)
                 SetFontAlign(3);
 				//SetCurrentFont(font_comfortaa_light);
 				SetFontColor(0xFFFFFF00 | a, 0);
-				DrawString(MENU_ICON_OFF + ((MENU_TITLE_OFF * 3) - 15) / 2, game_y + 2, game.codes[x].cwrite ? "constant" : "once");
+				DrawString(MENU_ICON_OFF + ((MENU_TITLE_OFF * 3) - 15) / 2, game_y + 2, "apply");
                 SetFontAlign(0);
                 SetFontSize(14, 16);
                 
