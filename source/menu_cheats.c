@@ -451,7 +451,7 @@ void Draw_CheatsMenu_View(void)
  */
 void DrawGameList(int selIndex, save_entry_t * games, int glen, u8 alpha)
 {
-    SetFontSize(14, 16);
+    SetFontSize(APP_FONT_SIZE_SELECTION);
 	SetCurrentFont(font_comfortaa_regular);
     
     int game_y = 80, y_inc = 20;
@@ -510,7 +510,7 @@ void DrawGameList(int selIndex, save_entry_t * games, int glen, u8 alpha)
 
 void DrawCheatsList(int selIndex, save_entry_t game, u8 alpha)
 {
-    SetFontSize(14, 16);
+    SetFontSize(APP_FONT_SIZE_SELECTION);
     
     int game_y = 80, y_inc = 20;
     int maxPerPage = (512 - (game_y * 2)) / y_inc;
@@ -545,7 +545,7 @@ void DrawCheatsList(int selIndex, save_entry_t game, u8 alpha)
 				SetFontColor(APP_FONT_TAG_COLOR | a, 0);
 				DrawString(MENU_ICON_OFF + ((MENU_TITLE_OFF * 3) - 15) / 2, game_y + 2, "apply");
                 SetFontAlign(0);
-                SetFontSize(14, 16);
+                SetFontSize(APP_FONT_SIZE_SELECTION);
                 
                 if (game.codes[x].options_count > 0 && game.codes[x].options)
                 {

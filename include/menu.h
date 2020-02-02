@@ -48,6 +48,12 @@
 
 #define APP_FONT_COLOR						0x00000000
 #define APP_FONT_TAG_COLOR					0xFFFFFF00
+#define APP_FONT_SIZE_TITLE					24, 24
+#define APP_FONT_SIZE_SUBTITLE				20, 20
+#define APP_FONT_SIZE_SUBTEXT				12, 12
+#define APP_FONT_SIZE_ABOUT					14, 14
+#define APP_FONT_SIZE_SELECTION				14, 16
+#define APP_FONT_SIZE_DESCRIPTION			18, 16
 
 typedef struct t_png_texture
 {

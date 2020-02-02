@@ -249,7 +249,7 @@ static void sys_callback(uint64_t status, uint64_t param, void* userdata) {
 	}
 }
 
-int isArtemisLoaded()
+int isAppLoaded()
 {
 	char buf[100];
 	readFileBuffered("/dev_hdd0/tmp/apollo", (char *)buf);
@@ -273,7 +273,7 @@ void DeleteBootHistory(void)
 	{
 		if (strstr(dir->d_name, ".") == NULL && strstr(dir->d_name, "..") == NULL)
 		{
-			snprintf(fullPath, sizeof(fullPath)-1, "%s%s%s", "/dev_hdd0/home/", dir->d_name, "/etc/boot_history.dat");
+			snprintf(fullPath, sizeof(fullPath), "/dev_hdd0/home/%s/etc/boot_history.dat", dir->d_name);
 			unlink_secure(fullPath);
 		}
 	}
@@ -443,14 +443,14 @@ void Draw_MainMenu_Ani()
 		//Background
 		DrawBackgroundTexture(0, bg_a);
 		
-		//Artemis logo
+		//App logo
 		w = 500, h = 140;
 		DrawTexture(menu_textures[titlescr_logo_png_index], 424 - (w / 2), 256 - (h / 2) - 120, 0, w, h, 0xFFFFFF00 | logo_a);
 		
-		//Artemis description
+		//App description
 		SetFontAlign(1);
 		SetCurrentFont(font_comfortaa_light);
-		SetFontSize(18, 16);
+		SetFontSize(APP_FONT_SIZE_DESCRIPTION);
 		SetFontColor(APP_FONT_COLOR | logo_a, 0);
 		DrawString(screen_width / 2, 210, MENU_MAIN_DESCRIPTION);
 		
@@ -480,38 +480,36 @@ void Draw_MainMenu_Ani()
 		//Background
 		DrawBackgroundTexture(0, 0xFF);
 		
-		//Artemis logo
+		//App logo
 		w = 500; h = 140;
 		DrawTexture(menu_textures[titlescr_logo_png_index], 424 - (w / 2), 256 - (h / 2) - 120, 0, w, h, 0xFFFFFFFF);
 
-		//Artemis description
+		//App description
 		SetFontAlign(1);
 		SetCurrentFont(font_comfortaa_light);
-		SetFontSize(18, 16);
+		SetFontSize(APP_FONT_SIZE_DESCRIPTION);
 		SetFontColor(APP_FONT_COLOR | 0xFF, 0);
 		DrawString(screen_width / 2, 210, MENU_MAIN_DESCRIPTION);
 
-		SetFontSize(12, 12);
+		SetFontSize(APP_FONT_SIZE_SUBTEXT);
 		DrawString(screen_width / 2, 480, MENU_MAIN_FOOTER);
-		
-		DrawTextureRotated(menu_textures[circle_loading_seek_png_index], screen_width / 2, screen_height / 2, 1, 89, 89, 0xFFFFFFFF, ani);
 		
 		//------------ Icons
 		
 		//Start game
-		DrawTexture(menu_textures[titlescr_ico_xmb_png_index], 50 + 150, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | icon_a);
+		DrawTexture(menu_textures[titlescr_ico_xmb_png_index], 200, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | icon_a);
 		
 		//Cheats
-		DrawTexture(menu_textures[titlescr_ico_cht_png_index], 150 + 150, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | icon_a);
+		DrawTexture(menu_textures[titlescr_ico_cht_png_index], 300, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | icon_a);
 
 		//Online cheats
-		DrawTexture(menu_textures[titlescr_ico_net_png_index], 250 + 150, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | icon_a);
+		DrawTexture(menu_textures[titlescr_ico_net_png_index], 400, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | icon_a);
 		
 		//Options
-		DrawTexture(menu_textures[titlescr_ico_opt_png_index], 350 + 150 + 5, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | icon_a);
+		DrawTexture(menu_textures[titlescr_ico_opt_png_index], 500, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | icon_a);
 		
 		//About
-		DrawTexture(menu_textures[titlescr_ico_abt_png_index], 450 + 150, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | icon_a);
+		DrawTexture(menu_textures[titlescr_ico_abt_png_index], 600, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | icon_a);
 		
 		tiny3d_Flip();
 
@@ -531,55 +529,55 @@ void Draw_MainMenu()
 	//Background
 	DrawBackgroundTexture(0, 0xff);
 	
-	//Artemis logo
+	//App logo
 	c = titlescr_logo_png_index;
 	w = 500; h = 140;
 	DrawTexture(menu_textures[c], 424 - (w / 2), 256 - (h / 2) - 120, 0, w, h, 0xffffffff);
 	
-	//Artemis description
+	//App description
 	SetFontAlign(1);
 	SetCurrentFont(font_comfortaa_light);
-	SetFontSize(18, 16);
+	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
 	SetFontColor(APP_FONT_COLOR | 0xFF, 0);
 	DrawString(screen_width / 2, 210, MENU_MAIN_DESCRIPTION);
 
-	SetFontSize(12, 12);
+	SetFontSize(APP_FONT_SIZE_SUBTEXT);
 	DrawString(screen_width / 2, 480, MENU_MAIN_FOOTER);
 
 	//------------ Icons
 	SetFontAlign(3);
-	SetFontSize(12, 12);
+	SetFontSize(APP_FONT_SIZE_SUBTEXT);
 	SetCurrentFont(font_comfortaa_regular);
 
-	//Start game
+	//USB saves
 	c = titlescr_ico_xmb_png_index;
-	DrawTexture(menu_textures[c], 50 + 150, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 0) ? 0xFF : 32));
+	DrawTexture(menu_textures[c], 200, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 0) ? 0xFF : 32));
 	SetFontColor(APP_FONT_COLOR | ((menu_sel == 0) ? 0xFF : 32), 0);
-	DrawString(50 + 150 + (MENU_MAIN_ICON_WIDTH / 2), 390, "USB Saves");
+	DrawString(200 + (MENU_MAIN_ICON_WIDTH / 2), 390, "USB Saves");
 
-	//Cheats
+	//HDD saves
 	c = titlescr_ico_cht_png_index;
-	DrawTexture(menu_textures[c], 150 + 150, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 1) ? 0xFF : 32));
+	DrawTexture(menu_textures[c], 300, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 1) ? 0xFF : 32));
 	SetFontColor(APP_FONT_COLOR | ((menu_sel == 1) ? 0xFF : 32), 0);
-	DrawString(150 + 150 + (MENU_MAIN_ICON_WIDTH / 2) + 5, 390, "HDD Saves");
+	DrawString(300 + (MENU_MAIN_ICON_WIDTH / 2), 390, "HDD Saves");
 
 	//Online Cheats
 	c = titlescr_ico_net_png_index;
-	DrawTexture(menu_textures[c], 250 + 150, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 2) ? 0xFF : 32));
+	DrawTexture(menu_textures[c], 400, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 2) ? 0xFF : 32));
 	SetFontColor(APP_FONT_COLOR | ((menu_sel == 2) ? 0xFF : 32), 0);
-	DrawString(250 + 150 + (MENU_MAIN_ICON_WIDTH / 2) + 5, 390, "Online DB");
+	DrawString(400 + (MENU_MAIN_ICON_WIDTH / 2), 390, "Online DB");
 
 	//Options
 	c = titlescr_ico_opt_png_index;
-	DrawTexture(menu_textures[c], 350 + 150 + 5, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 3) ? 0xFF : 32));
+	DrawTexture(menu_textures[c], 500, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 3) ? 0xFF : 32));
 	SetFontColor(APP_FONT_COLOR | ((menu_sel == 3) ? 0xFF : 32), 0);
-	DrawString(350 + 150 + (MENU_MAIN_ICON_WIDTH / 2) + 14, 390, "Options");
+	DrawString(500 + (MENU_MAIN_ICON_WIDTH / 2) + 5, 390, "Options");
 
 	//About
 	c = titlescr_ico_abt_png_index;
-	DrawTexture(menu_textures[c], 450 + 150, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 4) ? 0xFF : 32));
+	DrawTexture(menu_textures[c], 600, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 4) ? 0xFF : 32));
 	SetFontColor(APP_FONT_COLOR | ((menu_sel == 4) ? 0xFF : 32), 0);
-	DrawString(450 + 150 + (MENU_MAIN_ICON_WIDTH / 2), 390, "About");
+	DrawString(600 + (MENU_MAIN_ICON_WIDTH / 2), 390, "About");
 
 	SetFontAlign(0);
 
@@ -792,6 +790,8 @@ void set_usb_path(save_list_t* save_list)
 
 void ReloadUserSaves(save_list_t* save_list)
 {
+    init_loading_screen();
+
 	if (save_list->list)
 	{
 		UnloadGameList(save_list->list, save_list->count);
@@ -802,6 +802,8 @@ void ReloadUserSaves(save_list_t* save_list)
 	save_list->list = ReadUserList(save_list->path, &(save_list->count));
 	if (apollo_config.doSort)
 		BubbleSortGameList(save_list->list, save_list->count);
+
+    stop_loading_screen();
 }
 
 void ReloadOnlineCheats()
@@ -851,9 +853,7 @@ void SetMenu(int id)
 			if (!usb_saves.list)
 			{
 			    set_usb_path(&usb_saves);
-				usb_saves.list = ReadUserList(usb_saves.path, &(usb_saves.count));
-				if (apollo_config.doSort)
-					BubbleSortGameList(usb_saves.list, usb_saves.count);
+				ReloadUserSaves(&usb_saves);
 			}
 			
 			if (apollo_config.doAni)
@@ -863,10 +863,8 @@ void SetMenu(int id)
 		case MENU_HDD_SAVES: //HDD saves Menu
 			if (!hdd_saves.list)
 			{
-				sprintf(hdd_saves.path, SAVES_PATH_HDD, apollo_config.user_id);
-				hdd_saves.list = ReadUserList(hdd_saves.path, &(hdd_saves.count));
-				if (apollo_config.doSort)
-					BubbleSortGameList(hdd_saves.list, hdd_saves.count);
+				snprintf(hdd_saves.path, sizeof(hdd_saves.path), SAVES_PATH_HDD, apollo_config.user_id);
+				ReloadUserSaves(&hdd_saves);
 			}
 			
 			if (apollo_config.doAni)
@@ -1015,29 +1013,39 @@ int moveMenuSelection(padData pad_data, save_list_t * save_list)
 
 	return 0;
 }
-/*
-		else if (paddata[0].BTN_CROSS)
+
+void build_patch(sfo_patch_t* patch)
+{
+    int j;
+
+	for (j = 0; j < selected_entry.code_count; j++)
+	{
+		if (!selected_entry.codes[j].activated)
+		    continue;
+		    
+    	LOG("Active: [%s]", selected_entry.codes[j].name);
+
+		if (strcmp(selected_entry.codes[j].codes, CODE_UNLOCK_COPY) == 0)
+		    patch->flags = SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION;
+
+		if (strcmp(selected_entry.codes[j].codes, CODE_REMOVE_ACCOUNT_ID) == 0)
 		{
-			if (!save_list->list[menu_sel].codes)
-			{
-				int sz = 0;
-				save_list->list[menu_sel].codes = ReadCodes(save_list->list[menu_sel].title_id, &sz);
-				save_list->list[menu_sel].code_count = sz;
-			}
-			if (apollo_config.doSort)
-				save_list->list[menu_sel] = BubbleSortCodeList(save_list->list[menu_sel]);
-			selected_entry = save_list->list[menu_sel];
-			SetMenu(MENU_PATCHES);
-			return;
-		}
-		else if (paddata[0].BTN_SQUARE)
+		    patch->account_id = malloc(17);
+		    strcpy(patch->account_id, "0000000000000000");
+	    }
+
+		if (strcmp(selected_entry.codes[j].codes, CODE_UPDATE_ACCOUNT_ID) == 0)
 		{
-			ReloadUserSaves(save_list);
-		}
+		    patch->account_id = malloc(17);
+		    sprintf(patch->account_id, "%016lx", apollo_config.account_id);
+	    }
+
+		if (strcmp(selected_entry.codes[j].codes, CODE_UPDATE_PSID) == 0)
+		    patch->psid = (u8*) &(apollo_config.psid[0]);
+
+		selected_entry.codes[j].activated = 0;
 	}
-	
-	Draw_UserCheatsMenu(save_list->list, save_list->count, menu_sel, 0xFF);
-	*/
+}
 
 // Resets new frame
 void drawScene()
@@ -1138,7 +1146,7 @@ void drawScene()
 				}
 				else if (paddata[0].BTN_SQUARE)
 				{
-					sprintf(hdd_saves.path, SAVES_PATH_HDD, apollo_config.user_id);
+					snprintf(hdd_saves.path, sizeof(hdd_saves.path), SAVES_PATH_HDD, apollo_config.user_id);
 					ReloadUserSaves(&hdd_saves);
 				}
 			}
@@ -1241,7 +1249,6 @@ void drawScene()
 				{
 					if ((menu_options[menu_sel].type == APP_OPTION_BOOL) || (menu_options[menu_sel].type == APP_OPTION_CALL))
 						menu_options[menu_sel].callback(menu_sel, *menu_options[menu_sel].value);
-//						*menu_options[menu_sel].value = 1;
 				}
 			}
 			
@@ -1270,6 +1277,9 @@ void drawScene()
 				}
 				else if (paddata[0].BTN_CIRCLE)
 				{
+					for (int j = 0; j < selected_entry.code_count; j++)
+						selected_entry.codes[j].activated = 0;
+
 					SetMenu(last_menu_id[MENU_PATCHES]);
 					return;
 				}
@@ -1277,98 +1287,49 @@ void drawScene()
 				{
 					selected_entry.codes[menu_sel].activated = !selected_entry.codes[menu_sel].activated;
 
-/*
-					LOG("act %d", selected_entry.codes[menu_sel].activated);
-					LOG("nam %s", selected_entry.codes[menu_sel].name);
-					LOG("cod %s", selected_entry.codes[menu_sel].codes);
-*/
+					if (strcmp(selected_entry.codes[menu_sel].codes, CODE_RESIGN_SAVE) == 0)
+					{
+						char in_file_path[256];
+						sfo_patch_t patch = {
+					        .flags = 0,
+					        .user_id = apollo_config.user_id,
+					        .account_id = NULL,
+					        .psid = NULL,
+						};
+
+						build_patch(&patch);
+
+						snprintf(in_file_path, sizeof(in_file_path), "%s" "PARAM.SFO", selected_entry.path);
+						LOG("Applying SFO patches '%s'...", in_file_path);
+
+		                if (patch_sfo(in_file_path, &patch) == SUCCESS)
+			            {
+    						LOG("Resigning save '%s'...", selected_entry.name);
+    						if (pfd_util_init(selected_entry.title_id, selected_entry.path))
+    						{
+    							if (pfd_util_process(PFD_CMD_UPDATE, 0) == SUCCESS)
+        		                    show_dialog(0, "Save file successfully resigned!");
+    	    	                else
+    		                        show_dialog(0, "Error! Save file couldn't be resigned");
+    
+    							pfd_util_process(PFD_CMD_CHECK, 0);
+    						}
+                            else
+                            {
+    		                    show_dialog(0, "Error! Save file couldn't be resigned");
+                            }
+    
+    						pfd_util_end();
+						}
+
+						if(patch.account_id)
+						    free(patch.account_id);
+
+						selected_entry.codes[menu_sel].activated = 0;
+					}
 					
 					if (selected_entry.codes[menu_sel].activated)
 					{
-
-						if (strcmp(selected_entry.codes[menu_sel].codes, CODE_RESIGN_SAVE) == 0)
-						{
-							LOG("Resigning save '%s'...", selected_entry.name);
-							if (pfd_util_init(selected_entry.title_id, selected_entry.path))
-							{
-//    							if (pfd_util_process(PFD_CMD_CHECK, 0) == SUCCESS)
-    							if (pfd_util_process(PFD_CMD_UPDATE, 0) == SUCCESS)
-	    		                    show_dialog(0, "Save file successfully resigned!");
-		    	                else
-			                        show_dialog(0, "Error! Save file couldn't be resigned");
-
-    							pfd_util_process(PFD_CMD_CHECK, 0);
-							}
-                            else
-                            {
-			                    show_dialog(0, "Error! Save file couldn't be resigned");
-                            }
-
-							pfd_util_end();
-
-							selected_entry.codes[menu_sel].activated = !selected_entry.codes[menu_sel].activated;
-						}
-
-						if (strcmp(selected_entry.codes[menu_sel].codes, CODE_UNLOCK_COPY) == 0)
-						{
-						    sfo_patch_t patch = {
-						        .flags = SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION,
-						        .user_id = 0,
-						        .account_id = NULL,
-						        .psid = NULL,
-						       };
-							char in_file_path[256];
-							snprintf(in_file_path, sizeof(in_file_path), "%s" "PARAM.SFO", selected_entry.path);
-
-							LOG("Unlocking save '%s'...", in_file_path);
-			                if (patch_sfo(in_file_path, &patch) == SUCCESS)
-			                    show_dialog(0, "Save file successfully unlocked!");
-			                else
-			                    show_dialog(0, "Error! Save file couldn't be unlocked");
-
-							selected_entry.codes[menu_sel].activated = !selected_entry.codes[menu_sel].activated;
-						}
-
-						if (strcmp(selected_entry.codes[menu_sel].codes, CODE_REMOVE_ACCOUNT_ID) == 0)
-						{
-						    sfo_patch_t patch = {
-						        .flags = 0,
-						        .user_id = 0,
-						        .account_id = "0000000000000000",
-						        .psid = NULL,
-						       };
-							char in_file_path[256];
-							snprintf(in_file_path, sizeof(in_file_path), "%s" "PARAM.SFO", selected_entry.path);
-
-							LOG("Removing Account ID '%s'...", in_file_path);
-			                if (patch_sfo(in_file_path, &patch) == SUCCESS)
-			                    show_dialog(0, "Account ID successfully removed!");
-			                else
-			                    show_dialog(0, "Error! Save file couldn't be modified");
-
-							selected_entry.codes[menu_sel].activated = !selected_entry.codes[menu_sel].activated;
-						}
-
-						if (strcmp(selected_entry.codes[menu_sel].codes, CODE_UPDATE_PSID) == 0)
-						{
-						    sfo_patch_t patch = {
-						        .flags = 0,
-						        .user_id = 0,
-						        .account_id = NULL,
-						        .psid = (u8*) &(apollo_config.psid[0]),
-						       };
-							char in_file_path[256];
-							snprintf(in_file_path, sizeof(in_file_path), "%s" "PARAM.SFO", selected_entry.path);
-
-							LOG("Setting Console ID '%s'...", in_file_path);
-			                if (patch_sfo(in_file_path, &patch) == SUCCESS)
-			                    show_dialog(0, "Console ID successfully updated!");
-			                else
-			                    show_dialog(0, "Error! Save file couldn't be modified");
-
-							selected_entry.codes[menu_sel].activated = !selected_entry.codes[menu_sel].activated;
-						}
-
 						//Check if option code
 						if (!selected_entry.codes[menu_sel].options)
 						{
@@ -1604,7 +1565,7 @@ s32 main(s32 argc, const char* argv[])
 				alpha -= dec;
 			}
 			
-			SetFontSize(18, 16);
+			SetFontSize(APP_FONT_SIZE_DESCRIPTION);
 			SetCurrentFont(0);
 			SetFontAlign(1);
 			SetFontColor(APP_FONT_COLOR | alpha, 0);

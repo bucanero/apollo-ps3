@@ -1,6 +1,8 @@
 #include <string.h>
 #include <tiny3d.h>
 #include <pngdec/pngdec.h>
+#include <sys/thread.h>
+#include <unistd.h>
 
 #include "libfont.h"
 #include "menu.h"
@@ -118,7 +120,7 @@ void DrawHeader_Ani(png_texture icon, char * headerTitle, char * headerSubTitle,
 	SetCurrentFont(font_comfortaa_regular);
 	if (headerTitle)
 	{
-		SetFontSize(24, 24);
+		SetFontSize(APP_FONT_SIZE_TITLE);
 		DrawString(MENU_ICON_OFF + 10, 31, headerTitle);
 	}
 
@@ -126,7 +128,7 @@ void DrawHeader_Ani(png_texture icon, char * headerTitle, char * headerSubTitle,
 	if (headerSubTitle)
 	{
 		int width = 800 - (MENU_ICON_OFF + MENU_TITLE_OFF + WidthFromStr((u8*)headerTitle)) - 30;
-		SetFontSize(20, 20);
+		SetFontSize(APP_FONT_SIZE_SUBTITLE);
 		char * tName = malloc(strlen(headerSubTitle) + 1);
 		strcpy(tName, headerSubTitle);
 		while (WidthFromStr((u8*)tName) > width)
@@ -168,13 +170,13 @@ void DrawHeader(png_texture icon, int xOff, char * headerTitle, char * headerSub
 	SetCurrentFont(font_comfortaa_regular);
 	if (mode)
 	{
-		SetFontSize(20, 20);
+		SetFontSize(APP_FONT_SIZE_SUBTITLE);
 		if (headerTitle)
 			DrawString(xOff + MENU_ICON_OFF + 10, 35, headerTitle);
 	}
 	else
 	{
-		SetFontSize(24, 24);
+		SetFontSize(APP_FONT_SIZE_TITLE);
 		if (headerTitle)
 			DrawString(xOff + MENU_ICON_OFF + 10, 31, headerTitle);
 	}
@@ -183,7 +185,7 @@ void DrawHeader(png_texture icon, int xOff, char * headerTitle, char * headerSub
 	if (headerSubTitle)
 	{
 		int width = 800 - (MENU_ICON_OFF + MENU_TITLE_OFF + WidthFromStr((u8*)headerTitle)) - 30;
-		SetFontSize(20, 20);
+		SetFontSize(APP_FONT_SIZE_SUBTITLE);
 		char * tName = malloc(strlen(headerSubTitle) + 1);
 		strcpy(tName, headerSubTitle);
 		while (WidthFromStr((u8*)tName) > width)
@@ -255,9 +257,52 @@ void DrawTextureRotated(png_texture tex, int x, int y, int z, int w, int h, u32 
 	DrawSpritesRot2D(x, y, z, w, h, rgba, angle);
 }
 
-void loading_screen(float angle)
+static int please_wait;
+
+void loading_screen_thread(void* user_data)
 {
-    DrawTextureRotated(menu_textures[circle_loading_bg_png_index], screen_width / 2, screen_height / 2, 0, 89, 89, 0xFFFFFFFF, 0);
-    DrawTextureRotated(menu_textures[circle_loading_seek_png_index], screen_width / 2, screen_height / 2, 1, 89, 89, 0xFFFFFFFF, angle);
-	tiny3d_Flip();
+    float angle = 0;
+    while (please_wait == 1)
+    {
+        angle += 0.1f;
+    	tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
+    	tiny3d_AlphaTest(1, 0x10, TINY3D_ALPHA_FUNC_GEQUAL);
+    	tiny3d_BlendFunc(1, TINY3D_BLEND_FUNC_SRC_RGB_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_ALPHA_SRC_ALPHA,
+    		TINY3D_BLEND_FUNC_SRC_ALPHA_ONE_MINUS_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_RGB_ONE_MINUS_SRC_ALPHA,
+    		TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
+
+    	tiny3d_Project2D();
+
+    	DrawBackground2D(0xFFFFFFFF);
+
+        //Loading animation
+        DrawTextureCentered(menu_textures[circle_loading_bg_png_index], 424, 300, 0, 89, 89, 0xFFFFFFFF);
+        DrawTextureRotated(menu_textures[circle_loading_seek_png_index], 424 , 300, 0, 89, 89, 0xFFFFFFCC, angle);
+
+    	tiny3d_Flip();
+	}
+
+    please_wait = -1;
+    sysThreadExit (0);
+}
+
+int init_loading_screen()
+{
+    sys_ppu_thread_t tid;
+    please_wait = 1;
+    
+    int ret = sysThreadCreate (&tid, loading_screen_thread, NULL, 1000, 16*1024, THREAD_JOINABLE, "please_wait");
+
+    return ret;
+}
+
+void stop_loading_screen()
+{
+    if (please_wait != 1)
+        return;
+
+    please_wait = 0;
+
+    while (please_wait != -1)
+        usleep(1000);
 }

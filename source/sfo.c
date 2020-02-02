@@ -354,8 +354,8 @@ void sfo_patch_user_id(sfo_context_t *inout, u32 userid) {
 	p = sfo_context_get_param(inout, "PARAMS");
 	if (p != NULL) {
 		sfo_param_params_t *params = (sfo_param_params_t *)p->value;
-		params->user_id_1 = userid;
-		params->user_id_2 = userid;
+		params->user_id_1 = ES32(userid);
+		params->user_id_2 = ES32(userid);
 	}
 }
 
