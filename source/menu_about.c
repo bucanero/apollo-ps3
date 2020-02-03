@@ -49,7 +49,7 @@ void _draw_AboutMenu(u8 alpha)
 	SetFontAlign(1);
 	SetCurrentFont(font_comfortaa_bold);
 	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
-	DrawString(848 / 2, 170 + ((cnt + 3) * 12), "Apollo Save Tool:");
+	DrawString(848 / 2, 170 + ((cnt + 3) * 12), "Console Details:");
 
 	int off = cnt + 5;
 	for (cnt = 0; menu_about_strings_project[cnt] != NULL; cnt += 2)
@@ -64,6 +64,11 @@ void _draw_AboutMenu(u8 alpha)
 		SetFontAlign(0);
 		DrawString((848 / 2) + 10, 175 + ((off + cnt) * 12), (char *)menu_about_strings_project[cnt + 1]);
 	}
+
+	SetFontAlign(1);
+	SetCurrentFont(font_comfortaa_regular);
+	SetFontSize(APP_FONT_SIZE_SUBTEXT);
+	DrawString(screen_width / 2, 480, "http://apollo.psdev.tk/");
 }
 
 void Draw_AboutMenu_Ani()

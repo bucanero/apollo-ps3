@@ -88,12 +88,12 @@ padData paddata[MAX_PADS];
 padData padA[MAX_PADS];
 padData padB[MAX_PADS];
 
-void music_callback(int index, int sel);
-void sort_callback(int index, int sel);
-void ani_callback(int index, int sel);
-void horm_callback(int index, int sel);
-void verm_callback(int index, int sel);
-void update_callback(int index, int sel);
+void music_callback(int sel);
+void sort_callback(int sel);
+void ani_callback(int sel);
+void horm_callback(int sel);
+void verm_callback(int sel);
+void update_callback(int sel);
 
 app_config_t apollo_config = {
     .music = 1,
@@ -140,11 +140,15 @@ const char * menu_about_strings[] = { "Bucanero", "Developer",
 									"flatz", "PFD/SFO tools",
 									NULL, NULL };
 
+char user_id_str[9] = "00000000";
 char psid_str1[17] = "0000000000000000";
 char psid_str2[17] = "0000000000000000";
+char account_id_str[17] = "0000000000000000";
 
 const char * menu_about_strings_project[] = { "WebSite", "http://apollo.psdev.tk/",
 											psid_str1, psid_str2,
+											"Account ID", account_id_str,
+											"User ID", user_id_str,
 											NULL, NULL };
 
 /*
@@ -588,11 +592,9 @@ void LoadTexture()
 {
 	texture_mem = tiny3d_AllocTexture(64*1024*1024); // alloc 64MB of space for textures (this pointer can be global)
 	
-	u32 * texture_pointer; // use to asign texture space without changes texture_mem
-
 	if(!texture_mem) return; // fail!
 
-	texture_pointer = texture_mem;
+	u32 * texture_pointer = texture_mem; // use to asign texture space without changes texture_mem
 	
 	ResetFont();
 	
@@ -649,12 +651,9 @@ void LoadTexture()
 
 void LoadTextures_Menu()
 {
-	u32 * texture_pointer; // use to assign texture space without changes texture_mem
-
 	if (!font_mem) return; // fail!
 
-	texture_pointer = font_mem;
-
+	u32 * texture_pointer = font_mem; // use to assign texture space without changes texture_mem
 	int cnt = 0;
 
 	//Main Menu
@@ -724,7 +723,7 @@ void LoadSounds()
 	SND_Pause(0);
 }
 
-void music_callback(int index, int sel)
+void music_callback(int sel)
 {
 	apollo_config.music = !sel;
 
@@ -736,35 +735,35 @@ void music_callback(int index, int sel)
 		SND_PauseVoice(2, 1);
 }
 
-void sort_callback(int index, int sel)
+void sort_callback(int sel)
 {
 	apollo_config.doSort = !sel;
 }
 
-void ani_callback(int index, int sel)
+void ani_callback(int sel)
 {
 	apollo_config.doAni = !sel;
 }
 
-void horm_callback(int index, int sel)
+void horm_callback(int sel)
 {
-	if (sel < 0)
+	if (sel == 255)
 		sel = 0;
 	if (sel > 100)
 		sel = 100;
 	apollo_config.marginH = sel;
 }
 
-void verm_callback(int index, int sel)
+void verm_callback(int sel)
 {
-	if (sel < 0)
+	if (sel == 255)
 		sel = 0;
 	if (sel > 100)
 		sel = 100;
 	apollo_config.marginV = sel;
 }
 
-void update_callback(int index, int sel)
+void update_callback(int sel)
 {
 	if (sel)
 	{
@@ -1167,7 +1166,7 @@ void drawScene()
 					if (!online_saves.list[menu_sel].codes)
 					{
 						int sz = 0;
-						online_saves.list[menu_sel].codes = ReadOnlineNCL(online_saves.list[menu_sel].path, &sz);
+						online_saves.list[menu_sel].codes = ReadOnlineSaves(online_saves.list[menu_sel].title_id, &sz);
 						online_saves.list[menu_sel].code_count = sz;
 					}
 					if (apollo_config.doSort)
@@ -1229,7 +1228,7 @@ void drawScene()
 					else if (menu_options[menu_sel].type == APP_OPTION_INC)
 						(*menu_options[menu_sel].value)--;
 					
-					menu_options[menu_sel].callback(menu_sel, *menu_options[menu_sel].value);
+					menu_options[menu_sel].callback(*menu_options[menu_sel].value);
 				}
 				else if (paddata[0].BTN_RIGHT)
 				{
@@ -1243,12 +1242,12 @@ void drawScene()
 					else if (menu_options[menu_sel].type == APP_OPTION_INC)
 						*menu_options[menu_sel].value += 1;
 
-					menu_options[menu_sel].callback(menu_sel, *menu_options[menu_sel].value);
+					menu_options[menu_sel].callback(*menu_options[menu_sel].value);
 				}
 				else if (paddata[0].BTN_CROSS)
 				{
 					if ((menu_options[menu_sel].type == APP_OPTION_BOOL) || (menu_options[menu_sel].type == APP_OPTION_CALL))
-						menu_options[menu_sel].callback(menu_sel, *menu_options[menu_sel].value);
+						menu_options[menu_sel].callback(*menu_options[menu_sel].value);
 				}
 			}
 			
@@ -1451,6 +1450,8 @@ s32 main(s32 argc, const char* argv[])
 	// set to display the PSID on the About menu
     sprintf(psid_str1, "%016lX", apollo_config.psid[0]);
     sprintf(psid_str2, "%016lX", apollo_config.psid[1]);
+    sprintf(user_id_str, "%08d", apollo_config.user_id);
+    sprintf(account_id_str, "%016lX", apollo_config.account_id);
 
 	pfd_util_setup_keys((u8*) &(apollo_config.psid[0]), apollo_config.user_id);
 
@@ -1531,7 +1532,7 @@ s32 main(s32 argc, const char* argv[])
 	SND_SetInfiniteVoice(2, (effect_is_stereo) ? VOICE_STEREO_16BIT : VOICE_MONO_16BIT, effect_freq, 0, background_music, background_music_size, 255, 255);
 	
 	//Set options
-	music_callback(0, !apollo_config.music);
+	music_callback(!apollo_config.music);
 
 	SetMenu(MENU_MAIN_SCREEN);
 	

@@ -277,7 +277,7 @@ void loading_screen_thread(void* user_data)
 
         //Loading animation
         DrawTextureCentered(menu_textures[circle_loading_bg_png_index], 424, 300, 0, 89, 89, 0xFFFFFFFF);
-        DrawTextureRotated(menu_textures[circle_loading_seek_png_index], 424 , 300, 0, 89, 89, 0xFFFFFFCC, angle);
+        DrawTextureRotated(menu_textures[circle_loading_seek_png_index], 424 , 300, 0, 89, 89, 0xFFFFFFFF, angle);
 
     	tiny3d_Flip();
 	}

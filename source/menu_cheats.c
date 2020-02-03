@@ -488,8 +488,8 @@ void DrawGameList(int selIndex, save_entry_t * games, int glen, u8 alpha)
 			}
 			if (games[x].title_id)
 				DrawString(800 - (MENU_ICON_OFF * 3) - xo, game_y, games[x].title_id);
-			if (games[x].account_id)
-				DrawString(800 - (MENU_ICON_OFF * 1) - xo, game_y, games[x].account_id);
+			if (games[x].locked)
+				DrawString(800 - (MENU_ICON_OFF * 1) - xo, game_y, "Lock");
         }
         
         if (x == selIndex)

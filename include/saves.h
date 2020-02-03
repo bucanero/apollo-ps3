@@ -15,7 +15,7 @@
 #define SAVES_PATH_USB1			"/dev_usb001/tmp/PS3/SAVEDATA/"
 #define SAVES_PATH_HDD			"/dev_hdd0/home/%08d/savedata/"
 
-#define ONLINE_URL				"http://apollo.psdev.tk/"
+#define ONLINE_URL				"http://apollo-dl.psdev.tk/"
 #define ONLINE_LOCAL_CACHE		APOLLO_PATH "CACHE/"
 #define ONLINE_CACHE_TIMEOUT    24*3600     // 1-day local cache
 
@@ -38,7 +38,6 @@ typedef struct option_entry
 typedef struct code_entry
 {
     char * name;
-    char * file;
     int activated;
     int options_count;
     char * codes;
@@ -50,7 +49,6 @@ typedef struct save_entry
     char * name;
 	char * title_id;
 	char * path;
-	char * account_id;
 	unsigned char locked;
     int code_count;
     int code_sorted;
@@ -78,7 +76,7 @@ void UnloadGameList(save_entry_t * list, int count);
 int isGameActivated(save_entry_t game);
 char * ParseActivatedGameList(save_entry_t * list, int count);
 void writeFile(const char * path, char * a, char * b);
-char * readFile(const char * path);
+char * readFile(const char * path, long* size);
 void readFileBuffered(const char * path, char * buffer);
 void BubbleSortGameList(save_entry_t * games, int count);
 save_entry_t BubbleSortCodeList(save_entry_t game);
@@ -86,7 +84,7 @@ int isCodeLineValid(char * line);
 long getFileSize(const char * path);
 option_entry_t * ReadOptions(code_entry_t code, int * count);
 code_entry_t * ReadCodes(const char * title_id, int * _code_count);
-code_entry_t * ReadOnlineNCL(const char * path, int * _code_count);
+code_entry_t * ReadOnlineSaves(const char * title_id, int * _code_count);
 
 int http_init(void);
 void http_end(void);
@@ -98,3 +96,6 @@ int show_dialog(int tdialog, const char * str);
 void init_progress_bar(const char* progress_bar_title, const char* msg);
 void update_progress_bar(long unsigned int* progress, const long unsigned int total_size, const char* msg);
 void end_progress_bar(void);
+
+int init_loading_screen();
+void stop_loading_screen();

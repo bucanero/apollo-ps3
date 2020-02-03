@@ -141,8 +141,8 @@ long getDirListSize(const char * path)
 		{
 			if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
 			{
-				snprintf(fullPath, sizeof(fullPath)-1, "%s%s", path, dir->d_name);
-				snprintf(sfoPath, sizeof(sfoPath)-1, "%s/PARAM.SFO", fullPath);
+				snprintf(fullPath, sizeof(fullPath), "%s%s", path, dir->d_name);
+				snprintf(sfoPath, sizeof(sfoPath), "%s/PARAM.SFO", fullPath);
 				if ((dir_exists(fullPath) == SUCCESS) && (file_exists(sfoPath) == SUCCESS))
 				{
 					count++;
@@ -258,7 +258,7 @@ void writeFile(const char * path, char * a, char * b)
  *	path:			Path to file
  * Return:			Pointer to the newly allocated buffer
  */
-char * readFile(const char * path)
+char * readFile(const char * path, long* size)
 {
 	FILE *f = fopen(path, "rb");
 	if (f == NULL)
@@ -273,7 +273,7 @@ char * readFile(const char * path)
 	fread(string, fsize, 1, f);
 	fclose(f);
 
-	//string[fsize] = 0;
+	*size = fsize;
 	return string;
 }
 
@@ -673,10 +673,11 @@ code_entry_t * ReadCodes(const char * title_id, int * _code_count)
  *	_count_count:	Pointer to int (set to the number of codes within the ncl)
  * Return:			Returns an array of code_entry, null if failed to load
  */
-code_entry_t * ReadOnlineNCL(const char * filename, int * _code_count)
+code_entry_t * ReadOnlineSaves(const char * title_id, int * _code_count)
 { 
-	char path[256];
-	snprintf(path, sizeof(path)-1, ONLINE_LOCAL_CACHE "%s", filename);
+	char path[256], url[256];
+	snprintf(path, sizeof(path), ONLINE_LOCAL_CACHE "%s.txt", title_id);
+	snprintf(url, sizeof(url), ONLINE_URL "%s/", title_id);
 
 	if (isExist(path))
 	{
@@ -684,15 +685,94 @@ code_entry_t * ReadOnlineNCL(const char * filename, int * _code_count)
 		stat(path, &stats);
 		// re-download if file is +1 day old
 		if ((stats.st_mtime + ONLINE_CACHE_TIMEOUT) < time(NULL))
-			http_download(ONLINE_URL "codes/", filename, path, 0);
+			http_download(url, "saves.txt", path, 0);
 	}
 	else
 	{
-		if (!http_download(ONLINE_URL "codes/", filename, path, 0))
+		if (!http_download(url, "saves.txt", path, 0))
 			return NULL;
 	}
 
-	return ReadCodes(path, _code_count);
+	long fsize;
+	char *data = readFile(path, &fsize);
+	data[fsize] = 0;
+	
+	char *ptr = data;
+	char *end = data + fsize + 1;
+
+	int game_count = 0;
+
+	while (ptr < end && *ptr)
+	{
+		if (*ptr == '\n')
+		{
+			game_count++;
+		}
+		ptr++;
+	}
+	
+	if (!game_count)
+		return NULL;
+
+	code_entry_t * ret = (code_entry_t *)malloc(sizeof(code_entry_t) * game_count);
+	*_code_count = game_count;
+
+	int cur_count = 0;    
+	ptr = data;
+	
+	while (ptr < end && *ptr && cur_count < game_count)
+	{
+		char* content = ptr;
+
+		while (ptr < end && *ptr != '\n' && *ptr != '\r')
+		{
+			ptr++;
+		}
+		*ptr++ = 0;
+
+        LOG("ReadUserList() :: Reading %s...", content);
+		if (content[12] == '=')
+		{
+			ret[cur_count].activated = 0;
+			ret[cur_count].options_count = 1;
+
+			ret[cur_count].options = (option_entry_t*)malloc(sizeof(option_entry_t) * ret[cur_count].options_count);
+
+			ret[cur_count].options[0].size = 2;
+			ret[cur_count].options[0].value = malloc (sizeof(char *) * ret[cur_count].options[0].size);
+			ret[cur_count].options[0].name = malloc (sizeof(char *) * ret[cur_count].options[0].size);
+
+			asprintf(&ret[cur_count].options[0].name[0], "Download to USB");
+			asprintf(&ret[cur_count].options[0].value[0], "DOWNLOAD_USB");
+
+			asprintf(&ret[cur_count].options[0].name[1], "Download to HDD");
+			asprintf(&ret[cur_count].options[0].value[1], "DOWNLOAD_HDD");
+
+//			ret[cur_count].codes = malloc(23); // strlen("BLUS12345/12345678.zip") + 1
+			asprintf(&ret[cur_count].codes, "%s/%.12s", title_id, content);
+
+			content += 13;
+			asprintf(&ret[cur_count].name, "%s", content);
+//			ret[cur_count].name = malloc(strlen(content) + 1);
+//			strcpy(ret[cur_count].name, content);
+
+			LOG("%d - [%s] %s", cur_count, ret[cur_count].codes, ret[cur_count].name);
+			cur_count++;
+		}
+
+		if (ptr < end && *ptr == '\r')
+		{
+			ptr++;
+		}
+		if (ptr < end && *ptr == '\n')
+		{
+			ptr++;
+		}
+	}
+
+	if (data) free(data);
+
+	return ret;
 }
 
 /*
@@ -962,8 +1042,8 @@ save_entry_t * ReadUserList(const char* userPath, int * gmc)
 		if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0)
 			continue;
 
-		snprintf(fullPath, sizeof(fullPath)-1, "%s%s/", userPath, dir->d_name);
-		snprintf(sfoPath, sizeof(sfoPath)-1, "%s" "PARAM.SFO", fullPath);
+		snprintf(fullPath, sizeof(fullPath), "%s%s/", userPath, dir->d_name);
+		snprintf(sfoPath, sizeof(sfoPath), "%s" "PARAM.SFO", fullPath);
 		if ((dir_exists(fullPath) == SUCCESS) && (file_exists(sfoPath) == SUCCESS))
 		{
 			LOG("ReadUserList() :: Reading %s...", dir->d_name);
@@ -1039,8 +1119,9 @@ save_entry_t * ReadOnlineList(int * gmc)
 			return NULL;
 	}
 	
-	long fsize = getFileSize(path);
-	char *data = readFile(path);
+	long fsize;
+	char *data = readFile(path, &fsize);
+	data[fsize] = 0;
 	
 	char *ptr = data;
 	char *end = data + fsize + 1;
@@ -1058,6 +1139,7 @@ save_entry_t * ReadOnlineList(int * gmc)
 	
 	if (!game_count)
 		return NULL;
+
 	save_entry_t * ret = (save_entry_t *)malloc(sizeof(save_entry_t) * game_count);
 	*gmc = game_count;
 

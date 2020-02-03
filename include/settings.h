@@ -17,7 +17,7 @@ typedef struct
 	char * * options;
 	int type;
 	uint8_t * value;
-	void(*callback)(int,int);
+	void(*callback)(int);
 } menu_option_t;
 
 typedef struct

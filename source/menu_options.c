@@ -43,7 +43,7 @@ void _draw_OptionsMenu(u8 alpha)
 				break;
 			case APP_OPTION_INC:
 				SetFontAlign(0);
-				sprintf((char*)APP_OPTION_INC_TEMP, "%d", *menu_options[ind].value);
+				sprintf((char*)APP_OPTION_INC_TEMP, "- %d +", *menu_options[ind].value);
 				int inc_width = WidthFromStr((u8*)APP_OPTION_INC_TEMP);
 				DrawString((MENU_ICON_OFF - 18) - (inc_width / 2), y_off, (char*)APP_OPTION_INC_TEMP);
 				break;
@@ -63,7 +63,7 @@ void _draw_OptionsMenu(u8 alpha)
 
 void Draw_OptionsMenu_Ani()
 {
-    int div = 12, ani = 0;
+    int ani = 0;
     for (ani = 0; ani < MENU_ANI_MAX; ani++)
     {
         tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
@@ -74,7 +74,7 @@ void Draw_OptionsMenu_Ani()
         
         tiny3d_Project2D();
         
-		DrawHeader_Ani(menu_textures[header_ico_opt_png_index], "Options", NULL, 0x00000000, 0xffffffff, ani, div);
+		DrawHeader_Ani(menu_textures[header_ico_opt_png_index], "Options", NULL, 0x00000000, 0xffffffff, ani, 12);
         
 		u8 icon_a = (u8)(((ani * 2) > 0xFF) ? 0xFF : (ani * 2));
         int _game_a = (int)(icon_a - (MENU_ANI_MAX / 2)) * 2;
