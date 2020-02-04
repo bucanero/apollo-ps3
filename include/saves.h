@@ -11,8 +11,8 @@
 #define APOLLO_PATH				"/dev_hdd0/game/NP0APOLLO/USRDIR/"
 #define APOLLO_DATA_PATH		APOLLO_PATH "DATA/"
 
-#define SAVES_PATH_USB0			"/dev_usb000/tmp/PS3/SAVEDATA/"
-#define SAVES_PATH_USB1			"/dev_usb001/tmp/PS3/SAVEDATA/"
+#define SAVES_PATH_USB0			"/dev_usb000/PS3/SAVEDATA/"
+#define SAVES_PATH_USB1			"/dev_usb001/PS3/SAVEDATA/"
 #define SAVES_PATH_HDD			"/dev_hdd0/home/%08d/savedata/"
 
 #define ONLINE_URL				"http://apollo-dl.psdev.tk/"
@@ -22,8 +22,8 @@
 #define CODE_RESIGN_SAVE        "RESIGN_SAVE"
 #define CODE_UNLOCK_COPY        "UNLOCK_COPY"
 #define CODE_REMOVE_ACCOUNT_ID  "REMOVE_ACCT"
-#define CODE_UPDATE_ACCOUNT_ID  "UPDATE_ACCT"
-#define CODE_UPDATE_PSID        "UPDATE_PSID"
+//#define CODE_UPDATE_ACCOUNT_ID  "UPDATE_ACCT"
+//#define CODE_UPDATE_PSID        "UPDATE_PSID"
 
 typedef struct option_entry
 {
@@ -83,8 +83,8 @@ save_entry_t BubbleSortCodeList(save_entry_t game);
 int isCodeLineValid(char * line);
 long getFileSize(const char * path);
 option_entry_t * ReadOptions(code_entry_t code, int * count);
-code_entry_t * ReadCodes(const char * title_id, int * _code_count);
-code_entry_t * ReadOnlineSaves(const char * title_id, int * _code_count);
+int ReadCodes(save_entry_t * save);
+int ReadOnlineSaves(save_entry_t * game);
 
 int http_init(void);
 void http_end(void);

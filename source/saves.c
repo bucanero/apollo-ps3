@@ -496,6 +496,15 @@ option_entry_t * ReadOptions(code_entry_t code, int * count)
 	return ret;
 }
 
+void _setManualCode(code_entry_t* entry, const char* name, const char* code)
+{
+	entry->activated = 0;
+	entry->options_count = 0;
+	entry->options = NULL;
+	asprintf(&entry->name, name);
+	asprintf(&entry->codes, code);
+}
+
 /*
  * Function:		ReadCodes()
  * File:			saves.c
@@ -506,36 +515,16 @@ option_entry_t * ReadOptions(code_entry_t code, int * count)
  *	_count_count:	Pointer to int (set to the number of codes within the ncl)
  * Return:			Returns an array of code_entry, null if failed to load
  */
-code_entry_t * ReadCodes(const char * title_id, int * _code_count)
+int ReadCodes(save_entry_t * save)
 {
-    int name_length, code_len = 0, code_count = 5, cur_count = 0;
+    int name_length, code_len = 0, code_count = 3, cur_count = 0;
 //	int cur_count = 0, code_count = 2;
 	int lockd = 1;
 
 	code_entry_t * ret;
-/*
-	*_code_count = code_count;
-	code_entry_t * ret = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (code_count));
-
-	ret[cur_count].activated = 0;
-//	ret[cur_count].options = NULL;
-	ret[cur_count].name = (char *)malloc(12);
-	ret[cur_count].codes = (char *)malloc(strlen(CODE_RESIGN_SAVE)+1);
-	strcpy(ret[cur_count].name, "Resign save");
-	strcpy(ret[cur_count].codes, CODE_RESIGN_SAVE);
-
-	cur_count++;
-	ret[cur_count].activated = 0;
-//	ret[cur_count].options = NULL;
-	ret[cur_count].name = (char *)malloc(23);
-	ret[cur_count].codes = (char *)malloc(strlen(CODE_UNLOCK_COPY)+1);
-	strcpy(ret[cur_count].name, "Remove copy protection");
-	strcpy(ret[cur_count].codes, CODE_UNLOCK_COPY);
-
-*/
 
 	char filePath[256];
-	snprintf(filePath, sizeof(filePath)-1, APOLLO_DATA_PATH "%s.ps3savepatch", title_id);
+	snprintf(filePath, sizeof(filePath), APOLLO_DATA_PATH "%s.ps3savepatch", save->title_id);
 	int fileSize = getFileSize(filePath);
 
 	if (fileSize > 0)
@@ -588,11 +577,7 @@ code_entry_t * ReadCodes(const char * title_id, int * _code_count)
 		            memcpy(ret[cur_count].name, &buffer[x], name_length);
 		            ret[cur_count].name[name_length] = 0;
 		
-		            ret[cur_count].file = (char *)malloc(strlen(savefile) + 1);
-		            strcpy(ret[cur_count].file, savefile);
-		
 		            LOG ("readNCL() :: code[%d].name = '%s'", cur_count, ret[cur_count].name);
-					LOG("file '%s'", ret[cur_count].file);
 		                        
 		            x += name_length + 1;
 					code_len = findNextBreak(buffer, x) - x;
@@ -617,50 +602,18 @@ code_entry_t * ReadCodes(const char * title_id, int * _code_count)
 		ret = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (code_count));
 	}
 
-	*_code_count = code_count;
+	save->code_count = code_count;
 
-	ret[cur_count].activated = 0;
-	ret[cur_count].options = NULL;
-	ret[cur_count].name = (char *)malloc(12);
-	ret[cur_count].codes = (char *)malloc(12);
-	strcpy(ret[cur_count].name, "Resign save");
-	strcpy(ret[cur_count].codes, CODE_RESIGN_SAVE);
-
-	cur_count++;
-	ret[cur_count].activated = 0;
-	ret[cur_count].options = NULL;
-	ret[cur_count].name = (char *)malloc(23);
-	ret[cur_count].codes = (char *)malloc(12);
-	strcpy(ret[cur_count].name, "Remove copy protection");
-	strcpy(ret[cur_count].codes, CODE_UNLOCK_COPY);
-
-	cur_count++;
-	ret[cur_count].activated = 0;
-	ret[cur_count].options = NULL;
-	ret[cur_count].name = (char *)malloc(18);
-	ret[cur_count].codes = (char *)malloc(12);
-	strcpy(ret[cur_count].name, "Remove Account ID");
-	strcpy(ret[cur_count].codes, CODE_REMOVE_ACCOUNT_ID);
-
-	cur_count++;
-	ret[cur_count].activated = 0;
-	ret[cur_count].options = NULL;
-	ret[cur_count].name = (char *)malloc(18);
-	ret[cur_count].codes = (char *)malloc(12);
-	strcpy(ret[cur_count].name, "Update Account ID");
-	strcpy(ret[cur_count].codes, CODE_UPDATE_ACCOUNT_ID);
-
-	cur_count++;
-	ret[cur_count].activated = 0;
-	ret[cur_count].options = NULL;
-	ret[cur_count].name = (char *)malloc(18);
-	ret[cur_count].codes = (char *)malloc(12);
-	strcpy(ret[cur_count].name, "Update Console ID");
-	strcpy(ret[cur_count].codes, CODE_UPDATE_PSID);
+	_setManualCode(&ret[cur_count++], "Apply patches & Resign", CODE_RESIGN_SAVE);
+	_setManualCode(&ret[cur_count++], "Remove copy protection", CODE_UNLOCK_COPY);
+	_setManualCode(&ret[cur_count++], "Remove Account ID", CODE_REMOVE_ACCOUNT_ID);
+//	_setManualCode(&ret[cur_count++], "Update Account ID", CODE_UPDATE_ACCOUNT_ID);
+//	_setManualCode(&ret[cur_count++], "Update Console ID", CODE_UPDATE_PSID);
 
 	LOG("cur_count=%d,code_count=%d", cur_count, code_count);
 
-	return ret;
+	save->codes = ret;
+	return cur_count;
 }
 
 /*
@@ -673,11 +626,11 @@ code_entry_t * ReadCodes(const char * title_id, int * _code_count)
  *	_count_count:	Pointer to int (set to the number of codes within the ncl)
  * Return:			Returns an array of code_entry, null if failed to load
  */
-code_entry_t * ReadOnlineSaves(const char * title_id, int * _code_count)
+int ReadOnlineSaves(save_entry_t * game)
 { 
 	char path[256], url[256];
-	snprintf(path, sizeof(path), ONLINE_LOCAL_CACHE "%s.txt", title_id);
-	snprintf(url, sizeof(url), ONLINE_URL "%s/", title_id);
+	snprintf(path, sizeof(path), ONLINE_LOCAL_CACHE "%s.txt", game->title_id);
+	snprintf(url, sizeof(url), ONLINE_URL "%s/", game->title_id);
 
 	if (isExist(path))
 	{
@@ -690,7 +643,7 @@ code_entry_t * ReadOnlineSaves(const char * title_id, int * _code_count)
 	else
 	{
 		if (!http_download(url, "saves.txt", path, 0))
-			return NULL;
+			return -1;
 	}
 
 	long fsize;
@@ -712,10 +665,10 @@ code_entry_t * ReadOnlineSaves(const char * title_id, int * _code_count)
 	}
 	
 	if (!game_count)
-		return NULL;
+		return -1;
 
 	code_entry_t * ret = (code_entry_t *)malloc(sizeof(code_entry_t) * game_count);
-	*_code_count = game_count;
+	game->code_count = game_count;
 
 	int cur_count = 0;    
 	ptr = data;
@@ -749,12 +702,10 @@ code_entry_t * ReadOnlineSaves(const char * title_id, int * _code_count)
 			asprintf(&ret[cur_count].options[0].value[1], "DOWNLOAD_HDD");
 
 //			ret[cur_count].codes = malloc(23); // strlen("BLUS12345/12345678.zip") + 1
-			asprintf(&ret[cur_count].codes, "%s/%.12s", title_id, content);
+			asprintf(&ret[cur_count].codes, "%s/%.12s", game->title_id, content);
 
 			content += 13;
 			asprintf(&ret[cur_count].name, "%s", content);
-//			ret[cur_count].name = malloc(strlen(content) + 1);
-//			strcpy(ret[cur_count].name, content);
 
 			LOG("%d - [%s] %s", cur_count, ret[cur_count].codes, ret[cur_count].name);
 			cur_count++;
@@ -772,7 +723,8 @@ code_entry_t * ReadOnlineSaves(const char * title_id, int * _code_count)
 
 	if (data) free(data);
 
-	return ret;
+	game->codes = ret;
+	return cur_count;
 }
 
 /*
@@ -810,12 +762,6 @@ void UnloadGameList(save_entry_t * list, int count)
 				list[x].title_id = NULL;
 			}
 			
-			if (list[x].account_id)
-			{
-				free(list[x].account_id);
-				list[x].account_id = NULL;
-			}
-
 			if (list[x].codes)
 			{
 				for (y = 0; y < list[x].code_count; y++)
@@ -997,7 +943,7 @@ void BubbleSortGameList(save_entry_t * games, int count)
 		{
 			if (BubbleSortGameList_Compare(games[d], games[d+1]))
 			{
-				swap[0]       = games[d];
+				swap[0]    = games[d];
 				games[d]   = games[d+1];
 				games[d+1] = swap[0];
 			}
@@ -1034,7 +980,6 @@ save_entry_t * ReadUserList(const char* userPath, int * gmc)
 	save_entry_t * ret = (save_entry_t *)malloc(sizeof(save_entry_t) * save_count);
 
 	char sfoPath[256];
-	char fullPath[256];
 	int cur_count = 0;
 
 	while ((dir = readdir(d)) != NULL)
@@ -1042,9 +987,8 @@ save_entry_t * ReadUserList(const char* userPath, int * gmc)
 		if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0)
 			continue;
 
-		snprintf(fullPath, sizeof(fullPath), "%s%s/", userPath, dir->d_name);
-		snprintf(sfoPath, sizeof(sfoPath), "%s" "PARAM.SFO", fullPath);
-		if ((dir_exists(fullPath) == SUCCESS) && (file_exists(sfoPath) == SUCCESS))
+		snprintf(sfoPath, sizeof(sfoPath), "%s%s/PARAM.SFO", userPath, dir->d_name);
+		if (file_exists(sfoPath) == SUCCESS)
 		{
 			LOG("ReadUserList() :: Reading %s...", dir->d_name);
 
@@ -1059,27 +1003,18 @@ save_entry_t * ReadUserList(const char* userPath, int * gmc)
 			ret[cur_count].code_count = 0;
 			ret[cur_count].code_sorted = 0;
 
-			ret[cur_count].path = malloc(strlen(fullPath) + 1);
-			strcpy(ret[cur_count].path, fullPath);
-
-			ret[cur_count].title_id = malloc(10); // strlen("BLUS00000") + 1
-			sprintf(ret[cur_count].title_id, "%.9s", dir->d_name);
+			asprintf(&ret[cur_count].path, "%s%s/", userPath, dir->d_name);
+			asprintf(&ret[cur_count].title_id, "%.9s", dir->d_name);
 
 			char *sfo_data = (char*) sfo_get_param_value(sfo, "TITLE");
-			ret[cur_count].name = malloc(strlen(sfo_data) + 1);
-			strcpy(ret[cur_count].name, sfo_data);
-
-			sfo_data = (char*) sfo_get_param_value(sfo, "ACCOUNT_ID");
-			ret[cur_count].account_id = malloc(17); // max len 16
-			sprintf(ret[cur_count].account_id, "%.16s", sfo_data);
+			asprintf(&ret[cur_count].name, "%s", sfo_data);
 
 			sfo_data = (char*) sfo_get_param_value(sfo, "ATTRIBUTE");
 			ret[cur_count].locked =	sfo_data[0];
 
 			sfo_free(sfo);
 				
-			LOG("name '%s' [%s]", ret[cur_count].name, ret[cur_count].title_id);
-			LOG("accid '%s' lockd (%d)", ret[cur_count].account_id, ret[cur_count].locked);
+			LOG("[%s] L(%d) name '%s'", ret[cur_count].title_id, ret[cur_count].locked, ret[cur_count].name);
 				
 			//printf("Successfully read %d codes\n", ret[cur_count].code_count);
 
@@ -1156,22 +1091,23 @@ save_entry_t * ReadOnlineList(int * gmc)
 		}
 		*ptr++ = 0;
 
-		int ccnt[1] = {0};
+//        LOG("ReadUserList() :: Reading %s...", content);
+		if (content[9] == '=')
+		{
+			ret[cur_count].path = NULL;
+			ret[cur_count].codes = NULL;
+			ret[cur_count].locked = 0;
+			ret[cur_count].code_count = 0;
+			ret[cur_count].code_sorted = 0;
 
-//        printf("ReadUserList() :: Reading %s...", content);
+			asprintf(&ret[cur_count].title_id, "%.9s", content);
 
-		ret[cur_count].codes = NULL;
-//			ret[cur_count].path = content;
-		ret[cur_count].path = malloc(strlen(content) + 1);
-		strcpy(ret[cur_count].path, content);
-		ret[cur_count].code_count = *ccnt;
-		ret[cur_count].name = stripExt(content);
-		ret[cur_count].code_sorted = 0;
-		ret[cur_count].account_id = NULL;
-		ret[cur_count].title_id = NULL;
-//		parseVTID(&ret[cur_count]);
+			content += 10;
+			asprintf(&ret[cur_count].name, "%s", content);
 
-		cur_count++;
+			LOG("%d - [%s] %s", cur_count, ret[cur_count].title_id, ret[cur_count].name);
+			cur_count++;
+		}
 
 		if (ptr < end && *ptr == '\r')
 		{

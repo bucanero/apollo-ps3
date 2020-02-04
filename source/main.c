@@ -51,6 +51,7 @@
 #define MENU_PATCHES        6
 #define MENU_PATCH_VIEW     7
 #define MENU_CODE_OPTIONS   8
+#define MENU_SAVE_DETAILS   9
 
 //Font
 #include "comfortaa_bold_ttf.h"
@@ -145,8 +146,7 @@ char psid_str1[17] = "0000000000000000";
 char psid_str2[17] = "0000000000000000";
 char account_id_str[17] = "0000000000000000";
 
-const char * menu_about_strings_project[] = { "WebSite", "http://apollo.psdev.tk/",
-											psid_str1, psid_str2,
+const char * menu_about_strings_project[] = { psid_str1, psid_str2,
 											"Account ID", account_id_str,
 											"User ID", user_id_str,
 											NULL, NULL };
@@ -164,18 +164,19 @@ const char * menu_about_strings_project[] = { "WebSite", "http://apollo.psdev.tk
 */
 int menu_id = 0;												// Menu currently in
 int menu_sel = 0;												// Index of selected item (use varies per menu)
-int menu_old_sel[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };				// Previous menu_sel for each menu
-int last_menu_id[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };				// Last menu id called (for returning)
+int menu_old_sel[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };			// Previous menu_sel for each menu
+int last_menu_id[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };			// Last menu id called (for returning)
 
 const char * menu_pad_help[] = { NULL,																//Main
-								"\x10 Select    \x13 Back    \x11 Refresh",							//USB list
-								"\x10 Select    \x13 Back    \x11 Refresh",							//HDD list
+								"\x10 Select    \x13 Back    \x12 Details    \x11 Refresh",			//USB list
+								"\x10 Select    \x13 Back    \x12 Details    \x11 Refresh",			//HDD list
 								"\x10 Select    \x13 Back    \x11 Refresh",							//Online list
 								"\x10 Select    \x13 Back",											//Options
 								"\x13 Back",														//About
 								"\x10 Enable    \x12 View Code    \x13 Back",						//Select Cheats
 								"\x13 Back",														//View Cheat
-								"\x10 Select    \x13 Back"											//Cheat Option
+								"\x10 Select    \x13 Back",											//Cheat Option
+								"\x13 Back",														//View Details
 								};
 
 /*
@@ -832,6 +833,7 @@ void SetMenu(int id)
 		case MENU_PATCHES: //Cheat Selection Menu			
 			break;
 
+		case MENU_SAVE_DETAILS:
 		case MENU_PATCH_VIEW: //Cheat View Menu
 			Draw_CheatsMenu_View_Ani_Exit();
 			break;
@@ -873,9 +875,7 @@ void SetMenu(int id)
 		case MENU_ONLINE_DB: //Cheats Online Menu
 			if (!online_saves.list)
 			{
-				online_saves.list = ReadOnlineList(&online_saves.count);
-				if (apollo_config.doSort)
-					BubbleSortGameList(online_saves.list, online_saves.count);
+				ReloadOnlineCheats();
 			}
 
 			if (apollo_config.doAni)
@@ -901,6 +901,11 @@ void SetMenu(int id)
 
 		case MENU_PATCH_VIEW: //Cheat View Menu
 			menu_old_sel[MENU_PATCH_VIEW] = 0;
+			if (apollo_config.doAni)
+				Draw_CheatsMenu_View_Ani();
+			break;
+
+		case MENU_SAVE_DETAILS: //Save Detail View Menu
 			if (apollo_config.doAni)
 				Draw_CheatsMenu_View_Ani();
 			break;
@@ -970,7 +975,7 @@ void move_selection_fwd(int game_count, int steps)
 		menu_sel = game_count - 1;
 }
 
-int moveMenuSelection(padData pad_data, save_list_t * save_list)
+int moveMenuSelection(padData pad_data, save_list_t * save_list, int(*read_codes)(save_entry_t*) )
 {
 	if(pad_data.BTN_UP)
 	{
@@ -1009,6 +1014,17 @@ int moveMenuSelection(padData pad_data, save_list_t * save_list)
 		SetMenu(MENU_MAIN_SCREEN);
 		return 1;
 	}
+	else if (pad_data.BTN_CROSS)
+	{
+		if (!save_list->list[menu_sel].codes)
+			read_codes(&save_list->list[menu_sel]);
+
+		if (apollo_config.doSort)
+			save_list->list[menu_sel] = BubbleSortCodeList(save_list->list[menu_sel]);
+		selected_entry = save_list->list[menu_sel];
+		SetMenu(MENU_PATCHES);
+		return 1;
+	}
 
 	return 0;
 }
@@ -1028,19 +1044,7 @@ void build_patch(sfo_patch_t* patch)
 		    patch->flags = SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION;
 
 		if (strcmp(selected_entry.codes[j].codes, CODE_REMOVE_ACCOUNT_ID) == 0)
-		{
-		    patch->account_id = malloc(17);
 		    strcpy(patch->account_id, "0000000000000000");
-	    }
-
-		if (strcmp(selected_entry.codes[j].codes, CODE_UPDATE_ACCOUNT_ID) == 0)
-		{
-		    patch->account_id = malloc(17);
-		    sprintf(patch->account_id, "%016lx", apollo_config.account_id);
-	    }
-
-		if (strcmp(selected_entry.codes[j].codes, CODE_UPDATE_PSID) == 0)
-		    patch->psid = (u8*) &(apollo_config.psid[0]);
 
 		selected_entry.codes[j].activated = 0;
 	}
@@ -1093,24 +1097,43 @@ void drawScene()
 			// Check the pads.
 			if (readPad(0))
 			{
-				if(moveMenuSelection(paddata[0], &usb_saves))
+				if(moveMenuSelection(paddata[0], &usb_saves, ReadCodes))
 				{
 					return;
 				}
-				else if (paddata[0].BTN_CROSS)
-				{
-					if (!usb_saves.list[menu_sel].codes)
-					{
-						int sz = 0;
-						usb_saves.list[menu_sel].codes = ReadCodes(usb_saves.list[menu_sel].title_id, &sz);
-						usb_saves.list[menu_sel].code_count = sz;
-					}
-					if (apollo_config.doSort)
-						usb_saves.list[menu_sel] = BubbleSortCodeList(usb_saves.list[menu_sel]);
-					selected_entry = usb_saves.list[menu_sel];
-					SetMenu(MENU_PATCHES);
-					return;
-				}
+            	else if (paddata[0].BTN_TRIANGLE)
+            	{
+            		char sfoPath[256];
+            		selected_entry = usb_saves.list[menu_sel];
+
+            		snprintf(sfoPath, sizeof(sfoPath), "%s" "PARAM.SFO", selected_entry.path);
+        			LOG("Save Details :: Reading %s...", sfoPath);
+        
+        			sfo_context_t* sfo = sfo_alloc();
+        			if (sfo_read(sfo, sfoPath) < 0) {
+        				LOG("Unable to read from '%s'", sfoPath);
+        				sfo_free(sfo);
+        				return;
+        			}
+        
+        			sfo_params_ids_t* param_ids = (sfo_params_ids_t*)(sfo_get_param_value(sfo, "PARAMS") + 0x1C);
+        			param_ids->user_id = ES32(param_ids->user_id);
+
+            	    asprintf(&selected_centry.name, "Details");
+            	    asprintf(&selected_centry.codes, "%s\n\n"
+            	    "Name: %s\n"
+            	    "Title: %s\n"
+            	    "User ID: %08d\n"
+            	    "Account ID: %s\n"
+            	    "PSID: %016lX %016lX\n", selected_entry.path, selected_entry.name, selected_entry.title_id,
+            	    param_ids->user_id, param_ids->account_id, param_ids->psid[0], param_ids->psid[1]);
+        			LOG(selected_centry.codes);
+
+        			sfo_free(sfo);
+
+            		SetMenu(MENU_SAVE_DETAILS);
+            		return;
+            	}
 				else if (paddata[0].BTN_SQUARE)
 				{
 				    set_usb_path(&usb_saves);
@@ -1125,22 +1148,8 @@ void drawScene()
 			// Check the pads.
 			if (readPad(0))
 			{
-				if(moveMenuSelection(paddata[0], &hdd_saves))
+				if(moveMenuSelection(paddata[0], &hdd_saves, ReadCodes))
 				{
-					return;
-				}
-				else if (paddata[0].BTN_CROSS)
-				{
-					if (!hdd_saves.list[menu_sel].codes)
-					{
-						int sz = 0;
-						hdd_saves.list[menu_sel].codes = ReadCodes(hdd_saves.list[menu_sel].title_id, &sz);
-						hdd_saves.list[menu_sel].code_count = sz;
-					}
-					if (apollo_config.doSort)
-						hdd_saves.list[menu_sel] = BubbleSortCodeList(hdd_saves.list[menu_sel]);
-					selected_entry = hdd_saves.list[menu_sel];
-					SetMenu(MENU_PATCHES);
 					return;
 				}
 				else if (paddata[0].BTN_SQUARE)
@@ -1157,22 +1166,8 @@ void drawScene()
 			// Check the pads.
 			if (readPad(0))
 			{
-				if(moveMenuSelection(paddata[0], &online_saves))
+				if(moveMenuSelection(paddata[0], &online_saves, ReadOnlineSaves))
 				{
-					return;
-				}
-				else if (paddata[0].BTN_CROSS)
-				{
-					if (!online_saves.list[menu_sel].codes)
-					{
-						int sz = 0;
-						online_saves.list[menu_sel].codes = ReadOnlineSaves(online_saves.list[menu_sel].title_id, &sz);
-						online_saves.list[menu_sel].code_count = sz;
-					}
-					if (apollo_config.doSort)
-						online_saves.list[menu_sel] = BubbleSortCodeList(online_saves.list[menu_sel]);
-					selected_entry = online_saves.list[menu_sel];
-					SetMenu(MENU_PATCHES);
 					return;
 				}
 				else if (paddata[0].BTN_SQUARE)
@@ -1293,9 +1288,10 @@ void drawScene()
 					        .flags = 0,
 					        .user_id = apollo_config.user_id,
 					        .account_id = NULL,
-					        .psid = NULL,
+					        .psid = (u8*) &(apollo_config.psid[0]),
 						};
 
+						asprintf(&patch.account_id, "%016lx", apollo_config.account_id);
 						build_patch(&patch);
 
 						snprintf(in_file_path, sizeof(in_file_path), "%s" "PARAM.SFO", selected_entry.path);
@@ -1346,12 +1342,14 @@ void drawScene()
 						}
 					}
 				}
+/*
 				else if (paddata[0].BTN_TRIANGLE)
 				{
 					selected_centry = selected_entry.codes[menu_sel];
 					SetMenu(MENU_PATCH_VIEW);
 					return;
 				}
+*/
 			}
 			
 			Draw_CheatsMenu_Selection(menu_sel, 0xFFFFFFFF);
@@ -1389,19 +1387,16 @@ void drawScene()
 			break;
 
 		case MENU_CODE_OPTIONS: //Cheat Option Menu
-			//Calc max
-			max = selected_centry.options[option_index].size;
-			
 			// Check the pads.
 			if (readPad(0))
 			{
 				if(paddata[0].BTN_UP)
 				{
-					move_selection_back(max, 1);
+					move_selection_back(selected_centry.options[option_index].size, 1);
 				}
 				else if(paddata[0].BTN_DOWN)
 				{
-					move_selection_fwd(max, 1);
+					move_selection_fwd(selected_centry.options[option_index].size, 1);
 				}
 				else if (paddata[0].BTN_CIRCLE)
 				{
@@ -1425,6 +1420,33 @@ void drawScene()
 			}
 			
 			Draw_CheatsMenu_Options();
+			break;
+
+		case MENU_SAVE_DETAILS: //Cheat View Menu
+			// Check the pads.
+			if (readPad(0))
+			{
+				if(paddata[0].BTN_UP)
+				{
+					move_selection_back(7, 1);
+				}
+				else if(paddata[0].BTN_DOWN)
+				{
+					move_selection_fwd(7, 1);
+				}
+				if (paddata[0].BTN_CIRCLE)
+				{
+					if (selected_centry.name)
+						free(selected_centry.name);
+					if (selected_centry.codes)
+						free(selected_centry.codes);
+
+					SetMenu(last_menu_id[MENU_SAVE_DETAILS]);
+					return;
+				}
+			}
+			
+			Draw_CheatsMenu_View();
 			break;
 	}
 }
@@ -1516,8 +1538,6 @@ s32 main(s32 argc, const char* argv[])
 				menu_options_maxsel[i]++;
 		}
 	}
-	
-	//texture_mem = tiny3d_AllocTexture(64*1024*1024);
 
 	videoState state;
 	assert(videoGetState(0, 0, &state) == 0); // Get the state of the display
@@ -1525,7 +1545,7 @@ s32 main(s32 argc, const char* argv[])
 	
 	videoResolution res;
 	assert(videoGetResolution(state.displayMode.resolution, &res) == 0);
-	LOG("Resolution: %d by %d", res.width, res.height);
+	LOG("Resolution: %dx%d", res.width, res.height);
 	screen_width = res.width;
 	screen_height = res.height;
 	
@@ -1536,7 +1556,7 @@ s32 main(s32 argc, const char* argv[])
 
 	SetMenu(MENU_MAIN_SCREEN);
 	
-	while (1)
+	while (!close_app)
 	{       
 		tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
 
@@ -1547,10 +1567,6 @@ s32 main(s32 argc, const char* argv[])
 		tiny3d_BlendFunc(1, TINY3D_BLEND_FUNC_SRC_RGB_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_ALPHA_SRC_ALPHA,
 			TINY3D_BLEND_FUNC_SRC_ALPHA_ONE_MINUS_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_RGB_ONE_MINUS_SRC_ALPHA,
 			TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
-					
-		// Check the pads.
-		if (close_app)
-			return 0;
 		
 		drawScene();
 		

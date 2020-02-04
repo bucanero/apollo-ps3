@@ -67,8 +67,8 @@ void _draw_AboutMenu(u8 alpha)
 
 	SetFontAlign(1);
 	SetCurrentFont(font_comfortaa_regular);
-	SetFontSize(APP_FONT_SIZE_SUBTEXT);
-	DrawString(screen_width / 2, 480, "http://apollo.psdev.tk/");
+	DrawString(screen_width / 2, 420, "http://apollo.psdev.tk/");
+	SetFontAlign(0);
 }
 
 void Draw_AboutMenu_Ani()

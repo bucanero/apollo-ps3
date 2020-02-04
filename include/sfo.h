@@ -23,6 +23,12 @@ typedef struct {
 	u8* psid;
 } sfo_patch_t;
 
+typedef struct {
+	uint64_t psid[2];
+	uint32_t user_id;
+	char account_id[17];
+} sfo_params_ids_t;
+
 sfo_context_t * sfo_alloc(void);
 void sfo_free(sfo_context_t *context);
 
