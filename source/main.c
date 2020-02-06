@@ -96,10 +96,14 @@ void horm_callback(int sel);
 void verm_callback(int sel);
 void update_callback(int sel);
 
+void update_usb_path(char *p);
+void update_hdd_path(char *p);
+
 app_config_t apollo_config = {
     .music = 1,
     .doSort = 1,
     .doAni = 1,
+    .update = 1,
     .marginH = 0,
     .marginV = 0,
     .user_id = 0,
@@ -108,12 +112,12 @@ app_config_t apollo_config = {
 };
 
 const menu_option_t menu_options[] = {
-	{ .name = "Music", .options = NULL, .type = APP_OPTION_BOOL, .value = &apollo_config.music, .callback = music_callback },
+	{ .name = "Background Music", .options = NULL, .type = APP_OPTION_BOOL, .value = &apollo_config.music, .callback = music_callback },
 	{ .name = "Sort Saves", .options = NULL, .type = APP_OPTION_BOOL, .value = &apollo_config.doSort, .callback = sort_callback },
 	{ .name = "Menu Animations", .options = NULL, .type = APP_OPTION_BOOL, .value = &apollo_config.doAni, .callback = ani_callback },
-	{ .name = "Horizontal Margin", .options = NULL, .type = APP_OPTION_INC, .value = &apollo_config.marginH, .callback = horm_callback },
-	{ .name = "Vertical Margin", .options = NULL, .type = APP_OPTION_INC, .value = &apollo_config.marginV, .callback = verm_callback },
-//	{ .name = "Update Check", .options = NULL, .type = APP_OPTION_CALL, .callback = update_callback },
+	{ .name = "Screen Horizontal Margin", .options = NULL, .type = APP_OPTION_INC, .value = &apollo_config.marginH, .callback = horm_callback },
+	{ .name = "Screen Vertical Margin", .options = NULL, .type = APP_OPTION_INC, .value = &apollo_config.marginV, .callback = verm_callback },
+	{ .name = "Version Update Check", .options = NULL, .type = APP_OPTION_BOOL, .value = &apollo_config.update, .callback = update_callback },
 	{ .name = NULL }
 };
 
@@ -186,6 +190,9 @@ save_list_t hdd_saves = {
     .list = NULL,
     .count = 0,
     .path = "",
+    .read_list = ReadUserList,
+    .read_codes = ReadCodes,
+    .update_path = update_hdd_path,
 };
 
 /*
@@ -195,6 +202,9 @@ save_list_t usb_saves = {
     .list = NULL,
     .count = 0,
     .path = "",
+    .read_list = ReadUserList,
+    .read_codes = ReadCodes,
+    .update_path = update_usb_path,
 };
 
 /*
@@ -204,6 +214,9 @@ save_list_t online_saves = {
     .list = NULL,
     .count = 0,
     .path = ONLINE_URL,
+    .read_list = ReadOnlineList,
+    .read_codes = ReadOnlineSaves,
+    .update_path = NULL,
 };
 
 save_entry_t selected_entry;
@@ -252,18 +265,6 @@ static void sys_callback(uint64_t status, uint64_t param, void* userdata) {
 		   break;
 		 
 	}
-}
-
-int isAppLoaded()
-{
-	char buf[100];
-	readFileBuffered("/dev_hdd0/tmp/apollo", (char *)buf);
-	if (buf[0] == 0)
-		return 0;
-	if (strstr(buf, "on") != NULL)
-		return 1;
-	
-	return 0;
 }
 
 void DeleteBootHistory(void)
@@ -527,7 +528,7 @@ void Draw_MainMenu_Ani()
 
 void Draw_MainMenu()
 {
-	int c = bgimg_png_index, w = 0, h = 0;
+	int c = 0, w = 0, h = 0;
 	
 	//------------ Backgrounds
 	
@@ -585,7 +586,6 @@ void Draw_MainMenu()
 	DrawString(600 + (MENU_MAIN_ICON_WIDTH / 2), 390, "About");
 
 	SetFontAlign(0);
-
 }
 
 // Used only in initialization. Allocates 64 mb for textures and loads the font
@@ -610,7 +610,7 @@ void LoadTexture()
 	
 	TTFUnloadFont();
 	
-	if (!menu_textures && TOTAL_MENU_TEXTURES)
+	if (!menu_textures)
 		menu_textures = (png_texture *)malloc(sizeof(png_texture) * TOTAL_MENU_TEXTURES);
 	
 	//Init Main Menu textures
@@ -764,7 +764,7 @@ void verm_callback(int sel)
 	apollo_config.marginV = sel;
 }
 
-void update_callback(int sel)
+void db_download_callback(int sel)
 {
 	if (sel)
 	{
@@ -778,14 +778,82 @@ void update_callback(int sel)
 	}
 }
 
-void set_usb_path(save_list_t* save_list)
+void update_callback(int sel)
+{
+    apollo_config.update = !sel;
+
+    if (!apollo_config.update)
+        return;
+
+	LOG("checking latest Apollo version at %s", APOLLO_UPDATE_URL);
+
+	if (http_download(APOLLO_UPDATE_URL, "", ONLINE_LOCAL_CACHE "ver.check", 0))
+	{
+		char *buffer;
+		long size = 0;
+
+		buffer = readFile(ONLINE_LOCAL_CACHE "ver.check", &size);
+
+		if (!buffer)
+			return;
+
+		LOG("received %u bytes", size);
+		buffer[size-1] = 0;
+
+		static const char find[] = "\"name\":\"Apollo Save Tool v";
+		const char* start = strstr(buffer, find);
+		if (start != NULL)
+		{
+			LOG("found name");
+			start += sizeof(find) - 1;
+
+			char* end = strstr(start, "\"");
+			if (end != NULL)
+			{
+				*end = 0;
+				LOG("latest version is %s", start);
+
+				if (stricmp(APOLLO_VERSION, start) != 0)
+				{
+					if (show_dialog(1, "New version available! Download update?"))
+					{
+						if (http_download(ONLINE_URL, "apollo-ps3.pkg", "/dev_hdd0/packages/apollo-ps3.pkg", 1))
+							show_dialog(0, "Update downloaded!");
+						else
+							show_dialog(0, "Download error!");
+					}
+				}
+			}
+			else
+			{
+				LOG("no end of name found");
+			}
+		}
+		else
+		{
+			LOG("no name found");
+		}
+
+	}
+	else
+	{
+		LOG("http request to %s failed", APOLLO_UPDATE_URL);
+	}
+}
+
+void update_usb_path(char* path)
 {
 	if (dir_exists(SAVES_PATH_USB0) == SUCCESS)
-		strcpy(save_list->path, SAVES_PATH_USB0);
+		strcpy(path, SAVES_PATH_USB0);
 	else if (dir_exists(SAVES_PATH_USB1) == SUCCESS)
-		strcpy(save_list->path, SAVES_PATH_USB1);
+		strcpy(path, SAVES_PATH_USB1);
 	else
-		strcpy(save_list->path, "");
+		strcpy(path, "");
+}
+
+void update_hdd_path(char* path)
+{
+	sprintf(path, SAVES_PATH_HDD, apollo_config.user_id);
 }
 
 void ReloadUserSaves(save_list_t* save_list)
@@ -798,26 +866,15 @@ void ReloadUserSaves(save_list_t* save_list)
 		save_list->count = 0;
 		save_list->list = NULL;
 	}
-	
-	save_list->list = ReadUserList(save_list->path, &(save_list->count));
+
+	if (save_list->update_path)
+		save_list->update_path(save_list->path);
+
+	save_list->list = save_list->read_list(save_list->path, &(save_list->count));
 	if (apollo_config.doSort)
 		BubbleSortGameList(save_list->list, save_list->count);
 
     stop_loading_screen();
-}
-
-void ReloadOnlineCheats()
-{
-	if (online_saves.list)
-	{
-		UnloadGameList(online_saves.list, online_saves.count);
-		online_saves.count = 0;
-		online_saves.list = NULL;
-	}
-
-	online_saves.list = ReadOnlineList(&online_saves.count);
-	if (apollo_config.doSort)
-		BubbleSortGameList(online_saves.list, online_saves.count);
 }
 
 void SetMenu(int id)
@@ -852,10 +909,7 @@ void SetMenu(int id)
 
 		case MENU_USB_SAVES: //USB saves Menu
 			if (!usb_saves.list)
-			{
-			    set_usb_path(&usb_saves);
 				ReloadUserSaves(&usb_saves);
-			}
 			
 			if (apollo_config.doAni)
 				Draw_UserCheatsMenu_Ani(usb_saves.list, usb_saves.count);
@@ -863,10 +917,7 @@ void SetMenu(int id)
 
 		case MENU_HDD_SAVES: //HDD saves Menu
 			if (!hdd_saves.list)
-			{
-				snprintf(hdd_saves.path, sizeof(hdd_saves.path), SAVES_PATH_HDD, apollo_config.user_id);
 				ReloadUserSaves(&hdd_saves);
-			}
 			
 			if (apollo_config.doAni)
 				Draw_UserCheatsMenu_Ani(hdd_saves.list, hdd_saves.count);
@@ -874,9 +925,7 @@ void SetMenu(int id)
 
 		case MENU_ONLINE_DB: //Cheats Online Menu
 			if (!online_saves.list)
-			{
-				ReloadOnlineCheats();
-			}
+				ReloadUserSaves(&online_saves);
 
 			if (apollo_config.doAni)
 				Draw_UserCheatsMenu_Ani(online_saves.list, online_saves.count);
@@ -893,8 +942,10 @@ void SetMenu(int id)
 			break;
 
 		case MENU_PATCHES: //Cheat Selection Menu
-			if (menu_id == MENU_USB_SAVES || menu_id == MENU_HDD_SAVES) //if entering from game list, don't keep index, otherwise keep
+			//if entering from game list, don't keep index, otherwise keep
+			if (menu_id == MENU_USB_SAVES || menu_id == MENU_HDD_SAVES || menu_id == MENU_ONLINE_DB)
 				menu_old_sel[MENU_PATCHES] = 0;
+
 			if (apollo_config.doAni && menu_id != MENU_PATCH_VIEW && menu_id != MENU_CODE_OPTIONS)
 				Draw_CheatsMenu_Selection_Ani();
 			break;
@@ -902,12 +953,12 @@ void SetMenu(int id)
 		case MENU_PATCH_VIEW: //Cheat View Menu
 			menu_old_sel[MENU_PATCH_VIEW] = 0;
 			if (apollo_config.doAni)
-				Draw_CheatsMenu_View_Ani();
+				Draw_CheatsMenu_View_Ani("Patch view");
 			break;
 
 		case MENU_SAVE_DETAILS: //Save Detail View Menu
 			if (apollo_config.doAni)
-				Draw_CheatsMenu_View_Ani();
+				Draw_CheatsMenu_View_Ani(selected_entry.name);
 			break;
 
 		case MENU_CODE_OPTIONS: //Cheat Option Menu
@@ -975,58 +1026,302 @@ void move_selection_fwd(int game_count, int steps)
 		menu_sel = game_count - 1;
 }
 
-int moveMenuSelection(padData pad_data, save_list_t * save_list, int(*read_codes)(save_entry_t*) )
+void getSaveDetails(save_list_t * save_list)
 {
-	if(pad_data.BTN_UP)
-	{
-		move_selection_back(save_list->count, 1);
-	}
-	else if(pad_data.BTN_DOWN)
-	{
-		move_selection_fwd(save_list->count, 1);
-	}
-	else if (pad_data.BTN_LEFT)
-	{
-		move_selection_back(save_list->count, 5);
-	}
-	else if (pad_data.BTN_L1)
-	{
-		move_selection_back(save_list->count, 25);
-	}
-	else if (pad_data.BTN_L2)
-	{
-		move_letter_back(save_list->list, save_list->count);
-	}
-	else if (pad_data.BTN_RIGHT)
-	{
-		move_selection_fwd(save_list->count, 5);
-	}
-	else if (pad_data.BTN_R1)
-	{
-		move_selection_fwd(save_list->count, 25);
-	}
-	else if (pad_data.BTN_R2)
-	{
-		move_letter_fwd(save_list->list, save_list->count);
-	}
-	else if (pad_data.BTN_CIRCLE)
-	{
-		SetMenu(MENU_MAIN_SCREEN);
-		return 1;
-	}
-	else if (pad_data.BTN_CROSS)
-	{
-		if (!save_list->list[menu_sel].codes)
-			read_codes(&save_list->list[menu_sel]);
+	char sfoPath[256];
+	selected_entry = save_list->list[menu_sel];
 
-		if (apollo_config.doSort)
-			save_list->list[menu_sel] = BubbleSortCodeList(save_list->list[menu_sel]);
-		selected_entry = save_list->list[menu_sel];
-		SetMenu(MENU_PATCHES);
-		return 1;
+	snprintf(sfoPath, sizeof(sfoPath), "%s" "PARAM.SFO", selected_entry.path);
+	LOG("Save Details :: Reading %s...", sfoPath);
+
+	sfo_context_t* sfo = sfo_alloc();
+	if (sfo_read(sfo, sfoPath) < 0) {
+		LOG("Unable to read from '%s'", sfoPath);
+		sfo_free(sfo);
+		return;
 	}
 
-	return 0;
+	sfo_params_ids_t* param_ids = (sfo_params_ids_t*)(sfo_get_param_value(sfo, "PARAMS") + 0x1C);
+	param_ids->user_id = ES32(param_ids->user_id);
+
+    asprintf(&selected_centry.name, "Details");
+    asprintf(&selected_centry.codes, "%s\n\n"
+        "Name: %s\n"
+        "Title: %s\n"
+        "User ID: %08d\n"
+        "Account ID: %s\n"
+        "PSID: %016lX %016lX\n", selected_entry.path, selected_entry.name, selected_entry.title_id,
+        param_ids->user_id, param_ids->account_id, param_ids->psid[0], param_ids->psid[1]);
+	LOG(selected_centry.codes);
+
+	sfo_free(sfo);
+}
+
+void doSaveMenu(save_list_t * save_list)
+{
+    if(readPad(0))
+    {
+    	if(paddata[0].BTN_UP)
+    		move_selection_back(save_list->count, 1);
+    
+    	else if(paddata[0].BTN_DOWN)
+    		move_selection_fwd(save_list->count, 1);
+    
+    	else if (paddata[0].BTN_LEFT)
+    		move_selection_back(save_list->count, 5);
+    
+    	else if (paddata[0].BTN_L1)
+    		move_selection_back(save_list->count, 25);
+    
+    	else if (paddata[0].BTN_L2)
+    		move_letter_back(save_list->list, save_list->count);
+    
+    	else if (paddata[0].BTN_RIGHT)
+    		move_selection_fwd(save_list->count, 5);
+    
+    	else if (paddata[0].BTN_R1)
+    		move_selection_fwd(save_list->count, 25);
+    
+    	else if (paddata[0].BTN_R2)
+    		move_letter_fwd(save_list->list, save_list->count);
+    
+    	else if (paddata[0].BTN_CIRCLE)
+    	{
+    		SetMenu(MENU_MAIN_SCREEN);
+    		return;
+    	}
+    	else if (paddata[0].BTN_CROSS)
+    	{
+    		if (!save_list->list[menu_sel].codes)
+    			save_list->read_codes(&save_list->list[menu_sel]);
+    
+    		if (apollo_config.doSort)
+    			save_list->list[menu_sel] = BubbleSortCodeList(save_list->list[menu_sel]);
+    		selected_entry = save_list->list[menu_sel];
+    		SetMenu(MENU_PATCHES);
+    		return;
+    	}
+    	else if (paddata[0].BTN_TRIANGLE && save_list->update_path)
+    	{
+    	    getSaveDetails(save_list);
+    		SetMenu(MENU_SAVE_DETAILS);
+    		return;
+    	}
+		else if (paddata[0].BTN_SQUARE)
+		{
+			ReloadUserSaves(save_list);
+		}
+	}
+
+	Draw_UserCheatsMenu(save_list->list, save_list->count, menu_sel, 0xFF);
+}
+
+void doMainMenu()
+{
+	// Check the pads.
+	if (readPad(0))
+	{
+		if(paddata[0].BTN_LEFT)
+			move_selection_back(5, 1);
+
+		else if(paddata[0].BTN_RIGHT)
+			move_selection_fwd(5, 1);
+
+		else if (paddata[0].BTN_CROSS)
+		    SetMenu(menu_sel+1);
+
+		else if(paddata[0].BTN_CIRCLE && show_dialog(1, "Exit to XMB?"))
+			close_app = 1;
+
+		else if(paddata[0].BTN_SELECT)
+		{
+			LOG("Screen");
+//					dbglogger_screenshot_tmp(0);
+			LOG("Shot");
+		}
+	}
+	
+	Draw_MainMenu();
+}
+
+void doAboutMenu()
+{
+	// Check the pads.
+	if (readPad(0))
+	{
+		if (paddata[0].BTN_CIRCLE)
+		{
+			SetMenu(MENU_MAIN_SCREEN);
+			return;
+		}
+	}
+}
+
+void doOptionsMenu()
+{
+	// Check the pads.
+	if (readPad(0))
+	{
+		if(paddata[0].BTN_UP)
+			move_selection_back(menu_options_maxopt, 1);
+
+		else if(paddata[0].BTN_DOWN)
+			move_selection_fwd(menu_options_maxopt, 1);
+
+		else if (paddata[0].BTN_CIRCLE)
+		{
+			save_app_settings(&apollo_config);
+			SetMenu(MENU_MAIN_SCREEN);
+			return;
+		}
+		else if (paddata[0].BTN_LEFT)
+		{
+			if (menu_options[menu_sel].type == APP_OPTION_LIST)
+			{
+				if (*menu_options[menu_sel].value > 0)
+					(*menu_options[menu_sel].value)--;
+				else
+					*menu_options[menu_sel].value = menu_options_maxsel[menu_sel] - 1;
+			}
+			else if (menu_options[menu_sel].type == APP_OPTION_INC)
+				(*menu_options[menu_sel].value)--;
+			
+			menu_options[menu_sel].callback(*menu_options[menu_sel].value);
+		}
+		else if (paddata[0].BTN_RIGHT)
+		{
+			if (menu_options[menu_sel].type == APP_OPTION_LIST)
+			{
+				if (*menu_options[menu_sel].value < (menu_options_maxsel[menu_sel] - 1))
+					*menu_options[menu_sel].value += 1;
+				else
+					*menu_options[menu_sel].value = 0;
+			}
+			else if (menu_options[menu_sel].type == APP_OPTION_INC)
+				*menu_options[menu_sel].value += 1;
+
+			menu_options[menu_sel].callback(*menu_options[menu_sel].value);
+		}
+		else if (paddata[0].BTN_CROSS)
+		{
+			if ((menu_options[menu_sel].type == APP_OPTION_BOOL) || (menu_options[menu_sel].type == APP_OPTION_CALL))
+				menu_options[menu_sel].callback(*menu_options[menu_sel].value);
+		}
+	}
+	
+	Draw_OptionsMenu();
+}
+
+void doPatchViewMenu()
+{
+	//Calc max
+	int max = 0;
+	const char * str;
+
+	for(str = selected_centry.codes; *str; ++str)
+		max += *str == '\n';
+	//max += -((512 - (120*2))/18) + 1; //subtract the max per page
+	if (max <= 0)
+		max = 1;
+	
+	// Check the pads.
+	if (readPad(0))
+	{
+		if(paddata[0].BTN_UP)
+			move_selection_back(max, 1);
+
+		else if(paddata[0].BTN_DOWN)
+			move_selection_fwd(max, 1);
+
+		else if (paddata[0].BTN_CIRCLE)
+		{
+			SetMenu(last_menu_id[MENU_PATCH_VIEW]);
+			return;
+		}
+	}
+	
+	Draw_CheatsMenu_View("Patch view");
+}
+
+void doCodeOptionsMenu()
+{
+    code_entry_t* code = &selected_entry.codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]];
+	// Check the pads.
+	if (readPad(0))
+	{
+		if(paddata[0].BTN_UP)
+			move_selection_back(selected_centry.options[option_index].size, 1);
+
+		else if(paddata[0].BTN_DOWN)
+			move_selection_fwd(selected_centry.options[option_index].size, 1);
+
+		else if (paddata[0].BTN_CIRCLE)
+		{
+			code->activated = 0;
+//			selected_entry.codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]].activated = 0;
+			SetMenu(last_menu_id[MENU_CODE_OPTIONS]);
+			return;
+		}
+		else if (paddata[0].BTN_CROSS)
+		{
+			code->options[option_index].sel = menu_sel;
+
+            //LOG ("{!!!} %s %s", code->options[option_index].value[menu_sel], code->codes);
+			if (strcmp(code->options[option_index].value[menu_sel], CODE_DOWNLOAD_USB1) == 0)
+			{
+        		if (http_download(ONLINE_URL, code->codes, ONLINE_LOCAL_CACHE "tmpsave.zip", 1))
+        		{
+        			if (extract_zip(ONLINE_LOCAL_CACHE "tmpsave.zip", SAVES_PATH_USB1))
+        				show_dialog(0, "Save game successfully downloaded");
+        
+        			unlink_secure(ONLINE_LOCAL_CACHE "tmp.zip");
+        		}
+        		code->activated = 0;
+			}
+
+//			selected_entry.codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]].options[option_index].sel = menu_sel;
+			option_index++;
+			
+			if (option_index >= code->options_count)
+//			if (option_index >= selected_entry.codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]].options_count)
+			{
+				SetMenu(last_menu_id[MENU_CODE_OPTIONS]);
+				return;
+			}
+			else
+				menu_sel = 0;
+		}
+	}
+	
+	Draw_CheatsMenu_Options();
+}
+
+void doSaveDetailsMenu()
+{
+	// Check the pads.
+	if (readPad(0))
+	{
+		if(paddata[0].BTN_UP)
+		{
+			move_selection_back(7, 1);
+		}
+		else if(paddata[0].BTN_DOWN)
+		{
+			move_selection_fwd(7, 1);
+		}
+		if (paddata[0].BTN_CIRCLE)
+		{
+			if (selected_centry.name)
+				free(selected_centry.name);
+			if (selected_centry.codes)
+				free(selected_centry.codes);
+
+			SetMenu(last_menu_id[MENU_SAVE_DETAILS]);
+			return;
+		}
+	}
+	
+	Draw_CheatsMenu_View(selected_entry.name);
 }
 
 void build_patch(sfo_patch_t* patch)
@@ -1050,403 +1345,157 @@ void build_patch(sfo_patch_t* patch)
 	}
 }
 
+void doPatchMenu()
+{
+	// Check the pads.
+	if (readPad(0))
+	{
+		if(paddata[0].BTN_UP)
+			move_selection_back(selected_entry.code_count, 1);
+
+		else if(paddata[0].BTN_DOWN)
+			move_selection_fwd(selected_entry.code_count, 1);
+
+		else if (paddata[0].BTN_LEFT)
+			move_selection_back(selected_entry.code_count, 5);
+
+		else if (paddata[0].BTN_RIGHT)
+			move_selection_fwd(selected_entry.code_count, 5);
+
+		else if (paddata[0].BTN_CIRCLE)
+		{
+			for (int j = 0; j < selected_entry.code_count; j++)
+				selected_entry.codes[j].activated = 0;
+
+			SetMenu(last_menu_id[MENU_PATCHES]);
+			return;
+		}
+		else if (paddata[0].BTN_CROSS)
+		{
+			selected_entry.codes[menu_sel].activated = !selected_entry.codes[menu_sel].activated;
+
+//            LOG("[X] %d - '%s'", selected_entry.codes[menu_sel].activated, selected_entry.codes[menu_sel].codes);
+
+			if (strcmp(selected_entry.codes[menu_sel].codes, CODE_RESIGN_SAVE) == 0)
+			{
+				char in_file_path[256];
+				sfo_patch_t patch = {
+			        .flags = 0,
+			        .user_id = apollo_config.user_id,
+			        .account_id = NULL,
+			        .psid = (u8*) &(apollo_config.psid[0]),
+				};
+
+				asprintf(&patch.account_id, "%016lx", apollo_config.account_id);
+				build_patch(&patch);
+
+				snprintf(in_file_path, sizeof(in_file_path), "%s" "PARAM.SFO", selected_entry.path);
+				LOG("Applying SFO patches '%s'...", in_file_path);
+
+                if (patch_sfo(in_file_path, &patch) == SUCCESS)
+	            {
+					LOG("Resigning save '%s'...", selected_entry.name);
+					if (pfd_util_init(selected_entry.title_id, selected_entry.path))
+					{
+						if (pfd_util_process(PFD_CMD_UPDATE, 0) == SUCCESS)
+		                    show_dialog(0, "Save file successfully resigned!");
+    	                else
+	                        show_dialog(0, "Error! Save file couldn't be resigned");
+
+						pfd_util_process(PFD_CMD_CHECK, 0);
+					}
+                    else
+                    {
+	                    show_dialog(0, "Error! Save file couldn't be resigned");
+                    }
+
+					pfd_util_end();
+				}
+
+				if(patch.account_id)
+				    free(patch.account_id);
+
+				selected_entry.codes[menu_sel].activated = 0;
+			}
+			
+			if (selected_entry.codes[menu_sel].activated)
+			{
+				//Check if option code
+				if (!selected_entry.codes[menu_sel].options)
+				{
+					int size;
+					selected_entry.codes[menu_sel].options = ReadOptions(selected_entry.codes[menu_sel], &size);
+					selected_entry.codes[menu_sel].options_count = size;
+				}
+				
+				if (selected_entry.codes[menu_sel].options)
+				{
+					selected_centry = selected_entry.codes[menu_sel];
+					option_index = 0;
+					SetMenu(MENU_CODE_OPTIONS);
+					return;
+				}
+			}
+		}
+/*
+		else if (paddata[0].BTN_TRIANGLE)
+		{
+			selected_centry = selected_entry.codes[menu_sel];
+			SetMenu(MENU_PATCH_VIEW);
+			return;
+		}
+*/
+	}
+	
+	Draw_CheatsMenu_Selection(menu_sel, 0xFFFFFFFF);
+}
+
 // Resets new frame
 void drawScene()
 {   
-	tiny3d_Project2D(); // change to 2D context (remember you it works with 848 x 512 as virtual coordinates)
-	
-//	char * userc, * onlinec;
-	int max = 0;
+//	tiny3d_Project2D(); // change to 2D context (remember you it works with 848 x 512 as virtual coordinates)
 	
 	switch (menu_id)
 	{
 		case MENU_MAIN_SCREEN:
-			
-			// Check the pads.
-			if (readPad(0))
-			{
-				if(paddata[0].BTN_LEFT)
-				{
-					move_selection_back(5, 1);
-				}
-				else if(paddata[0].BTN_RIGHT)
-				{
-					move_selection_fwd(5, 1);
-				}
-				else if (paddata[0].BTN_CROSS)
-				{
-				    SetMenu(menu_sel+1);
-				}
-				else if(paddata[0].BTN_CIRCLE && show_dialog(1, "Exit to XMB?"))
-				{
-					close_app = 1;
-				}
-
-				else if(paddata[0].BTN_SELECT)
-				{
-					LOG("Screen");
-//					dbglogger_screenshot_tmp(0);
-					LOG("Shot");
-				}
-			}
-			
-			Draw_MainMenu();
+			doMainMenu();
 			break;
 
 		case MENU_USB_SAVES: //USB Saves Menu
-			// Check the pads.
-			if (readPad(0))
-			{
-				if(moveMenuSelection(paddata[0], &usb_saves, ReadCodes))
-				{
-					return;
-				}
-            	else if (paddata[0].BTN_TRIANGLE)
-            	{
-            		char sfoPath[256];
-            		selected_entry = usb_saves.list[menu_sel];
-
-            		snprintf(sfoPath, sizeof(sfoPath), "%s" "PARAM.SFO", selected_entry.path);
-        			LOG("Save Details :: Reading %s...", sfoPath);
-        
-        			sfo_context_t* sfo = sfo_alloc();
-        			if (sfo_read(sfo, sfoPath) < 0) {
-        				LOG("Unable to read from '%s'", sfoPath);
-        				sfo_free(sfo);
-        				return;
-        			}
-        
-        			sfo_params_ids_t* param_ids = (sfo_params_ids_t*)(sfo_get_param_value(sfo, "PARAMS") + 0x1C);
-        			param_ids->user_id = ES32(param_ids->user_id);
-
-            	    asprintf(&selected_centry.name, "Details");
-            	    asprintf(&selected_centry.codes, "%s\n\n"
-            	    "Name: %s\n"
-            	    "Title: %s\n"
-            	    "User ID: %08d\n"
-            	    "Account ID: %s\n"
-            	    "PSID: %016lX %016lX\n", selected_entry.path, selected_entry.name, selected_entry.title_id,
-            	    param_ids->user_id, param_ids->account_id, param_ids->psid[0], param_ids->psid[1]);
-        			LOG(selected_centry.codes);
-
-        			sfo_free(sfo);
-
-            		SetMenu(MENU_SAVE_DETAILS);
-            		return;
-            	}
-				else if (paddata[0].BTN_SQUARE)
-				{
-				    set_usb_path(&usb_saves);
-					ReloadUserSaves(&usb_saves);
-				}
-			}
-			
-			Draw_UserCheatsMenu(usb_saves.list, usb_saves.count, menu_sel, 0xFF);
+			doSaveMenu(&usb_saves);
 			break;
 
 		case MENU_HDD_SAVES: //HDD Saves Menu
-			// Check the pads.
-			if (readPad(0))
-			{
-				if(moveMenuSelection(paddata[0], &hdd_saves, ReadCodes))
-				{
-					return;
-				}
-				else if (paddata[0].BTN_SQUARE)
-				{
-					snprintf(hdd_saves.path, sizeof(hdd_saves.path), SAVES_PATH_HDD, apollo_config.user_id);
-					ReloadUserSaves(&hdd_saves);
-				}
-			}
-			
-			Draw_UserCheatsMenu(hdd_saves.list, hdd_saves.count, menu_sel, 0xFF);
+			doSaveMenu(&hdd_saves);
 			break;
 
 		case MENU_ONLINE_DB: //Online Cheats Menu
-			// Check the pads.
-			if (readPad(0))
-			{
-				if(moveMenuSelection(paddata[0], &online_saves, ReadOnlineSaves))
-				{
-					return;
-				}
-				else if (paddata[0].BTN_SQUARE)
-				{
-					ReloadOnlineCheats();
-				}
-			}
-
-			Draw_UserCheatsMenu(online_saves.list, online_saves.count, menu_sel, 0xFF);
+			doSaveMenu(&online_saves);
 			break;
 
 		case MENU_CREDITS: //About Menu
-			// Check the pads.
-			if (readPad(0))
-			{
-				if (paddata[0].BTN_CIRCLE)
-				{
-					SetMenu(MENU_MAIN_SCREEN);
-					return;
-				}
-			}
-			
+			doAboutMenu();
 			Draw_AboutMenu();
 			break;
 
 		case MENU_SETTINGS: //Options Menu
-			// Check the pads.
-			if (readPad(0))
-			{
-				if(paddata[0].BTN_UP)
-				{
-					move_selection_back(menu_options_maxopt, 1);
-				}
-				else if(paddata[0].BTN_DOWN)
-				{
-					move_selection_fwd(menu_options_maxopt, 1);
-				}
-				else if (paddata[0].BTN_CIRCLE)
-				{
-					save_app_settings(&apollo_config);
-					SetMenu(MENU_MAIN_SCREEN);
-					return;
-				}
-				else if (paddata[0].BTN_LEFT)
-				{
-					if (menu_options[menu_sel].type == APP_OPTION_LIST)
-					{
-						if (*menu_options[menu_sel].value > 0)
-							(*menu_options[menu_sel].value)--;
-						else
-							*menu_options[menu_sel].value = menu_options_maxsel[menu_sel] - 1;
-					}
-					else if (menu_options[menu_sel].type == APP_OPTION_INC)
-						(*menu_options[menu_sel].value)--;
-					
-					menu_options[menu_sel].callback(*menu_options[menu_sel].value);
-				}
-				else if (paddata[0].BTN_RIGHT)
-				{
-					if (menu_options[menu_sel].type == APP_OPTION_LIST)
-					{
-						if (*menu_options[menu_sel].value < (menu_options_maxsel[menu_sel] - 1))
-							*menu_options[menu_sel].value += 1;
-						else
-							*menu_options[menu_sel].value = 0;
-					}
-					else if (menu_options[menu_sel].type == APP_OPTION_INC)
-						*menu_options[menu_sel].value += 1;
-
-					menu_options[menu_sel].callback(*menu_options[menu_sel].value);
-				}
-				else if (paddata[0].BTN_CROSS)
-				{
-					if ((menu_options[menu_sel].type == APP_OPTION_BOOL) || (menu_options[menu_sel].type == APP_OPTION_CALL))
-						menu_options[menu_sel].callback(*menu_options[menu_sel].value);
-				}
-			}
-			
-			Draw_OptionsMenu();
+			doOptionsMenu();
 			break;
 
 		case MENU_PATCHES: //Cheats Selection Menu
-			// Check the pads.
-			if (readPad(0))
-			{
-				if(paddata[0].BTN_UP)
-				{
-					move_selection_back(selected_entry.code_count, 1);
-				}
-				else if(paddata[0].BTN_DOWN)
-				{
-					move_selection_fwd(selected_entry.code_count, 1);
-				}
-				else if (paddata[0].BTN_LEFT)
-				{
-					move_selection_back(selected_entry.code_count, 5);
-				}
-				else if (paddata[0].BTN_RIGHT)
-				{
-					move_selection_fwd(selected_entry.code_count, 5);
-				}
-				else if (paddata[0].BTN_CIRCLE)
-				{
-					for (int j = 0; j < selected_entry.code_count; j++)
-						selected_entry.codes[j].activated = 0;
-
-					SetMenu(last_menu_id[MENU_PATCHES]);
-					return;
-				}
-				else if (paddata[0].BTN_CROSS)
-				{
-					selected_entry.codes[menu_sel].activated = !selected_entry.codes[menu_sel].activated;
-
-					if (strcmp(selected_entry.codes[menu_sel].codes, CODE_RESIGN_SAVE) == 0)
-					{
-						char in_file_path[256];
-						sfo_patch_t patch = {
-					        .flags = 0,
-					        .user_id = apollo_config.user_id,
-					        .account_id = NULL,
-					        .psid = (u8*) &(apollo_config.psid[0]),
-						};
-
-						asprintf(&patch.account_id, "%016lx", apollo_config.account_id);
-						build_patch(&patch);
-
-						snprintf(in_file_path, sizeof(in_file_path), "%s" "PARAM.SFO", selected_entry.path);
-						LOG("Applying SFO patches '%s'...", in_file_path);
-
-		                if (patch_sfo(in_file_path, &patch) == SUCCESS)
-			            {
-    						LOG("Resigning save '%s'...", selected_entry.name);
-    						if (pfd_util_init(selected_entry.title_id, selected_entry.path))
-    						{
-    							if (pfd_util_process(PFD_CMD_UPDATE, 0) == SUCCESS)
-        		                    show_dialog(0, "Save file successfully resigned!");
-    	    	                else
-    		                        show_dialog(0, "Error! Save file couldn't be resigned");
-    
-    							pfd_util_process(PFD_CMD_CHECK, 0);
-    						}
-                            else
-                            {
-    		                    show_dialog(0, "Error! Save file couldn't be resigned");
-                            }
-    
-    						pfd_util_end();
-						}
-
-						if(patch.account_id)
-						    free(patch.account_id);
-
-						selected_entry.codes[menu_sel].activated = 0;
-					}
-					
-					if (selected_entry.codes[menu_sel].activated)
-					{
-						//Check if option code
-						if (!selected_entry.codes[menu_sel].options)
-						{
-							int size[1];
-							selected_entry.codes[menu_sel].options = ReadOptions(selected_entry.codes[menu_sel], (int *)size);
-							selected_entry.codes[menu_sel].options_count = size[0];
-						}
-						
-						if (selected_entry.codes[menu_sel].options)
-						{
-							selected_centry = selected_entry.codes[menu_sel];
-							option_index = 0;
-							SetMenu(MENU_CODE_OPTIONS);
-							return;
-						}
-					}
-				}
-/*
-				else if (paddata[0].BTN_TRIANGLE)
-				{
-					selected_centry = selected_entry.codes[menu_sel];
-					SetMenu(MENU_PATCH_VIEW);
-					return;
-				}
-*/
-			}
-			
-			Draw_CheatsMenu_Selection(menu_sel, 0xFFFFFFFF);
+			doPatchMenu();
 			break;
 
 		case MENU_PATCH_VIEW: //Cheat View Menu
-			//Calc max
-			max = 0;
-			const char * str;
-			for(str = selected_centry.codes; *str; ++str)
-				max += *str == '\n';
-			//max += -((512 - (120*2))/18) + 1; //subtract the max per page
-			if (max <= 0)
-				max = 1;
-			
-			// Check the pads.
-			if (readPad(0))
-			{
-				if(paddata[0].BTN_UP)
-				{
-					move_selection_back(max, 1);
-				}
-				else if(paddata[0].BTN_DOWN)
-				{
-					move_selection_fwd(max, 1);
-				}
-				else if (paddata[0].BTN_CIRCLE)
-				{
-					SetMenu(last_menu_id[MENU_PATCH_VIEW]);
-					return;
-				}
-			}
-			
-			Draw_CheatsMenu_View();
+			doPatchViewMenu();
 			break;
 
 		case MENU_CODE_OPTIONS: //Cheat Option Menu
-			// Check the pads.
-			if (readPad(0))
-			{
-				if(paddata[0].BTN_UP)
-				{
-					move_selection_back(selected_centry.options[option_index].size, 1);
-				}
-				else if(paddata[0].BTN_DOWN)
-				{
-					move_selection_fwd(selected_centry.options[option_index].size, 1);
-				}
-				else if (paddata[0].BTN_CIRCLE)
-				{
-					selected_entry.codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]].activated = 0;
-					SetMenu(last_menu_id[MENU_CODE_OPTIONS]);
-					return;
-				}
-				else if (paddata[0].BTN_CROSS)
-				{
-					selected_entry.codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]].options[option_index].sel = menu_sel;
-					option_index++;
-					
-					if (option_index >= selected_entry.codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]].options_count)
-					{
-						SetMenu(last_menu_id[MENU_CODE_OPTIONS]);
-						return;
-					}
-					else
-						menu_sel = 0;
-				}
-			}
-			
-			Draw_CheatsMenu_Options();
+			doCodeOptionsMenu();
 			break;
 
 		case MENU_SAVE_DETAILS: //Cheat View Menu
-			// Check the pads.
-			if (readPad(0))
-			{
-				if(paddata[0].BTN_UP)
-				{
-					move_selection_back(7, 1);
-				}
-				else if(paddata[0].BTN_DOWN)
-				{
-					move_selection_fwd(7, 1);
-				}
-				if (paddata[0].BTN_CIRCLE)
-				{
-					if (selected_centry.name)
-						free(selected_centry.name);
-					if (selected_centry.codes)
-						free(selected_centry.codes);
-
-					SetMenu(last_menu_id[MENU_SAVE_DETAILS]);
-					return;
-				}
-			}
-			
-			Draw_CheatsMenu_View();
+			doSaveDetailsMenu();
 			break;
 	}
 }
@@ -1496,37 +1545,20 @@ s32 main(s32 argc, const char* argv[])
 	// Setup font
 	SetExtraSpace(5);
 	SetCurrentFont(0);
-	RegisterSpecialCharacter(0x10,
-		menu_textures[footer_ico_cross_png_index].texture.width / 1,
-		4,
-		1.2,
-		1.2,
-		menu_textures[footer_ico_cross_png_index]);
-	RegisterSpecialCharacter(0x11,
-		menu_textures[footer_ico_square_png_index].texture.width / 1,
-		4,
-		1.2,
-		1.2,
-		menu_textures[footer_ico_square_png_index]);
-	RegisterSpecialCharacter(0x12,
-		menu_textures[footer_ico_triangle_png_index].texture.width / 1,
-		4,
-		1.2,
-		1.2,
-		menu_textures[footer_ico_triangle_png_index]);
-	RegisterSpecialCharacter(0x13,
-		menu_textures[footer_ico_circle_png_index].texture.width / 1,
-		4,
-		1.2,
-		1.2,
-		menu_textures[footer_ico_circle_png_index]);
+	RegisterSpecialCharacter(0x10, menu_textures[footer_ico_cross_png_index].texture.width,
+		4, 1.2, 1.2, menu_textures[footer_ico_cross_png_index]);
+	RegisterSpecialCharacter(0x11, menu_textures[footer_ico_square_png_index].texture.width,
+		4, 1.2, 1.2, menu_textures[footer_ico_square_png_index]);
+	RegisterSpecialCharacter(0x12, menu_textures[footer_ico_triangle_png_index].texture.width,
+		4, 1.2, 1.2, menu_textures[footer_ico_triangle_png_index]);
+	RegisterSpecialCharacter(0x13, menu_textures[footer_ico_circle_png_index].texture.width,
+		4, 1.2, 1.2, menu_textures[footer_ico_circle_png_index]);
 
 	menu_options_maxopt = 0;
 	while (menu_options[menu_options_maxopt].name)
 		menu_options_maxopt++;
 	
-	int selSize = menu_options_maxopt * sizeof(int);
-	menu_options_maxsel = (int *)calloc(1, selSize);
+	menu_options_maxsel = (int *)calloc(1, menu_options_maxopt * sizeof(int));
 	
 	int i = 0;
 	for (i = 0; i < menu_options_maxopt; i++)
@@ -1553,6 +1585,7 @@ s32 main(s32 argc, const char* argv[])
 	
 	//Set options
 	music_callback(!apollo_config.music);
+	update_callback(!apollo_config.update);
 
 	SetMenu(MENU_MAIN_SCREEN);
 	
@@ -1568,6 +1601,9 @@ s32 main(s32 argc, const char* argv[])
 			TINY3D_BLEND_FUNC_SRC_ALPHA_ONE_MINUS_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_RGB_ONE_MINUS_SRC_ALPHA,
 			TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
 		
+		// change to 2D context (remember you it works with 848 x 512 as virtual coordinates)
+		tiny3d_Project2D();
+
 		drawScene();
 		
 		//Draw help

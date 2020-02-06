@@ -2,13 +2,51 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <sys/stat.h>
 
 #include "saves.h"
-
+#include "common.h"
 
 static inline uint64_t min64(uint64_t a, uint64_t b)
 {
     return a < b ? a : b;
+}
+
+int _mkdirs(const char* dir)
+{
+    char path[256];
+    snprintf(path, sizeof(path), "%s", dir);
+    LOG("mkdirs for %s", path);
+    char* ptr = path;
+    ptr++;
+    while (*ptr)
+    {
+        while (*ptr && *ptr != '/')
+        {
+            ptr++;
+        }
+        char last = *ptr;
+        *ptr = 0;
+
+        if (dir_exists(path) == FAILED)
+        {
+            LOG("mkdir %s", path);
+            int err = mkdir(path, 0777);
+            if (err < 0)
+            {
+                LOG("mkdir %s err=0x%08x", path, (uint32_t)err);
+                return 0;
+            }
+        }
+        
+        *ptr++ = last;
+        if (last == 0)
+        {
+            break;
+        }
+    }
+
+    return 1;
 }
 
 int extract_zip(const char* zip_file, const char* dest_path)
@@ -42,7 +80,9 @@ int extract_zip(const char* zip_file, const char* dest_path)
 		snprintf(path, sizeof(path)-1, "%s%s", dest_path, filename);
 
 		if (filename[strlen(filename) - 1] == '/') {
-//			mkdir(path, 0777);
+			if (!_mkdirs(path))
+				return 0;
+
 			continue;
 		}
 

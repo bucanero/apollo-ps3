@@ -74,7 +74,7 @@ void Draw_OptionsMenu_Ani()
         
         tiny3d_Project2D();
         
-		DrawHeader_Ani(menu_textures[header_ico_opt_png_index], "Options", NULL, 0x00000000, 0xffffffff, ani, 12);
+		DrawHeader_Ani(menu_textures[header_ico_opt_png_index], "Options", NULL, APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
         
 		u8 icon_a = (u8)(((ani * 2) > 0xFF) ? 0xFF : (ani * 2));
         int _game_a = (int)(icon_a - (MENU_ANI_MAX / 2)) * 2;
@@ -94,6 +94,6 @@ void Draw_OptionsMenu_Ani()
 
 void Draw_OptionsMenu()
 {
-	DrawHeader(menu_textures[header_ico_opt_png_index], 0, "Options", NULL, 0x000000ff, 0xffffffff, 0);
+	DrawHeader(menu_textures[header_ico_opt_png_index], 0, "Options", NULL, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 0);
     _draw_OptionsMenu(0xFF);
 }

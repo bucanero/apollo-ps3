@@ -10,6 +10,7 @@
 
 #define APOLLO_PATH				"/dev_hdd0/game/NP0APOLLO/USRDIR/"
 #define APOLLO_DATA_PATH		APOLLO_PATH "DATA/"
+#define APOLLO_UPDATE_URL		"https://api.github.com/repos/bucanero/apollo-ps3/releases/latest"
 
 #define SAVES_PATH_USB0			"/dev_usb000/PS3/SAVEDATA/"
 #define SAVES_PATH_USB1			"/dev_usb001/PS3/SAVEDATA/"
@@ -22,8 +23,9 @@
 #define CODE_RESIGN_SAVE        "RESIGN_SAVE"
 #define CODE_UNLOCK_COPY        "UNLOCK_COPY"
 #define CODE_REMOVE_ACCOUNT_ID  "REMOVE_ACCT"
-//#define CODE_UPDATE_ACCOUNT_ID  "UPDATE_ACCT"
-//#define CODE_UPDATE_PSID        "UPDATE_PSID"
+#define CODE_DOWNLOAD_USB0      "DNLOAD_USB0"
+#define CODE_DOWNLOAD_USB1      "DNLOAD_USB1"
+#define CODE_DOWNLOAD_HDD       "DNLOAD_HDD0"
 
 typedef struct option_entry
 {
@@ -55,23 +57,17 @@ typedef struct save_entry
     code_entry_t * codes;
 } save_entry_t;
 
-typedef struct game_entry_s
-{
-    char * name;
-	char * title_id;
-	char * path;
-    int save_count;
-    save_entry_t * saves;
-} game_entry_t;
-
 typedef struct {
     save_entry_t * list;
     int count;
     char path[128];
+    void(*update_path)(char *);
+    int(*read_codes)(save_entry_t *);
+    save_entry_t* (*read_list)(const char*, int *);
 } save_list_t;
 
 save_entry_t * ReadUserList(const char* userPath, int * gmc);
-save_entry_t * ReadOnlineList(int * gmc);
+save_entry_t * ReadOnlineList(const char* urlPath, int * gmc);
 void UnloadGameList(save_entry_t * list, int count);
 int isGameActivated(save_entry_t game);
 char * ParseActivatedGameList(save_entry_t * list, int count);

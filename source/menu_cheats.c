@@ -114,7 +114,7 @@ void Draw_CheatsMenu_Options_Ani_Exit(void)
 		Draw_CheatsMenu_Selection(menu_old_sel[5], (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
 		DrawTexture(menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
-		DrawHeader(menu_textures[header_ico_opt_png_index], left, "Cheat Option", selected_centry.name, 0x00000000 | icon_a, 0xffffffff, 1);
+		DrawHeader(menu_textures[header_ico_opt_png_index], left, "Cheat Option", selected_centry.name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 /*
 		int _game_a = (int)(icon_a - (max / 2)) * 2;
 		if (_game_a > 0xFF)
@@ -159,7 +159,7 @@ void Draw_CheatsMenu_Options_Ani(void)
 		Draw_CheatsMenu_Selection(menu_sel, (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
 		DrawTexture(menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
-		DrawHeader(menu_textures[header_ico_opt_png_index], left, "Cheat Option", selected_centry.name, 0x00000000 | icon_a, 0xffffffff, 1);
+		DrawHeader(menu_textures[header_ico_opt_png_index], left, "Cheat Option", selected_centry.name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
         
 		u8 game_a = (u8)(icon_a < 0x8F ? 0 : icon_a);
 		DrawOptions(selected_centry.options[option_index], game_a, 20, menu_old_sel[7]);
@@ -179,7 +179,7 @@ void Draw_CheatsMenu_Options(void)
 	Draw_CheatsMenu_Selection(menu_old_sel[5], 0xD0D0D0FF);
 
 	DrawTexture(menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), 0x000000FF);
-	DrawHeader(menu_textures[header_ico_opt_png_index], MENU_SPLIT_OFF, "Cheat Option", selected_centry.name, 0x000000ff, 0xffffffff, 1);
+	DrawHeader(menu_textures[header_ico_opt_png_index], MENU_SPLIT_OFF, "Cheat Option", selected_centry.name, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
 
 	DrawOptions(selected_centry.options[option_index], 0xFF, 20, menu_sel);
 	DrawScrollBar(menu_sel, selected_centry.options[option_index].size, 20, 800, 0xFF);
@@ -377,7 +377,7 @@ void Draw_CheatsMenu_View_Ani_Exit(void)
 		Draw_CheatsMenu_Selection(menu_old_sel[5], (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
 		DrawTexture(menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
-		DrawHeader(menu_textures[header_ico_opt_png_index], left, "Patch View", selected_centry.name, 0x00000000 | icon_a, 0xffffffff, 1);
+		DrawHeader(menu_textures[header_ico_opt_png_index], left, "Patch View", selected_centry.name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 /*
 		int _game_a = (int)(icon_a - (max / 2)) * 2;
 		if (_game_a > 0xFF)
@@ -391,7 +391,7 @@ void Draw_CheatsMenu_View_Ani_Exit(void)
 	}
 }
 
-void Draw_CheatsMenu_View_Ani(void)
+void Draw_CheatsMenu_View_Ani(const char* title)
 {
 	int div = 12, max = MENU_ANI_MAX, ani = 0, left = MENU_SPLIT_OFF;
     for (ani = 0; ani < max; ani++)
@@ -419,7 +419,7 @@ void Draw_CheatsMenu_View_Ani(void)
 		Draw_CheatsMenu_Selection(menu_sel, (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
 		DrawTexture(menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
-		DrawHeader(menu_textures[header_ico_opt_png_index], left, "Patch View", selected_centry.name, 0x00000000 | icon_a, 0xffffffff, 1);
+		DrawHeader(menu_textures[header_ico_opt_png_index], left, (char*)title, selected_centry.name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 
 		u8 game_a = (u8)(icon_a < 0x8F ? 0 : icon_a);
 		int nlines = DrawCodes(selected_centry, game_a, 20, left, menu_old_sel[6]);
@@ -432,14 +432,14 @@ void Draw_CheatsMenu_View_Ani(void)
     }
 }
 
-void Draw_CheatsMenu_View(void)
+void Draw_CheatsMenu_View(const char* title)
 {
     //------------ Backgrounds
     
 	Draw_CheatsMenu_Selection(menu_old_sel[5], 0xD0D0D0FF);
 
 	DrawTexture(menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), 0x000000FF);
-	DrawHeader(menu_textures[header_ico_opt_png_index], MENU_SPLIT_OFF, "Patch View", selected_centry.name, 0x000000ff, 0xffffffff, 1);
+	DrawHeader(menu_textures[header_ico_opt_png_index], MENU_SPLIT_OFF, (char*)title, selected_centry.name, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
 
     int nlines = DrawCodes(selected_centry, 0xFF, 20, MENU_SPLIT_OFF, menu_sel);
     //DrawScrollBar2(menu_sel, nlines, 18, 700, 0xFF);
@@ -543,7 +543,7 @@ void DrawCheatsList(int selIndex, save_entry_t game, u8 alpha)
                 SetFontAlign(3);
 				//SetCurrentFont(font_comfortaa_light);
 				SetFontColor(APP_FONT_TAG_COLOR | a, 0);
-				DrawString(MENU_ICON_OFF + ((MENU_TITLE_OFF * 3) - 15) / 2, game_y + 2, "apply");
+				DrawString(MENU_ICON_OFF + ((MENU_TITLE_OFF * 3) - 15) / 2, game_y + 2, "select");
                 SetFontAlign(0);
                 SetFontSize(APP_FONT_SIZE_SELECTION);
                 
@@ -611,7 +611,7 @@ void Draw_CheatsMenu_Selection_Ani()
         
         u8 icon_a = (u8)(((ani * 2) > 0xFF) ? 0xFF : (ani * 2));
         
-		DrawHeader_Ani(menu_textures[header_ico_cht_png_index], "Patches", selected_entry.name, 0x00000000, 0xffffffff, ani, div);
+		DrawHeader_Ani(menu_textures[header_ico_cht_png_index], "Patches", selected_entry.name, APP_FONT_TITLE_COLOR, 0xffffffff, ani, div);
 
         int _game_a = (int)(icon_a - (max / 2)) * 2;
         if (_game_a > 0xFF)
@@ -628,7 +628,7 @@ void Draw_CheatsMenu_Selection_Ani()
 
 void Draw_CheatsMenu_Selection(int menuSel, u32 rgba)
 {
-	DrawHeader(menu_textures[header_ico_cht_png_index], 0, "Patches", selected_entry.name, 0x000000ff, rgba, 0);
+	DrawHeader(menu_textures[header_ico_cht_png_index], 0, "Patches", selected_entry.name, APP_FONT_TITLE_COLOR | 0xFF, rgba, 0);
 
     DrawCheatsList(menuSel, selected_entry, (u8)rgba);
 }
@@ -654,7 +654,7 @@ void Draw_UserCheatsMenu_Ani(save_entry_t * games, int games_len)
         
         u8 icon_a = (u8)(((ani * 2) > 0xFF) ? 0xFF : (ani * 2));
         
-		DrawHeader_Ani(menu_textures[header_ico_cht_png_index], "Saves", "Save Game List", 0x00000000, 0xffffffff, ani, div);
+		DrawHeader_Ani(menu_textures[header_ico_cht_png_index], "Saves", "Save Game List", APP_FONT_TITLE_COLOR, 0xffffffff, ani, div);
         
         int _game_a = (int)(icon_a - (max / 2)) * 2;
         if (_game_a > 0xFF)
@@ -671,7 +671,7 @@ void Draw_UserCheatsMenu_Ani(save_entry_t * games, int games_len)
 
 void Draw_UserCheatsMenu(save_entry_t * games, int games_len, int menuSel, u8 alpha)
 {
-	DrawHeader(menu_textures[header_ico_cht_png_index], 0, "Saves", "Save Game List", 0x000000ff, 0xffffff00 | alpha, 0);
+	DrawHeader(menu_textures[header_ico_cht_png_index], 0, "Saves", "Save Game List", APP_FONT_TITLE_COLOR | 0xFF, 0xffffff00 | alpha, 0);
     
 	DrawGameList(menuSel, games, games_len, alpha);
     

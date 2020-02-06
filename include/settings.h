@@ -1,5 +1,5 @@
 
-#define APOLLO_VERSION			"v0.0.1"	//Apollo PS3 version (about menu)
+#define APOLLO_VERSION			"0.0.1"		//Apollo PS3 version (about menu)
 #define MENU_TITLE_OFF			30			//Offset of menu title text from menu mini icon
 #define MENU_ICON_OFF 			70          //X Offset to start printing menu mini icon
 #define MENU_ANI_MAX 			0x80        //Max animation number
@@ -27,6 +27,7 @@ typedef struct
     uint8_t doAni;
     uint8_t marginH;
     uint8_t marginV;
+    uint8_t update;
     uint32_t user_id;
     uint64_t psid[2];
     uint64_t account_id;
@@ -35,6 +36,3 @@ typedef struct
 extern const menu_option_t menu_options[];
 
 extern app_config_t apollo_config;
-
-extern int menu_options_maxopt;
-extern int * menu_options_maxsel;

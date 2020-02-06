@@ -18,7 +18,7 @@ void _draw_AboutMenu(u8 alpha)
     SetFontColor(APP_FONT_COLOR | alpha, 0);
     SetFontAlign(1);
 	SetCurrentFont(font_comfortaa_bold);
-	DrawString(848 / 2, 70, "Thank you for using Apollo!");
+	DrawString(848 / 2, 70, "Thanks for using Apollo!");
 	SetCurrentFont(font_comfortaa_regular);
     SetFontSize(APP_FONT_SIZE_SUBTEXT);
 	DrawString(848 / 2, 95, "an open source save game tool");
@@ -49,7 +49,7 @@ void _draw_AboutMenu(u8 alpha)
 	SetFontAlign(1);
 	SetCurrentFont(font_comfortaa_bold);
 	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
-	DrawString(848 / 2, 170 + ((cnt + 3) * 12), "Console Details:");
+	DrawString(848 / 2, 170 + ((cnt + 3) * 12), "Console details:");
 
 	int off = cnt + 5;
 	for (cnt = 0; menu_about_strings_project[cnt] != NULL; cnt += 2)
@@ -84,7 +84,7 @@ void Draw_AboutMenu_Ani()
 
 		tiny3d_Project2D();
 
-		DrawHeader_Ani(menu_textures[header_ico_abt_png_index], "About", APOLLO_VERSION, 0, 0xffffffff, ani, div);
+		DrawHeader_Ani(menu_textures[header_ico_abt_png_index], "About", "v" APOLLO_VERSION, APP_FONT_TITLE_COLOR, 0xffffffff, ani, div);
 
 		//------------- About Menu Contents
 
@@ -104,6 +104,6 @@ void Draw_AboutMenu_Ani()
 
 void Draw_AboutMenu()
 {
-	DrawHeader(menu_textures[header_ico_abt_png_index], 0, "About", APOLLO_VERSION, 0x000000ff, 0xffffffff, 0);
+	DrawHeader(menu_textures[header_ico_abt_png_index], 0, "About", "v" APOLLO_VERSION, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 0);
 	_draw_AboutMenu(0xFF);
 }

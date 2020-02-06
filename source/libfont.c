@@ -603,6 +603,7 @@ float DrawString(float x, float y, char *str)
 {
 	int dx = (font_datas.sx+font_datas.extra);
 	float initX = x;
+	u32 color = font_datas.color;
 	
     if(font_datas.align == 1) {
     
@@ -632,6 +633,12 @@ float DrawString(float x, float y, char *str)
             }
         }
 
+        if (!schr)
+        {
+        	font_datas.color = 0x00000000 | (color & 0x000000ff);
+        	DrawChar(x+1, y+1, font_datas.Z, (u8) *str);
+        	font_datas.color = color;
+        }
         DrawChar(x, y, font_datas.Z, (u8) *str);
 		
 		if (schr)
