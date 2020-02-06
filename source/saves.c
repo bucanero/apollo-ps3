@@ -687,25 +687,26 @@ int ReadOnlineSaves(save_entry_t * game)
 		if (content[12] == '=')
 		{
 			ret[cur_count].activated = 0;
-			ret[cur_count].options_count = 1;
-
-			ret[cur_count].options = (option_entry_t*)malloc(sizeof(option_entry_t) * ret[cur_count].options_count);
-
-			ret[cur_count].options[0].size = 2;
-			ret[cur_count].options[0].value = malloc (sizeof(char *) * ret[cur_count].options[0].size);
-			ret[cur_count].options[0].name = malloc (sizeof(char *) * ret[cur_count].options[0].size);
-
-			asprintf(&ret[cur_count].options[0].name[0], "Download to USB");
-			asprintf(&ret[cur_count].options[0].value[0], "DOWNLOAD_USB");
-
-			asprintf(&ret[cur_count].options[0].name[1], "Download to HDD");
-			asprintf(&ret[cur_count].options[0].value[1], "DOWNLOAD_HDD");
-
-//			ret[cur_count].codes = malloc(23); // strlen("BLUS12345/12345678.zip") + 1
 			asprintf(&ret[cur_count].codes, "%s/%.12s", game->title_id, content);
 
 			content += 13;
 			asprintf(&ret[cur_count].name, "%s", content);
+
+			ret[cur_count].options_count = 1;
+			ret[cur_count].options = (option_entry_t*)malloc(sizeof(option_entry_t) * ret[cur_count].options_count);
+
+			ret[cur_count].options[0].id = 0;
+			ret[cur_count].options[0].sel = -1;
+			ret[cur_count].options[0].size = 2;
+			ret[cur_count].options[0].line = NULL;
+			ret[cur_count].options[0].value = malloc (sizeof(char *) * ret[cur_count].options[0].size);
+			ret[cur_count].options[0].name = malloc (sizeof(char *) * ret[cur_count].options[0].size);
+
+			asprintf(&ret[cur_count].options[0].name[0], "Download to USB");
+			asprintf(&ret[cur_count].options[0].value[0], CODE_DOWNLOAD_USB1);
+
+			asprintf(&ret[cur_count].options[0].name[1], "Download to HDD");
+			asprintf(&ret[cur_count].options[0].value[1], CODE_DOWNLOAD_HDD);
 
 			LOG("%d - [%s] %s", cur_count, ret[cur_count].codes, ret[cur_count].name);
 			cur_count++;
@@ -1036,7 +1037,7 @@ save_entry_t * ReadUserList(const char* userPath, int * gmc)
  *	gmc:			Set as the number of games read
  * Return:			Pointer to array of game_entry, null if failed
  */
-save_entry_t * ReadOnlineList(int * gmc)
+save_entry_t * ReadOnlineList(const char* urlPath, int * gmc)
 {
 	const char* path = ONLINE_LOCAL_CACHE "games.txt";
 
@@ -1046,11 +1047,11 @@ save_entry_t * ReadOnlineList(int * gmc)
 		stat(path, &stats);
 		// re-download if file is +1 day old
 		if ((stats.st_mtime + ONLINE_CACHE_TIMEOUT) < time(NULL))
-			http_download(ONLINE_URL, "games.txt", path, 0);
+			http_download(urlPath, "games.txt", path, 0);
 	}
 	else
 	{
-		if (!http_download(ONLINE_URL, "games.txt", path, 0))
+		if (!http_download(urlPath, "games.txt", path, 0))
 			return NULL;
 	}
 	
