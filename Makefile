@@ -57,6 +57,9 @@ CXXFLAGS	=	$(CFLAGS)
 
 LDFLAGS		=	$(MACHDEP) -Wl,-Map,$(notdir $@).map
 
+ifdef DEBUGLOG
+CFLAGS		+=	-DAPOLLO_ENABLE_LOGGING
+endif
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
