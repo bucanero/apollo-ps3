@@ -6,7 +6,7 @@
 
 The `apollo-ps3` homebrew app allows to download, unlock, patch and resign save-game files directly on your PS3.
 
-![image](./docs/screenshots/screenshot_2020_02_06_01_57_21.png)
+![image](./docs/screenshots/screenshot_2020_02_06_main.png)
 
 **Comments, ideas, suggestions?** You can contact [me](https://github.com/bucanero/) on [Twitter](https://twitter.com/dparrino) and on [my website](http://www.bucanero.com.ar/).
 
