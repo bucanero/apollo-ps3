@@ -131,25 +131,21 @@ long getDirListSize(const char * path)
 	d = opendir(path);
 	
 	char sfoPath[256];
-	char fullPath[256];
 	int count = 0;
 	
 	if (d)
 	{
-		
 		while ((dir = readdir(d)) != NULL)
 		{
 			if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
 			{
-				snprintf(fullPath, sizeof(fullPath), "%s%s", path, dir->d_name);
-				snprintf(sfoPath, sizeof(sfoPath), "%s/PARAM.SFO", fullPath);
-				if ((dir_exists(fullPath) == SUCCESS) && (file_exists(sfoPath) == SUCCESS))
+				snprintf(sfoPath, sizeof(sfoPath), "%s%s/PARAM.SFO", path, dir->d_name);
+				if (file_exists(sfoPath) == SUCCESS)
 				{
 					count++;
 				}
 			}
 		}
-		
 		closedir(d);
 	}
 	
@@ -702,11 +698,11 @@ int ReadOnlineSaves(save_entry_t * game)
 			ret[cur_count].options[0].value = malloc (sizeof(char *) * ret[cur_count].options[0].size);
 			ret[cur_count].options[0].name = malloc (sizeof(char *) * ret[cur_count].options[0].size);
 
-			asprintf(&ret[cur_count].options[0].name[0], "Download to USB");
+			asprintf(&ret[cur_count].options[0].name[0], "Download to USB 1");
 			asprintf(&ret[cur_count].options[0].value[0], CODE_DOWNLOAD_USB1);
 
-			asprintf(&ret[cur_count].options[0].name[1], "Download to HDD");
-			asprintf(&ret[cur_count].options[0].value[1], CODE_DOWNLOAD_HDD);
+			asprintf(&ret[cur_count].options[0].name[1], "Download to USB 0");
+			asprintf(&ret[cur_count].options[0].value[1], CODE_DOWNLOAD_USB0);
 
 			LOG("%d - [%s] %s", cur_count, ret[cur_count].codes, ret[cur_count].name);
 			cur_count++;

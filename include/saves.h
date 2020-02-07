@@ -1,5 +1,3 @@
-#define APOLLO_ENABLE_LOGGING 1
-
 #ifdef APOLLO_ENABLE_LOGGING
 #include <dbglogger.h>
 #define LOG dbglogger_log

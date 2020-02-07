@@ -1,8 +1,6 @@
 #include "backend.h"
 #include "util.h"
 
-#define LOG dbglogger_log
-
 extern int verbose_flag;
 
 static int enumerate_callback(void *user, pfd_entry_info_t *entry_info) {

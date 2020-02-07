@@ -130,10 +130,6 @@ png_texture * menu_textures;                // png_texture array for main menu, 
 
 int screen_width = 0, screen_height = 0;    // Set to dimensions of the screen in main()
 
-int highlight_alpha = 128;                  // Alpha of the selected
-int highlight_pulse = 1;                    // Whether the increment the highlight
-int highlight_amount = 6;                   // Amount of alpha to inc/dec each time
-int pause_pulse = 0;                        // Counter that holds how long alpha is held in place
 int idle_time = 0;                          // Set by readPad
 
 #define MENU_MAIN_DESCRIPTION   "PlayStation 3 Save Game Tool"
@@ -177,7 +173,7 @@ const char * menu_pad_help[] = { NULL,																//Main
 								"\x10 Select    \x13 Back    \x11 Refresh",							//Online list
 								"\x10 Select    \x13 Back",											//Options
 								"\x13 Back",														//About
-								"\x10 Enable    \x12 View Code    \x13 Back",						//Select Cheats
+								"\x10 Select    \x12 View Code    \x13 Back",						//Select Cheats
 								"\x13 Back",														//View Cheat
 								"\x10 Select    \x13 Back",											//Cheat Option
 								"\x13 Back",														//View Details
@@ -190,9 +186,9 @@ save_list_t hdd_saves = {
     .list = NULL,
     .count = 0,
     .path = "",
-    .read_list = ReadUserList,
-    .read_codes = ReadCodes,
-    .update_path = update_hdd_path,
+    .read_list = &ReadUserList,
+    .read_codes = &ReadCodes,
+    .update_path = &update_hdd_path,
 };
 
 /*
@@ -202,9 +198,9 @@ save_list_t usb_saves = {
     .list = NULL,
     .count = 0,
     .path = "",
-    .read_list = ReadUserList,
-    .read_codes = ReadCodes,
-    .update_path = update_usb_path,
+    .read_list = &ReadUserList,
+    .read_codes = &ReadCodes,
+    .update_path = &update_usb_path,
 };
 
 /*
@@ -214,8 +210,8 @@ save_list_t online_saves = {
     .list = NULL,
     .count = 0,
     .path = ONLINE_URL,
-    .read_list = ReadOnlineList,
-    .read_codes = ReadOnlineSaves,
+    .read_list = &ReadOnlineList,
+    .read_codes = &ReadOnlineSaves,
     .update_path = NULL,
 };
 
@@ -522,8 +518,6 @@ void Draw_MainMenu_Ani()
 		if (icon_a == 32)
 			break;
 	}
-	
-	highlight_alpha = 32;
 }
 
 void Draw_MainMenu()
@@ -1041,16 +1035,19 @@ void getSaveDetails(save_list_t * save_list)
 		return;
 	}
 
+	char* subtitle = (char*) sfo_get_param_value(sfo, "SUB_TITLE");
 	sfo_params_ids_t* param_ids = (sfo_params_ids_t*)(sfo_get_param_value(sfo, "PARAMS") + 0x1C);
 	param_ids->user_id = ES32(param_ids->user_id);
 
-    asprintf(&selected_centry.name, "Details");
+    asprintf(&selected_centry.name, selected_entry.title_id);
     asprintf(&selected_centry.codes, "%s\n\n"
-        "Name: %s\n"
         "Title: %s\n"
+        "Sub-Title: %s\n"
+        "Lock: %s\n\n"
         "User ID: %08d\n"
         "Account ID: %s\n"
-        "PSID: %016lX %016lX\n", selected_entry.path, selected_entry.name, selected_entry.title_id,
+        "PSID: %016lX %016lX\n", selected_entry.path, selected_entry.name, subtitle, 
+        (selected_entry.locked ? "Copying Prohibited" : "Unlocked"),
         param_ids->user_id, param_ids->account_id, param_ids->psid[0], param_ids->psid[1]);
 	LOG(selected_centry.codes);
 
@@ -1132,13 +1129,6 @@ void doMainMenu()
 
 		else if(paddata[0].BTN_CIRCLE && show_dialog(1, "Exit to XMB?"))
 			close_app = 1;
-
-		else if(paddata[0].BTN_SELECT)
-		{
-			LOG("Screen");
-//					dbglogger_screenshot_tmp(0);
-			LOG("Shot");
-		}
 	}
 	
 	Draw_MainMenu();
@@ -1155,6 +1145,8 @@ void doAboutMenu()
 			return;
 		}
 	}
+
+	Draw_AboutMenu();
 }
 
 void doOptionsMenu()
@@ -1258,7 +1250,6 @@ void doCodeOptionsMenu()
 		else if (paddata[0].BTN_CIRCLE)
 		{
 			code->activated = 0;
-//			selected_entry.codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]].activated = 0;
 			SetMenu(last_menu_id[MENU_CODE_OPTIONS]);
 			return;
 		}
@@ -1266,7 +1257,18 @@ void doCodeOptionsMenu()
 		{
 			code->options[option_index].sel = menu_sel;
 
-            //LOG ("{!!!} %s %s", code->options[option_index].value[menu_sel], code->codes);
+			if (strcmp(code->options[option_index].value[menu_sel], CODE_DOWNLOAD_USB0) == 0)
+			{
+        		if (http_download(ONLINE_URL, code->codes, ONLINE_LOCAL_CACHE "tmpsave.zip", 1))
+        		{
+        			if (extract_zip(ONLINE_LOCAL_CACHE "tmpsave.zip", SAVES_PATH_USB0))
+        				show_dialog(0, "Save game successfully downloaded");
+        
+        			unlink_secure(ONLINE_LOCAL_CACHE "tmpsave.zip");
+        		}
+        		code->activated = 0;
+			}
+
 			if (strcmp(code->options[option_index].value[menu_sel], CODE_DOWNLOAD_USB1) == 0)
 			{
         		if (http_download(ONLINE_URL, code->codes, ONLINE_LOCAL_CACHE "tmpsave.zip", 1))
@@ -1274,16 +1276,14 @@ void doCodeOptionsMenu()
         			if (extract_zip(ONLINE_LOCAL_CACHE "tmpsave.zip", SAVES_PATH_USB1))
         				show_dialog(0, "Save game successfully downloaded");
         
-        			unlink_secure(ONLINE_LOCAL_CACHE "tmp.zip");
+        			unlink_secure(ONLINE_LOCAL_CACHE "tmpsave.zip");
         		}
         		code->activated = 0;
 			}
 
-//			selected_entry.codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]].options[option_index].sel = menu_sel;
 			option_index++;
 			
 			if (option_index >= code->options_count)
-//			if (option_index >= selected_entry.codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]].options_count)
 			{
 				SetMenu(last_menu_id[MENU_CODE_OPTIONS]);
 				return;
@@ -1303,11 +1303,11 @@ void doSaveDetailsMenu()
 	{
 		if(paddata[0].BTN_UP)
 		{
-			move_selection_back(7, 1);
+			move_selection_back(9, 1);
 		}
 		else if(paddata[0].BTN_DOWN)
 		{
-			move_selection_fwd(7, 1);
+			move_selection_fwd(9, 1);
 		}
 		if (paddata[0].BTN_CIRCLE)
 		{
@@ -1402,7 +1402,7 @@ void doPatchMenu()
     	                else
 	                        show_dialog(0, "Error! Save file couldn't be resigned");
 
-						pfd_util_process(PFD_CMD_CHECK, 0);
+//						pfd_util_process(PFD_CMD_CHECK, 0);
 					}
                     else
                     {
@@ -1452,9 +1452,7 @@ void doPatchMenu()
 
 // Resets new frame
 void drawScene()
-{   
-//	tiny3d_Project2D(); // change to 2D context (remember you it works with 848 x 512 as virtual coordinates)
-	
+{
 	switch (menu_id)
 	{
 		case MENU_MAIN_SCREEN:
@@ -1475,7 +1473,6 @@ void drawScene()
 
 		case MENU_CREDITS: //About Menu
 			doAboutMenu();
-			Draw_AboutMenu();
 			break;
 
 		case MENU_SETTINGS: //Options Menu
@@ -1494,7 +1491,7 @@ void drawScene()
 			doCodeOptionsMenu();
 			break;
 
-		case MENU_SAVE_DETAILS: //Cheat View Menu
+		case MENU_SAVE_DETAILS: //Save Details Menu
 			doSaveDetailsMenu();
 			break;
 	}
@@ -1627,25 +1624,7 @@ s32 main(s32 argc, const char* argv[])
 		}
 		
 		tiny3d_Flip();
-		
-		/* Alpha calculation to control Highlight pulse */
-		if (highlight_pulse) {
-			highlight_alpha += highlight_amount;
-			if (highlight_alpha > 128) {
-				highlight_alpha = 128;
-				pause_pulse++;
-				if (pause_pulse >= 12) {
-					highlight_amount = -3;
-					pause_pulse = 0;
-				}
-			} else if (highlight_alpha < 32) {
-				highlight_amount = 3;
-				highlight_alpha = 32;
-			}
-		}
-		else {
-			highlight_alpha = 128;  
-		}
+
 	}
 	
 	return 0;

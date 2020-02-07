@@ -5,8 +5,6 @@
 #include "pfd.h"
 #include "util.h"
 
-#define LOG dbglogger_log
-
 typedef struct {
 	char *game_ids;
 	u8 *disc_hash_key;

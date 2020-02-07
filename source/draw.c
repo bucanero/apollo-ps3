@@ -273,11 +273,11 @@ void loading_screen_thread(void* user_data)
 
     	tiny3d_Project2D();
 
-    	DrawBackground2D(0xFFFFFFFF);
+		DrawBackgroundTexture(0, 0xFF);
 
         //Loading animation
-        DrawTextureCentered(menu_textures[circle_loading_bg_png_index], 424, 300, 0, 89, 89, 0xFFFFFFFF);
-        DrawTextureRotated(menu_textures[circle_loading_seek_png_index], 424 , 300, 0, 89, 89, 0xFFFFFFFF, angle);
+        DrawTextureCentered(menu_textures[circle_loading_bg_png_index], 424, 256, 0, 89, 89, 0xFFFFFFFF);
+        DrawTextureRotated(menu_textures[circle_loading_seek_png_index], 424, 256, 0, 89, 89, 0xFFFFFFFF, angle);
 
     	tiny3d_Flip();
 	}

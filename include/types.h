@@ -15,13 +15,13 @@
 #include <unistd.h>
 //#	include <sys/mman.h>
 
-//#ifdef APOLLO_ENABLE_LOGGING
+#ifdef APOLLO_ENABLE_LOGGING
 #include <dbglogger.h>
 #define LOG dbglogger_log
-//#else
-//#define LOG(...)
-//#define dbglogger_init(...)
-//#endif
+#else
+#define LOG(...)
+#define dbglogger_init(...)
+#endif
 
 #include <sys/stat.h>
 #include <ppu-types.h>
