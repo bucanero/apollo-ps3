@@ -58,17 +58,15 @@ Currently, the list of available games and files is limited, but the project aim
 
 # FAQs
 
-1. Where I can get a save-game for *XYZ game*?
-
-  You can check sites like [Brewology.com](https://ps3.brewology.com/gamesaves/savedgames.php?page=savedgames&system=ps3), and [GameFAQs](https://gamefaqs.gamespot.com/ps3/). Also, searching on [Google](http://www.google.com) might help.
-  
-2. I have a save-game file that I want to share. How can I upload it?
-  
-  If you have a save file that is not currently available on the Online Database and want to share it, please check [this link](https://github.com/bucanero/apollo-saves) for instructions.
-  
-3. Why is it called **Apollo**?
-  
-  [Apollo](https://en.wikipedia.org/wiki/Apollo) was the twin brother of [Artemis](https://en.wikipedia.org/wiki/Artemis), goddess of the hunt. Since this project was born using the [Artemis-GUI](https://github.com/Dnawrkshp/ArtemisPS3/Artemis-GUI) codebase, I decided to respect that heritage by calling it Apollo.
+ 1. Where I can get a save-game for *XYZ game*?
+    
+    You can check sites like [Brewology.com](https://ps3.brewology.com/gamesaves/savedgames.php?page=savedgames&system=ps3), and [GameFAQs](https://gamefaqs.gamespot.com/ps3/). Also, searching on [Google](http://www.google.com) might help.
+ 1. I have a save-game file that I want to share. How can I upload it?
+    
+    If you have a save file that is not currently available on the Online Database and want to share it, please check [this link](https://github.com/bucanero/apollo-saves) for instructions.
+ 1. Why is it called **Apollo**?
+    
+    [Apollo](https://en.wikipedia.org/wiki/Apollo) was the twin brother of [Artemis](https://en.wikipedia.org/wiki/Artemis), goddess of the hunt. Since this project was born using the [Artemis-GUI](https://github.com/Dnawrkshp/ArtemisPS3/Artemis-GUI) codebase, I decided to respect that heritage by calling it Apollo.
 
 # Credits
 
