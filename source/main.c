@@ -499,7 +499,7 @@ void Draw_MainMenu_Ani()
 		//------------ Icons
 		
 		//Start game
-		DrawTexture(menu_textures[titlescr_ico_xmb_png_index], 200, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | icon_a);
+		DrawTexture(menu_textures[titlescr_ico_usb_png_index], 200, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | icon_a);
 		
 		//Cheats
 		DrawTexture(menu_textures[titlescr_ico_cht_png_index], 300, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | icon_a);
@@ -550,7 +550,7 @@ void Draw_MainMenu()
 	SetCurrentFont(font_comfortaa_regular);
 
 	//USB saves
-	c = titlescr_ico_xmb_png_index;
+	c = titlescr_ico_usb_png_index;
 	DrawTexture(menu_textures[c], 200, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 0) ? 0xFF : 32));
 	SetFontColor(APP_FONT_COLOR | ((menu_sel == 0) ? 0xFF : 32), 0);
 	DrawString(200 + (MENU_MAIN_ICON_WIDTH / 2), 390, "USB Saves");
@@ -639,7 +639,7 @@ void LoadTexture()
 	load_menu_texture(titlescr_ico_abt, png);
 	load_menu_texture(titlescr_ico_cht, png);
 	load_menu_texture(titlescr_ico_opt, png);
-	load_menu_texture(titlescr_ico_xmb, png);
+	load_menu_texture(titlescr_ico_usb, png);
 	load_menu_texture(titlescr_ico_net, png);
 	load_menu_texture(titlescr_logo, png);
 }

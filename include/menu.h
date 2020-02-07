@@ -35,7 +35,7 @@
 #define	 titlescr_ico_abt_png_index							28
 #define	 titlescr_ico_cht_png_index							29
 #define	 titlescr_ico_opt_png_index							30
-#define	 titlescr_ico_xmb_png_index							31
+#define	 titlescr_ico_usb_png_index							31
 #define	 titlescr_ico_net_png_index							32
 #define	 titlescr_logo_png_index							33
 
