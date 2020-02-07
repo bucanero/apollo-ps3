@@ -91,7 +91,7 @@ You can also set the `PS3LOAD` environment variable to the PS3 IP address: `expo
 This will allow you to use `make run` and send `apollo-ps3.self` directly to the PS3Load listener.
 
 To enable debug logging, build Apollo Save Tool with `make DEBUGLOG=1`. The application will send debug messages to
-UDP multicast address 239.255.0.100:30000. To receive them you can use [socat][] on your computer:
+UDP multicast address `239.255.0.100:30000`. To receive them you can use [socat][] on your computer:
 
     $ socat udp4-recv:30000,ip-add-membership=239.255.0.100:0.0.0.0 -
 
