@@ -1508,8 +1508,7 @@ void exiting()
 */
 s32 main(s32 argc, const char* argv[])
 {
-	dbglogger_init_str("tcp:192.168.1.102:18999");
-//	dbglogger_init_str("file:/dev_hdd0/tmp/apollo.log");
+	dbglogger_init();
 
 	http_init();
 

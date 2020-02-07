@@ -219,7 +219,6 @@ void pfd_util_end(void) {
 	if (file_names)
 		list_free(file_names);
 
-	LOG("clean up 3");
 /*
 	if (secure_file_ids) {
 		list_node_t *node;

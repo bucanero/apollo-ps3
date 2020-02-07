@@ -16,8 +16,7 @@ endif
 #---------------------------------------------------------------------------------
 #  TITLE, APPID, CONTENTID, ICON0, SFOXML before ppu_rules.
 #---------------------------------------------------------------------------------
-TC_ADD		:=	`date +%d%H%M`
-ICON0		:=	$(CURDIR)/ICON0.PNG
+ICON0		:=	$(CURDIR)/pkgfiles/ICON0.PNG
 
 #ICON1		:=	$(CURDIR)/ICON1.PAM
 
