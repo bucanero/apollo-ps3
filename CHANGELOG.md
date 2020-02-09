@@ -4,6 +4,14 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v0.5.1](https://github.com/bucanero/apollo-ps3/releases/tag/v0.5.1) - 2020-02-09
+
+Hot fix release.
+
+### Fixed
+
+* Fix unzip issue when unpacking online save files
+
 ## [v0.5.0](https://github.com/bucanero/apollo-ps3/releases/tag/v0.5.0) - 2020-02-07
 
 First public release.
