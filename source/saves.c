@@ -502,7 +502,7 @@ void _setManualCode(code_entry_t* entry, const char* name, const char* code)
 }
 
 /*
- * Function:		ReadCodes()
+ * Function:		ReadLocalCodes()
  * File:			saves.c
  * Project:			Apollo PS3
  * Description:		Reads an entire NCL file into an array of code_entry
@@ -511,7 +511,7 @@ void _setManualCode(code_entry_t* entry, const char* name, const char* code)
  *	_count_count:	Pointer to int (set to the number of codes within the ncl)
  * Return:			Returns an array of code_entry, null if failed to load
  */
-int ReadCodes(save_entry_t * save)
+int ReadLocalCodes(save_entry_t * save)
 {
     int name_length, code_len = 0, code_count = 3, cur_count = 0;
 //	int cur_count = 0, code_count = 2;
@@ -811,20 +811,23 @@ void UnloadGameList(save_entry_t * list, int count)
  *	b:				Second code
  * Return:			1 if greater, 0 if less or equal
  */
-int BubbleSortCodeList_Compare(code_entry_t a, code_entry_t b)
+int qsortCodeList_Compare(const void* itemA, const void* itemB)
 {
-	if (!a.name || !b.name)
+	code_entry_t* a = (code_entry_t*) itemA;
+	code_entry_t* b = (code_entry_t*) itemB;
+
+	if (!a->name || !b->name)
 		return 0;
 	
 	//Set up vars
-	int al = strlen(a.name), bl = strlen(b.name);
+	int al = strlen(a->name), bl = strlen(b->name);
 	int x = 0;
 	
 	//Do comparison
 	int smallmax = (al <= bl) ? al : bl;
 	for (x = 0; x < smallmax; x++)
 	{
-		char cA = a.name[x], cB = b.name[x];
+		char cA = a->name[x], cB = b->name[x];
 		if (cA >= 'A' && cA <= 'Z')
 			cA += 0x20;
 		if (cB >= 'A' && cB <= 'Z')
@@ -833,50 +836,13 @@ int BubbleSortCodeList_Compare(code_entry_t a, code_entry_t b)
 		if (cA > cB)
 			return 1;
 		else if (cA < cB)
-			return 0;
+			return -1;
 	}
 	
 	if (al > bl)
 		return 1;
 	
 	return 0;
-}
-
-/*
- * Function:		BubbleSortCodeList()
- * File:			saves.c
- * Project:			Apollo PS3
- * Description:		Sorts the game_entry's codes by name (least to greatest)
- * Arguments:
- *	game:			Game's code list to sort
- * Return:			Returns sorted game list
- */
-save_entry_t BubbleSortCodeList(save_entry_t game)
-{
-	if (game.code_sorted)
-		return game;
-
-	code_entry_t * swap = (code_entry_t *)malloc(sizeof(code_entry_t) * 1);
-	int c = 0, d = 0, count = game.code_count;
-	
-	for (c = 0; c < (count-1); c++)
-	{
-		int dMax = (count - c - 1);
-		for (d = 0 ; d < dMax; d++)
-		{
-			if (BubbleSortCodeList_Compare(game.codes[d], game.codes[d+1]))
-			{
-				swap[0] = game.codes[d];
-				game.codes[d]   = game.codes[d+1];
-				game.codes[d+1] = swap[0];
-			}
-		}
-	}
-	
-	free (swap);
-	
-	game.code_sorted = 1;
-	return game;
 }
 
 /*
@@ -885,21 +851,23 @@ save_entry_t BubbleSortCodeList(save_entry_t game)
  * Project:			Apollo PS3
  * Description:		Compares two game_entry for BubbleSort
  * Arguments:
- *	a:				Code to process
- *	b:				Pointer to int (set to the number of tags within the code)
- * Return:			Returns an array of option_entry and the count at *count
+ *	a:				First code
+ *	b:				Second code
+ * Return:			1 if greater, 0 if less or equal
  */
-int BubbleSortGameList_Compare(save_entry_t a, save_entry_t b)
+int qsortSaveList_Compare(const void* itemA, const void* itemB)
 {
+	save_entry_t* a = (save_entry_t*) itemA;
+	save_entry_t* b = (save_entry_t*) itemB;
 	//Set up vars
-	int al = strlen(a.name), bl = strlen(b.name);
+	int al = strlen(a->name), bl = strlen(b->name);
 	int x = 0;
 	
 	//Do comparison
 	int smallmax = (al <= bl) ? al : bl;
 	for (x = 0; x < smallmax; x++)
 	{
-		char cA = a.name[x], cB = b.name[x];
+		char cA = a->name[x], cB = b->name[x];
 		if (cA >= 'A' && cA <= 'Z')
 			cA += 0x20;
 		if (cB >= 'A' && cB <= 'Z')
@@ -908,46 +876,13 @@ int BubbleSortGameList_Compare(save_entry_t a, save_entry_t b)
 		if (cA > cB)
 			return 1;
 		else if (cA < cB)
-			return 0;
+			return -1;
 	}
 	
 	if (al > bl)
 		return 1;
 	
 	return 0;
-}
-
-/*
- * Function:		BubbleSortGameList()
- * File:			saves.c
- * Project:			Apollo PS3
- * Description:		Sorts array of game_entry by name (least to greatest)
- * Arguments:
- *	games:			Pointer to array of games to be sorted
- *	count:			Number of games in games
- * Return:			void
- */
-void BubbleSortGameList(save_entry_t * games, int count)
-{
-	//Allocate so we don't use the stack
-	save_entry_t * swap = (save_entry_t *)malloc(sizeof(save_entry_t) * 1);
-	int c = 0, d = 0;
-	
-	//Bubble sort
-	for (c = 0; c < (count-1); c++)
-	{
-		for (d = 0 ; d < (count - c - 1); d++)
-		{
-			if (BubbleSortGameList_Compare(games[d], games[d+1]))
-			{
-				swap[0]    = games[d];
-				games[d]   = games[d+1];
-				games[d+1] = swap[0];
-			}
-		}
-	}
-	
-	free (swap);
 }
 
 /*

@@ -73,9 +73,6 @@ extern int screen_width;						// Set to dimensions of the screen in main()
 extern int screen_height;
 
 extern int highlight_alpha;						// Alpha of the selected
-extern int highlight_pulse;						// Whether the increment the highlight
-extern int highlight_amount;					// Amount of alpha to inc/dec each time
-extern int pause_pulse;							// Counter that holds how long alpha is held in place
 extern int idle_time;							// Set by readPad
 
 extern const char * menu_about_strings[];

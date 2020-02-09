@@ -59,9 +59,9 @@ typedef struct {
     save_entry_t * list;
     int count;
     char path[128];
-    void(*update_path)(char *);
-    int(*read_codes)(save_entry_t *);
-    save_entry_t* (*read_list)(const char*, int *);
+    void (*UpdatePath)(char *);
+    int (*ReadCodes)(save_entry_t *);
+    save_entry_t* (*ReadList)(const char*, int *);
 } save_list_t;
 
 save_entry_t * ReadUserList(const char* userPath, int * gmc);
@@ -72,12 +72,12 @@ char * ParseActivatedGameList(save_entry_t * list, int count);
 void writeFile(const char * path, char * a, char * b);
 char * readFile(const char * path, long* size);
 void readFileBuffered(const char * path, char * buffer);
-void BubbleSortGameList(save_entry_t * games, int count);
-save_entry_t BubbleSortCodeList(save_entry_t game);
+int qsortSaveList_Compare(const void* A, const void* B);
+int qsortCodeList_Compare(const void* A, const void* B);
 int isCodeLineValid(char * line);
 long getFileSize(const char * path);
 option_entry_t * ReadOptions(code_entry_t code, int * count);
-int ReadCodes(save_entry_t * save);
+int ReadLocalCodes(save_entry_t * save);
 int ReadOnlineSaves(save_entry_t * game);
 
 int http_init(void);

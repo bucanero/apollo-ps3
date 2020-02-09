@@ -186,9 +186,9 @@ save_list_t hdd_saves = {
     .list = NULL,
     .count = 0,
     .path = "",
-    .read_list = &ReadUserList,
-    .read_codes = &ReadCodes,
-    .update_path = &update_hdd_path,
+    .ReadList = &ReadUserList,
+    .ReadCodes = &ReadLocalCodes,
+    .UpdatePath = &update_hdd_path,
 };
 
 /*
@@ -198,9 +198,9 @@ save_list_t usb_saves = {
     .list = NULL,
     .count = 0,
     .path = "",
-    .read_list = &ReadUserList,
-    .read_codes = &ReadCodes,
-    .update_path = &update_usb_path,
+    .ReadList = &ReadUserList,
+    .ReadCodes = &ReadLocalCodes,
+    .UpdatePath = &update_usb_path,
 };
 
 /*
@@ -210,9 +210,9 @@ save_list_t online_saves = {
     .list = NULL,
     .count = 0,
     .path = ONLINE_URL,
-    .read_list = &ReadOnlineList,
-    .read_codes = &ReadOnlineSaves,
-    .update_path = NULL,
+    .ReadList = &ReadOnlineList,
+    .ReadCodes = &ReadOnlineSaves,
+    .UpdatePath = NULL,
 };
 
 save_entry_t selected_entry;
@@ -861,14 +861,47 @@ void ReloadUserSaves(save_list_t* save_list)
 		save_list->list = NULL;
 	}
 
-	if (save_list->update_path)
-		save_list->update_path(save_list->path);
+	if (save_list->UpdatePath)
+		save_list->UpdatePath(save_list->path);
 
-	save_list->list = save_list->read_list(save_list->path, &(save_list->count));
+	save_list->list = save_list->ReadList(save_list->path, &(save_list->count));
 	if (apollo_config.doSort)
-		BubbleSortGameList(save_list->list, save_list->count);
+		qsort(save_list->list, save_list->count, sizeof(save_entry_t), &qsortSaveList_Compare);
 
     stop_loading_screen();
+}
+
+void LoadSaveDetails()
+{
+	char sfoPath[256];
+
+	snprintf(sfoPath, sizeof(sfoPath), "%s" "PARAM.SFO", selected_entry.path);
+	LOG("Save Details :: Reading %s...", sfoPath);
+
+	sfo_context_t* sfo = sfo_alloc();
+	if (sfo_read(sfo, sfoPath) < 0) {
+		LOG("Unable to read from '%s'", sfoPath);
+		sfo_free(sfo);
+		return;
+	}
+
+	char* subtitle = (char*) sfo_get_param_value(sfo, "SUB_TITLE");
+	sfo_params_ids_t* param_ids = (sfo_params_ids_t*)(sfo_get_param_value(sfo, "PARAMS") + 0x1C);
+	param_ids->user_id = ES32(param_ids->user_id);
+
+    asprintf(&selected_centry.name, selected_entry.title_id);
+    asprintf(&selected_centry.codes, "%s\n\n"
+        "Title: %s\n"
+        "Sub-Title: %s\n"
+        "Lock: %s\n\n"
+        "User ID: %08d\n"
+        "Account ID: %s\n"
+        "PSID: %016lX %016lX\n", selected_entry.path, selected_entry.name, subtitle, 
+        (selected_entry.locked ? "Copying Prohibited" : "Unlocked"),
+        param_ids->user_id, param_ids->account_id, param_ids->psid[0], param_ids->psid[1]);
+	LOG(selected_centry.codes);
+
+	sfo_free(sfo);
 }
 
 void SetMenu(int id)
@@ -951,6 +984,7 @@ void SetMenu(int id)
 			break;
 
 		case MENU_SAVE_DETAILS: //Save Detail View Menu
+    	    LoadSaveDetails();
 			if (apollo_config.doAni)
 				Draw_CheatsMenu_View_Ani(selected_entry.name);
 			break;
@@ -1020,40 +1054,6 @@ void move_selection_fwd(int game_count, int steps)
 		menu_sel = game_count - 1;
 }
 
-void getSaveDetails(save_list_t * save_list)
-{
-	char sfoPath[256];
-	selected_entry = save_list->list[menu_sel];
-
-	snprintf(sfoPath, sizeof(sfoPath), "%s" "PARAM.SFO", selected_entry.path);
-	LOG("Save Details :: Reading %s...", sfoPath);
-
-	sfo_context_t* sfo = sfo_alloc();
-	if (sfo_read(sfo, sfoPath) < 0) {
-		LOG("Unable to read from '%s'", sfoPath);
-		sfo_free(sfo);
-		return;
-	}
-
-	char* subtitle = (char*) sfo_get_param_value(sfo, "SUB_TITLE");
-	sfo_params_ids_t* param_ids = (sfo_params_ids_t*)(sfo_get_param_value(sfo, "PARAMS") + 0x1C);
-	param_ids->user_id = ES32(param_ids->user_id);
-
-    asprintf(&selected_centry.name, selected_entry.title_id);
-    asprintf(&selected_centry.codes, "%s\n\n"
-        "Title: %s\n"
-        "Sub-Title: %s\n"
-        "Lock: %s\n\n"
-        "User ID: %08d\n"
-        "Account ID: %s\n"
-        "PSID: %016lX %016lX\n", selected_entry.path, selected_entry.name, subtitle, 
-        (selected_entry.locked ? "Copying Prohibited" : "Unlocked"),
-        param_ids->user_id, param_ids->account_id, param_ids->psid[0], param_ids->psid[1]);
-	LOG(selected_centry.codes);
-
-	sfo_free(sfo);
-}
-
 void doSaveMenu(save_list_t * save_list)
 {
     if(readPad(0))
@@ -1090,17 +1090,17 @@ void doSaveMenu(save_list_t * save_list)
     	else if (paddata[0].BTN_CROSS)
     	{
     		if (!save_list->list[menu_sel].codes)
-    			save_list->read_codes(&save_list->list[menu_sel]);
+    			save_list->ReadCodes(&save_list->list[menu_sel]);
     
     		if (apollo_config.doSort)
-    			save_list->list[menu_sel] = BubbleSortCodeList(save_list->list[menu_sel]);
+    			qsort(save_list->list[menu_sel].codes, save_list->list[menu_sel].code_count, sizeof(code_entry_t), &qsortCodeList_Compare);
     		selected_entry = save_list->list[menu_sel];
     		SetMenu(MENU_PATCHES);
     		return;
     	}
-    	else if (paddata[0].BTN_TRIANGLE && save_list->update_path)
+    	else if (paddata[0].BTN_TRIANGLE && save_list->UpdatePath)
     	{
-    	    getSaveDetails(save_list);
+    		selected_entry = save_list->list[menu_sel];
     		SetMenu(MENU_SAVE_DETAILS);
     		return;
     	}

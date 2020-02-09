@@ -17,7 +17,10 @@ int _mkdirs(const char* dir)
     char path[256];
     snprintf(path, sizeof(path), "%s", dir);
     LOG("mkdirs for %s", path);
-    char* ptr = path;
+
+    char* ptr = strrchr(path, '/');
+    *ptr = 0;
+    ptr = path;
     ptr++;
     while (*ptr)
     {
@@ -78,13 +81,10 @@ int extract_zip(const char* zip_file, const char* dest_path)
 			filename++;
 
 		snprintf(path, sizeof(path)-1, "%s%s", dest_path, filename);
+		_mkdirs(path);
 
-		if (filename[strlen(filename) - 1] == '/') {
-			if (!_mkdirs(path))
-				return 0;
-
+		if (filename[strlen(filename) - 1] == '/')
 			continue;
-		}
 
 		struct zip_stat st;
 		if (zip_stat_index(archive, i, 0, &st)) {
@@ -102,7 +102,7 @@ int extract_zip(const char* zip_file, const char* dest_path)
 			zip_fclose(zfd);
             zip_close(archive);
 			end_progress_bar();
-            LOG("Error opening temporary file.");
+            LOG("Error opening temporary file '%s'.", path);
             return 0;
 		}
 
