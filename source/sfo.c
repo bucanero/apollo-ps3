@@ -5,9 +5,6 @@
 #define SFO_MAGIC   0x46535000u
 #define SFO_VERSION 0x0101u /* 1.1 */
 
-#define SFO_ACCOUNT_ID_SIZE 16
-#define SFO_PSID_SIZE 16
-
 typedef struct sfo_header_s {
 	u32 magic;
 	u32 version;

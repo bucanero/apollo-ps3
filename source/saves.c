@@ -802,32 +802,26 @@ void UnloadGameList(save_entry_t * list, int count)
 }
 
 /*
- * Function:		BubbleSortCodeList_Compare()
+ * Function:		_qsort_compare()
  * File:			saves.c
  * Project:			Apollo PS3
- * Description:		Compares two code_entry's names for BubbleSort
+ * Description:		Compares two string names for QuickSort
  * Arguments:
  *	a:				First code
  *	b:				Second code
- * Return:			1 if greater, 0 if less or equal
+ * Return:			1 if greater, -1 if less, or 0 if equal
  */
-int qsortCodeList_Compare(const void* itemA, const void* itemB)
+int _qsort_compare(const char* a_name, const char* b_name)
 {
-	code_entry_t* a = (code_entry_t*) itemA;
-	code_entry_t* b = (code_entry_t*) itemB;
-
-	if (!a->name || !b->name)
-		return 0;
-	
 	//Set up vars
-	int al = strlen(a->name), bl = strlen(b->name);
+	int al = strlen(a_name), bl = strlen(b_name);
 	int x = 0;
 	
 	//Do comparison
 	int smallmax = (al <= bl) ? al : bl;
 	for (x = 0; x < smallmax; x++)
 	{
-		char cA = a->name[x], cB = b->name[x];
+		char cA = a_name[x], cB = b_name[x];
 		if (cA >= 'A' && cA <= 'Z')
 			cA += 0x20;
 		if (cB >= 'A' && cB <= 'Z')
@@ -845,44 +839,33 @@ int qsortCodeList_Compare(const void* itemA, const void* itemB)
 	return 0;
 }
 
+int qsortCodeList_Compare(const void* itemA, const void* itemB)
+{
+	code_entry_t* a = (code_entry_t*) itemA;
+	code_entry_t* b = (code_entry_t*) itemB;
+
+	if (!a->name || !b->name)
+		return 0;
+
+	return _qsort_compare(a->name, b->name);
+}
+
 /*
- * Function:		BubbleSortGameList_Compare()
+ * Function:		qsortSaveList_Compare()
  * File:			saves.c
  * Project:			Apollo PS3
- * Description:		Compares two game_entry for BubbleSort
+ * Description:		Compares two game_entry for QuickSort
  * Arguments:
  *	a:				First code
  *	b:				Second code
- * Return:			1 if greater, 0 if less or equal
+ * Return:			1 if greater, -1 if less, or 0 if equal
  */
 int qsortSaveList_Compare(const void* itemA, const void* itemB)
 {
 	save_entry_t* a = (save_entry_t*) itemA;
 	save_entry_t* b = (save_entry_t*) itemB;
-	//Set up vars
-	int al = strlen(a->name), bl = strlen(b->name);
-	int x = 0;
-	
-	//Do comparison
-	int smallmax = (al <= bl) ? al : bl;
-	for (x = 0; x < smallmax; x++)
-	{
-		char cA = a->name[x], cB = b->name[x];
-		if (cA >= 'A' && cA <= 'Z')
-			cA += 0x20;
-		if (cB >= 'A' && cB <= 'Z')
-			cB += 0x20;
-		
-		if (cA > cB)
-			return 1;
-		else if (cA < cB)
-			return -1;
-	}
-	
-	if (al > bl)
-		return 1;
-	
-	return 0;
+
+	return _qsort_compare(a->name, b->name);
 }
 
 /*

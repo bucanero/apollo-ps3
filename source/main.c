@@ -142,9 +142,9 @@ const char * menu_about_strings[] = { "Bucanero", "Developer",
 									NULL, NULL };
 
 char user_id_str[9] = "00000000";
-char psid_str1[17] = "0000000000000000";
-char psid_str2[17] = "0000000000000000";
-char account_id_str[17] = "0000000000000000";
+char psid_str1[SFO_PSID_SIZE+1] = "0000000000000000";
+char psid_str2[SFO_PSID_SIZE+1] = "0000000000000000";
+char account_id_str[SFO_ACCOUNT_ID_SIZE+1] = "0000000000000000";
 
 const char * menu_about_strings_project[] = { psid_str1, psid_str2,
 											"Account ID", account_id_str,
@@ -1339,7 +1339,7 @@ void build_patch(sfo_patch_t* patch)
 		    patch->flags = SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION;
 
 		if (strcmp(selected_entry.codes[j].codes, CODE_REMOVE_ACCOUNT_ID) == 0)
-		    strcpy(patch->account_id, "0000000000000000");
+		    bzero(patch->account_id, SFO_ACCOUNT_ID_SIZE);
 
 		selected_entry.codes[j].activated = 0;
 	}

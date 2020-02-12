@@ -8,6 +8,8 @@ extern "C" {
 #endif
 
 #define SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION (1 << 0)
+#define SFO_ACCOUNT_ID_SIZE 16
+#define SFO_PSID_SIZE 16
 
 typedef struct sfo_context_s sfo_context_t;
 
@@ -26,7 +28,7 @@ typedef struct {
 typedef struct {
 	uint64_t psid[2];
 	uint32_t user_id;
-	char account_id[17];
+	char account_id[SFO_ACCOUNT_ID_SIZE+1];
 } sfo_params_ids_t;
 
 sfo_context_t * sfo_alloc(void);
