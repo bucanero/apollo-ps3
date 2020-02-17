@@ -54,9 +54,7 @@
 #define MENU_SAVE_DETAILS   9
 
 //Font
-#include "comfortaa_bold_ttf.h"
-#include "comfortaa_light_ttf.h"
-#include "comfortaa_regular_ttf.h"
+#include "ttf_render.h"
 
 //Sound
 #include "spu_soundmodule_bin.h"
@@ -81,7 +79,10 @@ sysSpuImage spu_image;
 	   extern const uint32_t name##_##type##_size; \
 	   menu_textures[name##_##type##_index].buffer = (const void*) name##_##type; \
 	   menu_textures[name##_##type##_index].size = name##_##type##_size; \
+	   LoadTexture(name##_##type##_index); \
 	})
+
+#define show_message(msg)	show_dialog(0, msg)
 
 //Pad stuff
 padInfo padinfo;
@@ -95,6 +96,8 @@ void ani_callback(int sel);
 void horm_callback(int sel);
 void verm_callback(int sel);
 void update_callback(int sel);
+void clearcache_callback(int sel);
+void up_appdata_callback(int sel);
 
 void update_usb_path(char *p);
 void update_hdd_path(char *p);
@@ -118,6 +121,8 @@ const menu_option_t menu_options[] = {
 	{ .name = "Screen Horizontal Margin", .options = NULL, .type = APP_OPTION_INC, .value = &apollo_config.marginH, .callback = horm_callback },
 	{ .name = "Screen Vertical Margin", .options = NULL, .type = APP_OPTION_INC, .value = &apollo_config.marginV, .callback = verm_callback },
 	{ .name = "Version Update Check", .options = NULL, .type = APP_OPTION_BOOL, .value = &apollo_config.update, .callback = update_callback },
+	{ .name = "Clear Local Cache", .options = NULL, .type = APP_OPTION_CALL, .value = NULL, .callback = clearcache_callback },
+	{ .name = "Update Application Data", .options = NULL, .type = APP_OPTION_CALL, .value = NULL, .callback = up_appdata_callback },
 	{ .name = NULL }
 };
 
@@ -261,28 +266,6 @@ static void sys_callback(uint64_t status, uint64_t param, void* userdata) {
 		   break;
 		 
 	}
-}
-
-void DeleteBootHistory(void)
-{
-	DIR *d;
-	struct dirent *dir;
-	d = opendir("/dev_hdd0/home/");
-	char fullPath[256];
-	
-	//Delete home boot history files first
-	while ((dir = readdir(d)) != NULL)
-	{
-		if (strstr(dir->d_name, ".") == NULL && strstr(dir->d_name, "..") == NULL)
-		{
-			snprintf(fullPath, sizeof(fullPath), "/dev_hdd0/home/%s/etc/boot_history.dat", dir->d_name);
-			unlink_secure(fullPath);
-		}
-	}
-	
-	//Delete the other boot history files
-	unlink_secure("/dev_hdd0/vsh/pushlist/game.dat");
-	unlink_secure("/dev_hdd0/vsh/pushlist/patch.dat");
 }
 
 int pad_time = 0, rest_time = 0, pad_held_time = 0, rest_held_time = 0;
@@ -454,7 +437,7 @@ void Draw_MainMenu_Ani()
 		SetCurrentFont(font_comfortaa_light);
 		SetFontSize(APP_FONT_SIZE_DESCRIPTION);
 		SetFontColor(APP_FONT_COLOR | logo_a, 0);
-		DrawString(screen_width / 2, 210, MENU_MAIN_DESCRIPTION);
+		DrawString(0, 210, MENU_MAIN_DESCRIPTION);
 		
 		tiny3d_Flip();
 	}
@@ -491,10 +474,10 @@ void Draw_MainMenu_Ani()
 		SetCurrentFont(font_comfortaa_light);
 		SetFontSize(APP_FONT_SIZE_DESCRIPTION);
 		SetFontColor(APP_FONT_COLOR | 0xFF, 0);
-		DrawString(screen_width / 2, 210, MENU_MAIN_DESCRIPTION);
+		DrawString(0, 210, MENU_MAIN_DESCRIPTION);
 
 		SetFontSize(APP_FONT_SIZE_SUBTEXT);
-		DrawString(screen_width / 2, 480, MENU_MAIN_FOOTER);
+		DrawString(0, 480, MENU_MAIN_FOOTER);
 		
 		//------------ Icons
 		
@@ -539,10 +522,10 @@ void Draw_MainMenu()
 	SetCurrentFont(font_comfortaa_light);
 	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
 	SetFontColor(APP_FONT_COLOR | 0xFF, 0);
-	DrawString(screen_width / 2, 210, MENU_MAIN_DESCRIPTION);
+	DrawString(0, 210, MENU_MAIN_DESCRIPTION);
 
 	SetFontSize(APP_FONT_SIZE_SUBTEXT);
-	DrawString(screen_width / 2, 480, MENU_MAIN_FOOTER);
+	DrawString(0, 480, MENU_MAIN_FOOTER);
 
 	//------------ Icons
 	SetFontAlign(3);
@@ -582,27 +565,38 @@ void Draw_MainMenu()
 	SetFontAlign(0);
 }
 
+void LoadTexture(int cnt)
+{
+	pngLoadFromBuffer(menu_textures[cnt].buffer, menu_textures[cnt].size, &menu_textures[cnt].texture);
+
+	// copy texture datas from PNG to the RSX memory allocated for textures
+	if (menu_textures[cnt].texture.bmp_out)
+	{
+		memcpy(free_mem, menu_textures[cnt].texture.bmp_out, menu_textures[cnt].texture.pitch * menu_textures[cnt].texture.height);
+		free(menu_textures[cnt].texture.bmp_out); // free the PNG because i don't need this datas
+		menu_textures[cnt].texture_off = tiny3d_TextureOffset(free_mem);      // get the offset (RSX use offset instead address)
+		free_mem += ((menu_textures[cnt].texture.pitch * menu_textures[cnt].texture.height + 15) & ~15) / 4; // aligned to 16 bytes (it is u32) and update the pointer
+	}
+}
+
 // Used only in initialization. Allocates 64 mb for textures and loads the font
-void LoadTexture()
+void LoadTextures_Menu()
 {
 	texture_mem = tiny3d_AllocTexture(64*1024*1024); // alloc 64MB of space for textures (this pointer can be global)
 	
 	if(!texture_mem) return; // fail!
-
-	u32 * texture_pointer = texture_mem; // use to asign texture space without changes texture_mem
 	
 	ResetFont();
 	
-	TTFLoadFont(NULL, (void *)comfortaa_regular_ttf, comfortaa_regular_ttf_size);
-	texture_pointer = (u32 *) AddFontFromTTF((u8 *) texture_pointer, 32, 255, 32, 32, TTF_to_Bitmap);
-	TTFLoadFont(NULL, (void *)comfortaa_bold_ttf, comfortaa_bold_ttf_size);
-	texture_pointer = (u32 *) AddFontFromTTF((u8 *) texture_pointer, 32, 255, 32, 32, TTF_to_Bitmap);
-	TTFLoadFont(NULL, (void *)comfortaa_light_ttf, comfortaa_light_ttf_size);
-	texture_pointer = (u32 *) AddFontFromTTF((u8 *) texture_pointer, 32, 255, 32, 32, TTF_to_Bitmap);
-	
-	font_mem = texture_pointer;
-	
 	TTFUnloadFont();
+	TTFLoadFont(0, "/dev_flash/data/font/SCE-PS3-SR-R-LATIN2.TTF", NULL, 0);
+	TTFLoadFont(1, "/dev_flash/data/font/SCE-PS3-DH-R-CGB.TTF", NULL, 0);
+	TTFLoadFont(2, "/dev_flash/data/font/SCE-PS3-SR-R-JPN.TTF", NULL, 0);
+	TTFLoadFont(3, "/dev_flash/data/font/SCE-PS3-YG-R-KOR.TTF", NULL, 0);
+
+	free_mem = (u32*) init_ttf_table((u16*) texture_mem);
+	
+//	TTFUnloadFont();
 	
 	if (!menu_textures)
 		menu_textures = (png_texture *)malloc(sizeof(png_texture) * TOTAL_MENU_TEXTURES);
@@ -642,31 +636,34 @@ void LoadTexture()
 	load_menu_texture(titlescr_ico_usb, png);
 	load_menu_texture(titlescr_ico_net, png);
 	load_menu_texture(titlescr_logo, png);
-}
 
-void LoadTextures_Menu()
-{
-	if (!font_mem) return; // fail!
+/*
+	load_menu_texture(bg, png);
+	load_menu_texture(bg_water, png);
+	load_menu_texture(column_1, png);
+	load_menu_texture(column_2, png);
+	load_menu_texture(column_3, png);
+	load_menu_texture(column_4, png);
+	load_menu_texture(column_5, png);
+	load_menu_texture(column_6, png);
+	load_menu_texture(column_7, png);
+	load_menu_texture(jar_about, png);
+	load_menu_texture(jar_about_hover, png);
+	load_menu_texture(jar_bup, png);
+	load_menu_texture(jar_bup_hover, png);
+	load_menu_texture(jar_db, png);
+	load_menu_texture(jar_db_hover, png);
+	load_menu_texture(jar_empty, png);
+	load_menu_texture(jar_hdd, png);
+	load_menu_texture(jar_hdd_hover, png);
+	load_menu_texture(jar_opt, png);
+	load_menu_texture(jar_opt_hover, png);
+	load_menu_texture(jar_usb, png);
+	load_menu_texture(jar_usb_hover, png);
+	load_menu_texture(logo, png);
+*/
 
-	u32 * texture_pointer = font_mem; // use to assign texture space without changes texture_mem
-	int cnt = 0;
-
-	//Main Menu
-	for (cnt = 0; cnt < TOTAL_MENU_TEXTURES; cnt++)
-	{
-		pngLoadFromBuffer(menu_textures[cnt].buffer, menu_textures[cnt].size, &menu_textures[cnt].texture);
-
-		// copy texture datas from PNG to the RSX memory allocated for textures
-		if (menu_textures[cnt].texture.bmp_out)
-		{
-			memcpy(texture_pointer, menu_textures[cnt].texture.bmp_out, menu_textures[cnt].texture.pitch * menu_textures[cnt].texture.height);
-			free(menu_textures[cnt].texture.bmp_out); // free the PNG because i don't need this datas
-			menu_textures[cnt].texture_off = tiny3d_TextureOffset(texture_pointer);      // get the offset (RSX use offset instead address)
-			texture_pointer += ((menu_textures[cnt].texture.pitch * menu_textures[cnt].texture.height + 15) & ~15) / 4; // aligned to 16 bytes (it is u32) and update the pointer
-		}
-	}
-
-	u32 tBytes = texture_pointer - texture_mem;
+	u32 tBytes = free_mem - texture_mem;
 	LOG("LoadTextures_Menu() :: Allocated %db (%.02fkb, %.02fmb) for textures", tBytes, tBytes / (float)1024, tBytes / (float)(1024 * 1024));
 }
 
@@ -758,17 +755,37 @@ void verm_callback(int sel)
 	apollo_config.marginV = sel;
 }
 
-void db_download_callback(int sel)
+void clearcache_callback(int sel)
 {
-	if (sel)
-	{
-		if (http_download(ONLINE_URL, "cheatdb.zip", ONLINE_LOCAL_CACHE "tmp.zip", 1))
-		{
-			if (extract_zip(ONLINE_LOCAL_CACHE "tmp.zip", APOLLO_DATA_PATH))
-				show_dialog(0, "Successfully updated local cheat database");
+	DIR *d;
+	struct dirent *dir;
+	char dataPath[256];
 
-			unlink_secure(ONLINE_LOCAL_CACHE "tmp.zip");
+	d = opendir(ONLINE_LOCAL_CACHE);
+	if (!d)
+		return;
+
+	LOG("Cleaning folder '%s'...", ONLINE_LOCAL_CACHE);
+
+	while ((dir = readdir(d)) != NULL)
+	{
+		if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
+		{
+			snprintf(dataPath, sizeof(dataPath), "%s" "%s", ONLINE_LOCAL_CACHE, dir->d_name);
+			unlink_secure(dataPath);
 		}
+	}
+	closedir(d);
+}
+
+void up_appdata_callback(int sel)
+{
+	if (http_download(ONLINE_URL, "appdata.zip", ONLINE_LOCAL_CACHE "tmpdata.zip", 1))
+	{
+		if (extract_zip(ONLINE_LOCAL_CACHE "tmpdata.zip", APOLLO_DATA_PATH))
+			show_message("Successfully updated local application data");
+
+		unlink_secure(ONLINE_LOCAL_CACHE "tmpdata.zip");
 	}
 }
 
@@ -812,9 +829,9 @@ void update_callback(int sel)
 					if (show_dialog(1, "New version available! Download update?"))
 					{
 						if (http_download(ONLINE_URL, "apollo-ps3.pkg", "/dev_hdd0/packages/apollo-ps3.pkg", 1))
-							show_dialog(0, "Update downloaded!");
+							show_message("Update downloaded!");
 						else
-							show_dialog(0, "Download error!");
+							show_message("Download error!");
 					}
 				}
 			}
@@ -852,7 +869,7 @@ void update_hdd_path(char* path)
 
 void ReloadUserSaves(save_list_t* save_list)
 {
-    init_loading_screen();
+    init_loading_screen("Loading save games...");
 
 	if (save_list->list)
 	{
@@ -895,10 +912,12 @@ void LoadSaveDetails()
         "Sub-Title: %s\n"
         "Lock: %s\n\n"
         "User ID: %08d\n"
-        "Account ID: %s\n"
+        "Account ID: %s (%s)\n"
         "PSID: %016lX %016lX\n", selected_entry.path, selected_entry.name, subtitle, 
-        (selected_entry.locked ? "Copying Prohibited" : "Unlocked"),
-        param_ids->user_id, param_ids->account_id, param_ids->psid[0], param_ids->psid[1]);
+        (selected_entry.flags & SAVE_FLAG_LOCKED ? "Copying Prohibited" : "Unlocked"),
+        param_ids->user_id, param_ids->account_id, 
+        (selected_entry.flags & SAVE_FLAG_OWNER ? "Owner" : "Not Owner"),
+		param_ids->psid[0], param_ids->psid[1]);
 	LOG(selected_centry.codes);
 
 	sfo_free(sfo);
@@ -1196,8 +1215,11 @@ void doOptionsMenu()
 		}
 		else if (paddata[0].BTN_CROSS)
 		{
-			if ((menu_options[menu_sel].type == APP_OPTION_BOOL) || (menu_options[menu_sel].type == APP_OPTION_CALL))
+			if (menu_options[menu_sel].type == APP_OPTION_BOOL)
 				menu_options[menu_sel].callback(*menu_options[menu_sel].value);
+
+			else if (menu_options[menu_sel].type == APP_OPTION_CALL)
+				menu_options[menu_sel].callback(0);
 		}
 	}
 	
@@ -1235,6 +1257,93 @@ void doPatchViewMenu()
 	Draw_CheatsMenu_View("Patch view");
 }
 
+void downloadSave(const char* file, const char* path)
+{
+	if (http_download(ONLINE_URL, file, ONLINE_LOCAL_CACHE "tmpsave.zip", 1))
+	{
+		if (extract_zip(ONLINE_LOCAL_CACHE "tmpsave.zip", path))
+			show_message("Save game successfully downloaded");
+		else
+			show_message("Error extracting save game!");
+
+		unlink_secure(ONLINE_LOCAL_CACHE "tmpsave.zip");
+	}
+	else
+		show_message("Error downloading save game!");
+}
+
+
+uint32_t get_filename_id(const char* dir)
+{
+	char path[128];
+	uint32_t tid = 0;
+	
+	do
+	{
+	    tid++;
+	    snprintf(path, sizeof(path), "%s%08d.zip", dir, tid);
+	}
+	while (file_exists(path) == SUCCESS);
+
+	return tid;
+}
+
+void zipSave(const char* save_path, const char* exp_path)
+{
+	char* export_file;
+	char* tmp;
+	uint32_t fid;
+
+	if (mkdirs(exp_path) != SUCCESS)
+		return;
+
+    init_loading_screen("Exporting save game...");
+
+	fid = get_filename_id(exp_path);
+	asprintf(&export_file, "%s%08d.zip", exp_path, fid);
+
+	asprintf(&tmp, save_path);
+	*strrchr(tmp, '/') = 0;
+	*strrchr(tmp, '/') = 0;
+
+	zip_directory(tmp, save_path, export_file);
+
+	sprintf(export_file, "%s" "saves.txt", exp_path);
+
+	FILE* f = fopen(export_file, "a");
+	fprintf(f, "%08d.zip=[%s]%s\n", fid, selected_entry.title_id, selected_entry.name);
+	fclose(f);
+
+	free(export_file);
+	free(tmp);
+
+    stop_loading_screen();
+}
+
+void copySave(const char* save_path, const char* exp_path)
+{
+	char* copy_path;
+	char* tmp;
+
+	if ((strncmp(save_path, exp_path, strlen(exp_path)) == 0) || (mkdirs(exp_path) != SUCCESS))
+		return;
+
+    init_loading_screen("Copying save game...");
+
+	asprintf(&tmp, save_path);
+	*strrchr(tmp, '/') = 0;
+	asprintf(&copy_path, "%s%s", exp_path, strrchr(tmp, '/')+1);
+	*strrchr(tmp, '/') = 0;
+
+    LOG("Copying <%s> to %s...", save_path, copy_path);
+	copy_directory(tmp, save_path, copy_path);
+
+	free(copy_path);
+	free(tmp);
+
+    stop_loading_screen();
+}
+
 void doCodeOptionsMenu()
 {
     code_entry_t* code = &selected_entry.codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]];
@@ -1256,28 +1365,23 @@ void doCodeOptionsMenu()
 		else if (paddata[0].BTN_CROSS)
 		{
 			code->options[option_index].sel = menu_sel;
+			const char* codecmd = code->options[option_index].value[menu_sel];
 
-			if (strcmp(code->options[option_index].value[menu_sel], CODE_DOWNLOAD_USB0) == 0)
+			if (strncmp(codecmd, CMD_DOWNLOAD_USB, 10) == 0)
 			{
-        		if (http_download(ONLINE_URL, code->codes, ONLINE_LOCAL_CACHE "tmpsave.zip", 1))
-        		{
-        			if (extract_zip(ONLINE_LOCAL_CACHE "tmpsave.zip", SAVES_PATH_USB0))
-        				show_dialog(0, "Save game successfully downloaded");
-        
-        			unlink_secure(ONLINE_LOCAL_CACHE "tmpsave.zip");
-        		}
+				downloadSave(code->codes, codecmd[10] ? SAVES_PATH_USB1 : SAVES_PATH_USB0);
         		code->activated = 0;
 			}
 
-			if (strcmp(code->options[option_index].value[menu_sel], CODE_DOWNLOAD_USB1) == 0)
+			if (strncmp(codecmd, CMD_EXPORT_ZIP_USB, 10) == 0)
 			{
-        		if (http_download(ONLINE_URL, code->codes, ONLINE_LOCAL_CACHE "tmpsave.zip", 1))
-        		{
-        			if (extract_zip(ONLINE_LOCAL_CACHE "tmpsave.zip", SAVES_PATH_USB1))
-        				show_dialog(0, "Save game successfully downloaded");
-        
-        			unlink_secure(ONLINE_LOCAL_CACHE "tmpsave.zip");
-        		}
+				zipSave(selected_entry.path, codecmd[10] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0);
+        		code->activated = 0;
+			}
+
+			if (strncmp(codecmd, CMD_COPY_SAVE_USB, 10) == 0)
+			{
+				copySave(selected_entry.path, codecmd[10] ? SAVES_PATH_USB1 : SAVES_PATH_USB0);
         		code->activated = 0;
 			}
 
@@ -1335,10 +1439,10 @@ void build_patch(sfo_patch_t* patch)
 		    
     	LOG("Active: [%s]", selected_entry.codes[j].name);
 
-		if (strcmp(selected_entry.codes[j].codes, CODE_UNLOCK_COPY) == 0)
+		if (strcmp(selected_entry.codes[j].codes, CMD_UNLOCK_COPY) == 0)
 		    patch->flags = SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION;
 
-		if (strcmp(selected_entry.codes[j].codes, CODE_REMOVE_ACCOUNT_ID) == 0)
+		if (strcmp(selected_entry.codes[j].codes, CMD_REMOVE_ACCOUNT_ID) == 0)
 		    bzero(patch->account_id, SFO_ACCOUNT_ID_SIZE);
 
 		selected_entry.codes[j].activated = 0;
@@ -1376,7 +1480,7 @@ void doPatchMenu()
 
 //            LOG("[X] %d - '%s'", selected_entry.codes[menu_sel].activated, selected_entry.codes[menu_sel].codes);
 
-			if (strcmp(selected_entry.codes[menu_sel].codes, CODE_RESIGN_SAVE) == 0)
+			if (strcmp(selected_entry.codes[menu_sel].codes, CMD_RESIGN_SAVE) == 0)
 			{
 				char in_file_path[256];
 				sfo_patch_t patch = {
@@ -1398,15 +1502,15 @@ void doPatchMenu()
 					if (pfd_util_init(selected_entry.title_id, selected_entry.path))
 					{
 						if (pfd_util_process(PFD_CMD_UPDATE, 0) == SUCCESS)
-		                    show_dialog(0, "Save file successfully resigned!");
+		                    show_message("Save file successfully resigned!");
     	                else
-	                        show_dialog(0, "Error! Save file couldn't be resigned");
+	                        show_message("Error! Save file couldn't be resigned");
 
 //						pfd_util_process(PFD_CMD_CHECK, 0);
 					}
                     else
                     {
-	                    show_dialog(0, "Error! Save file couldn't be resigned");
+	                    show_message("Error! Save file couldn't be resigned");
                     }
 
 					pfd_util_end();
@@ -1534,7 +1638,6 @@ s32 main(s32 argc, const char* argv[])
 	if(sysUtilRegisterCallback(SYSUTIL_EVENT_SLOT0, sys_callback, NULL)==0) inited |= INITED_CALLBACK;
 	
 	// Load texture
-	LoadTexture();
 	LoadTextures_Menu();
 	LoadSounds();
 	

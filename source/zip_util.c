@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <sys/stat.h>
+#include <dirent.h>
 
 #include "saves.h"
 #include "common.h"
@@ -12,44 +13,61 @@ static inline uint64_t min64(uint64_t a, uint64_t b)
     return a < b ? a : b;
 }
 
-int _mkdirs(const char* dir)
+void walk_zip_directory(const char* startdir, const char* inputdir, struct zip *zipper)
 {
-    char path[256];
-    snprintf(path, sizeof(path), "%s", dir);
-    LOG("mkdirs for %s", path);
+	char fullname[256];	
+	struct dirent *dirp;
+	int len = strlen(startdir) + 1;
+	DIR *dp = opendir(inputdir);
 
-    char* ptr = strrchr(path, '/');
-    *ptr = 0;
-    ptr = path;
-    ptr++;
-    while (*ptr)
-    {
-        while (*ptr && *ptr != '/')
-        {
-            ptr++;
-        }
-        char last = *ptr;
-        *ptr = 0;
+	if (!dp) {
+		LOG("Failed to open input directory: '%s'", inputdir);
+		return;
+	}
 
-        if (dir_exists(path) == FAILED)
-        {
-            LOG("mkdir %s", path);
-            int err = mkdir(path, 0777);
-            if (err < 0)
-            {
-                LOG("mkdir %s err=0x%08x", path, (uint32_t)err);
-                return 0;
-            }
-        }
-        
-        *ptr++ = last;
-        if (last == 0)
-        {
-            break;
-        }
+	if (zip_add_dir(zipper, inputdir+len) < 0)
+		return;
+
+	while ((dirp = readdir(dp)) != NULL) {
+		if ((strcmp(dirp->d_name, ".")  != 0) && (strcmp(dirp->d_name, "..") != 0)) {
+  			snprintf(fullname, sizeof(fullname), "%s%s", inputdir, dirp->d_name);
+
+  			if (dir_exists(fullname) == SUCCESS) {
+    			if (zip_add_dir(zipper, &fullname[len]) < 0) {
+	      			LOG("Failed to add directory to zip: %s", fullname);
+    			}
+    			walk_zip_directory(startdir, fullname, zipper);
+  			} else {
+    			struct zip_source *source = zip_source_file(zipper, fullname, 0, 0);
+    			if (!source) {
+      				LOG("Failed to add file to zip: %s", fullname);
+      				continue;
+    			}
+    			if (zip_add(zipper, &fullname[len], source) < 0) {
+      				zip_source_free(source);
+      				LOG("Failed to add file to zip: %s", fullname);
+    			}
+  			}
+		}
+	}
+	closedir(dp);
+}
+
+int zip_directory(const char* basedir, const char* inputdir, const char* output_filename)
+{
+    int ret;
+    struct zip* archive = zip_open(output_filename, ZIP_CREATE | ZIP_EXCL, &ret);
+
+    LOG("Zipping <%s> to %s...", inputdir, output_filename);
+    if (!archive) {
+        LOG("Failed to open output file '%s'", output_filename);
+        return 0;
     }
 
-    return 1;
+    walk_zip_directory(basedir, inputdir, archive);
+    ret = zip_close(archive);
+
+    return (ret == ZIP_ER_OK);
 }
 
 int extract_zip(const char* zip_file, const char* dest_path)
@@ -81,7 +99,7 @@ int extract_zip(const char* zip_file, const char* dest_path)
 			filename++;
 
 		snprintf(path, sizeof(path)-1, "%s%s", dest_path, filename);
-		_mkdirs(path);
+		mkdirs(path);
 
 		if (filename[strlen(filename) - 1] == '/')
 			continue;

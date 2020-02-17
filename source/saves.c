@@ -1,6 +1,7 @@
 #include "saves.h"
 #include "common.h"
 #include "sfo.h"
+#include "settings.h"
 
 #include <stdio.h>
 #include <malloc.h>
@@ -501,6 +502,25 @@ void _setManualCode(code_entry_t* entry, const char* name, const char* code)
 	asprintf(&entry->codes, code);
 }
 
+option_entry_t* _createOptions(int count, const char* name, const char* value)
+{
+	option_entry_t* options = (option_entry_t*)malloc(sizeof(option_entry_t));
+
+	options->id = 0;
+	options->sel = -1;
+	options->size = count;
+	options->line = NULL;
+	options->value = malloc (sizeof(char *) * count);
+	options->name = malloc (sizeof(char *) * count);
+
+	asprintf(&options->name[0], "%s %d", name, 0);
+	asprintf(&options->value[0], "%s%c", value, 0);
+	asprintf(&options->name[1], "%s %d", name, 1);
+	asprintf(&options->value[1], "%s%c", value, 1);
+
+	return options;
+}
+
 /*
  * Function:		ReadLocalCodes()
  * File:			saves.c
@@ -513,7 +533,7 @@ void _setManualCode(code_entry_t* entry, const char* name, const char* code)
  */
 int ReadLocalCodes(save_entry_t * save)
 {
-    int name_length, code_len = 0, code_count = 3, cur_count = 0;
+    int name_length, code_len = 0, code_count = 5, cur_count = 0;
 //	int cur_count = 0, code_count = 2;
 	int lockd = 1;
 
@@ -600,11 +620,20 @@ int ReadLocalCodes(save_entry_t * save)
 
 	save->code_count = code_count;
 
-	_setManualCode(&ret[cur_count++], "Apply patches & Resign", CODE_RESIGN_SAVE);
-	_setManualCode(&ret[cur_count++], "Remove copy protection", CODE_UNLOCK_COPY);
-	_setManualCode(&ret[cur_count++], "Remove Account ID", CODE_REMOVE_ACCOUNT_ID);
-//	_setManualCode(&ret[cur_count++], "Update Account ID", CODE_UPDATE_ACCOUNT_ID);
-//	_setManualCode(&ret[cur_count++], "Update Console ID", CODE_UPDATE_PSID);
+	_setManualCode(&ret[cur_count++], "Apply patches & Resign", CMD_RESIGN_SAVE);
+	_setManualCode(&ret[cur_count++], "Remove copy protection", CMD_UNLOCK_COPY);
+	_setManualCode(&ret[cur_count++], "Remove Account ID", CMD_REMOVE_ACCOUNT_ID);
+//	_setManualCode(&ret[cur_count++], "Remove Console ID", CMD_REMOVE_PSID);
+
+	_setManualCode(&ret[cur_count], "Export save game to Zip", "");
+	ret[cur_count].options_count = 1;
+	ret[cur_count].options = _createOptions(2, "Export Zip to USB", CMD_EXPORT_ZIP_USB);
+	cur_count++;
+
+	_setManualCode(&ret[cur_count], "Copy save game to USB", "");
+	ret[cur_count].options_count = 1;
+	ret[cur_count].options = _createOptions(2, "Copy to USB", CMD_COPY_SAVE_USB);
+	cur_count++;
 
 	LOG("cur_count=%d,code_count=%d", cur_count, code_count);
 
@@ -666,7 +695,7 @@ int ReadOnlineSaves(save_entry_t * game)
 	code_entry_t * ret = (code_entry_t *)malloc(sizeof(code_entry_t) * game_count);
 	game->code_count = game_count;
 
-	int cur_count = 0;    
+	int cur_count = 0;
 	ptr = data;
 	
 	while (ptr < end && *ptr && cur_count < game_count)
@@ -689,20 +718,7 @@ int ReadOnlineSaves(save_entry_t * game)
 			asprintf(&ret[cur_count].name, "%s", content);
 
 			ret[cur_count].options_count = 1;
-			ret[cur_count].options = (option_entry_t*)malloc(sizeof(option_entry_t) * ret[cur_count].options_count);
-
-			ret[cur_count].options[0].id = 0;
-			ret[cur_count].options[0].sel = -1;
-			ret[cur_count].options[0].size = 2;
-			ret[cur_count].options[0].line = NULL;
-			ret[cur_count].options[0].value = malloc (sizeof(char *) * ret[cur_count].options[0].size);
-			ret[cur_count].options[0].name = malloc (sizeof(char *) * ret[cur_count].options[0].size);
-
-			asprintf(&ret[cur_count].options[0].name[0], "Download to USB 1");
-			asprintf(&ret[cur_count].options[0].value[0], CODE_DOWNLOAD_USB1);
-
-			asprintf(&ret[cur_count].options[0].name[1], "Download to USB 0");
-			asprintf(&ret[cur_count].options[0].value[1], CODE_DOWNLOAD_USB0);
+			ret[cur_count].options = _createOptions(2, "Download to USB", CMD_DOWNLOAD_USB);
 
 			LOG("%d - [%s] %s", cur_count, ret[cur_count].codes, ret[cur_count].name);
 			cur_count++;
@@ -801,44 +817,6 @@ void UnloadGameList(save_entry_t * list, int count)
 	LOG("UnloadGameList() :: Successfully unloaded game list");
 }
 
-/*
- * Function:		_qsort_compare()
- * File:			saves.c
- * Project:			Apollo PS3
- * Description:		Compares two string names for QuickSort
- * Arguments:
- *	a:				First code
- *	b:				Second code
- * Return:			1 if greater, -1 if less, or 0 if equal
- */
-int _qsort_compare(const char* a_name, const char* b_name)
-{
-	//Set up vars
-	int al = strlen(a_name), bl = strlen(b_name);
-	int x = 0;
-	
-	//Do comparison
-	int smallmax = (al <= bl) ? al : bl;
-	for (x = 0; x < smallmax; x++)
-	{
-		char cA = a_name[x], cB = b_name[x];
-		if (cA >= 'A' && cA <= 'Z')
-			cA += 0x20;
-		if (cB >= 'A' && cB <= 'Z')
-			cB += 0x20;
-		
-		if (cA > cB)
-			return 1;
-		else if (cA < cB)
-			return -1;
-	}
-	
-	if (al > bl)
-		return 1;
-	
-	return 0;
-}
-
 int qsortCodeList_Compare(const void* itemA, const void* itemB)
 {
 	code_entry_t* a = (code_entry_t*) itemA;
@@ -847,7 +825,7 @@ int qsortCodeList_Compare(const void* itemA, const void* itemB)
 	if (!a->name || !b->name)
 		return 0;
 
-	return _qsort_compare(a->name, b->name);
+	return strcasecmp(a->name, b->name);
 }
 
 /*
@@ -860,12 +838,9 @@ int qsortCodeList_Compare(const void* itemA, const void* itemB)
  *	b:				Second code
  * Return:			1 if greater, -1 if less, or 0 if equal
  */
-int qsortSaveList_Compare(const void* itemA, const void* itemB)
+int qsortSaveList_Compare(const void* a, const void* b)
 {
-	save_entry_t* a = (save_entry_t*) itemA;
-	save_entry_t* b = (save_entry_t*) itemB;
-
-	return _qsort_compare(a->name, b->name);
+	return strcasecmp(((save_entry_t*) a)->name, ((save_entry_t*) b)->name);
 }
 
 /*
@@ -917,6 +892,7 @@ save_entry_t * ReadUserList(const char* userPath, int * gmc)
 			ret[cur_count].codes = NULL;
 			ret[cur_count].code_count = 0;
 			ret[cur_count].code_sorted = 0;
+			ret[cur_count].flags = SAVE_FLAG_PS3;
 
 			asprintf(&ret[cur_count].path, "%s%s/", userPath, dir->d_name);
 			asprintf(&ret[cur_count].title_id, "%.9s", dir->d_name);
@@ -925,11 +901,16 @@ save_entry_t * ReadUserList(const char* userPath, int * gmc)
 			asprintf(&ret[cur_count].name, "%s", sfo_data);
 
 			sfo_data = (char*) sfo_get_param_value(sfo, "ATTRIBUTE");
-			ret[cur_count].locked =	sfo_data[0];
+			ret[cur_count].flags |=	(sfo_data[0] ? SAVE_FLAG_LOCKED : 0);
+
+			sprintf(sfoPath, "%016lx", apollo_config.account_id);
+			sfo_data = (char*) sfo_get_param_value(sfo, "ACCOUNT_ID");
+			if (strncmp(sfo_data, sfoPath, 16) == 0)
+				ret[cur_count].flags |=	SAVE_FLAG_OWNER;
 
 			sfo_free(sfo);
 				
-			LOG("[%s] L(%d) name '%s'", ret[cur_count].title_id, ret[cur_count].locked, ret[cur_count].name);
+			LOG("[%s] F(%d) name '%s'", ret[cur_count].title_id, ret[cur_count].flags, ret[cur_count].name);
 				
 			//printf("Successfully read %d codes\n", ret[cur_count].code_count);
 
@@ -1011,7 +992,7 @@ save_entry_t * ReadOnlineList(const char* urlPath, int * gmc)
 		{
 			ret[cur_count].path = NULL;
 			ret[cur_count].codes = NULL;
-			ret[cur_count].locked = 0;
+			ret[cur_count].flags = SAVE_FLAG_PS3;
 			ret[cur_count].code_count = 0;
 			ret[cur_count].code_sorted = 0;
 

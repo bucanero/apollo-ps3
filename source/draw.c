@@ -262,6 +262,7 @@ static int please_wait;
 void loading_screen_thread(void* user_data)
 {
     float angle = 0;
+
     while (please_wait == 1)
     {
         angle += 0.1f;
@@ -279,6 +280,8 @@ void loading_screen_thread(void* user_data)
         DrawTextureCentered(menu_textures[circle_loading_bg_png_index], 424, 256, 0, 89, 89, 0xFFFFFFFF);
         DrawTextureRotated(menu_textures[circle_loading_seek_png_index], 424, 256, 0, 89, 89, 0xFFFFFFFF, angle);
 
+		DrawString(0, 356, (char*) user_data);		
+
     	tiny3d_Flip();
 	}
 
@@ -286,12 +289,16 @@ void loading_screen_thread(void* user_data)
     sysThreadExit (0);
 }
 
-int init_loading_screen()
+int init_loading_screen(const char* message)
 {
     sys_ppu_thread_t tid;
     please_wait = 1;
-    
-    int ret = sysThreadCreate (&tid, loading_screen_thread, NULL, 1000, 16*1024, THREAD_JOINABLE, "please_wait");
+
+	SetFontAlign(1);
+	SetFontSize(APP_FONT_SIZE_SELECTION);
+	SetFontColor(APP_FONT_COLOR | 0xFF, 0);
+
+    int ret = sysThreadCreate (&tid, loading_screen_thread, (void*) message, 1000, 16*1024, THREAD_JOINABLE, "please_wait");
 
     return ret;
 }

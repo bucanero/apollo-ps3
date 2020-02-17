@@ -10,20 +10,43 @@
 #define APOLLO_DATA_PATH		APOLLO_PATH "DATA/"
 #define APOLLO_UPDATE_URL		"https://api.github.com/repos/bucanero/apollo-ps3/releases/latest"
 
-#define SAVES_PATH_USB0			"/dev_usb000/PS3/SAVEDATA/"
-#define SAVES_PATH_USB1			"/dev_usb001/PS3/SAVEDATA/"
-#define SAVES_PATH_HDD			"/dev_hdd0/home/%08d/savedata/"
+#define USB0_PATH               "/dev_usb000/PS3/"
+#define USB1_PATH               "/dev_usb001/PS3/"
+#define USER_PATH_HDD			"/dev_hdd0/home/%08d/"
+#define SAVES_PATH_USB0			USB0_PATH "SAVEDATA/"
+#define SAVES_PATH_USB1			USB1_PATH "SAVEDATA/"
+#define SAVES_PATH_HDD			USER_PATH_HDD "savedata/"
+#define TROPHY_PATH_HDD			USER_PATH_HDD "trophy/"
+#define EXDATA_PATH_HDD			USER_PATH_HDD "exdata/"
+
+#define EXPORT_PATH_USB0        USB0_PATH "EXPORT/"
+#define EXPORT_PATH_USB1        USB1_PATH "EXPORT/"
 
 #define ONLINE_URL				"http://apollo-dl.psdev.tk/"
 #define ONLINE_LOCAL_CACHE		APOLLO_PATH "CACHE/"
 #define ONLINE_CACHE_TIMEOUT    24*3600     // 1-day local cache
 
-#define CODE_RESIGN_SAVE        "RESIGN_SAVE"
-#define CODE_UNLOCK_COPY        "UNLOCK_COPY"
-#define CODE_REMOVE_ACCOUNT_ID  "REMOVE_ACCT"
-#define CODE_DOWNLOAD_USB0      "DNLOAD_USB0"
-#define CODE_DOWNLOAD_USB1      "DNLOAD_USB1"
-#define CODE_DOWNLOAD_HDD       "DNLOAD_HDD0"
+#define CMD_RESIGN_SAVE         "RESIGN_SAVE"
+#define CMD_UNLOCK_COPY         "UNLOCK_COPY"
+#define CMD_REMOVE_ACCOUNT_ID   "REMOVE_ACCT"
+#define CMD_REMOVE_PSID         "REMOVE_PSID"
+#define CMD_DOWNLOAD_USB        "DNLOAD_USB"
+#define CMD_DOWNLOAD_HDD        "DNLOAD_HDD0"
+#define CMD_COPY_SAVE_USB       "COPYSG_USB"
+
+// Export commands
+#define CMD_EXPORT_ZIP_USB      "EXPORT_ZIP"
+#define CMD_EXP_EXDATA_USB      "EXP_EXDATA"
+#define CMD_EXP_TROPHY_USB      "EXP_TROPHY"
+#define CMD_EXP_SAVES_USB       "EXP__SAVES"
+
+// Save flags
+#define SAVE_FLAG_LOCKED        1
+#define SAVE_FLAG_OWNER         2
+#define SAVE_FLAG_PS3           4
+#define SAVE_FLAG_PSX           8
+#define SAVE_FLAG_PS2           16
+#define SAVE_FLAG_PSP           32
 
 typedef struct option_entry
 {
@@ -38,7 +61,7 @@ typedef struct option_entry
 typedef struct code_entry
 {
     char * name;
-    int activated;
+    unsigned char activated;
     int options_count;
     char * codes;
     option_entry_t * options;
@@ -49,9 +72,9 @@ typedef struct save_entry
     char * name;
 	char * title_id;
 	char * path;
-	unsigned char locked;
+	unsigned int flags;
     int code_count;
-    int code_sorted;
+    unsigned char code_sorted;
     code_entry_t * codes;
 } save_entry_t;
 
@@ -85,11 +108,12 @@ void http_end(void);
 int http_download(const char* url, const char* filename, const char* local_dst, int show_progress);
 
 int extract_zip(const char* zip_file, const char* dest_path);
+int zip_directory(const char* basedir, const char* inputdir, const char* output_zipfile);
 
-int show_dialog(int tdialog, const char * str);
+int show_dialog(int dialog_type, const char * str);
 void init_progress_bar(const char* progress_bar_title, const char* msg);
 void update_progress_bar(long unsigned int* progress, const long unsigned int total_size, const char* msg);
 void end_progress_bar(void);
 
-int init_loading_screen();
+int init_loading_screen(const char* msg);
 void stop_loading_screen();

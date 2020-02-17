@@ -10,6 +10,7 @@
 
 #include "libfont.h"
 #include "menu.h"
+#include "ttf_render.h"
 
 struct t_font_description
 {
@@ -358,20 +359,9 @@ void RegisterSpecialCharacter(char value, short fw, short fy, float sx, float sy
 
 }
 
-int WidthFromStr(u8 * str)
+int WidthFromStr(const char * str)
 {
-    int w = 0;
-
-    while(*str) {
-		special_char* schr = GetSpecialCharFromValue(*str);
-		if (schr)
-			w += ((font_datas.sx * schr->sx) + font_datas.extra) * schr->fw / (float)font_datas.fonts[font_datas.current_font].w;
-		else
-			w += (font_datas.sx + font_datas.extra) * font_datas.fonts[font_datas.current_font].fw[*str] / (float)font_datas.fonts[font_datas.current_font].w;
-		str++;
-    }
-
-    return w;
+	return width_ttf_string(str, font_datas.sx, font_datas.sy);
 }
 
 int WidthFromStrMono(u8 * str)
@@ -388,10 +378,14 @@ int WidthFromStrMono(u8 * str)
 
 void DrawCharSpecial(float x, float y, float z, const special_char* schr)
 {
-	float h = (float)font_datas.fonts[font_datas.current_font].h;
-	float dx = font_datas.sx * schr->sx, dy = font_datas.sy * schr->sy;
+//	float h = (float)font_datas.fonts[font_datas.current_font].h;
+//	float dx = font_datas.sx * schr->sx;
+//	float dy = font_datas.sy * schr->sy;
+//	float h = 16;//(float)font_datas.fonts[font_datas.current_font].h;
+	float dx = 20; //font_datas.sx * schr->sx, 
+	float dy = 20; //font_datas.sy * schr->sy;
 
-	y += (float)((schr->fy * font_datas.sy) / h) / schr->sy;
+//	y += (float)((schr->fy * font_datas.sy) / h) / schr->sy;
 	
 	// Load sprite texture
 	tiny3d_SetTexture(0, schr->image.texture_off, schr->image.texture.width,
@@ -538,7 +532,7 @@ void DrawChar(float x, float y, float z, u8 chr)
 	tiny3d_End();
 }
 
-static int i_must_break_line(char *str, float x)
+static int i_must_break_line(const char *str, float x)
 {
     int xx =0;
 	int dx = (font_datas.sx+font_datas.extra);
@@ -599,76 +593,43 @@ float DrawStringMono(float x, float y, char *str)
     return x;
 }
 
+int skip_icon(int x, int y, char c)
+{
+	return 16;
+}
+
+int draw_icon(int x, int y, char c)
+{
+	special_char* schr = GetSpecialCharFromValue(c);
+	if (schr)
+	{
+		DrawCharSpecial(x, y, font_datas.Z, schr);
+		return 16;
+	}
+	else return 0;
+}
+
 float DrawString(float x, float y, char *str)
 {
-	int dx = (font_datas.sx+font_datas.extra);
-	float initX = x;
-	u32 color = font_datas.color;
-	
     if(font_datas.align == 1) {
-    
-        x= (848 - WidthFromStr((u8 *) str)) / 2;
-
+        x= (848 - WidthFromStr(str)) / 2;
     }
 	else if (font_datas.align == 2) {
-		x -= WidthFromStr((u8 *) str);
+		x -= WidthFromStr(str);
 	}
 	else if (font_datas.align == 3) {
-		x -= WidthFromStr((u8 *) str)/2;
+		x -= WidthFromStr(str)/2;
 	}
 
-    while (*str) {
-        
-		special_char* schr = GetSpecialCharFromValue(*str);
+	display_ttf_string((int)x +1, (int)y +1, str, 0x00000000 | (font_datas.color & 0x000000ff), 0, font_datas.sx, font_datas.sy+4, &skip_icon);
 
-        if(*str == '\n') {
-            x = initX; 
-            y += font_datas.sy * font_datas.fonts[font_datas.current_font].bh / font_datas.fonts[font_datas.current_font].h;
-            str++;
-            continue;
-        } else {
-            if(font_datas.autonewline && i_must_break_line(str, x)) {
-                x = initX; 
-                y += font_datas.sy * font_datas.fonts[font_datas.current_font].bh / font_datas.fonts[font_datas.current_font].h;
-            }
-        }
-
-        if (!schr)
-        {
-        	font_datas.color = 0x00000000 | (color & 0x000000ff);
-        	DrawChar(x+1, y+1, font_datas.Z, (u8) *str);
-        	font_datas.color = color;
-        }
-        DrawChar(x, y, font_datas.Z, (u8) *str);
-		
-		if (schr)
-			x += (font_datas.sx * schr->sx) * schr->fw / (float)font_datas.fonts[font_datas.current_font].w;
-		else
-		{
-			//Make font look nicer by fixing bad spacing
-			float ddX = dx * font_datas.fonts[font_datas.current_font].fw[((u8)*str)] / font_datas.fonts[font_datas.current_font].w;
-			if (str[1] == 'j')
-				ddX *= 2.0 / 3.0;
-			if (str[0] == 'm' || str[0] == 'M')
-				ddX *= 0.9;
-			if (str[0] == '.')
-				ddX *= 3.0 / 2.0;
-			x += ddX;
-		}
-        str++; 
-    }
-
-    font_datas.X = x; font_datas.Y = y;
-
-    return x;
+	return display_ttf_string((int)x, (int)y, str, font_datas.color, font_datas.bkcolor, font_datas.sx, font_datas.sy+4, &draw_icon);
 }
 
 static char buff[4096];
 
 float DrawFormatString(float x, float y, char *format, ...)
 {
-	int dx = font_datas.sx;
-	float initX = x;
     char *str = (char *) buff;
     va_list	opt;
 	
@@ -676,39 +637,5 @@ float DrawFormatString(float x, float y, char *format, ...)
 	vsprintf( (void *) buff, format, opt);
 	va_end(opt);
 
-    if(font_datas.align == 1) {
-    
-        x = (848 - WidthFromStr((u8 *) str)) / 2;
-
-    }
-	else if (font_datas.align == 2) {
-		x -= WidthFromStr((u8 *) str);
-	}
-	else if (font_datas.align == 3) {
-		x -= WidthFromStr((u8 *) str)/2;
-	}
-
-    while (*str) {
-        
-        if(*str == '\n') {
-            x = initX; 
-            y += font_datas.sy * font_datas.fonts[font_datas.current_font].bh / font_datas.fonts[font_datas.current_font].h; 
-            str++;
-            continue;
-        } else {
-            if(font_datas.autonewline && i_must_break_line(str, x)) {
-                x = initX; 
-                y += font_datas.sy * font_datas.fonts[font_datas.current_font].bh / font_datas.fonts[font_datas.current_font].h;
-            }
-        }
-
-        DrawChar(x, y, font_datas.Z, (u8) *str);
-       
-        x += dx * font_datas.fonts[font_datas.current_font].fw[((u8)*str)] / font_datas.fonts[font_datas.current_font].w;
-        str++;
-    }
-
-    font_datas.X = x; font_datas.Y = y;
-
-    return x;
+    return DrawString(x, y, str);
 }

@@ -481,14 +481,14 @@ void DrawGameList(int selIndex, save_entry_t * games, int glen, u8 alpha)
 				char * nBuffer = (char*)malloc(strlen(games[x].name));
 				strcpy(nBuffer, games[x].name);
 				int game_name_width = 0;
-				while ((game_name_width = WidthFromStr((u8*)nBuffer)) > 0 && (MENU_ICON_OFF + (MENU_TITLE_OFF * 1) - xo + game_name_width) > (800 - (MENU_ICON_OFF * 3) - xo))
+				while ((game_name_width = WidthFromStr(nBuffer)) > 0 && (MENU_ICON_OFF + (MENU_TITLE_OFF * 1) - xo + game_name_width) > (800 - (MENU_ICON_OFF * 3) - xo))
 					nBuffer[strlen(nBuffer) - 1] = '\0';
 				DrawString(MENU_ICON_OFF + (MENU_TITLE_OFF * 1) - xo, game_y, nBuffer);
 				free(nBuffer);
 			}
 			if (games[x].title_id)
 				DrawString(800 - (MENU_ICON_OFF * 3) - xo, game_y, games[x].title_id);
-			if (games[x].locked)
+			if (games[x].flags & SAVE_FLAG_LOCKED)
 				DrawString(800 - (MENU_ICON_OFF * 1) - xo, game_y, "Lock");
         }
         

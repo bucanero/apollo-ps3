@@ -44,7 +44,7 @@ void _draw_OptionsMenu(u8 alpha)
 			case APP_OPTION_INC:
 				SetFontAlign(0);
 				sprintf((char*)APP_OPTION_INC_TEMP, "- %d +", *menu_options[ind].value);
-				int inc_width = WidthFromStr((u8*)APP_OPTION_INC_TEMP);
+				int inc_width = WidthFromStr(APP_OPTION_INC_TEMP);
 				DrawString((MENU_ICON_OFF - 18) - (inc_width / 2), y_off, (char*)APP_OPTION_INC_TEMP);
 				break;
 		}

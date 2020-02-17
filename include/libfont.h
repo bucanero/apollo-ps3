@@ -98,7 +98,7 @@ void RegisterSpecialCharacter(char value, short fw, short fy, float sx, float sy
 
 // get width of string based on font
 
-int WidthFromStr(u8 * str);
+int WidthFromStr(const char * str);
 
 // function to draw one character
 

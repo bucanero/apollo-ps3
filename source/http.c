@@ -15,7 +15,7 @@
 #define HTTP_SUCCESS 	1
 #define HTTP_FAILED	 	0
 
-#define ARTEMIS_USER_AGENT "Mozilla/5.0 (PLAYSTATION 3; 1.00)"
+#define HTTP_USER_AGENT "Mozilla/5.0 (PLAYSTATION 3; 1.00)"
 
 typedef struct
 {
@@ -214,7 +214,7 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 		goto end;
 	}
     httpClientSetConnTimeout(httpClient, 10 * 1000 * 1000);
-    httpClientSetUserAgent(httpClient, ARTEMIS_USER_AGENT);
+    httpClientSetUserAgent(httpClient, HTTP_USER_AGENT);
 
 	// Escape URL file name characters
 	escaped_name = escape_filename(filename);

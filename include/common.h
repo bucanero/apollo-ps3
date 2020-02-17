@@ -11,21 +11,6 @@ int is_char_integer(char c);
 int is_char_letter(char c);
 
 //----------------------------------------
-//LOG
-//----------------------------------------
-
-extern int verbose ;
-
-#ifdef ENABLE_LOG
-int WriteToLog(char *str);
-
-void CloseLog();
-
-int Open_Log(char *file);
-
-#endif
-
-//----------------------------------------
 //COBRA/MAMBA
 //----------------------------------------
 
@@ -39,5 +24,8 @@ int is_mamba(void);
 int file_exists(const char *path);
 int dir_exists(const char *path);
 int unlink_secure(void *path);
+int mkdirs(const char* dir);
+int copy_file(const char* input, const char* output);
+int copy_directory(const char* startdir, const char* inputdir, const char* outputdir);
 
 #endif

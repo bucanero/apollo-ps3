@@ -4,6 +4,18 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+### Added
+
+* Export save-game to .Zip file
+* Copy save-game to USB
+* New `Settings` option to clear local cache
+* New `Settings` option to update application data
+
+### Fixed
+
+* Fixed patch when removing Account ID
+* Use internal PS3 fonts to fix issues with extended characters
+
 ## [v0.5.1](https://github.com/bucanero/apollo-ps3/releases/tag/v0.5.1) - 2020-02-09
 
 Hot fix release.

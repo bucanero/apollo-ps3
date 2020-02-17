@@ -23,15 +23,9 @@ void _draw_AboutMenu(u8 alpha)
     SetFontSize(APP_FONT_SIZE_SUBTEXT);
 	DrawString(848 / 2, 95, "an open source save game tool");
 
-	SetFontAlign(0);
 	SetCurrentFont(font_comfortaa_bold);
 	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
-	float dx = DrawString((848 - (u32)WidthFromStr((u8*)"PlayStation 3® version:")) / 2, 140, "PlayStation 3");
-	//Make the ® small
-	SetFontSize(9, 8);
-	dx = DrawString(dx, 139, "® ");
-	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
-	DrawString(dx, 140, "version:");
+	DrawString(0, 140, "PlayStation 3Â® version:");
     
     for (cnt = 0; menu_about_strings[cnt] != NULL; cnt += 2)
     {

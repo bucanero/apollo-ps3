@@ -65,7 +65,7 @@ typedef struct t_png_texture
 } png_texture;
 
 u32 * texture_mem;      // Pointers to texture memory
-u32 * font_mem;         // Pointer after font
+u32 * free_mem;         // Pointer after last texture
 
 extern png_texture * menu_textures;				// png_texture array for main menu, initialized in LoadTexture
 
@@ -98,10 +98,6 @@ extern void DrawHeader(png_texture icon, int xOff, char * headerTitle, char * he
 extern void DrawHeader_Ani(png_texture icon, char * headerTitle, char * headerSubTitle, u32 rgba, u32 bgrgba, int ani, int div);
 extern void DrawBackgroundTexture(int x, u8 alpha);
 extern void DrawTextureRotated(png_texture tex, int x, int y, int z, int w, int h, u32 rgba, float angle);
-
-extern int TTFLoadFont(char * path, void * from_memory, int size_from_memory);
-extern void TTF_to_Bitmap(uint8_t chr, uint8_t * bitmap, short *w, short *h, short *y_correction);
-extern void TTFUnloadFont();
 
 int load_app_settings(app_config_t* config);
 int save_app_settings(app_config_t* config);

@@ -4,13 +4,14 @@
 #include <sys/systime.h>
 #include <sys/file.h>
 #include <sys/stat.h>
-#include <dirent.h> 
+#include <dirent.h>
+#include <zlib.h>
 
 #include "common.h"
 
 #define FS_S_IFMT 0170000
 
-#define VERSION_NAME "MAMBA/PRX Autoloader v2.1.2 by NzV"
+#define TMP_BUFF_SIZE 4096
 
 //----------------------------------------
 //String Utils
@@ -28,57 +29,6 @@ int is_char_letter(char c)
 		return SUCCESS;
 	return FAILED;
 }
-
-//----------------------------------------
-//LOG
-//----------------------------------------
-
-int verbose = 0;
-
-#ifdef ENABLE_LOG
-
-int fd_log = -1;
-
-int WriteToLog(char *str)
-{
-    if(fd_log < 0 ) return FAILED;
-    if(!str) return SUCCESS;
-    u64 size = strlen(str);
-    if(size == 0) return SUCCESS;
-    u64 ret_size = 0;
-    sprintf(str,"%s", str);
-    if(sysLv2FsWrite(fd_log, str, size, &ret_size) || ret_size!=size)
-    {
-        return FAILED;
-    }
-    return SUCCESS;
-}
-
-void CloseLog()
-{
-    if (verbose) WriteToLog("-----[END]-----");
-    if (verbose) WriteToLog("---[By NzV]---");
-    verbose = 0;
-    if(fd_log >= 0) sysLv2FsClose(fd_log);
-    fd_log = -1;
-}
-
-int Open_Log(char *file)
-{
-    if(fd_log >= 0) return -666;
-    if(!sysLv2FsOpen(file, SYS_O_WRONLY | SYS_O_CREAT | SYS_O_TRUNC, &fd_log, 0777, NULL, 0))
-    {
-        sysLv2FsChmod(file, FS_S_IFMT | 0777);
-        if(WriteToLog(VERSION_NAME)!=SUCCESS) {CloseLog(); return FAILED;}
-        WriteToLog("-----[LOG]-----");
-        return SUCCESS;
-    } 
-    fd_log = -1;
-    verbose = 0;
-    return FAILED;
-}
-
-#endif
 
 //----------------------------------------
 //COBRA/MAMBA
@@ -116,15 +66,6 @@ int is_mamba(void)
 }
 
 //----------------------------------------
-//GAME UTILS
-//----------------------------------------
-
-int game_exists(const char *name, const char *id)
-{
-    return 0;
-}
-
-//----------------------------------------
 //FILE UTILS
 //----------------------------------------
 
@@ -156,6 +97,145 @@ int unlink_secure(void *path)
 		//return remove(path);
     }
     return FAILED;
+}
+
+/*
+* Creates all the directories in the provided path. (can include a filename)
+* (directory must end with '/')
+*/
+int mkdirs(const char* dir)
+{
+    char path[256];
+    snprintf(path, sizeof(path), "%s", dir);
+
+    char* ptr = strrchr(path, '/');
+    *ptr = 0;
+    ptr = path;
+    ptr++;
+    while (*ptr)
+    {
+        while (*ptr && *ptr != '/')
+            ptr++;
+
+        char last = *ptr;
+        *ptr = 0;
+
+        if (dir_exists(path) == FAILED)
+            if (mkdir(path, 0777) < 0)
+                return FAILED;
+        
+        *ptr++ = last;
+        if (last == 0)
+            break;
+
+    }
+
+    return SUCCESS;
+}
+
+int copy_file(const char* input, const char* output)
+{
+    char buffer[TMP_BUFF_SIZE];
+    size_t read;
+
+    mkdirs(output);
+    FILE* in = fopen(input, "rb");
+    FILE* out = fopen(output, "wb");
+    
+    if (!in || !out)
+        return FAILED;
+
+    do
+    {
+        read = fread(buffer, 1, TMP_BUFF_SIZE, in);
+        if (fwrite(buffer, read, 1, out) == 0)
+            break;
+    }
+    while (read == TMP_BUFF_SIZE);
+
+    fclose(out);
+    fclose(in);
+
+    return SUCCESS;
+}
+
+uint32_t file_crc32(const char* input)
+{
+    char buffer[TMP_BUFF_SIZE];
+    uLong crc = crc32_z(0L, Z_NULL, 0);
+    size_t read;
+
+    FILE* in = fopen(input, "rb");
+    
+    if (!in)
+        return FAILED;
+
+    do
+    {
+        read = fread(buffer, 1, TMP_BUFF_SIZE, in);
+        crc = crc32_z(crc, buffer, read);
+    }
+    while (read == TMP_BUFF_SIZE);
+
+    fclose(in);
+
+    return crc;
+}
+
+uint32_t file_adler(const char* input)
+{
+    char buffer[TMP_BUFF_SIZE];
+    uLong adler = adler32_z(0L, Z_NULL, 0);
+    size_t read;
+
+    FILE* in = fopen(input, "rb");
+    
+    if (!in)
+        return FAILED;
+
+    do
+    {
+        read = fread(buffer, 1, TMP_BUFF_SIZE, in);
+        adler = adler32_z(adler, buffer, read);
+    }
+    while (read == TMP_BUFF_SIZE);
+
+    fclose(in);
+
+    return adler;
+}
+
+int copy_directory(const char* startdir, const char* inputdir, const char* outputdir)
+{
+	char fullname[256];	
+	struct dirent *dirp;
+	int len = strlen(startdir) + 1;
+	DIR *dp = opendir(inputdir);
+
+	if (!dp) {
+		return FAILED;
+	}
+
+	while ((dirp = readdir(dp)) != NULL) {
+		if ((strcmp(dirp->d_name, ".")  != 0) && (strcmp(dirp->d_name, "..") != 0)) {
+  			snprintf(fullname, sizeof(fullname), "%s%s", inputdir, dirp->d_name);
+
+  			if (dir_exists(fullname) == SUCCESS) {
+    			copy_directory(startdir, fullname, outputdir);
+  			} else {
+  			    char *out_name;
+  			    asprintf(&out_name, "%s%s", outputdir, &fullname[len]);
+    			if (copy_file(fullname, out_name) != SUCCESS) {
+         			free(out_name);
+     				return FAILED;
+    			}
+    			free(out_name);
+  			}
+		}
+	}
+	closedir(dp);
+
+    return SUCCESS;
 }
 
 //----------------------------------------
