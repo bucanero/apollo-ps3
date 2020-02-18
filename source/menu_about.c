@@ -18,10 +18,10 @@ void _draw_AboutMenu(u8 alpha)
     SetFontColor(APP_FONT_COLOR | alpha, 0);
     SetFontAlign(1);
 	SetCurrentFont(font_comfortaa_bold);
-	DrawString(848 / 2, 70, "Thanks for using Apollo!");
+	DrawString(0, 70, "Thanks for using Apollo!");
 	SetCurrentFont(font_comfortaa_regular);
     SetFontSize(APP_FONT_SIZE_SUBTEXT);
-	DrawString(848 / 2, 95, "an open source save game tool");
+	DrawString(0, 95, "an open source save game tool");
 
 	SetCurrentFont(font_comfortaa_bold);
 	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
@@ -43,7 +43,7 @@ void _draw_AboutMenu(u8 alpha)
 	SetFontAlign(1);
 	SetCurrentFont(font_comfortaa_bold);
 	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
-	DrawString(848 / 2, 170 + ((cnt + 3) * 12), "Console details:");
+	DrawString(0, 170 + ((cnt + 3) * 12), "Console details:");
 
 	int off = cnt + 5;
 	for (cnt = 0; menu_about_strings_project[cnt] != NULL; cnt += 2)
@@ -61,7 +61,7 @@ void _draw_AboutMenu(u8 alpha)
 
 	SetFontAlign(1);
 	SetCurrentFont(font_comfortaa_regular);
-	DrawString(screen_width / 2, 420, "http://apollo.psdev.tk/");
+	DrawString(0, 420, "http://apollo.psdev.tk/");
 	SetFontAlign(0);
 }
 

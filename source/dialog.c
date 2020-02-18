@@ -84,10 +84,3 @@ void update_progress_bar(uint64_t* progress, const uint64_t total_size, const ch
 
 	tiny3d_Flip();
 }
-
-/*
-void loading_screen(void)
-{
-    DrawTextureRotated(menu_textures[circle_loading_seek_png_index], screen_width / 2, screen_height / 2, 1, 89, 89, 0xFFFFFFFF, angle += 0.1f);
-}
-*/
