@@ -218,8 +218,7 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 
 	// Escape URL file name characters
 	escaped_name = escape_filename(filename);
-	escaped_url = (char *)calloc(1, strlen(url) + strlen(escaped_name) + 1);
-	sprintf(escaped_url, "%s%s", url, escaped_name);
+	asprintf(&escaped_url, "%s%s", url, escaped_name);
 	
 	LOG("Downloading (%s) -> (%s)", escaped_url, local_dst);
 

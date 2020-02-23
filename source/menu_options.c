@@ -13,7 +13,7 @@
 void _draw_OptionsMenu(u8 alpha)
 {
 	int c = 0, w = 0, h = 0;
-	char APP_OPTION_INC_TEMP[24];
+	char APP_OPTION_INC_TEMP[16];
 
     SetFontSize(APP_FONT_SIZE_SELECTION);
     int ind = 0, y_off = 120;
@@ -29,12 +29,12 @@ void _draw_OptionsMenu(u8 alpha)
 				c = (*menu_options[ind].value == 1) ? opt_on_png_index : opt_off_png_index;
 				w = (int)(menu_textures[c].texture.width / 1.8);
 				h = (int)(menu_textures[c].texture.height / 1.8);
-				DrawTexture(menu_textures[c], MENU_ICON_OFF - 29, y_off - 3, 0, w, h, 0xFFFFFF00 | alpha);
+				DrawTexture(&menu_textures[c], MENU_ICON_OFF - 29, y_off, 0, w, h, 0xFFFFFF00 | alpha);
 				break;
 			case APP_OPTION_CALL:
 				w = (int)(menu_textures[mark_arrow_png_index].texture.width / 1.8);
 				h = (int)(menu_textures[mark_arrow_png_index].texture.height / 1.8);
-				DrawTexture(menu_textures[mark_arrow_png_index], MENU_ICON_OFF - 26, y_off-3, 0, w, h, 0xFFFFFF00 | alpha);
+				DrawTexture(&menu_textures[mark_arrow_png_index], MENU_ICON_OFF - 26, y_off-3, 0, w, h, 0xFFFFFF00 | alpha);
 				break;
 			case APP_OPTION_LIST:
 				SetFontAlign(2);
@@ -43,9 +43,9 @@ void _draw_OptionsMenu(u8 alpha)
 				break;
 			case APP_OPTION_INC:
 				SetFontAlign(0);
-				sprintf((char*)APP_OPTION_INC_TEMP, "- %d +", *menu_options[ind].value);
+				sprintf(APP_OPTION_INC_TEMP, "- %d +", *menu_options[ind].value);
 				int inc_width = WidthFromStr(APP_OPTION_INC_TEMP);
-				DrawString((MENU_ICON_OFF - 18) - (inc_width / 2), y_off, (char*)APP_OPTION_INC_TEMP);
+				DrawString((MENU_ICON_OFF - 18) - (inc_width / 2), y_off, APP_OPTION_INC_TEMP);
 				break;
 		}
         
@@ -53,7 +53,7 @@ void _draw_OptionsMenu(u8 alpha)
         {
             int i = 0;
             for (i = 0; i < 848; i++)
-				DrawTexture(menu_textures[mark_line_png_index], i, y_off, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
+				DrawTexture(&menu_textures[mark_line_png_index], i, y_off, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
         }
         
         y_off += 20;
@@ -74,7 +74,7 @@ void Draw_OptionsMenu_Ani()
         
         tiny3d_Project2D();
         
-		DrawHeader_Ani(menu_textures[header_ico_opt_png_index], "Options", NULL, APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
+		DrawHeader_Ani(cat_opt_png_index, "Options", NULL, APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
         
 		u8 icon_a = (u8)(((ani * 2) > 0xFF) ? 0xFF : (ani * 2));
         int _game_a = (int)(icon_a - (MENU_ANI_MAX / 2)) * 2;
@@ -94,6 +94,6 @@ void Draw_OptionsMenu_Ani()
 
 void Draw_OptionsMenu()
 {
-	DrawHeader(menu_textures[header_ico_opt_png_index], 0, "Options", NULL, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 0);
+	DrawHeader(cat_opt_png_index, 0, "Options", NULL, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 0);
     _draw_OptionsMenu(0xFF);
 }

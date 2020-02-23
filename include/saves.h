@@ -26,6 +26,7 @@
 #define ONLINE_LOCAL_CACHE		APOLLO_PATH "CACHE/"
 #define ONLINE_CACHE_TIMEOUT    24*3600     // 1-day local cache
 
+// Save commands
 #define CMD_RESIGN_SAVE         "RESIGN_SAVE"
 #define CMD_UNLOCK_COPY         "UNLOCK_COPY"
 #define CMD_REMOVE_ACCOUNT_ID   "REMOVE_ACCT"
@@ -33,20 +34,44 @@
 #define CMD_DOWNLOAD_USB        "DNLOAD_USB"
 #define CMD_DOWNLOAD_HDD        "DNLOAD_HDD0"
 #define CMD_COPY_SAVE_USB       "COPYSG_USB"
+#define CMD_EXPORT_ZIP_USB      "EXPORT_ZIP"
 
 // Export commands
-#define CMD_EXPORT_ZIP_USB      "EXPORT_ZIP"
 #define CMD_EXP_EXDATA_USB      "EXP_EXDATA"
 #define CMD_EXP_TROPHY_USB      "EXP_TROPHY"
-#define CMD_EXP_SAVES_USB       "EXP__SAVES"
+#define CMD_EXP_SAVES_USB       "EXP_ASAVES"
+
+// Import commands
+#define CMD_IMP_EXDATA_USB      "IMP_EXDATA"
+#define CMD_IMP_TROPHY_USB      "IMP_TROPHY"
+
 
 // Save flags
 #define SAVE_FLAG_LOCKED        1
 #define SAVE_FLAG_OWNER         2
 #define SAVE_FLAG_PS3           4
-#define SAVE_FLAG_PSX           8
+#define SAVE_FLAG_PS1           8
 #define SAVE_FLAG_PS2           16
 #define SAVE_FLAG_PSP           32
+#define SAVE_FLAG_PSV           64
+
+enum char_flag_enum
+{
+    CHAR_TAG_NULL,
+    CHAR_TAG_PS1,
+    CHAR_TAG_PS2,
+    CHAR_TAG_PS3,
+    CHAR_TAG_PSP,
+    CHAR_TAG_PSV,
+    CHAR_TAG_PCE,
+    CHAR_TAG_LOCKED,
+    CHAR_TAG_OWNER,
+    CHAR_TAG_WARNING,
+    CHAR_BTN_X = 0x10,
+    CHAR_BTN_S = 0x11,
+    CHAR_BTN_T = 0x12,
+    CHAR_BTN_O = 0x13,
+};
 
 typedef struct option_entry
 {
@@ -60,7 +85,9 @@ typedef struct option_entry
 
 typedef struct code_entry
 {
+    int id;
     char * name;
+    char * file;
     unsigned char activated;
     int options_count;
     char * codes;
@@ -78,10 +105,13 @@ typedef struct save_entry
     code_entry_t * codes;
 } save_entry_t;
 
-typedef struct {
+typedef struct
+{
     save_entry_t * list;
     int count;
     char path[128];
+    char* title;
+    unsigned char icon_id;
     void (*UpdatePath)(char *);
     int (*ReadCodes)(save_entry_t *);
     save_entry_t* (*ReadList)(const char*, int *);
@@ -102,6 +132,7 @@ long getFileSize(const char * path);
 option_entry_t * ReadOptions(code_entry_t code, int * count);
 int ReadLocalCodes(save_entry_t * save);
 int ReadOnlineSaves(save_entry_t * game);
+int LoadBackupCodes(save_entry_t * bup);
 
 int http_init(void);
 void http_end(void);

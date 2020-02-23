@@ -11,7 +11,7 @@
 
 #define FS_S_IFMT 0170000
 
-#define TMP_BUFF_SIZE 4096
+#define TMP_BUFF_SIZE 16384
 
 //----------------------------------------
 //String Utils
@@ -173,7 +173,7 @@ uint32_t file_crc32(const char* input)
     do
     {
         read = fread(buffer, 1, TMP_BUFF_SIZE, in);
-        crc = crc32_z(crc, buffer, read);
+        crc = crc32_z(crc, (u8*)buffer, read);
     }
     while (read == TMP_BUFF_SIZE);
 
@@ -196,7 +196,7 @@ uint32_t file_adler(const char* input)
     do
     {
         read = fread(buffer, 1, TMP_BUFF_SIZE, in);
-        adler = adler32_z(adler, buffer, read);
+        adler = adler32_z(adler, (u8*)buffer, read);
     }
     while (read == TMP_BUFF_SIZE);
 
@@ -209,7 +209,7 @@ int copy_directory(const char* startdir, const char* inputdir, const char* outpu
 {
 	char fullname[256];	
 	struct dirent *dirp;
-	int len = strlen(startdir) + 1;
+	int len = strlen(startdir);
 	DIR *dp = opendir(inputdir);
 
 	if (!dp) {
@@ -221,6 +221,7 @@ int copy_directory(const char* startdir, const char* inputdir, const char* outpu
   			snprintf(fullname, sizeof(fullname), "%s%s", inputdir, dirp->d_name);
 
   			if (dir_exists(fullname) == SUCCESS) {
+                strcat(fullname, "/");
     			copy_directory(startdir, fullname, outputdir);
   			} else {
   			    char *out_name;

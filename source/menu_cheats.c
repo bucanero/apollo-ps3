@@ -31,10 +31,10 @@ void DrawScrollBar(int selIndex, int max, int y_inc, int xOff, u8 alpha)
     SetFontAlign(0);
     
     //Draw box
-	DrawTextureCenteredX(menu_textures[scroll_bg_png_index], xOff, game_y, 0, 6, yTotal, 0xffffff00 | alpha);
+	DrawTextureCenteredX(&menu_textures[scroll_bg_png_index], xOff, game_y, 0, 6, yTotal, 0xffffff00 | alpha);
     
     //Draw cursor
-	DrawTextureCenteredX(menu_textures[scroll_lock_png_index], xOff, (int)((float)yTotal * pLoc) + game_y, 0, 4, maxPerPage * 2, 0xffffff00 | alpha);
+	DrawTextureCenteredX(&menu_textures[scroll_lock_png_index], xOff, (int)((float)yTotal * pLoc) + game_y, 0, 4, maxPerPage * 2, 0xffffff00 | alpha);
 }
 
 u8 CalculateAlphaList(int curIndex, int selIndex, int max)
@@ -51,9 +51,9 @@ u8 CalculateAlphaList(int curIndex, int selIndex, int max)
 /*
  * Cheats Code Options Menu
  */
-void DrawOptions(option_entry_t option, u8 alpha, int y_inc, int selIndex)
+void DrawOptions(option_entry_t* option, u8 alpha, int y_inc, int selIndex)
 {
-    if (!option.name || !option.value)
+    if (!option->name || !option->value)
         return;
     
     int c = 0, yOff = 80, cIndex = 0;
@@ -66,19 +66,19 @@ void DrawOptions(option_entry_t option, u8 alpha, int y_inc, int selIndex)
 
     for (c = startDrawX; c < max; c++)
     {
-        if (c >= 0 && c < option.size)
+        if (c >= 0 && c < option->size)
         {
             SetFontColor(APP_FONT_COLOR | ((alpha * CalculateAlphaList(c, selIndex, maxPerPage)) / 0xFF), 0);
             
-            if (option.name[c])
-                DrawString(MENU_SPLIT_OFF + MENU_ICON_OFF, yOff, option.name[c]);
+            if (option->name[c])
+                DrawString(MENU_SPLIT_OFF + MENU_ICON_OFF, yOff, option->name[c]);
             
             //Selector
             if (c == selIndex)
             {
                 int i = 0;
 				for (i = MENU_SPLIT_OFF; i < 848; i++)
-					DrawTexture(menu_textures[mark_line_png_index], i, yOff, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
+					DrawTexture(&menu_textures[mark_line_png_index], i, yOff, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
             }
             
             cIndex++;
@@ -89,13 +89,11 @@ void DrawOptions(option_entry_t option, u8 alpha, int y_inc, int selIndex)
 
 void Draw_CheatsMenu_Options_Ani_Exit(void)
 {
-	int div = 12, max = MENU_ANI_MAX, ani = 0, left = MENU_SPLIT_OFF;
-	for (ani = max - 1; ani >= 0; ani--)
+	int div = 12, ani = 0, left = MENU_SPLIT_OFF;
+	for (ani = MENU_ANI_MAX - 1; ani >= 0; ani--)
 	{
 		tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
-
 		tiny3d_AlphaTest(1, 0x0, TINY3D_ALPHA_FUNC_GEQUAL);
-
 		tiny3d_BlendFunc(1, TINY3D_BLEND_FUNC_SRC_RGB_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_ALPHA_SRC_ALPHA,
 			0x00000303 | 0x00000000,
 			TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
@@ -103,7 +101,7 @@ void Draw_CheatsMenu_Options_Ani_Exit(void)
 		tiny3d_Project2D();
 
 		u8 icon_a = (u8)((int)(((848 - left) / 848.0) * 255.0));
-		left = MENU_SPLIT_OFF + ((max - ani) * div * 3);
+		left = MENU_SPLIT_OFF + ((MENU_ANI_MAX - ani) * div * 3);
 		if (left > 848)
 			left = 848;
 
@@ -113,8 +111,8 @@ void Draw_CheatsMenu_Options_Ani_Exit(void)
 			rgbVal = 0xD0;
 		Draw_CheatsMenu_Selection(menu_old_sel[5], (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
-		DrawTexture(menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
-		DrawHeader(menu_textures[header_ico_opt_png_index], left, "Cheat Option", selected_centry.name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
+		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
+		DrawHeader(cat_sav_png_index, left, "Cheat Option", selected_centry.name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 /*
 		int _game_a = (int)(icon_a - (max / 2)) * 2;
 		if (_game_a > 0xFF)
@@ -133,13 +131,11 @@ void Draw_CheatsMenu_Options_Ani_Exit(void)
 
 void Draw_CheatsMenu_Options_Ani(void)
 {
-	int div = 12, max = MENU_ANI_MAX, ani = 0, left = 848;
-    for (ani = 0; ani < max; ani++)
+	int div = 12, ani = 0, left = 848;
+    for (ani = 0; ani < MENU_ANI_MAX; ani++)
     {
         tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
-        
         tiny3d_AlphaTest(1, 0x0, TINY3D_ALPHA_FUNC_GEQUAL);
-        
         tiny3d_BlendFunc(1, TINY3D_BLEND_FUNC_SRC_RGB_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_ALPHA_SRC_ALPHA,
             0x00000303 | 0x00000000,
             TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
@@ -158,11 +154,11 @@ void Draw_CheatsMenu_Options_Ani(void)
 			rgbVal = 0xD0;
 		Draw_CheatsMenu_Selection(menu_sel, (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
-		DrawTexture(menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
-		DrawHeader(menu_textures[header_ico_opt_png_index], left, "Cheat Option", selected_centry.name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
+		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
+		DrawHeader(cat_sav_png_index, left, "Cheat Option", selected_centry.name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
         
 		u8 game_a = (u8)(icon_a < 0x8F ? 0 : icon_a);
-		DrawOptions(selected_centry.options[option_index], game_a, 20, menu_old_sel[7]);
+		DrawOptions(&selected_centry.options[option_index], game_a, 20, menu_old_sel[7]);
         DrawScrollBar(menu_old_sel[7], selected_centry.options[option_index].size, 20, 800, game_a);
         
         tiny3d_Flip();
@@ -178,10 +174,10 @@ void Draw_CheatsMenu_Options(void)
 
 	Draw_CheatsMenu_Selection(menu_old_sel[5], 0xD0D0D0FF);
 
-	DrawTexture(menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), 0x000000FF);
-	DrawHeader(menu_textures[header_ico_opt_png_index], MENU_SPLIT_OFF, "Cheat Option", selected_centry.name, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
+	DrawTexture(&menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), 0x000000FF);
+	DrawHeader(cat_sav_png_index, MENU_SPLIT_OFF, "Cheat Option", selected_centry.name, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
 
-	DrawOptions(selected_centry.options[option_index], 0xFF, 20, menu_sel);
+	DrawOptions(&selected_centry.options[option_index], 0xFF, 20, menu_sel);
 	DrawScrollBar(menu_sel, selected_centry.options[option_index].size, 20, 800, 0xFF);
 }
 
@@ -269,9 +265,9 @@ int GetLineDescriptor(char * buffer, char * line)
     return 0;
 }
 
-int DrawCodes(code_entry_t code, u8 alpha, int y_inc, int xOff, int selIndex)
+int DrawCodes(code_entry_t* code, u8 alpha, int y_inc, int xOff, int selIndex)
 {
-    if (!code.name || !code.codes)
+    if (!code->name || !code->codes)
         return 0;
     
     int numOfLines = 0, c = 0, yOff = 80, cIndex = 0;
@@ -280,18 +276,18 @@ int DrawCodes(code_entry_t code, u8 alpha, int y_inc, int xOff, int selIndex)
     int startDrawX = selIndex - (maxPerPage / 2);
     int max = maxPerPage + startDrawX;
     
-    if (code.codes)
+    if (code->codes)
     {
-        int len = strlen(code.codes);
+        int len = strlen(code->codes);
         if (len > 0)
         {
-            for (c = 0; c < len; c++) { if (code.codes[c] == '\n') { numOfLines++; } }
+            for (c = 0; c < len; c++) { if (code->codes[c] == '\n') { numOfLines++; } }
             
             if (numOfLines > 0)
             {               
                 //Splits the codes by line into an array
                 char * splitCodes = (char *)malloc(len + 1);
-                memcpy(splitCodes, code.codes, len);
+                memcpy(splitCodes, code->codes, len);
                 splitCodes[len] = 0;
                 char * * lines = (char **)malloc(sizeof(char *) * numOfLines);
                 memset(lines, 0, sizeof(char *) * numOfLines);
@@ -331,7 +327,7 @@ int DrawCodes(code_entry_t code, u8 alpha, int y_inc, int xOff, int selIndex)
                         {
                             int i = 0;
                             for (i = 0; i < 848; i++)
-								DrawTexture(menu_textures[mark_line_png_index], xOff + i, yOff, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
+								DrawTexture(&menu_textures[mark_line_png_index], xOff + i, yOff, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
                         }
                     }
                     yOff += y_inc;
@@ -352,13 +348,11 @@ int DrawCodes(code_entry_t code, u8 alpha, int y_inc, int xOff, int selIndex)
 
 void Draw_CheatsMenu_View_Ani_Exit(void)
 {
-	int div = 12, max = MENU_ANI_MAX, ani = 0, left = MENU_SPLIT_OFF;
-	for (ani = max - 1; ani >= 0; ani--)
+	int div = 12, ani = 0, left = MENU_SPLIT_OFF;
+	for (ani = MENU_ANI_MAX - 1; ani >= 0; ani--)
 	{
 		tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
-
 		tiny3d_AlphaTest(1, 0x0, TINY3D_ALPHA_FUNC_GEQUAL);
-
 		tiny3d_BlendFunc(1, TINY3D_BLEND_FUNC_SRC_RGB_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_ALPHA_SRC_ALPHA,
 			0x00000303 | 0x00000000,
 			TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
@@ -366,7 +360,7 @@ void Draw_CheatsMenu_View_Ani_Exit(void)
 		tiny3d_Project2D();
 
 		u8 icon_a = (u8)((int)(((848 - left) / 848.0) * 255.0));
-		left = MENU_SPLIT_OFF + ((max - ani) * div * 3);
+		left = MENU_SPLIT_OFF + ((MENU_ANI_MAX - ani) * div * 3);
 		if (left > 848)
 			left = 848;
 
@@ -376,8 +370,8 @@ void Draw_CheatsMenu_View_Ani_Exit(void)
 			rgbVal = 0xD0;
 		Draw_CheatsMenu_Selection(menu_old_sel[5], (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
-		DrawTexture(menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
-		DrawHeader(menu_textures[header_ico_opt_png_index], left, "Patch View", selected_centry.name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
+		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
+		DrawHeader(cat_sav_png_index, left, "Patch View", selected_centry.name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 /*
 		int _game_a = (int)(icon_a - (max / 2)) * 2;
 		if (_game_a > 0xFF)
@@ -393,13 +387,11 @@ void Draw_CheatsMenu_View_Ani_Exit(void)
 
 void Draw_CheatsMenu_View_Ani(const char* title)
 {
-	int div = 12, max = MENU_ANI_MAX, ani = 0, left = MENU_SPLIT_OFF;
-    for (ani = 0; ani < max; ani++)
+	int div = 12, ani = 0, left = MENU_SPLIT_OFF;
+    for (ani = 0; ani < MENU_ANI_MAX; ani++)
     {
         tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
-        
         tiny3d_AlphaTest(1, 0x0, TINY3D_ALPHA_FUNC_GEQUAL);
-        
         tiny3d_BlendFunc(1, TINY3D_BLEND_FUNC_SRC_RGB_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_ALPHA_SRC_ALPHA,
             0x00000303 | 0x00000000,
             TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
@@ -418,11 +410,11 @@ void Draw_CheatsMenu_View_Ani(const char* title)
 			rgbVal = 0xD0;
 		Draw_CheatsMenu_Selection(menu_sel, (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
-		DrawTexture(menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
-		DrawHeader(menu_textures[header_ico_opt_png_index], left, (char*)title, selected_centry.name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
+		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
+		DrawHeader(cat_sav_png_index, left, (char*)title, selected_centry.name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 
 		u8 game_a = (u8)(icon_a < 0x8F ? 0 : icon_a);
-		int nlines = DrawCodes(selected_centry, game_a, 20, left, menu_old_sel[6]);
+		int nlines = DrawCodes(&selected_centry, game_a, 20, left, menu_old_sel[6]);
 		DrawScrollBar(menu_old_sel[6], nlines, 20, 800, game_a);
 		
 		tiny3d_Flip();
@@ -438,10 +430,10 @@ void Draw_CheatsMenu_View(const char* title)
     
 	Draw_CheatsMenu_Selection(menu_old_sel[5], 0xD0D0D0FF);
 
-	DrawTexture(menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), 0x000000FF);
-	DrawHeader(menu_textures[header_ico_opt_png_index], MENU_SPLIT_OFF, (char*)title, selected_centry.name, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
+	DrawTexture(&menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), 0x000000FF);
+	DrawHeader(cat_sav_png_index, MENU_SPLIT_OFF, (char*)title, selected_centry.name, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
 
-    int nlines = DrawCodes(selected_centry, 0xFF, 20, MENU_SPLIT_OFF, menu_sel);
+    int nlines = DrawCodes(&selected_centry, 0xFF, 20, MENU_SPLIT_OFF, menu_sel);
     //DrawScrollBar2(menu_sel, nlines, 18, 700, 0xFF);
     DrawScrollBar(menu_sel, nlines, 20, 800, 0xFF);
 }
@@ -454,6 +446,7 @@ void DrawGameList(int selIndex, save_entry_t * games, int glen, u8 alpha)
     SetFontSize(APP_FONT_SIZE_SELECTION);
 	SetCurrentFont(font_comfortaa_regular);
     
+    char tmp[4] = "   ";
     int game_y = 80, y_inc = 20;
     int maxPerPage = (512 - (game_y * 2)) / y_inc;
     
@@ -473,7 +466,7 @@ void DrawGameList(int selIndex, save_entry_t * games, int glen, u8 alpha)
 			u8 a = ((alpha * CalculateAlphaList(x, selIndex, maxPerPage)) / 0xFF);
 			if (isGameActivated(games[x]))
 			{
-				DrawTextureCentered(menu_textures[mark_arrow_png_index], MENU_ICON_OFF + (MENU_TITLE_OFF / 2), game_y + (y_inc / 2), 0, MENU_TITLE_OFF / 3, y_inc / 2, 0xFFFFFF00 | a);
+				DrawTextureCentered(&menu_textures[mark_arrow_png_index], MENU_ICON_OFF + (MENU_TITLE_OFF / 2), game_y + (y_inc / 2), 0, MENU_TITLE_OFF / 3, y_inc / 2, 0xFFFFFF00 | a);
 			}
             SetFontColor(APP_FONT_COLOR | a, 0);
 			if (games[x].name)
@@ -488,17 +481,21 @@ void DrawGameList(int selIndex, save_entry_t * games, int glen, u8 alpha)
 			}
 			if (games[x].title_id)
 				DrawString(800 - (MENU_ICON_OFF * 3) - xo, game_y, games[x].title_id);
-			if (games[x].flags & SAVE_FLAG_LOCKED)
-				DrawString(800 - (MENU_ICON_OFF * 1) - xo, game_y, "Lock");
+
+			tmp[0] = (games[x].flags & SAVE_FLAG_PS3) ? CHAR_TAG_PS3 : ' ';
+			tmp[1] = (games[x].flags & SAVE_FLAG_OWNER) ? CHAR_TAG_OWNER : ' ';
+			tmp[2] = (games[x].flags & SAVE_FLAG_LOCKED) ? CHAR_TAG_LOCKED : ' ';
+
+			DrawString(800 - (MENU_ICON_OFF * 1) - xo, game_y, tmp);
         }
         
         if (x == selIndex)
         {
             int c;
             for (c = 0; c < 848; c++)
-				DrawTexture(menu_textures[mark_line_png_index], c, game_y, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
+				DrawTexture(&menu_textures[mark_line_png_index], c, game_y, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
         
-			DrawTextureCenteredX(menu_textures[mark_arrow_png_index], MENU_ICON_OFF - 20, game_y, 0, (2 * y_inc) / 3, y_inc + 2, 0xFFFFFF00 | alpha);
+			DrawTextureCenteredX(&menu_textures[mark_arrow_png_index], MENU_ICON_OFF - 20, game_y, 0, (2 * y_inc) / 3, y_inc + 2, 0xFFFFFF00 | alpha);
 		}
         
         game_y += y_inc;
@@ -508,7 +505,7 @@ void DrawGameList(int selIndex, save_entry_t * games, int glen, u8 alpha)
     
 }
 
-void DrawCheatsList(int selIndex, save_entry_t game, u8 alpha)
+void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)
 {
     SetFontSize(APP_FONT_SIZE_SELECTION);
     
@@ -518,26 +515,26 @@ void DrawCheatsList(int selIndex, save_entry_t game, u8 alpha)
     int x = selIndex - (maxPerPage / 2);
     int max = maxPerPage + selIndex;
     
-    if (max > game.code_count)
-        max = game.code_count;
+    if (max > game->code_count)
+        max = game->code_count;
     
     for (; x < max; x++)
     {
         int xo = 0; //(((selIndex - x) < 0) ? -(selIndex - x) : (selIndex - x));
         
-        if (x >= 0 && game.codes[x].name)
+        if (x >= 0 && game->codes[x].name)
         {
             //u32 color = game.codes[x].activated ? 0x4040C000 : 0x00000000;
 			u8 a = (u8)((alpha * CalculateAlphaList(x, selIndex, maxPerPage)) / 0xFF);
             SetFontColor(APP_FONT_COLOR | a, 0);
             //printf ("Drawing code name %d\n", x);
 			SetCurrentFont(font_comfortaa_regular);
-            float dx = DrawString(MENU_ICON_OFF + (MENU_TITLE_OFF * 3) - xo, game_y, game.codes[x].name);
+            float dx = DrawString(MENU_ICON_OFF + (MENU_TITLE_OFF * 3) - xo, game_y, game->codes[x].name);
             //DrawString(MENU_ICON_OFF + (MENU_TITLE_OFF * 3), game_y, game.codes[x].name);
             
-            if (game.codes[x].activated)
+            if (game->codes[x].activated)
             {
-				DrawTexture(menu_textures[cheat_png_index], MENU_ICON_OFF, game_y, 0, (MENU_TITLE_OFF * 3) - 15, y_inc + 2, 0xFFFFFF00 | a);
+				DrawTexture(&menu_textures[cheat_png_index], MENU_ICON_OFF, game_y, 0, (MENU_TITLE_OFF * 3) - 15, y_inc + 2, 0xFFFFFF00 | a);
 
 				SetFontSize((int)(y_inc * 0.6), (int)(y_inc * 0.6));
                 SetFontAlign(3);
@@ -547,23 +544,23 @@ void DrawCheatsList(int selIndex, save_entry_t game, u8 alpha)
                 SetFontAlign(0);
                 SetFontSize(APP_FONT_SIZE_SELECTION);
                 
-                if (game.codes[x].options_count > 0 && game.codes[x].options)
+                if (game->codes[x].options_count > 0 && game->codes[x].options)
                 {
                     int od = 0;
-                    for (od = 0; od < game.codes[x].options_count; od++)
+                    for (od = 0; od < game->codes[x].options_count; od++)
                     {
-                        if (game.codes[x].options[od].sel >= 0 && game.codes[x].options[od].name && game.codes[x].options[od].name[game.codes[x].options[od].sel])
+                        if (game->codes[x].options[od].sel >= 0 && game->codes[x].options[od].name && game->codes[x].options[od].name[game->codes[x].options[od].sel])
                         {
 							SetCurrentFont(font_comfortaa_bold);
 
                             //Allocate option
-                            char * option = calloc(1, strlen(game.codes[x].options[od].name[game.codes[x].options[od].sel]) + 4);
+                            char * option = calloc(1, strlen(game->codes[x].options[od].name[game->codes[x].options[od].sel]) + 4);
 
                             //If first print "(NAME", else add to list of names ", NAME"
-                            sprintf(option, (od == 0) ? " (%s" : ", %s", game.codes[x].options[od].name[game.codes[x].options[od].sel]);
+                            sprintf(option, (od == 0) ? " (%s" : ", %s", game->codes[x].options[od].name[game->codes[x].options[od].sel]);
                             
                             //If it's the last one then end the list
-                            if (od == (game.codes[x].options_count - 1))
+                            if (od == (game->codes[x].options_count - 1))
                                 option[strlen(option)] = ')';
                             
 							SetFontColor(APP_FONT_COLOR | a, 0);
@@ -582,27 +579,24 @@ void DrawCheatsList(int selIndex, save_entry_t game, u8 alpha)
             //Draw selection bar
             int c = 0;
             for (c = 0; c < 848; c++)
-				DrawTexture(menu_textures[mark_line_png_index], c, game_y, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
+				DrawTexture(&menu_textures[mark_line_png_index], c, game_y, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
         
-			DrawTextureCenteredX(menu_textures[mark_arrow_png_index], MENU_ICON_OFF - 20, game_y, 0, (2 * y_inc) / 3, y_inc + 2, 0xFFFFFF00 | alpha);
+			DrawTextureCenteredX(&menu_textures[mark_arrow_png_index], MENU_ICON_OFF - 20, game_y, 0, (2 * y_inc) / 3, y_inc + 2, 0xFFFFFF00 | alpha);
 		}
         
         game_y += y_inc;
     }
     
-    DrawScrollBar(selIndex, game.code_count, y_inc, 800, alpha);
-    
+    DrawScrollBar(selIndex, game->code_count, y_inc, 800, alpha);
 }
 
 void Draw_CheatsMenu_Selection_Ani()
 {
-    int div = 12, max = MENU_ANI_MAX, ani = 0;
-    for (ani = 0; ani < max; ani++)
+    int ani = 0;
+    for (ani = 0; ani < MENU_ANI_MAX; ani++)
     {
         tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
-        
         tiny3d_AlphaTest(1, 0x0, TINY3D_ALPHA_FUNC_GEQUAL);
-        
         tiny3d_BlendFunc(1, TINY3D_BLEND_FUNC_SRC_RGB_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_ALPHA_SRC_ALPHA,
             0x00000303 | 0x00000000,
             TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
@@ -611,13 +605,13 @@ void Draw_CheatsMenu_Selection_Ani()
         
         u8 icon_a = (u8)(((ani * 2) > 0xFF) ? 0xFF : (ani * 2));
         
-		DrawHeader_Ani(menu_textures[header_ico_cht_png_index], "Patches", selected_entry.name, APP_FONT_TITLE_COLOR, 0xffffffff, ani, div);
+		DrawHeader_Ani(cat_cheats_png_index, "Patches", selected_entry.name, APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
 
-        int _game_a = (int)(icon_a - (max / 2)) * 2;
+        int _game_a = (int)(icon_a - (MENU_ANI_MAX / 2)) * 2;
         if (_game_a > 0xFF)
             _game_a = 0xFF;
         u8 game_a = (u8)(_game_a < 0 ? 0 : _game_a);
-        DrawCheatsList(menu_old_sel[5], selected_entry, game_a);
+        DrawCheatsList(menu_old_sel[5], &selected_entry, game_a);
         
         tiny3d_Flip();
         
@@ -628,24 +622,21 @@ void Draw_CheatsMenu_Selection_Ani()
 
 void Draw_CheatsMenu_Selection(int menuSel, u32 rgba)
 {
-	DrawHeader(menu_textures[header_ico_cht_png_index], 0, "Patches", selected_entry.name, APP_FONT_TITLE_COLOR | 0xFF, rgba, 0);
-
-    DrawCheatsList(menuSel, selected_entry, (u8)rgba);
+	DrawHeader(cat_cheats_png_index, 0, "Patches", selected_entry.name, APP_FONT_TITLE_COLOR | 0xFF, rgba, 0);
+    DrawCheatsList(menuSel, &selected_entry, (u8)rgba);
 }
 
 
 /*
  * User Cheats Game Selection Menu
  */
-void Draw_UserCheatsMenu_Ani(save_entry_t * games, int games_len)
+void Draw_UserCheatsMenu_Ani(save_list_t * list)
 {
-    int div = 12, max = MENU_ANI_MAX, ani = 0;
-    for (ani = 0; ani < max; ani++)
+    int ani = 0;
+    for (ani = 0; ani < MENU_ANI_MAX; ani++)
     {
         tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
-        
         tiny3d_AlphaTest(1, 0x0, TINY3D_ALPHA_FUNC_GEQUAL);
-        
         tiny3d_BlendFunc(1, TINY3D_BLEND_FUNC_SRC_RGB_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_ALPHA_SRC_ALPHA,
             0x00000303 | 0x00000000,
             TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
@@ -654,13 +645,13 @@ void Draw_UserCheatsMenu_Ani(save_entry_t * games, int games_len)
         
         u8 icon_a = (u8)(((ani * 2) > 0xFF) ? 0xFF : (ani * 2));
         
-		DrawHeader_Ani(menu_textures[header_ico_cht_png_index], "Saves", "Save Game List", APP_FONT_TITLE_COLOR, 0xffffffff, ani, div);
+		DrawHeader_Ani(list->icon_id, list->title, "Save Game List", APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
         
-        int _game_a = (int)(icon_a - (max / 2)) * 2;
+        int _game_a = (int)(icon_a - (MENU_ANI_MAX / 2)) * 2;
         if (_game_a > 0xFF)
             _game_a = 0xFF;
         u8 game_a = (u8)(_game_a < 0 ? 0 : _game_a);
-        DrawGameList(menu_old_sel[1], games, games_len, game_a);
+        DrawGameList(menu_old_sel[1], list->list, list->count, game_a);
         
         tiny3d_Flip();
         
@@ -669,10 +660,8 @@ void Draw_UserCheatsMenu_Ani(save_entry_t * games, int games_len)
     }
 }
 
-void Draw_UserCheatsMenu(save_entry_t * games, int games_len, int menuSel, u8 alpha)
+void Draw_UserCheatsMenu(save_list_t * list, int menuSel, u8 alpha)
 {
-	DrawHeader(menu_textures[header_ico_cht_png_index], 0, "Saves", "Save Game List", APP_FONT_TITLE_COLOR | 0xFF, 0xffffff00 | alpha, 0);
-    
-	DrawGameList(menuSel, games, games_len, alpha);
-    
+	DrawHeader(list->icon_id, 0, list->title, "Save Game List", APP_FONT_TITLE_COLOR | 0xFF, 0xffffff00 | alpha, 0);
+	DrawGameList(menuSel, list->list, list->count, alpha);
 }

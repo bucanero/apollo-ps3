@@ -94,7 +94,7 @@ void SetExtraSpace(int space);
 
 // register special character into font
 
-void RegisterSpecialCharacter(char value, short fw, short fy, float sx, float sy, png_texture image);
+void RegisterSpecialCharacter(char value, short fy, float scale, png_texture* image);
 
 // get width of string based on font
 
@@ -110,7 +110,7 @@ float DrawStringMono(float x, float y, char *str);
 
 // function to draw one string. It return X incremented
 
-float DrawString(float x, float y, char *str);
+float DrawString(float x, float y, const char *str);
 
 // function to draw with fomat string similar to printf. It return X incremented
 

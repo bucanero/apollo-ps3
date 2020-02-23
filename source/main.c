@@ -42,16 +42,21 @@
 #include "menu_options.h"
 #include "menu_cheats.h"
 
-#define MENU_MAIN_SCREEN    0
-#define MENU_USB_SAVES      1
-#define MENU_HDD_SAVES      2
-#define MENU_ONLINE_DB      3
-#define MENU_SETTINGS       4
-#define MENU_CREDITS        5
-#define MENU_PATCHES        6
-#define MENU_PATCH_VIEW     7
-#define MENU_CODE_OPTIONS   8
-#define MENU_SAVE_DETAILS   9
+enum menu_screen_ids
+{
+	MENU_MAIN_SCREEN,
+	MENU_USB_SAVES,
+	MENU_HDD_SAVES,
+	MENU_ONLINE_DB,
+	MENU_USER_BACKUP,
+	MENU_SETTINGS,
+	MENU_CREDITS,
+	MENU_PATCHES,
+	MENU_PATCH_VIEW,
+	MENU_CODE_OPTIONS,
+	MENU_SAVE_DETAILS,
+	TOTAL_MENU_IDS
+};
 
 //Font
 #include "ttf_render.h"
@@ -133,16 +138,14 @@ int close_app = 0;
 
 png_texture * menu_textures;                // png_texture array for main menu, initialized in LoadTexture
 
-int screen_width = 0, screen_height = 0;    // Set to dimensions of the screen in main()
-
 int idle_time = 0;                          // Set by readPad
 
 #define MENU_MAIN_DESCRIPTION   "PlayStation 3 Save Game Tool"
 #define MENU_MAIN_FOOTER        "www.bucanero.com.ar"
 
 const char * menu_about_strings[] = { "Bucanero", "Developer",
-									"Dnawrkshp", "GUI code",
 									"Berion", "GUI design",
+									"Dnawrkshp", "Artemis code",
 									"flatz", "PFD/SFO tools",
 									NULL, NULL };
 
@@ -169,13 +172,14 @@ const char * menu_about_strings_project[] = { psid_str1, psid_str2,
 */
 int menu_id = 0;												// Menu currently in
 int menu_sel = 0;												// Index of selected item (use varies per menu)
-int menu_old_sel[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };			// Previous menu_sel for each menu
-int last_menu_id[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };			// Last menu id called (for returning)
+int menu_old_sel[TOTAL_MENU_IDS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };		// Previous menu_sel for each menu
+int last_menu_id[TOTAL_MENU_IDS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };		// Last menu id called (for returning)
 
-const char * menu_pad_help[] = { NULL,																//Main
+const char * menu_pad_help[TOTAL_MENU_IDS] = { NULL,												//Main
 								"\x10 Select    \x13 Back    \x12 Details    \x11 Refresh",			//USB list
 								"\x10 Select    \x13 Back    \x12 Details    \x11 Refresh",			//HDD list
 								"\x10 Select    \x13 Back    \x11 Refresh",							//Online list
+								"\x10 Select    \x13 Back",											//User backup
 								"\x10 Select    \x13 Back",											//Options
 								"\x13 Back",														//About
 								"\x10 Select    \x12 View Code    \x13 Back",						//Select Cheats
@@ -188,6 +192,8 @@ const char * menu_pad_help[] = { NULL,																//Main
 * HDD save list
 */
 save_list_t hdd_saves = {
+	.icon_id = cat_hdd_png_index,
+	.title = "HDD Saves",
     .list = NULL,
     .count = 0,
     .path = "",
@@ -200,6 +206,8 @@ save_list_t hdd_saves = {
 * USB save list
 */
 save_list_t usb_saves = {
+	.icon_id = cat_usb_png_index,
+	.title = "USB Saves",
     .list = NULL,
     .count = 0,
     .path = "",
@@ -212,6 +220,8 @@ save_list_t usb_saves = {
 * Online code list
 */
 save_list_t online_saves = {
+	.icon_id = cat_db_png_index,
+	.title = "Online Database",
     .list = NULL,
     .count = 0,
     .path = ONLINE_URL,
@@ -220,13 +230,18 @@ save_list_t online_saves = {
     .UpdatePath = NULL,
 };
 
+/*
+* Online code list
+*/
+save_entry_t user_backup = {
+	.name = "User Data Backup",
+	.code_sorted = 0,
+	.codes = NULL,
+};
+
 save_entry_t selected_entry;
 code_entry_t selected_centry;
 int option_index = 0;
-
-// Set to dimensions of the screen in main()
-int screen_width;
-int screen_height;
 
 void release_all() {
 	
@@ -399,8 +414,6 @@ int readPad(int port)
 
 void Draw_MainMenu_Ani()
 {
-	int w = 0, h = 0;
-	
 	int max = MENU_ANI_MAX, ani = 0;
 	for (ani = 0; ani < max; ani++)
 	{
@@ -429,8 +442,7 @@ void Draw_MainMenu_Ani()
 		DrawBackgroundTexture(0, bg_a);
 		
 		//App logo
-		w = 500, h = 140;
-		DrawTexture(menu_textures[titlescr_logo_png_index], 424 - (w / 2), 256 - (h / 2) - 120, 0, w, h, 0xFFFFFF00 | logo_a);
+		DrawTexture(&menu_textures[logo_png_index], logo_png_x, logo_png_y, 0, logo_png_w, logo_png_h, 0xFFFFFF00 | logo_a);
 		
 		//App description
 		SetFontAlign(1);
@@ -458,7 +470,7 @@ void Draw_MainMenu_Ani()
 		
 		DrawBackground2D(0xFFFFFFFF);
 		
-		u8 icon_a = (u8)(((ani * rate) > 32) ? 32 : (ani * rate));
+		u8 icon_a = (u8)(((ani * rate) > 0xFF) ? 0xFF : (ani * rate));
 		
 		//------------ Backgrounds
 		
@@ -466,8 +478,7 @@ void Draw_MainMenu_Ani()
 		DrawBackgroundTexture(0, 0xFF);
 		
 		//App logo
-		w = 500; h = 140;
-		DrawTexture(menu_textures[titlescr_logo_png_index], 424 - (w / 2), 256 - (h / 2) - 120, 0, w, h, 0xFFFFFFFF);
+		DrawTexture(&menu_textures[logo_png_index], logo_png_x, logo_png_y, 0, logo_png_w, logo_png_h, 0xFFFFFFFF);
 
 		//App description
 		SetFontAlign(1);
@@ -476,25 +487,33 @@ void Draw_MainMenu_Ani()
 		SetFontColor(APP_FONT_COLOR | 0xFF, 0);
 		DrawString(0, 210, MENU_MAIN_DESCRIPTION);
 
+		drawColumns(icon_a);
+
 		SetFontSize(APP_FONT_SIZE_SUBTEXT);
-		DrawString(0, 480, MENU_MAIN_FOOTER);
+		DrawString(0, 490 + apollo_config.marginV, MENU_MAIN_FOOTER);
 		
 		//------------ Icons
 		
-		//Start game
-		DrawTexture(menu_textures[titlescr_ico_usb_png_index], 200, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | icon_a);
+		//Empty
+		drawJar(jar_empty_png_index, jar_empty_png_x, jar_empty_png_y, "", icon_a);
+
+		//USB save
+		drawJar(jar_usb_png_index, jar_usb_png_x, jar_usb_png_y, "", icon_a);
 		
-		//Cheats
-		DrawTexture(menu_textures[titlescr_ico_cht_png_index], 300, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | icon_a);
+		//HDD save
+		drawJar(jar_hdd_png_index, jar_hdd_png_x, jar_hdd_png_y, "", icon_a);
 
 		//Online cheats
-		DrawTexture(menu_textures[titlescr_ico_net_png_index], 400, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | icon_a);
+		drawJar(jar_db_png_index, jar_db_png_x, jar_db_png_y, "", icon_a);
 		
+		//Online cheats
+		drawJar(jar_bup_png_index, jar_bup_png_x, jar_bup_png_y, "", icon_a);
+
 		//Options
-		DrawTexture(menu_textures[titlescr_ico_opt_png_index], 500, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | icon_a);
+		drawJar(jar_opt_png_index, jar_opt_png_x, jar_opt_png_y, "", icon_a);
 		
 		//About
-		DrawTexture(menu_textures[titlescr_ico_abt_png_index], 600, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | icon_a);
+		drawJar(jar_about_png_index, jar_about_png_x, jar_about_png_y, "", icon_a);
 		
 		tiny3d_Flip();
 
@@ -505,17 +524,13 @@ void Draw_MainMenu_Ani()
 
 void Draw_MainMenu()
 {
-	int c = 0, w = 0, h = 0;
-	
 	//------------ Backgrounds
 	
 	//Background
 	DrawBackgroundTexture(0, 0xff);
 	
 	//App logo
-	c = titlescr_logo_png_index;
-	w = 500; h = 140;
-	DrawTexture(menu_textures[c], 424 - (w / 2), 256 - (h / 2) - 120, 0, w, h, 0xffffffff);
+	DrawTexture(&menu_textures[logo_png_index], logo_png_x, logo_png_y, 0, logo_png_w, logo_png_h, 0xffffffff);
 	
 	//App description
 	SetFontAlign(1);
@@ -524,43 +539,38 @@ void Draw_MainMenu()
 	SetFontColor(APP_FONT_COLOR | 0xFF, 0);
 	DrawString(0, 210, MENU_MAIN_DESCRIPTION);
 
+	drawColumns(0xFF);
+
 	SetFontSize(APP_FONT_SIZE_SUBTEXT);
-	DrawString(0, 480, MENU_MAIN_FOOTER);
+	DrawString(0, 490 + apollo_config.marginV, MENU_MAIN_FOOTER);
 
 	//------------ Icons
 	SetFontAlign(3);
-	SetFontSize(APP_FONT_SIZE_SUBTEXT);
+	SetFontSize(APP_FONT_SIZE_MENU);
 	SetCurrentFont(font_comfortaa_regular);
 
+//	drawColumns(0xFF);
+
+	//Empty
+	drawJar(jar_empty_png_index, jar_empty_png_x, jar_empty_png_y, "", 0xFF);
+
 	//USB saves
-	c = titlescr_ico_usb_png_index;
-	DrawTexture(menu_textures[c], 200, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 0) ? 0xFF : 32));
-	SetFontColor(APP_FONT_COLOR | ((menu_sel == 0) ? 0xFF : 32), 0);
-	DrawString(200 + (MENU_MAIN_ICON_WIDTH / 2), 390, "USB Saves");
+	drawJar(jar_usb_png_index, jar_usb_png_x, jar_usb_png_y, "USB Saves", 0xFF);
 
 	//HDD saves
-	c = titlescr_ico_cht_png_index;
-	DrawTexture(menu_textures[c], 300, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 1) ? 0xFF : 32));
-	SetFontColor(APP_FONT_COLOR | ((menu_sel == 1) ? 0xFF : 32), 0);
-	DrawString(300 + (MENU_MAIN_ICON_WIDTH / 2), 390, "HDD Saves");
+	drawJar(jar_hdd_png_index, jar_hdd_png_x, jar_hdd_png_y, "HDD Saves", 0xFF);
 
 	//Online Cheats
-	c = titlescr_ico_net_png_index;
-	DrawTexture(menu_textures[c], 400, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 2) ? 0xFF : 32));
-	SetFontColor(APP_FONT_COLOR | ((menu_sel == 2) ? 0xFF : 32), 0);
-	DrawString(400 + (MENU_MAIN_ICON_WIDTH / 2), 390, "Online DB");
+	drawJar(jar_db_png_index, jar_db_png_x, jar_db_png_y, "Online DB", 0xFF);
+
+	//User Backup
+	drawJar(jar_bup_png_index, jar_bup_png_x, jar_bup_png_y, "User Backup", 0xFF);
 
 	//Options
-	c = titlescr_ico_opt_png_index;
-	DrawTexture(menu_textures[c], 500, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 3) ? 0xFF : 32));
-	SetFontColor(APP_FONT_COLOR | ((menu_sel == 3) ? 0xFF : 32), 0);
-	DrawString(500 + (MENU_MAIN_ICON_WIDTH / 2) + 5, 390, "Options");
+	drawJar(jar_opt_png_index, jar_opt_png_x, jar_opt_png_y, "Settings", 0xFF);
 
 	//About
-	c = titlescr_ico_abt_png_index;
-	DrawTexture(menu_textures[c], 600, 320, 0, MENU_MAIN_ICON_WIDTH, 64, 0xffffff00 | ((menu_sel == 4) ? 0xFF : 32));
-	SetFontColor(APP_FONT_COLOR | ((menu_sel == 4) ? 0xFF : 32), 0);
-	DrawString(600 + (MENU_MAIN_ICON_WIDTH / 2), 390, "About");
+	drawJar(jar_about_png_index, jar_about_png_x, jar_about_png_y, "About", 0xFF);
 
 	SetFontAlign(0);
 }
@@ -596,6 +606,7 @@ void LoadTextures_Menu()
 
 	free_mem = (u32*) init_ttf_table((u16*) texture_mem);
 	
+	set_ttf_window(0, 0, 848 + apollo_config.marginH, 512 + apollo_config.marginV, 0);
 //	TTFUnloadFont();
 	
 	if (!menu_textures)
@@ -604,13 +615,11 @@ void LoadTextures_Menu()
 	//Init Main Menu textures
 	load_menu_texture(bgimg, png);
 	load_menu_texture(cheat, png);
-	load_menu_texture(circle_error_dark, png);
-	load_menu_texture(circle_error_light, png);
+
 	load_menu_texture(circle_loading_bg, png);
 	load_menu_texture(circle_loading_seek, png);
-	load_menu_texture(edit_ico_add, png);
-	load_menu_texture(edit_ico_del, png);
 	load_menu_texture(edit_shadow, png);
+
 	load_menu_texture(footer_ico_circle, png);
 	load_menu_texture(footer_ico_cross, png);
 	load_menu_texture(footer_ico_lt, png);
@@ -618,28 +627,25 @@ void LoadTextures_Menu()
 	load_menu_texture(footer_ico_square, png);
 	load_menu_texture(footer_ico_triangle, png);
 	load_menu_texture(header_dot, png);
-	load_menu_texture(header_ico_abt, png);
-	load_menu_texture(header_ico_cht, png);
-	load_menu_texture(header_ico_opt, png);
-	load_menu_texture(header_ico_xmb, png);
 	load_menu_texture(header_line, png);
-	load_menu_texture(help, png);
+
 	load_menu_texture(mark_arrow, png);
 	load_menu_texture(mark_line, png);
 	load_menu_texture(opt_off, png);
 	load_menu_texture(opt_on, png);
 	load_menu_texture(scroll_bg, png);
 	load_menu_texture(scroll_lock, png);
-	load_menu_texture(titlescr_ico_abt, png);
-	load_menu_texture(titlescr_ico_cht, png);
-	load_menu_texture(titlescr_ico_opt, png);
-	load_menu_texture(titlescr_ico_usb, png);
-	load_menu_texture(titlescr_ico_net, png);
-	load_menu_texture(titlescr_logo, png);
+	load_menu_texture(help, png);
 
-/*
-	load_menu_texture(bg, png);
-	load_menu_texture(bg_water, png);
+	load_menu_texture(cat_about, png);
+	load_menu_texture(cat_cheats, png);
+	load_menu_texture(cat_opt, png);
+	load_menu_texture(cat_usb, png);
+	load_menu_texture(cat_bup, png);
+	load_menu_texture(cat_db, png);
+	load_menu_texture(cat_hdd, png);
+	load_menu_texture(cat_sav, png);
+	load_menu_texture(cat_warning, png);
 	load_menu_texture(column_1, png);
 	load_menu_texture(column_2, png);
 	load_menu_texture(column_3, png);
@@ -661,7 +667,15 @@ void LoadTextures_Menu()
 	load_menu_texture(jar_usb, png);
 	load_menu_texture(jar_usb_hover, png);
 	load_menu_texture(logo, png);
-*/
+	load_menu_texture(tag_lock, png);
+	load_menu_texture(tag_own, png);
+	load_menu_texture(tag_pce, png);
+	load_menu_texture(tag_ps1, png);
+	load_menu_texture(tag_ps2, png);
+	load_menu_texture(tag_ps3, png);
+	load_menu_texture(tag_psp, png);
+	load_menu_texture(tag_psv, png);
+	load_menu_texture(tag_warning, png);
 
 	u32 tBytes = free_mem - texture_mem;
 	LOG("LoadTextures_Menu() :: Allocated %db (%.02fkb, %.02fmb) for textures", tBytes, tBytes / (float)1024, tBytes / (float)(1024 * 1024));
@@ -772,6 +786,7 @@ void clearcache_callback(int sel)
 		if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
 		{
 			snprintf(dataPath, sizeof(dataPath), "%s" "%s", ONLINE_LOCAL_CACHE, dir->d_name);
+			LOG("Removing %s", dataPath);
 			unlink_secure(dataPath);
 		}
 	}
@@ -931,6 +946,7 @@ void SetMenu(int id)
 		case MENU_USB_SAVES: //USB Saves Menu
 		case MENU_HDD_SAVES: //HHD Saves Menu
 		case MENU_ONLINE_DB: //Cheats Online Menu
+		case MENU_USER_BACKUP: //Backup Menu
 		case MENU_SETTINGS: //Options Menu
 		case MENU_CREDITS: //About Menu
 		case MENU_PATCHES: //Cheat Selection Menu			
@@ -958,7 +974,7 @@ void SetMenu(int id)
 				ReloadUserSaves(&usb_saves);
 			
 			if (apollo_config.doAni)
-				Draw_UserCheatsMenu_Ani(usb_saves.list, usb_saves.count);
+				Draw_UserCheatsMenu_Ani(&usb_saves);
 			break;
 
 		case MENU_HDD_SAVES: //HDD saves Menu
@@ -966,7 +982,7 @@ void SetMenu(int id)
 				ReloadUserSaves(&hdd_saves);
 			
 			if (apollo_config.doAni)
-				Draw_UserCheatsMenu_Ani(hdd_saves.list, hdd_saves.count);
+				Draw_UserCheatsMenu_Ani(&hdd_saves);
 			break;
 
 		case MENU_ONLINE_DB: //Cheats Online Menu
@@ -974,7 +990,7 @@ void SetMenu(int id)
 				ReloadUserSaves(&online_saves);
 
 			if (apollo_config.doAni)
-				Draw_UserCheatsMenu_Ani(online_saves.list, online_saves.count);
+				Draw_UserCheatsMenu_Ani(&online_saves);
 			break;
 
 		case MENU_CREDITS: //About Menu
@@ -985,6 +1001,20 @@ void SetMenu(int id)
 		case MENU_SETTINGS: //Options Menu
 			if (apollo_config.doAni)
 				Draw_OptionsMenu_Ani();
+			break;
+
+		case MENU_USER_BACKUP: //User Backup Menu
+			if (!user_backup.codes)
+			{
+				LoadBackupCodes(&user_backup);
+    			qsort(user_backup.codes, user_backup.code_count, sizeof(code_entry_t), &qsortCodeList_Compare);
+			}
+			selected_entry = user_backup;
+// ---------
+			last_menu_id[MENU_PATCHES] = 0;
+
+			if (apollo_config.doAni)
+				Draw_CheatsMenu_Selection_Ani();
 			break;
 
 		case MENU_PATCHES: //Cheat Selection Menu
@@ -1129,7 +1159,7 @@ void doSaveMenu(save_list_t * save_list)
 		}
 	}
 
-	Draw_UserCheatsMenu(save_list->list, save_list->count, menu_sel, 0xFF);
+	Draw_UserCheatsMenu(save_list, menu_sel, 0xFF);
 }
 
 void doMainMenu()
@@ -1138,10 +1168,10 @@ void doMainMenu()
 	if (readPad(0))
 	{
 		if(paddata[0].BTN_LEFT)
-			move_selection_back(5, 1);
+			move_selection_back(6, 1);
 
 		else if(paddata[0].BTN_RIGHT)
-			move_selection_fwd(5, 1);
+			move_selection_fwd(6, 1);
 
 		else if (paddata[0].BTN_CROSS)
 		    SetMenu(menu_sel+1);
@@ -1182,6 +1212,7 @@ void doOptionsMenu()
 		else if (paddata[0].BTN_CIRCLE)
 		{
 			save_app_settings(&apollo_config);
+			set_ttf_window(0, 0, 848 + apollo_config.marginH, 512 + apollo_config.marginV, 0);
 			SetMenu(MENU_MAIN_SCREEN);
 			return;
 		}
@@ -1233,7 +1264,7 @@ void doPatchViewMenu()
 	const char * str;
 
 	for(str = selected_centry.codes; *str; ++str)
-		max += *str == '\n';
+		max += (*str == '\n');
 	//max += -((512 - (120*2))/18) + 1; //subtract the max per page
 	if (max <= 0)
 		max = 1;
@@ -1272,6 +1303,17 @@ void downloadSave(const char* file, const char* path)
 		show_message("Error downloading save game!");
 }
 
+void _saveOwnerData(const char* path)
+{
+	FILE* f = fopen(path, "w");
+	if (!f)
+		return;
+
+	fprintf(f, "%016lX %016lX\n", apollo_config.psid[0], apollo_config.psid[1]);
+	fprintf(f, "%016lX\n", apollo_config.account_id);
+	fprintf(f, "%08d\n", apollo_config.user_id);
+	fclose(f);
+}
 
 uint32_t get_filename_id(const char* dir)
 {
@@ -1309,10 +1351,15 @@ void zipSave(const char* save_path, const char* exp_path)
 	zip_directory(tmp, save_path, export_file);
 
 	sprintf(export_file, "%s" "saves.txt", exp_path);
-
 	FILE* f = fopen(export_file, "a");
-	fprintf(f, "%08d.zip=[%s]%s\n", fid, selected_entry.title_id, selected_entry.name);
-	fclose(f);
+	if (f)
+	{
+		fprintf(f, "%08d.zip=[%s]%s\n", fid, selected_entry.title_id, selected_entry.name);
+		fclose(f);
+	}
+
+	sprintf(export_file, "%s" "owner.txt", exp_path);
+	_saveOwnerData(export_file);
 
 	free(export_file);
 	free(tmp);
@@ -1332,14 +1379,61 @@ void copySave(const char* save_path, const char* exp_path)
 
 	asprintf(&tmp, save_path);
 	*strrchr(tmp, '/') = 0;
-	asprintf(&copy_path, "%s%s", exp_path, strrchr(tmp, '/')+1);
-	*strrchr(tmp, '/') = 0;
+	asprintf(&copy_path, "%s%s/", exp_path, strrchr(tmp, '/')+1);
 
     LOG("Copying <%s> to %s...", save_path, copy_path);
-	copy_directory(tmp, save_path, copy_path);
+	copy_directory(save_path, save_path, copy_path);
 
 	free(copy_path);
 	free(tmp);
+
+    stop_loading_screen();
+}
+
+void exportLicenses(const char* exp_path)
+{
+	char* export_file;
+	char* lic_path;
+	char* tmp;
+
+	if (mkdirs(exp_path) != SUCCESS)
+		return;
+
+    init_loading_screen("Exporting user licenses...");
+
+	asprintf(&export_file, "%s" "licenses.zip", exp_path);
+	asprintf(&lic_path, EXDATA_PATH_HDD, apollo_config.user_id);
+
+	asprintf(&tmp, lic_path);
+	*strrchr(tmp, '/') = 0;
+
+	zip_directory(tmp, lic_path, export_file);
+
+	sprintf(export_file, "%s" "owner.txt", exp_path);
+	_saveOwnerData(export_file);
+
+	free(export_file);
+	free(lic_path);
+	free(tmp);
+
+    stop_loading_screen();
+}
+
+void exportSaves(const char* exp_path)
+{
+	char* save_path;
+
+	if (mkdirs(exp_path) != SUCCESS)
+		return;
+
+    init_loading_screen("Transfering all saves...");
+
+	asprintf(&save_path, SAVES_PATH_HDD, apollo_config.user_id);
+
+    LOG("Copying <%s> to %s...", save_path, exp_path);
+	copy_directory(save_path, save_path, exp_path);
+
+	free(save_path);
 
     stop_loading_screen();
 }
@@ -1382,6 +1476,24 @@ void doCodeOptionsMenu()
 			if (strncmp(codecmd, CMD_COPY_SAVE_USB, 10) == 0)
 			{
 				copySave(selected_entry.path, codecmd[10] ? SAVES_PATH_USB1 : SAVES_PATH_USB0);
+        		code->activated = 0;
+			}
+
+			if (strncmp(codecmd, CMD_EXP_EXDATA_USB, 10) == 0)
+			{
+				exportLicenses(codecmd[10] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0);
+        		code->activated = 0;
+			}
+
+			if (strncmp(codecmd, CMD_EXP_TROPHY_USB, 10) == 0)
+			{
+//				exportLicenses(codecmd[10] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0);
+        		code->activated = 0;
+			}
+
+			if (strncmp(codecmd, CMD_EXP_SAVES_USB, 10) == 0)
+			{
+				exportSaves(codecmd[10] ? SAVES_PATH_USB1 : SAVES_PATH_USB0);
         		code->activated = 0;
 			}
 
@@ -1541,17 +1653,20 @@ void doPatchMenu()
 				}
 			}
 		}
-/*
 		else if (paddata[0].BTN_TRIANGLE)
 		{
 			selected_centry = selected_entry.codes[menu_sel];
 			SetMenu(MENU_PATCH_VIEW);
 			return;
 		}
-*/
 	}
 	
 	Draw_CheatsMenu_Selection(menu_sel, 0xFFFFFFFF);
+}
+
+void doUserBackupMenu()
+{
+	doPatchMenu();
 }
 
 // Resets new frame
@@ -1583,6 +1698,10 @@ void drawScene()
 			doOptionsMenu();
 			break;
 
+		case MENU_USER_BACKUP: //User Backup Menu
+			doUserBackupMenu();
+			break;
+
 		case MENU_PATCHES: //Cheats Selection Menu
 			doPatchMenu();
 			break;
@@ -1605,6 +1724,26 @@ void exiting()
 {
 	http_end();
 	sysModuleUnload(SYSMODULE_PNGDEC);
+}
+
+void registerSpecialChars()
+{
+	// Register save tags
+	RegisterSpecialCharacter(CHAR_TAG_PS1, 2, 1.5, &menu_textures[tag_ps1_png_index]);
+	RegisterSpecialCharacter(CHAR_TAG_PS2, 2, 1.5, &menu_textures[tag_ps2_png_index]);
+	RegisterSpecialCharacter(CHAR_TAG_PS3, 2, 1.5, &menu_textures[tag_ps3_png_index]);
+	RegisterSpecialCharacter(CHAR_TAG_PSP, 2, 1.5, &menu_textures[tag_psp_png_index]);
+	RegisterSpecialCharacter(CHAR_TAG_PSV, 2, 1.5, &menu_textures[tag_psv_png_index]);
+	RegisterSpecialCharacter(CHAR_TAG_PCE, 2, 1.5, &menu_textures[tag_pce_png_index]);
+	RegisterSpecialCharacter(CHAR_TAG_LOCKED, 0, 1.5, &menu_textures[tag_lock_png_index]);
+	RegisterSpecialCharacter(CHAR_TAG_OWNER, 0, 1.5, &menu_textures[tag_own_png_index]);
+	RegisterSpecialCharacter(CHAR_TAG_WARNING, 0, 1.5, &menu_textures[tag_warning_png_index]);
+
+	// Register button icons
+	RegisterSpecialCharacter(CHAR_BTN_X, 0, 1.2, &menu_textures[footer_ico_cross_png_index]);
+	RegisterSpecialCharacter(CHAR_BTN_S, 0, 1.2, &menu_textures[footer_ico_square_png_index]);
+	RegisterSpecialCharacter(CHAR_BTN_T, 0, 1.2, &menu_textures[footer_ico_triangle_png_index]);
+	RegisterSpecialCharacter(CHAR_BTN_O, 0, 1.2, &menu_textures[footer_ico_circle_png_index]);
 }
 
 /*
@@ -1644,14 +1783,8 @@ s32 main(s32 argc, const char* argv[])
 	// Setup font
 	SetExtraSpace(5);
 	SetCurrentFont(0);
-	RegisterSpecialCharacter(0x10, menu_textures[footer_ico_cross_png_index].texture.width,
-		4, 1.2, 1.2, menu_textures[footer_ico_cross_png_index]);
-	RegisterSpecialCharacter(0x11, menu_textures[footer_ico_square_png_index].texture.width,
-		4, 1.2, 1.2, menu_textures[footer_ico_square_png_index]);
-	RegisterSpecialCharacter(0x12, menu_textures[footer_ico_triangle_png_index].texture.width,
-		4, 1.2, 1.2, menu_textures[footer_ico_triangle_png_index]);
-	RegisterSpecialCharacter(0x13, menu_textures[footer_ico_circle_png_index].texture.width,
-		4, 1.2, 1.2, menu_textures[footer_ico_circle_png_index]);
+
+	registerSpecialChars();
 
 	menu_options_maxopt = 0;
 	while (menu_options[menu_options_maxopt].name)
@@ -1677,8 +1810,6 @@ s32 main(s32 argc, const char* argv[])
 	videoResolution res;
 	assert(videoGetResolution(state.displayMode.resolution, &res) == 0);
 	LOG("Resolution: %dx%d", res.width, res.height);
-	screen_width = res.width;
-	screen_height = res.height;
 	
 	SND_SetInfiniteVoice(2, (effect_is_stereo) ? VOICE_STEREO_16BIT : VOICE_MONO_16BIT, effect_freq, 0, background_music, background_music_size, 255, 255);
 	

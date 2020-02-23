@@ -4,12 +4,15 @@
 #define MENU_ICON_OFF 			70          //X Offset to start printing menu mini icon
 #define MENU_ANI_MAX 			0x80        //Max animation number
 #define MENU_SPLIT_OFF			200			//Offset from left of sub/split menu to start drawing
-#define MENU_MAIN_ICON_WIDTH 	80			//Width of main menu icons
 
-#define APP_OPTION_BOOL			1
-#define APP_OPTION_LIST			2
-#define APP_OPTION_INC			3
-#define APP_OPTION_CALL			4
+enum app_option_type
+{
+    APP_OPTION_NONE,
+    APP_OPTION_BOOL,
+    APP_OPTION_LIST,
+    APP_OPTION_INC,
+    APP_OPTION_CALL,
+};
 
 typedef struct
 {

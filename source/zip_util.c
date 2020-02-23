@@ -25,8 +25,9 @@ void walk_zip_directory(const char* startdir, const char* inputdir, struct zip *
 		return;
 	}
 
-	if (zip_add_dir(zipper, inputdir+len) < 0)
-		return;
+	if (strlen(inputdir) > len)
+		if (zip_add_dir(zipper, inputdir+len) < 0)
+			return;
 
 	while ((dirp = readdir(dp)) != NULL) {
 		if ((strcmp(dirp->d_name, ".")  != 0) && (strcmp(dirp->d_name, "..") != 0)) {
@@ -40,7 +41,7 @@ void walk_zip_directory(const char* startdir, const char* inputdir, struct zip *
   			} else {
     			struct zip_source *source = zip_source_file(zipper, fullname, 0, 0);
     			if (!source) {
-      				LOG("Failed to add file to zip: %s", fullname);
+      				LOG("Failed to source file to zip: %s", fullname);
       				continue;
     			}
     			if (zip_add(zipper, &fullname[len], source) < 0) {

@@ -67,7 +67,7 @@ void _draw_AboutMenu(u8 alpha)
 
 void Draw_AboutMenu_Ani()
 {
-	int div = 12, ani = 0;
+	int ani = 0;
 	for (ani = 0; ani < MENU_ANI_MAX; ani++)
 	{
 		tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
@@ -78,7 +78,7 @@ void Draw_AboutMenu_Ani()
 
 		tiny3d_Project2D();
 
-		DrawHeader_Ani(menu_textures[header_ico_abt_png_index], "About", "v" APOLLO_VERSION, APP_FONT_TITLE_COLOR, 0xffffffff, ani, div);
+		DrawHeader_Ani(cat_about_png_index, "About", "v" APOLLO_VERSION, APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
 
 		//------------- About Menu Contents
 
@@ -98,6 +98,6 @@ void Draw_AboutMenu_Ani()
 
 void Draw_AboutMenu()
 {
-	DrawHeader(menu_textures[header_ico_abt_png_index], 0, "About", "v" APOLLO_VERSION, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 0);
+	DrawHeader(cat_about_png_index, 0, "About", "v" APOLLO_VERSION, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 0);
 	_draw_AboutMenu(0xFF);
 }

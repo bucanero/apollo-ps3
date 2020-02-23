@@ -52,13 +52,9 @@ static struct t_font_datas
 typedef struct t_special_char
 {
 	char value;
-
-	short fw;
 	short fy;
-	float sx;
-	float sy;
-
-	png_texture image;
+	float scale;
+	png_texture* image;
 } special_char;
 
 static special_char special_chars[MAX_SPECIAL_CHARS];
@@ -326,37 +322,30 @@ void SetExtraSpace(int space)
 	font_datas.extra = space;
 }
 
-void RegisterSpecialCharacter(char value, short fw, short fy, float sx, float sy, png_texture image)
+void RegisterSpecialCharacter(char value, short fy, float scale, png_texture* image)
 {
-	special_char chr;
-	chr.value = value;
-	chr.fw = fw;
-	chr.fy = fy;
-	chr.sx = sx;
-	chr.sy = sy;
-	chr.image = image;
-
 	// Verify special character
-	if (chr.value == 0)
+	if (value == 0)
 		return;
-	if (chr.image.texture_off == 0)
+	if (image->texture_off == 0 || image->size == 0)
 		return;
-	if (chr.image.size == 0)
-		return;
-	if (chr.image.texture.width == 0 || chr.image.texture.height == 0)
+	if (image->texture.width == 0 || image->texture.height == 0)
 		return;
 	
 	// Verify value is not in use
-	if (GetSpecialCharFromValue(chr.value))
+	if (GetSpecialCharFromValue(value))
 		return;
 
 	// Verify room in array
-	if ((special_char_index + 1) < MAX_SPECIAL_CHARS)
+	if (special_char_index < MAX_SPECIAL_CHARS)
 	{
-		special_chars[special_char_index] = chr;
+		special_chars[special_char_index].value = value;
+	    special_chars[special_char_index].fy = fy;
+	    special_chars[special_char_index].scale = scale;
+    	special_chars[special_char_index].image = image;
+
 		special_char_index++;
 	}
-
 }
 
 int WidthFromStr(const char * str)
@@ -376,20 +365,26 @@ int WidthFromStrMono(u8 * str)
     return w;
 }
 
-void DrawCharSpecial(float x, float y, float z, const special_char* schr)
+int DrawCharSpecial(float x, float y, float z, const special_char* schr, uint8_t draw)
 {
-//	float h = (float)font_datas.fonts[font_datas.current_font].h;
-//	float dx = font_datas.sx * schr->sx;
-//	float dy = font_datas.sy * schr->sy;
-//	float h = 16;//(float)font_datas.fonts[font_datas.current_font].h;
-	float dx = 20; //font_datas.sx * schr->sx, 
-	float dy = 20; //font_datas.sy * schr->sy;
+    float dx = (float)font_datas.sx / (float)schr->image->texture.width;
+    float dy = (float)font_datas.sy / (float)schr->image->texture.height;
+    float min = (dx >  dy ? dy : dx);
 
-//	y += (float)((schr->fy * font_datas.sy) / h) / schr->sy;
+	dx = (min * schr->scale * schr->image->texture.width);
+	dy = (min * schr->scale * schr->image->texture.height);
+
+	if (!draw)
+		return (int)dx;
+
+	if (schr->fy)
+		y += (float)schr->fy;
+	else
+		y += ((float)font_datas.sy - dy)/2;
 	
 	// Load sprite texture
-	tiny3d_SetTexture(0, schr->image.texture_off, schr->image.texture.width,
-		schr->image.texture.height, schr->image.texture.pitch,
+	tiny3d_SetTexture(0, schr->image->texture_off, schr->image->texture.width,
+		schr->image->texture.height, schr->image->texture.pitch,
 		TINY3D_TEX_FORMAT_A8R8G8B8, 1);
 
 	tiny3d_SetPolygon(TINY3D_QUADS);
@@ -408,6 +403,8 @@ void DrawCharSpecial(float x, float y, float z, const special_char* schr)
 	tiny3d_VertexTexture(0.0f, 0.999f);
 
 	tiny3d_End();
+
+    return (int)dx;
 }
 
 void DrawCharMono(float x, float y, float z, u8 chr)
@@ -415,7 +412,7 @@ void DrawCharMono(float x, float y, float z, u8 chr)
 	special_char* schr = GetSpecialCharFromValue(chr);
 	if (schr)
 	{
-		DrawCharSpecial(x, y, z, schr);
+//		DrawCharSpecial(x, y, z, schr);
 		return;
 	}
 
@@ -476,7 +473,7 @@ void DrawChar(float x, float y, float z, u8 chr)
 	special_char* schr = GetSpecialCharFromValue(chr);
 	if (schr)
 	{
-		DrawCharSpecial(x, y, z, schr);
+		DrawCharSpecial(x, y, z, schr, 1);
 		return;
 	}
 
@@ -595,21 +592,23 @@ float DrawStringMono(float x, float y, char *str)
 
 int skip_icon(int x, int y, char c)
 {
-	return 16;
+	special_char* schr = GetSpecialCharFromValue(c);
+	if (schr)
+		return DrawCharSpecial(x, y, font_datas.Z, schr, 0);
+
+	else return 0;
 }
 
 int draw_icon(int x, int y, char c)
 {
 	special_char* schr = GetSpecialCharFromValue(c);
 	if (schr)
-	{
-		DrawCharSpecial(x, y, font_datas.Z, schr);
-		return 16;
-	}
+		return DrawCharSpecial(x, y, font_datas.Z, schr, 1);
+
 	else return 0;
 }
 
-float DrawString(float x, float y, char *str)
+float DrawString(float x, float y, const char *str)
 {
     if(font_datas.align == 1) {
         x= (848 - WidthFromStr(str)) / 2;
