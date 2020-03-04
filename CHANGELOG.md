@@ -4,6 +4,14 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+### Added
+
+* Game Genie cheat patch support
+* Added `Remove Console ID` patch
+* Added Licenses backup to .Zip (`/dev_hdd0/home/000000XX/exdata/`)
+* Added bulk save-game copy to USB
+* Added Trophies backup to USB
+
 ## [v0.6.5](https://github.com/bucanero/apollo-ps3/releases/tag/v0.6.5) - 2020-02-17
 
 ### Added
