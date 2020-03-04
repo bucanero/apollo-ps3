@@ -1,0 +1,16 @@
+;BLUS30318
+;Terminator: Salvation
+
+:HEADER.BIN
+
+[Update MD5 (Required)]
+set range:0x000004,0x00050C
+set [hash]:MD5
+write at 0x00050D:[hash]
+
+:INFO.BIN
+
+[Update MD5 (Required)]
+set range:0x000004,0x0270F5
+set [hash]:MD5
+write at 0x0270F6:[hash]

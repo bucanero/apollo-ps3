@@ -1,0 +1,13 @@
+; NPJB00512
+; Mobile Suit Gundam: Extreme VS Full Boost
+
+
+:SAVE.DAT
+
+[Update SHA1 for SAVE.DAT (Required)]
+;set range:0x000020,0x025A4F
+set pointer:eof+1
+set range:0x000020,pointer
+set [hash]:SHA1
+write at 0x00000C:[hash]
+

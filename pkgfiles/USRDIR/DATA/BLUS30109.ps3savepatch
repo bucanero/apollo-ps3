@@ -1,0 +1,136 @@
+; Metal Gear Solid 4: Guns Of The Patriots
+; BLUS30109
+;From Game Genie For PS3
+
+:BLUS30109G*\MGS4.SAV
+
+[Max DP]
+200001C0 05F5E0FF
+200001C4 05F5E0FF
+
+; Do not use this AND the Max Items cheat at the same time.
+[Max Rations]
+10000528 00007FFF
+
+; Owned weapons only.
+[Infinite Ammo]
+41000352 00007FFF
+40440002 00000000
+
+; Owned items only.
+[Max Items]
+41000528 0000270F
+40620002 00000000
+
+:BLUS30109S\MGS4SYS.SAV
+
+; New game only.
+[Unlock The Boss Extreme Difficulty]
+10000006 00000001
+
+;From krustytoe (CMP)
+
+[INFO: xxxx = Whatever you want.]
+[INFO: Example - 0000 = 0 & 0064 = 100]
+
+[Continues]
+10000158 0000xxxx
+
+[Playtime 00:00:00]
+20000168 00000000
+
+[Alert Phases]
+1000016E 0000xxxx
+
+[Total Kills]
+10000178 0000xxxx
+
+[No Special Items Used]
+1000017A 00000000
+
+[CQC Uses]
+10000180 0000xxxx
+
+[Headshots]
+10000182 0000xxxx
+
+[Knife Kills]
+10000184 0000xxxx
+
+[Knife Knockouts(Stun)]
+10000186 0000xxxx
+
+[Sideways Rolls]
+10000188 0000xxxx
+
+[Forward Rolls]
+1000018A 0000xxxx
+
+[Combat Highs]
+1000018C 0000xxxx
+
+[Weapons Picked Up]
+1000018E 0000xxxx
+
+[Items Picked Up]
+10000190 0000xxxx
+
+[Hold-up Performed]
+10000192 0000xxxx
+
+[Body Search Performed]
+10000194 0000xxxx
+
+[# of Times Praised by Militia]
+10000196 0000xxxx
+
+[# of Items given to Militia]
+10000198 0000xxxx
+
+[# of Time Syringe Soldier]
+1000019A 0000xxxx
+
+[# of Time Scan Plugs Soldier]
+1000019C 0000xxxx
+
+[# of Pages Turned on Playboy]
+1000019E 0000xxxx
+
+# of Pages Turned on Emotion Mag]
+100001A0 0000xxxx
+
+[Crouch Walking Time]
+200001A8 0xxxxxxx
+
+[Crawling Time]
+200001AC 0xxxxxxx
+
+[Wall Press Time]
+200001B4 0xxxxxxx
+
+[Time in Cardboard/Drum]
+200001BC 0xxxxxxx
+
+[Life Recovery Items Used]
+10000AE0 0000xxxx
+
+;Knife Kills/Knockouts are combine in the result screen.
+;Weapons/Items Acquired are combine in the result screen.
+
+[Clear 10 times]
+00000001 0000000A
+
+[one song remaining iPod MUSIC]
+410005A0 00000001
+402C0002 00000000
+100005D0 0000FFFF
+100005CE 0000FFFF
+;Complete and get some in the hollow center of the map on the first floor passage around the ACT1 militia hideout "THEME OF TARA"
+
+[INFO: LIQUID EASY = 14]
+[INFO: NAKED NORMAL = 1E]
+[INFO: SOLID NORMAL = 23]
+[INFO: BIG BOSS HARD = 28]
+[INFO: EXTREME = 32]
+[Difficulty]
+00000007 000000xx

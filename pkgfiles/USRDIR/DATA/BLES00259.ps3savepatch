@@ -1,0 +1,13 @@
+; BLES00259
+; Battlefield: Bad Company
+
+: USR-DATA
+
+;by chaoszage   
+[Update MD5 for USR-DATA (Required)] 
+set range:0x10,EOF+1
+set [hash]:md5
+set [part1]:"" & mid([hash],4,1) & mid([hash],3,1) & mid([hash],2,1) & mid([hash],1,1)
+set [part2]:"" & mid([hash],6,1) & mid([hash],5,1) & mid([hash],8,1) & mid([hash],7,1)
+set [part3]:mid([hash],9,8)
+write at 0x0:[part1] & [part2] & [part3]

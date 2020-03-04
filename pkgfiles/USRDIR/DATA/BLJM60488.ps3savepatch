@@ -1,0 +1,122 @@
+; Sengoku Basara HD Collection
+; BLJM60488
+; From Keha World
+
+[group:Sengoku Basara]
+
+:DATA_1
+[Basara - All Characters Exp 999999]
+42000000 000F423F
+4010028C 00000000
+[Basara - Date Masamune Exp 999999]
+2000028C 000F423F
+[Basara - Nou Hime Exp 999999]
+20000A30 000F423F
+[Basara - All Characters All Weapon Lv.255]
+4200001B FFFFFFFF
+4016028C 00000000
+4100001F 0000FFFF
+4016028C 00000000
+[Basara - Date Masamune All Weapon Lv.255]
+200002A7 FFFFFFFF
+100002AB 0000FFFF
+[Basara - Nou Hime All Weapon Lv.255]
+20000A4B FFFFFFFF
+10000A4F 0000FFFF
+[Basara - Item Complete]
+200028C0 63636363
+400028C4 00000001
+404C0001 00000000
+
+[group:Sengoku Basara 2]
+
+:DATA_2
+[Basara 2 - Money 999999]
+20017568 000F423F
+[Basara 2 - All Characters(22) Exp 999999]
+42000000 000F423F
+401610F8 00000000
+[Basara 2 - Sanada Yukimura Exp 999999]
+200021F0 000F423F
+[Basara 2 - Maeda Keiji Exp 999999]
+20013170 000F423F
+[Basara 2 - All Characters(22) All Weapon Lv.Max]
+42000028 FFFFFFFF
+401610F8 00000000
+4200002C FFFFFFFF
+401610F8 00000000
+[Basara 2 - Sanada Yukimura All Weapon Lv.Max]
+20002218 FFFFFFFF
+2000221C FFFFFFFF
+[Basara 2 - Maeda Keiji All Weapon Lv.Max]
+20013198 FFFFFFFF
+2001319C FFFFFFFF
+Basara 2 - All Characters(22) All Armor Lv.Max]
+42000030 00FFFFFF
+401610F8 00000000
+[Basara 2 - Item Complete]
+200175B2 64646464
+000175B6 00000064
+400175B7 00000001
+40600001 00000000
+40017581 00000001
+40170001 00000000
+00017593 00000000
+000175CA 00000000
+00017607 00000000
+00017615 00000000
+00017615 00000000
+
+[group:Sengoku Basara 2 Heroes]
+
+:DATA_3
+[Heroes - Imagawa Yoshimoto Exp 999999]
+2001B030 000F423F
+[Heroes - Katakura Kojuro Exp 999999]
+20021C3C 000F423F
+[Heroes - Azai Nagamasa Exp 999999]
+200231D8 000F423F
+[Heroes - Oichi Exp 999999]
+20024774 000F423F
+[Heroes - Honganji Kennyo Exp 999999]
+20025D10 000F423F
+[Heroes - Fuma Kotaro Exp 999999]
+200272AC 000F423F
+[Heroes - All Characters(30) All Weapon Lv.Max]
+42000028 FFFFFFFF
+401E159C 00000000
+4200002C FFFFFFFF
+401E159C 00000000
+[Heroes - Imagawa Yoshimoto All Weapon Lv.Max]
+2001B058 FFFFFFFF
+2001B05C FFFFFFFF
+[Heroes - Katakura Kojuro All Weapon Lv.Max]
+20021C64 FFFFFFFF
+20021C68 FFFFFFFF
+[Heroes - Azai Nagamasa All Weapon Lv.Max]
+20023200 FFFFFFFF
+20023204 FFFFFFFF
+[Heroes - Oichi All Weapon Lv.Max]
+2002479C FFFFFFFF
+200247A0 FFFFFFFF
+[Heroes - Honganji Kennyo All Weapon Lv.Max]
+20025D38 FFFFFFFF
+20025D3C FFFFFFFF
+[Heroes - Fuma Kotaro All Weapon Lv.Max]
+200272D4 FFFFFFFF
+200272D8 FFFFFFFF
+[Heroes - All Characters(30) All Armor Lv.Max]
+42000030 00FFFFFF
+401E159C 00000000
+[Heroes - Imagawa Yoshimoto All Armor Lv.Max]
+2001B060 00FFFFFF
+[Heroes - Katakura Kojuro All Armor Lv.Max]
+20021C6C 00FFFFFF
+[Heroes - Azai Nagamasa All Armor Lv.Max]
+20023208 00FFFFFF
+[Heroes - Oichi All Armor Lv.Max]
+200247A4 00FFFFFF
+[Heroes - Honganji Kennyo All Armor Lv.Max]
+20025D40 00FFFFFF
+[Heroes - Fuma Kotaro All Armor Lv.Max]
+200272DC 00FFFFFF

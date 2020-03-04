@@ -1,0 +1,20 @@
+; NPJB00603
+; Far Cry 4
+
+; from chaoszage
+
+
+:SAVEDATA.000
+
+[Update crc32 & md5 hashes (required)]
+set pointer:read(0xC,4)
+set pointer:pointer+2F
+set range:0x30, pointer
+set [md5]:md5
+write at 0x10:[md5]
+set pointer:read(0xC,4)
+set pointer:pointer+2F
+set range:0x30, pointer
+set [crc]:crc32
+write at 0x20:[crc]
+

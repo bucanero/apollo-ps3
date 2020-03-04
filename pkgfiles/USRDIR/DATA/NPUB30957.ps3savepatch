@@ -1,0 +1,13 @@
+; NPUB30957
+; Guilty Gear XX Accent Core Plus (PSN)
+
+:SYSTEM.DAT
+
+[Update WADD for SYSTEM.DAT(Required)]
+set pointer:EOF+1
+;set [csum]:wadd(0x000004,0x002AF7)
+set [csum]:wadd(0x000004,pointer)
+set [csum]:right([csum],2)
+write at 0x00:[csum]
+
+;Missing another checksum info which at address 0x04

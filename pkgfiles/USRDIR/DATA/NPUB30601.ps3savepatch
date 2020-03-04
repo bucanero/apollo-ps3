@@ -1,0 +1,18 @@
+;NPUB30601
+;Quantum Conundrum (PSN)
+
+:PROFILE.QCP
+
+[Update CRC32Big for PROFILE.QCP (Required)]
+;set range:0x000008,0x000533
+set pointer:eof+1
+set range:0x000008,pointer
+set [hash]:CRC32Big
+write at 0x000004:[hash]
+
+[Update SHA1 for PROFILE.QCP (Required)]
+;set range:0x00001C,0x0003BA
+set pointer:eof+1
+set range:0x00001C,pointer
+set [hash]:SHA1
+write at 0x000008:[hash]

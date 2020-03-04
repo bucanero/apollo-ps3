@@ -1,0 +1,14 @@
+;BLUS30228
+;Rise of the Argonauts®
+
+:PAYLOAD
+
+[Update CRC32Big for PAYLOAD (Required)]
+; Checksum offset is located within the checksum range.
+write at 0x000000:00000000   ;Initializing checksum with null bytes
+;----------------------------
+;set range:0x0,0x011C52
+set pointer:eof+1
+set range:0x0,pointer
+set [hash]:CRC32Big
+write at 0x000000:[hash]

@@ -1,0 +1,38 @@
+[INFO: go to http://bruteforcesavedata.forumms.net/t18-batman-arkham-city-gotyguide-added-to-mod-xp for more info]
+
+[INFO: Some patches may not be supported by BSD yet]
+; Batman: Arkham City (GOTY)
+; BLUS30978
+;From Game Genie For PS3
+
+:BLUS30978-SAVE*\PAYLOAD
+[Level Up (Not Working)]
+90000000 0000001C
+93000000 00000028
+58000008 00000004
+58000000 00000000
+
+[Unlock All Character Bios (Not Working)]
+90000000 0000001C
+93000000 0000116F
+48000000 00000001
+40200001 00000000
+
+[Unlock All Arkham City Stories (Not Working)]
+90000000 0000001C
+93000000 00000F89
+4A000000 00000001
+403E0004 00000000
+
+[Unlock All Character Trophies (Not Working)]
+90000000 0000001C
+93000000 000010EB
+48000000 00000001
+40590001 00000000
+
+[Unlock All Concept Art (Not Working)]
+90000000 0000001C
+93000000 00001037
+48000000 00000001
+40500001 00000000
+

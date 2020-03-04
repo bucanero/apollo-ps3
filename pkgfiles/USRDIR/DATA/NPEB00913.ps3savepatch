@@ -1,0 +1,11 @@
+; NPEB00913
+; Virtua Fighter 5 Final Showdown (PSN)
+
+:SYSTEM.DAT
+
+[Update CRC32 for SYSTEM.DAT (Required)]
+;set range:0x000010,0x00500B
+set pointer:eof+1
+set range:0x000010,pointer
+set [hash]:CRC32
+write at 0x000008:[hash]

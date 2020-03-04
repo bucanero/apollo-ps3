@@ -1,0 +1,15 @@
+;BLES00949
+;Need for Speed™ Hot Pursuit
+;Created by Zephyer
+
+:MUD.7
+
+[GROUP::Racer Codes (Working)]
+
+[Level 20 (Need 1 EXP to MAX)]
+2001CA28 0098967F
+
+[GROUP::Enforcer Codes (Working)]
+
+[Level 20 (Need 1 EXP to Max)]
+2001CA20 0098967F

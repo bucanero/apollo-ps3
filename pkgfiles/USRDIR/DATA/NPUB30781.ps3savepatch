@@ -1,0 +1,17 @@
+; Hitman: Blood Money (PSN)
+; NPUB30781
+;From krustytoe (CMP)
+
+:HEADER.DAT
+
+[Max Money - Rookie Mode]
+20000074 05F5E0FF
+
+[Max Money - Normal Mode]
+20001764 05F5E0FF
+
+[Max Money - Expert Mode]
+20002E54 05F5E0FF
+
+[Max Money - Pro Mode]
+20004544 05F5E0FF

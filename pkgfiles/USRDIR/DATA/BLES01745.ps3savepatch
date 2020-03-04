@@ -1,0 +1,36 @@
+; BLES01745
+; Middle-earth™: Shadow of Mordor™
+
+;from aldo tools
+
+
+:FILENAME.SAV
+
+;[Update ADD for FILENAME.SAV (Required)]
+;set [csum]:0
+;;set [csum]:add(0x000010,0x0FFFFF)
+;set pointer:eof+1
+;set [csum]:add(0x000010,pointer)
+;write at 0x000008:[csum]
+
+
+;:FILENAME.SAV
+
+[Max upgrades Pts]
+search "C8DAA7A504":x2 times
+write next (-6):0x0003e7
+
+
+[Max Mirian Money]
+search "ECFD4156":x2 times
+write next (+1):0x0000270f
+
+
+[Update ADD for FILENAME.SAV (Required)]
+set [csum]:0
+;set [csum]:add(0x000010,0x0FFFFF)
+set pointer:eof+1
+set [csum]:add(0x000010,pointer)
+write at 0x000008:[csum]
+
+

@@ -1,0 +1,8 @@
+;NPUB30736
+;Girl Fight (PSN)
+;From SHAkA
+
+:PRG-DATA
+
+[Max Money]
+write at 0x00005270:0x3B9AC9FF

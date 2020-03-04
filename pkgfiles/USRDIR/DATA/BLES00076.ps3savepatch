@@ -1,0 +1,23 @@
+[INFO: Some patches may not be supported by BSD yet]
+; Conan
+; BLES00076
+;From Game Genie For PS3
+
+:BLES00076SAVE*\RPGDATA.NSG
+:BLES00076_PREFS\PROFILE.NSI
+
+[Unlock King Difficulty]
+700000A1 00000080
+
+[Unlock All Concept Art]
+2000009C FFFFFFFF
+720000A0 007FFFFF
+
+[Unlock All Cheats]
+700000A0 0000000F
+
+[Max Experience (Not Working)]
+62000000 00000018
+62100000 00000028
+62400000 497423F0
+

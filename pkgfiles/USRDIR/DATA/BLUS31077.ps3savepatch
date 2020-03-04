@@ -1,0 +1,10 @@
+; Under Defeat HD: Deluxe Edition
+; BLUS31077
+;From Game Genie For PS3
+
+:BLUS31077-SAVE-\SAVEDATA.DAT
+
+; This will give you infinite credits.
+[Unlock Free Play]
+20000EF8 00FFFFFF
+20000EFC 00FFFFFF

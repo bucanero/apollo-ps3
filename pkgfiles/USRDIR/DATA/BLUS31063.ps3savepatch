@@ -1,0 +1,17 @@
+; Tiger Woods PGA Tour 14
+; BLUS31063
+; From KE-HA
+
+:USR-DATA
+
+;Saved Created Golfer
+
+[Power/Accuracy/Workability/Spin/RecoVery/Putting 999999872=100]
+42010064 4B18967F
+40060004 00000000
+ 
+[Experience 9999999 / Level 100]
+200100A0 0098967F
+ 
+[Attribute Points 500]
+200100A4 000001F4

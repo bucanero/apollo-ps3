@@ -1,0 +1,13 @@
+; NPJB00439
+; Sengoku Musou 2 with Moushouden & Empires HD Version (PSN)
+
+:DATA.BIN
+
+[Money 9999999]
+20002758 0098967F 
+
+[Update ADD for DATA.BIN (Required)]
+set [csum]:0
+set [csum]:add(0x000008,0x0036DF)
+write at 0x0036e0:[csum]
+write at 0x023790:[csum]

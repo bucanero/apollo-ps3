@@ -1,0 +1,11 @@
+; NPEB00650
+; NBA Jam: On Fire Edition (PSN)
+
+:SYS-DATA
+
+[Update CRC32 for SYS-DATA (Required)]
+;set range:0x00001C,0x03D0AB
+set pointer:eof+1
+set range:0x00001C,pointer
+set [hash]:CRC32
+write at 0x000010:[hash]

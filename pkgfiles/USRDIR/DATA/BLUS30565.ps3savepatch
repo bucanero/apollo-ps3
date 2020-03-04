@@ -1,0 +1,30 @@
+; BLUS30565
+; Silent Hill: Downpour
+
+; by chaoszage
+
+:PAYLOAD
+
+[Group:Game Difficulty(Choose One)]
+[Easy]
+search "difficulty_game"
+write next 15:"0"
+[Normal]
+search "difficulty_game"
+write next 15:"1"
+[Hard]
+search "difficulty_game"
+write next 15:"2"
+
+[Group:Puzzle Difficulty(Choose One)]
+[Easy]
+search "difficulty_puzzle"
+write next 17:"0"
+[Normal]
+search "difficulty_puzzle"
+write next 17:"1"
+[Hard]
+search "difficulty_puzzle"
+write next 17:"2"
+
+

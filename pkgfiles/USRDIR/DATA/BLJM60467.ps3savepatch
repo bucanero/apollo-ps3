@@ -1,0 +1,10 @@
+; Okami HD
+; BLJM60467
+;From savedata.jp
+
+;Missing Save Data
+;Missing Checksum
+
+[Save Slot 1 - Stray Bead (Not Working)]
+000002CA 00000001
+000002DA 00000001

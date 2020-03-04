@@ -1,0 +1,46 @@
+; Aliens: Colonial Marines
+; BLES01455
+;From zeick
+
+[Decompress PAYLOAD (Required)]
+Decompress PAYLOAD
+
+:BLES01455-PROFILE\~extracted\00000018.dat
+group: Xenomorph 99 Upgrade Points
+write at 0x00000179:0x63
+:BLES01455-PROFILE\PAYLOAD
+[Fix Compression]
+delete at 0x20:0x4ff
+
+:BLES01455-PROFILE\~extracted\00000018.dat
+group: Xenomorph Max XP
+search 0x03000C
+write next (10):0x00039206
+:BLES01455-PROFILE\PAYLOAD
+[Fix Compression]
+delete at 0x20:0x4ff
+
+:BLES01455-PROFILE\~extracted\00000018.dat
+group: Marine 99 Upgrade Points
+write at 0x0000016D:0x63
+:BLES01455-PROFILE\PAYLOAD
+[Fix Compression]
+delete at 0x20:0x4ff
+
+:BLES01455-PROFILE\~extracted\00000018.dat
+group: Marine Max XP
+search 0x03000C
+write next (3):0x00039206
+:BLES01455-PROFILE\PAYLOAD
+[Fix Compression]
+delete at 0x20:0x4ff
+
+group: Compress PAYLOAD (Required)
+Compress PAYLOAD,-w 15
+
+:BLES01455-PROFILE\PAYLOAD
+Group: Update SHA1 (Required)
+set pointer:eof+1
+set range:0x000014,pointer
+set [hash]:SHA1
+write at 0x000000:[hash]

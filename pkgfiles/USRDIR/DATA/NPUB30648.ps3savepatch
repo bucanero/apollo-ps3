@@ -1,0 +1,17 @@
+;Resident Evil: The Darkside Chronicles (PSN)
+;NPUB30648
+;From Zephyer
+
+:DATA.BIN
+
+; --- Save Slot 01 Codes ---
+; type: none
+
+[Max Gold]
+20002660 0098967F
+
+[All Weapons Have Max Ammo]
+42002668 00002710
+40030004 00000000
+42002678 00002710
+40060004 00000000

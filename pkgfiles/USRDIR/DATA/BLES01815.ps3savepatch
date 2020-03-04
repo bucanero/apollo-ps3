@@ -1,0 +1,812 @@
+; Tales of Xillia
+; BLES01815
+; From Sydan
+
+:Save
+
+[Black feather 255 (max)]
+write at 0x00060C0F:FF
+
+[Black feather point (for trading)] 
+write at 0x00004A88:000003E8
+
+[Jude float 1000]
+write at 0x00048538:000003e8
+
+[Milla shift 1000]
+write at 0x0004853C:000003e8
+
+[Alvin charge 1000]
+write at 0x00048540:000003e8
+
+[Elize Tippo Switching 1000]
+write at 0x00048544:000003e8
+
+[Rowen Arte Tuning 1000]
+write at 0x00048548:000003e8
+
+[Leia Arte Long staff 1000]
+write at 0x0004854C:000003e8
+
+[Reset Playtime]
+write at 0x000484F8:00000000
+
+[Chest numbers 1000]
+write at 0x0004850C:000003e8
+
+[Random sparkling 1000]
+write at 0x00048510:000003e8
+
+[Encounters 10000]
+write at 0x00048518:00002710
+
+[Rare defeate 1000]
+write at 0x0004851C:000003e8
+
+[Best combo 999]
+write at 0x00048520:000003e7
+
+[Weakpoint hit 10000]
+write at 0x00048524:00002710
+
+[Link Arte used 5000]
+write at 0x00048528:00001388
+
+[Link arte chains 3000]
+write at 0x0004852C:00000BB8
+
+[Auto-Items used 1000]
+write at 0x00048530:000003e8
+
+[Food effect activated 2000]
+write at 0x00048534:000007D0
+
+[Jude link Restore 1000]
+write at 0x00048550:000003e8
+
+[Milla link Bind 1000]
+write at 0x00048554:000003e8
+
+[Alvin link Breaker 1000]
+write at 0x00048558:000003e8
+
+[Elize link Tepo drain 1000]
+write at 0x0004855C:000003e8
+
+[Rowen link Auto magic guard 1000]
+write at 0x00048560:000003e8
+
+[Leia link steal 1000]
+write at 0x00048564:000003e8
+
+[Jude enemies defeated 1000]
+write at 0x00048580:000003e8
+
+[Milla enemies defeated 1000]
+write at 0x00048584:000003e8
+
+[Alvin enemies defeated 1000]
+write at 0x00048588:000003e8
+
+[Elize enemies defeated 1000]
+write at 0x0004858C:000003e8
+
+[Rowen enemies defeated 1000]
+write at 0x00048590:000003e8
+
+[Jude - Milla link time]
+write at 0x00048598:00107AC0
+
+[Jude - Alvin link time]
+write at 0x0004859C:00107AC0
+
+[Milla -Alvin link time]
+write at 0x000485AC:00107AC0
+
+[Jude - Elize link time]
+write at 0x000485A0:00107AC0
+
+[Milla - Elize link time]
+write at 0x000485B0:00107AC0
+
+[Alvin - Elize link time]
+write at 0x000485BC:00107AC0
+
+[Jude - Rowen link time]
+write at 0x000485A4:00107AC0
+
+[Milla - Rowen link time]
+write at 0x000485B4:00107AC0
+
+[Alvin - Rowen link time]
+write at 0x000485C0:00107AC0
+
+[Elize - Rowen link time]
+write at 0x000485C8:00107AC0
+
+[Jude - Leia link time]
+write at 0x000485A8:00107AC0
+
+[Milla - Leia link time]
+write at 0x000485B8:00107AC0
+
+[Alvin - Leia link time]
+write at 0x000485C4:00107AC0
+
+[Elize - Leia link time]
+write at 0x000485CC:00107AC0
+
+[Rowen - Leia link time]
+write at 0x000485D0:00107AC0
+
+[Money 999999999]
+20000248 3B9AC9FF
+
+[Shop Lv.99 - Item]
+20000260 00148AC2
+
+[Shop Lv.99 - Weapon]
+20000264 00148AC2
+
+[Shop Lv.99 - Armor]
+20000268 00148AC2
+
+[Shop Lv.99 - Accessories]
+2000026C 00148AC2
+
+[Shop Lv.99 - Cooking]
+20000270 00148AC2
+
+[Exp 99999999 - Jude]
+2000AB5C 05F5E0FF
+
+[Exp 99999999 - Mira]
+20014B5C 05F5E0FF
+
+[Exp 99999999 - Alvin]
+2001EB5C 05F5E0FF
+
+[Exp 99999999 - Elise]
+20028B5C 05F5E0FF
+
+[Exp 99999999 - Rowen]
+20032B5C 05F5E0FF
+
+[Exp 99999999 - Leia]
+2003CB5C 05F5E0FF
+
+[All Item 99]
+400601D1 00000063
+40370001 00000000
+
+[All Cooking Item 99]
+400611D1 00000063
+40510001 00000000
+
+[All Weapon 99]
+400603D1 00000063
+40850001 00000000
+
+[All Helmet 99]
+40060623 00000063
+40510001 00000000
+
+[All Armor 99]
+400605D1 00000063
+40520001 00000000
+
+[All Accessories 99]
+400607D1 00000063
+405B0001 00000000
+
+[All Material 99]
+40060FD1 00000063
+40520001 00000000
+
+; From shrimp01
+
+[90 Sub-Events Completed]
+write at 0x00048507:5A
+
+[Obsessive Skit Viewer Title]
+write at 0x0004850B:DC
+
+[23 Mysterious Jewels (Only apply after opening the Sub-svent)]
+write at 0x00060C0E:17
+
+;From Brokentechnology
+
+[255 GP for Milla]
+00014B63 000000FF
+
+[255 GP for Alvin]
+0001EB63 000000FF
+
+[255 GP for Jude]
+0000AB63 000000FF
+
+[255 GP for Elize]
+00028B63 000000FF
+
+[255 GP for Rowen]
+00032B63 000000FF
+
+[255 GP for Leia]
+0003CB63 000000FF
+
+;From meddy
+
+[title for 275 different enemy type]
+write at 0x000484fc:00000113
+ 
+[title for 220 snippet IT DOESNT UNLOCK THEM]
+write at 0x00048508:00000113
+
+[GROUP:Arts Usage Count]
+[GROUP:Arts Usage Count\Jude Arts]
+[demon fist usage 9999]
+write at 0x000087a8:0000270f
+ 
+[healer usage 9999]
+write at 0x000087b0:0000270f
+ 
+[recovery ring usage 9999]
+write at 0x000087dc:0000270f
+ 
+[cerberus strike usage 9999]
+write at 0x000087ac:0000270f
+ 
+[steel usage 9999]
+write at 0x000087b4:0000270f
+ 
+[palm strike usage 9999]
+write at 0x000087b8:0000270f
+ 
+[aqua sweep usage 9999]
+write at 0x000087e8:0000270f
+ 
+[swallow dance usage 9999]
+write at 0x000087bc:0000270f
+ 
+[talon storm usage 9999]
+write at 0x000087c0:0000270f
+ 
+[cyclonic surge usage 9999]
+write at 0x000087c4:0000270f
+ 
+[beast usage 9999]
+write at 0x000087c8:0000270f
+ 
+[whirlwind snap usage 9999]
+write at 0x000087cc:0000270f
+ 
+[rising falcon usage 9999]
+write at 0x000087d0:0000270f
+ 
+[soaring vortex usage 9999]
+write at 0x000087d4:0000270f
+ 
+[mirage blitz usage 9999]
+write at 0x000087d8:0000270f
+ 
+[raging blast usage 9999]
+write at 0x000087e4:0000270f
+ 
+[dragon shot usage 9999]
+write at 0x000087f4:0000270f
+ 
+[sun spark usage 9999]
+write at 0x000087f8:0000270f
+ 
+[phoenix plunge usage 9999]
+write at 0x000087fc:0000270f
+ 
+[blunt fang usage 9999]
+write at 0x000087f0:0000270f
+ 
+[savage roar usage 9999]
+write at 0x00009954:0000270f
+ 
+[shattering demon fist usage 9999]
+write at 0x00009aa8:0000270f
+ 
+[GROUP:Arts Usage Count\Milla Arts]
+[fireball usage 9999]
+write at 0x00012860:0000270f
+ 
+[wind lance usage 9999]
+write at 0x00012870:0000270f
+ 
+[rock trine usage 9999]
+write at 0x0001286c:0000270f
+ 
+[splash usage 9999]
+write at 0x0001287c:0000270f
+ 
+[flame ring usage 9999]
+write at 0x00012864:0000270f
+ 
+[arrivederci usage 9999]
+write at 0x00012874:0000270f
+ 
+[bolt strike usage 9999]
+write at 0x00012888:0000270f
+ 
+[divine streak usage 9999]
+write at 0x00013a6c:0000270f
+ 
+[sunburst usage 9999]
+write at 0x00012868:0000270f
+ 
+[cyclone usage 9999]
+write at 0x00012878:0000270f
+ 
+[thunder blade usage 9999]
+write at 0x0001288c:0000270f
+ 
+[shining prism usage 9999]
+write at 0x00012884:0000270f
+ 
+[shimmer spin usage 9999]
+write at 0x00012834:0000270f
+ 
+[whirling assault usage 9999]
+write at 0x00012838:0000270f
+ 
+[sigil spear usage 9999]
+write at 0x0001283c:0000270f
+ 
+[blade torrent usage 9999]
+write at 0x00012840:0000270f
+ 
+[binding sphere usage 9999]
+write at 0x00012844:0000270f
+ 
+[condemnation usage 9999]
+write at 0x00012848:0000270f
+ 
+[deathknell usage 9999]
+write at 0x0001284c:0000270f
+ 
+[efreet usage 9999]
+write at 0x00012850:0000270f
+ 
+[gnome usage 9999]
+write at 0x00012854:0000270f
+ 
+[sylph usage 9999]
+write at 0x00012858:0000270f
+ 
+[undine usage 9999]
+write at 0x0001285c:0000270f
+ 
+[cloud pierce usage 9999]
+write at 0x00013958:0000270f
+ 
+[overdrive usage 9999]
+write at 0x00013ab0:0000270f
+
+[GROUP:Arts Usage Count\Alvin Arts] 
+[demon fang usage 9999]
+write at 0x0001c8c0:0000270f
+ 
+[tiger blade usage 9999]
+write at 0x0001c8c4:0000270f
+ 
+[sonic thrust usage 9999]
+write at 0x0001c8c8:0000270f
+ 
+[variable trigger usage 9999]
+write at 0x0001c8d8:0000270f
+ 
+[tornado drive usage 9999]
+write at 0x0001c8cc:0000270f
+ 
+[arc fire usage 9999]
+write at 0x0001c8fc:0000270f
+ 
+[guardian field usage 9999]
+write at 0x0001c8d0:0000270f
+ 
+[punishing shot usage 9999]
+write at 0x0001c8d4:0000270f
+ 
+[moonlight cleft usage 9999]
+write at 0x0001c8e0:0000270f
+ 
+[squall shot usage 9999]
+write at 0x0001c8dc:0000270f
+ 
+[terra rupture usage 9999]
+write at 0x0001c8e4:0000270f
+ 
+[homing shot usage 9999]
+write at 0x0001c8ec:0000270f
+ 
+[dragon swarm usage 9999]
+write at 0x0001c8e8:0000270f
+ 
+[pulse shot usage 9999]
+write at 0x0001c8f0:0000270f
+ 
+[dark radiance usage 9999]
+write at 0x0001c8f4:0000270f
+ 
+[demon inferno usage 9999]
+write at 0x0001c8f8:0000270f
+ 
+[cross cleave usage 9999]
+write at 0x0001c900:0000270f
+ 
+[hell fryer usage 9999]
+write at 0x0001d960:0000270f
+
+[GROUP:Arts Usage Count\Elize Arts] 
+[pixie circle usage 9999]
+write at 0x00026950:0000270f
+ 
+[recover usage 9999]
+write at 0x0002695c:0000270f
+ 
+[healing circle usage 9999]
+write at 0x00026954:0000270f
+ 
+[dispel usage 9999]
+write at 0x00026960:0000270f
+ 
+[resurrection usage 9999]
+write at 0x00026968:0000270f
+ 
+[nurse usage 9999]
+write at 0x00026958:0000270f
+ 
+[negative gate usage 9999]
+write at 0x00026944:0000270f
+ 
+[dark visitor usage 9999]
+write at 0x00026948:0000270f
+ 
+[dread wings usage 9999]
+write at 0x0002694c:0000270f
+ 
+[revive usage 9999]
+write at 0x00027670:0000270f
+ 
+[pow hammer usage 9999]
+write at 0x0002692c:0000270f
+ 
+[teepo spray usage 9999]
+write at 0x00026930:0000270f
+ 
+[teepo quake usage 9999]
+write at 0x00026940:0000270f
+ 
+[teepo roar usage 9999]
+write at 0x00026934:0000270f
+ 
+[teepo copter usage 9999]
+write at 0x00026938:0000270f
+ 
+[teepo squash usage 9999]
+write at 0x0002693c:0000270f
+ 
+[teepo vacuum usage 9999]
+write at 0x00026a68:0000270f
+ 
+[ignite terror usage 9999]
+write at 0x00027968:0000270f
+
+[GROUP:Arts Usage Count\Rowen Arts] 
+[fireball usage 9999]
+write at 0x000309ac:0000270f
+ 
+[wind lance usage 9999]
+write at 0x000309bc:0000270f
+ 
+[rock trine usage 9999]
+write at 0x000309b0:0000270f
+ 
+[splash usage 9999]
+write at 0x000309c0:0000270f
+ 
+[air pressure usage 9999]
+write at 0x000309b4:0000270f
+ 
+[blues sphere usage 9999]
+write at 0x000309c4:0000270f
+ 
+[freeze lancer usage 9999]
+write at 0x000309cc:0000270f
+ 
+[shimmering toll usage 9999]
+write at 0x000309d4:0000270f
+ 
+[tightening chains usage 9999]
+write at 0x000309dc:0000270f
+ 
+[roche waltz usage 9999]
+write at 0x000309b8:0000270f
+ 
+[diffusional drive usage 9999]
+write at 0x000309c8:0000270f
+ 
+[glacial core usage 9999]
+write at 0x000309d0:0000270f
+ 
+[divine streak usage 9999]
+write at 0x000309d8:0000270f
+ 
+[severed fate usage 9999]
+write at 0x0003099c:0000270f
+ 
+[marche waltz usage 9999]
+write at 0x000309a0:0000270f
+ 
+[meteoric waltz usage 9999]
+write at 0x000309a4:0000270f
+ 
+[spectral purge usage 9999]
+write at 0x000309a8:0000270f
+ 
+[tidal wave usage 9999]
+write at 0x00031970:0000270f
+
+[GROUP:Arts Usage Count\Leia Arts] 
+[first aid usage 9999]
+write at 0x0003aa3c:0000270f
+ 
+[heal usage 9999]
+write at 0x0003aa40:0000270f
+ 
+[resurrection usage 9999]
+write at 0x0003aa58:0000270f
+ 
+[cure usage 9999]
+write at 0x0003aa44:0000270f
+ 
+[sharpness usage 9999]
+write at 0x0003aa48:0000270f
+ 
+[barrier usage 9999]
+write at 0x0003aa4c:0000270f
+ 
+[quickness usage 9999]
+write at 0x0003aa50:0000270f
+ 
+[elemental impulse usage 9999]
+write at 0x0003aa54:0000270f
+ 
+[darting claw usage 9999]
+write at 0x0003aa14:0000270f
+ 
+[spiral strike usage 9999]
+write at 0x0003aa18:0000270f
+ 
+[cerberus strike usage 9999]
+write at 0x0003aa20:0000270f
+ 
+[swallow flight usage 9999]
+write at 0x0003aa1c:0000270f
+ 
+[rabid lunge usage 9999]
+write at 0x0003aa2c:0000270f
+ 
+[crescent flash usage 9999]
+write at 0x0003aa28:0000270f
+ 
+[staff rain usage 9999]
+write at 0x0003aa34:0000270f
+ 
+[soaring vortex usage 9999]
+write at 0x0003aa30:0000270f
+ 
+[soaring blast usage 9999]
+write at 0x0003aa24:0000270f
+ 
+[soulstroke spin usage 9999]
+write at 0x0003b978:0000270f
+
+[GROUP:Arts Usage Count\Linked Arts]
+[Jude+Milla - Final Gale Link Art Usage 9999]
+write at 0x00008A64:0000270F
+
+; From Neonemesis
+
+[GROUP:Max Stats/AC/SP]
+[GROUP:Max Stats/AC/SP\Jude]
+[AC]
+write at 0x0000852a:0063
+
+[SP]
+write at 0x0000852e:01f4
+
+[HP]
+write at 0x0000850e:270f
+write at 0x00008522:270f
+
+[TP]
+write at 0x00008512:03e7
+write at 0x00008526:03e7
+
+[STR]
+write at 0x00008532:270f
+
+[INT]
+write at 0x00008536:270f
+
+[VIT]
+write at 0x0000853a:270f
+
+[DEX]
+write at 0x0000853e:270f
+
+[AGI]
+write at 0x00008542:270f
+
+[PSY]
+write at 0x00008546:270f
+
+[GROUP:Max Stats/AC/SP\Milla]
+[AC]
+write at 0x0001252a:0063
+
+[SP]
+write at 0x0001252e:01f4
+
+[HP]
+write at 0x0001250e:270f
+write at 0x00012522:270f
+
+[TP]
+write at 0x00012512:03e7
+write at 0x00012526:03e7
+
+[STR]
+write at 0x00012532:270f
+
+[INT]
+write at 0x00012536:270f
+
+[VIT]
+write at 0x0001253a:270f
+
+[DEX]
+write at 0x0001253e:270f
+
+[AGI]
+write at 0x00012542:270f
+
+[PSY]
+write at 0x00012546:270f
+
+[GROUP:Max Stats/AC/SP\Alvin]
+[AC]
+write at 0x0001c52a:0063
+
+[SP]
+write at 0x0001c52e:01f4
+
+[HP]
+write at 0x0001c50e:270f
+write at 0x0001c522:270f
+
+[TP]
+write at 0x0001c512:03e7
+write at 0x0001c526:03e7
+
+[STR]
+write at 0x0001c532:270f
+
+[INT]
+write at 0x0001c536:270f
+
+[VIT]
+write at 0x0001c53a:270f
+
+[DEX]
+write at 0x0001c53e:270f
+
+[AGI]
+write at 0x0001c542:270f
+
+[PSY]
+write at 0x0001c546:270f
+
+[GROUP:Max Stats/AC/SP\Elize]
+[AC]
+write at 0x0002652a:0063
+
+[SP]
+write at 0x0002652e:01f4
+
+[HP]
+write at 0x0002650e:270f
+write at 0x00026522:270f
+
+[TP]
+write at 0x00026512:03e7
+write at 0x00026526:03e7
+
+[STR]
+write at 0x00026532:270f
+
+[INT]
+write at 0x00026536:270f
+
+[VIT]
+write at 0x0002653a:270f
+
+[DEX]
+write at 0x0002653e:270f
+
+[AGI]
+write at 0x00026542:270f
+
+[PSY]
+write at 0x00026546:270f
+
+[GROUP:Max Stats/AC/SP\Rowen]
+[AC]
+write at 0x0003052a:0063
+
+[SP]
+write at 0x0003052e:01f4
+
+[HP]
+write at 0x0003050e:270f
+write at 0x00030522:270f
+
+[TP]
+write at 0x00030512:03e7
+write at 0x00030526:03e7
+
+[STR]
+write at 0x00030532:270f
+
+[INT]
+write at 0x00030536:270f
+
+[VIT]
+write at 0x0003053a:270f
+
+[DEX]
+write at 0x0003053e:270f
+
+[AGI]
+write at 0x00030542:270f
+
+[PSY]
+write at 0x00030546:270f
+
+[GROUP:Max Stats/AC/SP\Leia]
+[AC]
+write at 0x0003a52a:0063
+
+[SP]
+write at 0x0003a52e:01f4
+
+[HP]
+write at 0x0003a50e:270f
+write at 0x0003a522:270f
+
+[TP]
+write at 0x0003a512:03e7
+write at 0x0003a526:03e7
+
+[STR]
+write at 0x0003a532:270f
+
+[INT]
+write at 0x0003a536:270f
+
+[VIT]
+write at 0x0003a53a:270f
+
+[DEX]
+write at 0x0003a53e:270f
+
+[AGI]
+write at 0x0003a542:270f
+
+[PSY]
+write at 0x0003a546:270f

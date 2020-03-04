@@ -1,0 +1,95 @@
+; BLES01492
+; Sacred 3
+; by pupped
+
+:SVDAT00.BIN
+
+; --- 1st Character ---
+
+[Level 50]
+write at 0x00000124:0x3b9ac9ff
+
+[Max Money]
+write at 0x00000128:0x3b9ac9ff
+
+[99 Items 1st Character]
+write at 0x00001550:0x63636363
+write at 0x00001554:0x63636363
+write at 0x00001558:0x63636363
+
+; --- 2nd Character ---
+
+[Level 50]
+write at 0x00001694:0x3b9ac9ff
+
+[Max Money]
+write at 0x00001698:0x3b9ac9ff
+
+[99 Items 2nd Character]
+write at 0x00002AC0:0x63636363
+write at 0x00002AC4:0x63636363
+write at 0x00002AC8:0x63636363
+
+; --- 3rd Character ---
+
+[Level 50]
+write at 0x00002C04:0x3b9ac9ff
+
+[Max Money]
+write at 0x00002C08:0x3b9ac9ff
+
+[99 Items]
+write at 0x00004030:0x63636363
+write at 0x00004034:0x63636363
+write at 0x00004038:0x63636363
+
+; --- 4th Character ---
+
+[Level 50]
+write at 0x00004174:0x3b9ac9ff
+
+[Max Money]
+write at 0x00004178:0x3b9ac9ff
+
+[99 Items]
+write at 0x000055A0:0x63636363
+write at 0x000055A4:0x63636363
+write at 0x000055A8:0x63636363
+
+; --- 5th Character ---
+
+[Level 50]
+write at 0x000056E4:0x3b9ac9ff
+
+[Max Money]
+write at 0x000056E8:0x3b9ac9ff
+
+[99 Items]
+write at 0x00006B10:0x63636363
+write at 0x00006B14:0x63636363
+write at 0x00006B18:0x63636363
+
+; --- 6th Character ---
+
+[Level 50]
+write at 0x00006C54:0x3b9ac9ff
+
+[Max Money]
+write at 0x00006C58:0x3b9ac9ff
+
+[99 Items]
+write at 0x00008080:0x63636363
+write at 0x00008084:0x63636363
+write at 0x00008088:0x63636363
+
+; --- Checksum fixer ---
+
+[Update CRC32 for SVDAT00.BIN (Required)]
+; Checksum offset is located within the checksum range.
+write at 0x000004:00000000   ;Initializing checksum with null bytes
+;----------------------------
+;set range:0x000000,0x0111C7
+set pointer:eof+1
+set range:0x000000,pointer
+set [hash]:CRC32
+write at 0x000004:[hash]

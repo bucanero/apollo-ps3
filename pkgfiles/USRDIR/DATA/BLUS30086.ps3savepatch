@@ -1,0 +1,11 @@
+;BLUS30086
+;Unreal Tournament III
+
+:PAYLOAD
+
+[Update SHA1 (Required)]
+;set range:0x000014,0x000464
+set pointer:eof+1
+set range:0x000014,pointer
+set [hash]:SHA1
+write at 0x000000:[hash]

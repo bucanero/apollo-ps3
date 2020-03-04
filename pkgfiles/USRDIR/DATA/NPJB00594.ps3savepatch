@@ -1,0 +1,65 @@
+; NPJB00594
+; Caladrius Blaze
+
+; codes by Vesper, http://bruteforcesavedata.forumms.net/
+
+:TEST0
+
+[99 Lives. They become 7 if changed in the option screen or if 1up is earned]
+00000011 00000063
+
+[99 Bombs. They become 9 if changed in the option screen, after death, when earned in missions and so on]
+00000013 00000063
+
+[999 Ether Chips Gained. Get 1 more in game for the trophy]
+0001B943 000003E7
+
+[Unlock All Stages in Original/Evolution/Arcade Mode]
+00000033 000000FF
+00000035 000000FF
+00000037 000000FF
+
+[Unlock Full Gallery. Apply this cheat first, then...]
+4001B760 00000001
+41C20001 00000000
+
+[...apply this one. After, see Alex's story intros for the gallery trophy]
+0001B83F 00000000
+0001B840 00000000
+
+[All 168 Element Shots used. Use whatever ES you want in game to get the trophy]
+4001B951 00000001
+40A80002 00000000
+
+[Unlock All Profiles]
+4001B922 0000001B
+40100001 00000000
+
+[Unlock All Elemental Shots Customize Options]
+0000002A 00000001
+0000002E 00000001
+
+[Unlock Boss Rush Mode]
+00000029 00000001
+
+[Unlock Conversation option under Gallery. Use this cheat first, then...]
+00000030 00000001
+00000031 00000001
+
+[...use this one to Unlock All Solo and Dual Conversations]
+40000038 00000001
+402C0001 00000000
+
+
+
+
+;Since it's a save you can get only from a cfw console, 
+;you should be very well able to use CCAPI codes. So..
+
+;Infinite Bombs /CCAPI
+;0x000FB114 60000000 activate 
+;0x000FB114 3063FFFF deactivate 
+
+;With this one you'll be able to do that infamous No Miss run for its trophy.
+;Select Original Mode so the agony is shorter, 1P, Easy, leave No Damage OFF, start from Stage 1 and then bomb away, bomb away, bomb away...
+

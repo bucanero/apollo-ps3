@@ -1,0 +1,71 @@
+; Darksiders II
+; BLUS30829
+;From Game Genie For PS3
+
+:BLUS30829DSSAVE*\DS2SAVE
+
+[Max Gilt]
+80010006 FFFFFFFF
+00010000 00000000
+28000006 FFE0F505
+
+[Max Boatman Coins]
+80010006 FFFFFFFF
+00010000 00000000
+2800000A 0F270000
+
+[Max Health Potions]
+8001000C 6865616C
+74685F72 6573746F
+0800000F 00000001
+0800002B 00000063
+
+[Max Wrath Potions]
+8001000C 77726174
+685F7265 73746F72
+0800000E 00000001
+0800002A 00000063
+
+[Max Skill Points]
+80010006 FFFFFFFF
+00010000 00000000
+0800001A 00000063
+
+; To trigger, you must cause your Experience to increase in-game.
+[Level Up]
+5000001F 00000004
+5000001B 00000000
+
+:BLUS30829DSPROF\DS2MAN
+
+:BLUS30829DSPROF\DS2SAVE
+
+;By DarkOverlord
+
+[99,999,999 Gold]
+search FFFFFFFF0001
+write next (6):FFE0F505
+
+[99 Skill Points]
+search FFFFFFFF0001
+write next (26):63
+
+[99 Health Potions - Must have at least 1 to work]
+search 6D696E6F725F6865616C74685F726573746F7265
+write next (49):63
+
+[99 Wrath Potions - Must have at least 1 to work]
+search 6D696E6F725F77726174685F726573746F7265
+write next (48):63
+
+[255 Mystic Stones - Must have at least 1 to work]
+search 73746F6E655F626C7565
+write next (39):FF
+
+[255 Power Stones - Must have at least 1 to work]
+search 73746F6E655F726564
+write next (38):FF
+
+[255 Resistance Stones - Must have at least 1 to work]
+search 73746F6E655F676F6C64
+write next (39):FF

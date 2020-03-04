@@ -1,0 +1,11 @@
+;BLES00492
+;Legends of Wrestlemania
+
+:LGNDSAVE.DAT
+
+[Update ADD for LGNDSAVE.DAT (Required)]
+set [csum]:0
+;set [csum]:add(0x20,0x49C64F)
+set pointer:eof+1
+set [csum]:add(0x20,pointer)
+write at 0x000018:[csum]

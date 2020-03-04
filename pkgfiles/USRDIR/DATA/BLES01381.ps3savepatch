@@ -1,0 +1,13 @@
+;BLES01381
+;FIFA Soccer 12
+
+;from savedata.jp
+
+:SYS-DATA
+;UEFA Euro 2012
+[Update CRC32 for SYS-DATA (Required)]
+;set range:0x00001C,0x079A4A
+set pointer:eof+1
+set range:0x00001C,pointer
+set [hash]:CRC32
+write at 0x000010:[hash]

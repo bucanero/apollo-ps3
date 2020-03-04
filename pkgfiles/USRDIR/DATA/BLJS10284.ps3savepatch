@@ -1,0 +1,34 @@
+; BLJS10284
+; Super Robot Taisen OG Saga Masoukishin F COFFIN OF THE END
+
+; cheat data from savedata.jp,BSD cheats by chaoszage
+
+:DATA-BIN
+
+[RED:Use 1 cheat at a time only]
+[RED:always go to option setting and set the setting before going to battle,let increase to 3 byte again else it will be frozen]
+
+; --- Quick Mode ---
+
+[More Gold, SETTING<->GOLD]
+set [G]:read(0x48F0,4)
+set [S]:read(0x48E8,4)
+write at 0x48F0:[S]
+write at 0x48E8:[G]
+
+; --- Manual Mode ---
+
+[RED:please visit http://bruteforcesavedata.forumms.net/t1139-super-robot-taisen-og-saga-masoukishin-f-coffin-of]
+
+[4byte swap,fill in your desire cheat into 0xaaaa]
+set [G]:read(0xaaaa,4)
+set [S]:read(0x48E8,4)
+write at 0xaaaa:[S]
+write at 0x48E8:[G]
+
+[2byte swap,fill in your desire cheat into 0xaaaa(Partial Working)]
+set [G]:read(0xaaaa,2)
+set [S]:read(0x495E,2)
+write at 0xaaaa:[S]
+write at 0x495E:[G]
+

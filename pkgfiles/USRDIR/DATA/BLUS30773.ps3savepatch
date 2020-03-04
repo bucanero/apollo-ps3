@@ -1,0 +1,42 @@
+; Disney Universe
+; BLUS30773
+;From Game Genie For PS3
+
+:BLUS30773AUTOSAVE*\SAVE.BIN
+; type: hidden
+
+:BLUS30773AUTOSAVE*\56600001.DAT
+; dependency: SAVE.BIN
+
+[Max Money (Not Working)]
+80010008 60400000
+00000002 00000000
+28000008 05F5E0FF
+
+
+:BLUS30773AUTOSAVE*\96600000.DAT
+; dependency: SAVE.BIN
+
+group: Update CRC32
+
+:56600001.DAT
+
+[Get CRC32 for 56600001.DAT (Required)]
+set [hash_56600001.DAT]:CRC32
+set [size_56600001.DAT]:eof+1
+
+:96600000.DAT
+
+[Get CRC32 for 96600000.DAT (Required)]
+set [hash_96600000.DAT]:CRC32
+set [size_96600000.DAT]:eof+1
+
+; dependency: SAVE.BIN
+
+:SAVE.BIN
+
+[Update CRC32 for 56600001.DAT and 96600000.DAT (Required)]
+write at 0x000014:[size_56600001.DAT]
+write at 0x000018:[hash_56600001.DAT]
+write at 0x000024:[size_96600000.DAT]
+write at 0x000028:[hash_96600000.DAT]

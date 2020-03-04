@@ -1,0 +1,9 @@
+; NPEB01309
+; Hunter's Trophy 2 - America (PSN)
+; From SHAkA
+
+
+:GAMEDATA
+
+[MAX SKILL POINT]
+write at 0x0000000F:0x270F00

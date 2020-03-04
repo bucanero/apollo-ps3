@@ -1,0 +1,39 @@
+;BLUS30629
+;BioShock Infinite
+;From zeick
+
+:BLUS30629*\~extracted\
+
+[Money $9999]
+search 0xC12581B2
+write next (4):0000270F
+
+[Lockpicks 30]
+search 0xC12581B2
+write next (34):001E
+
+[red:info:CHEATS BELOW MAY STOP STORY TROPHIES]
+
+[Money 90000]
+search 0xC12581B2
+write next (4):00015F90
+
+[Lockpicks $900]
+search 0xC12581B2
+write next (34):0384
+
+;From Keha World
+
+[Silver Eagle 99999 *Uses for Extracted Files List 1]
+search C12581B2
+write next 4: 0001869F
+;*You must have at least one Silver Eagle
+
+[Lockpick 999 *Uses for Extracted Files List 1]
+search C12581B2
+write next 34: 000003E7
+;*You must have at least one Lockpick
+
+[Infinity Health (Normal Mode) *Uses for Extracted Files List 1]
+search C12581B2
+write next 97: 7FFFFF7FFFFF

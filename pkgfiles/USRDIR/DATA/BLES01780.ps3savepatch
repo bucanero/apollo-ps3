@@ -1,0 +1,47 @@
+[INFO: Same patches may not be supported by BSD yet]
+; Tomb Raider
+; BLES01780
+;From Game Genie For PS3
+
+:SYS-DATA
+[Skill Point(s) 255]
+80010004 A530EE3D
+08000013 000000FF
+
+;After obtaining an arrow
+[Arrow 40]
+80010004 8863BA99
+08000005 00000028
+
+;After point acquisition
+[Salvage 9999]
+80010004 8720EBCE
+18000004 0000270F
+
+[Skill Point(s) 9999]
+80010004 A530EE3D
+08000013 0000270F
+
+[Salvage 999 *After point acquisition]
+80010004 8720EBCE
+18000004 000003E7
+
+[Salvage 4999 *After point acquisition]
+80010004 8720EBCE
+18000004 00001387
+
+[HundGun 100]
+80010004 B62B6E6C
+18000004 00000063
+
+[SubMachineGun 150]
+80010004 B62B6E6C
+18000004 00000096
+
+[ShotGun 30]
+80010004 A230E397
+18000004 0000001E
+ 
+[Grenade Launcher 7]
+80010004 AA96C1D1
+18000004 00000007

@@ -1,0 +1,25 @@
+; Hyperdimension Neptunia
+; BLES01178
+;From Game Genie For PS3
+
+:BLES01178-L*\GAME.BIN
+
+[Max Credits]
+200BB148 05F5E0FF
+
+; --- Items ---
+
+[Reflex]
+1000E054 000003E7
+
+[Detoxin]
+1000E056 000003E7
+
+[Gelatin]
+1000E058 000003E7
+
+[Tuffmil]
+1000E05A 000003E7
+
+[Reset Buttons]
+1000E05C 00000001

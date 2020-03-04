@@ -1,0 +1,17 @@
+; BCJS30020
+; SIREN: New Translation
+
+
+:SIREN.DAT
+
+[Update CRC32 for SIREN.DAT (Required)]
+; Checksum offset is located within the checksum range.
+write at 0x00000C:00000000   ;Initializing checksum with null bytes
+;----------------------------
+;set range:0x0,0x000477
+set pointer:eof+1
+set range:0x0,pointer
+set [hash]:CRC32
+set [hash]:xor:FFFFFFFF
+write at 0x00000C:[hash]
+

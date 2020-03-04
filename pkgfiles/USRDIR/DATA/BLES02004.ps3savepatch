@@ -1,0 +1,13 @@
+; BLES02004
+; F1 2013™
+
+
+
+:SECUINFO.BIN
+
+[Update CRC32 for SECUINFO.BIN (Required)]
+set pointer:eof+1
+set range:0x000004,pointer
+set [hash]:CRC32
+write at 0x000000:[hash]
+

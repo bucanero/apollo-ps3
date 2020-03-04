@@ -1,0 +1,219 @@
+; NPEB01795
+; One Piece: Pirate Warriors 2
+;From KE-HA
+
+:DATA.BIN
+
+[Berry 999999999]
+2000A614 3B9ACA99
+2000A618 3B9ACA99
+
+[All Coin Star.18 Lv.Max]
+4202A1F2 04124301
+42580010 00000000
+
+[Exp 999999(Lv.1-Lv.50) - All Characters]
+420000E0 000F423F
+402F0180 00000000
+
+[Exp 9999999(Lv.50-Lv.100) - All Characters]
+420000E0 0098967F
+402F0180 00000000
+
+[Exp 999999 -Rufi]
+200000E0 000F423F
+
+[Nakama ! 9999 - All Characters]
+4100474A 0000423F
+404300F0 00000000
+
+[Nakama ! 9999 - Nami]
+1000492A 0000FFFF
+
+[Growth Limit Break - All Characters]
+400000F8 00000005
+402F0180 00000000
+
+[Life Attack Defense Hissatsu Max - All Characters]
+400000F8 00000005
+402F0180 00000000
+410000E4 00002710
+402F0180 00000000
+420000E6 03E803E8
+402F0180 00000000
+400000EA 00000004
+402F0180 00000000
+400000EC 00000004
+402F0180 00000000
+
+[Lv.256 *Appearance - All Characters]
+400000EB 000000FF
+402F0180 00000000
+
+[Berry Shop All Unlock]
+4001B600 0000000D
+40370001 00000000
+4001B639 0000000D
+413A0001 00000000
+4001B796 0000000D
+402F0001 00000000
+
+[All Characters Unlock]
+410000F9 00001919
+402F0180 00000000
+400000FB 00000019
+402F0180 00000000
+
+;You can only use 5 Slots but with 15 points.
+;If you can't add more skill more up or down.
+[15 Skill Slot Points]
+400000EC 0000000F
+402F0180 00000000
+
+; --- Character Modifier ---
+
+[Luffy]
+00029AC7 00000000
+
+[Zoro]
+00029AC7 00000001
+[Nami]
+00029AC7 00000002
+[Usopp]
+00029AC7 00000003
+[Sanji]
+00029AC7 00000004
+[Chopper]
+00029AC7 00000005
+[Robin]
+00029AC7 00000006
+[Franky]
+00029AC7 00000007
+[Brook]
+00029AC7 00000008
+[Ace]
+00029AC7 00000009
+[Boa Hancock]
+00029AC7 0000000A
+[Jinbe]
+00029AC7 0000000B
+[Whitebeard]
+00029AC7 0000000C
+[Buggy]
+00029AC7 0000000D
+[Mihawk]
+00029AC7 0000000E
+[Crocodile]
+00029AC7 0000000F
+[Blackbeard]
+00029AC7 00000010
+[Kuma]
+00029AC7 00000011
+[Kizaru]
+00029AC7 00000012
+[Aokiji]
+00029AC7 00000013
+[Akainu]
+00029AC7 00000014
+[Eneru]
+00029AC7 00000015
+[Perona]
+00029AC7 00000016
+[Smoker]
+00029AC7 00000017
+[Marco]
+00029AC7 00000018
+[Garp]
+00029AC7 00000019
+[Law]
+00029AC7 0000001A
+[Luffy Pre-Timeskip]
+00029AC7 0000001B
+[Zoro Pre-Timeskip]
+00029AC7 0000001C
+[Nami Pre-Timeskip]
+00029AC7 0000001D
+[Usopp Pre-Timeskip]
+00029AC7 0000001E
+[Sanji Pre-Timeskip]
+00029AC7 0000001F
+[Chopper Pre-Timeskip]
+00029AC7 00000020
+[Robin Pre-Timeskip]
+00029AC7 00000021
+[Franky Pre-Timeskip]
+00029AC7 00000022
+[Brook Pre-Timeskip]
+00029AC7 00000023
+[Blackbeard Gura Gura no Mi]
+00029AC7 00000024
+[Don Kreg]
+00029AC7 00000025
+[Arlong
+00029AC7 00000026
+[Hacchi]
+00029AC7 00000027
+[Lapin]
+00029AC7 00000028
+[Wapol]
+00029AC7 00000029
+[Mr. 2]
+00029AC7 0000002A
+[Mr. 3]
+00029AC7 0000002B
+[Lucci]
+00029AC7 0000002C
+[Kaku]
+00029AC7 0000002D
+[Jabura]
+00029AC7 0000002E
+[Blueno]
+00029AC7 0000002F
+[Sentomaru]
+00029AC7 00000030
+[Pacifista]
+00029AC7 00000031
+[Minotaurus]
+00029AC7 00000032
+[Magellan]
+00029AC7 00000033
+[Hannyabal]
+00029AC7 00000034
+[Emporio Ivankov]
+00029AC7 00000035
+[Gekko Moria]
+00029AC7 00000036
+[Diamond Jozu]
+00029AC7 00000037
+[Vista]
+00029AC7 00000038
+[Blue Axe Warrior Captain]
+00029AC7 00000039
+
+;1) RANDOM ENEMIES:
+;3A - Captain
+;3B - Captain
+;3C - Captain
+;3D - Captain
+;3E - Captain
+;3F - Captain
+;40 - Zombie Captain
+;4C - Allies Gunner
+;55 - Impel Down Guard
+;70 - Marine Capturer
+;99 - Government Invisible ball (fight with kick)
+;9A - Gas Bomb Government Soldier
+;9B - Government Soldier
+;9C - Government Soldier
+;9D - Government Soldier
+;9E - Government Soldier
+;9F - Testing Government Enemie (Fly up and down, repeat fall animation)
+;1) A0 - Bazooka Villager
+;1) A1 - Shield Villager
+;1) A2 - Gas Bomb Villager
+;1) A3 - Giant Villager
+;1) B9 - Testing Zombie (Fly up and down, repeat fall animation)
+;1) AA - Shield Kami Soldier
+;1) C2 - Testing G-5 (Fly up and down, repeat fall animation)
+
+

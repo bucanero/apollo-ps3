@@ -1,0 +1,11 @@
+;BLUS30319
+;Cars Race-O-Rama
+
+:0_DATA.DAT
+
+[Update DWADD for 0_DATA.DAT (Required)]
+set [csum]:0
+;set [csum]:dwadd(0x000008,0x04DFFF)
+set pointer:eof+1
+set [csum]:dwadd(0x000008,pointer)
+write at 0x000000:[csum]

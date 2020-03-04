@@ -1,0 +1,76 @@
+; Dynasty Warriors 7 Empires
+; BCUS50563
+; From KE-HA
+
+:BCUS50563-PLAY*\DATA.BIN
+; type: none
+
+;Play Data Only
+[Food 999/Info 999/Gold 999 *Play Data Only]
+1002BD0E 000003E7
+1002BD12 000003E7
+1002BD16 000003E7
+
+;Play Data Only
+[Brave Wise Kind Orderly Affluent Evil - All Lv.9 - Cao Cao]
+410071C6 00006B6C
+40060002 00000000
+
+;Play Data Only
+[Brave Wise Kind Orderly Affluent Evil - All Lv.9 - Sun Shang Xiang]
+4100729E 00006B6C
+40060002 00000000
+
+;Play Data Only
+[Brave Wise Kind Orderly Affluent Evil - All Lv.9 - Liu Bei]
+41007496 00006B6C
+40060002 00000000
+
+;Play Data Only
+[Brave Wise Kind Orderly Affluent Evil - All Lv.9 - Lu Bu]
+41007526 00006B6C
+40060002 00000000
+
+;Play Data Only 
+[Brave Wise Kind Orderly Affluent Evil - All Lv.9 - Sun Quan]
+410078CE 00006B6C
+40060002 00000000
+
+;Play Data Only
+[Brave Wise Kind Orderly Affluent Evil - All Lv.9 - Dong Zhuo]
+41007A7E 00006B6C
+40060002 00000000
+
+;Play Data Only
+[Brave Wise Kind Orderly Affluent Evil - All Lv.9 - Zhen Ji]
+41007B56 00006B6C
+40060002 00000000
+
+;Play Data Only
+[Brave Wise Kind Orderly Affluent Evil - All Lv.9 - Xiao Qiao]
+41007B9E 00006B6C
+40060002 00000000
+
+;Play Data Only
+[Brave Wise Kind Orderly Affluent Evil - All Lv.9 - Zhu Rong]
+4100813E 00006B6C
+40060002 00000000
+
+;Play Data Only
+[Max Gold]
+1002BD16 000003E7
+
+;Play Data Only
+[Max Food]
+1002BD0E 000003E7
+
+;Play Data Only
+[Max Info]
+1002BD12 000003E7
+
+:BCUS50563-SYSTEM\DATA.BIN
+; type: none
+
+;SYSTEM Data Only
+[Bonus 99999 *System Data Only]
+20000A54 0001869F

@@ -1,0 +1,10 @@
+; DuckTales Remastered (PSN)
+; NPUB31126
+;From Azagthoth (CMP)
+
+:SAVE.DAT
+
+[Max Cash]
+200000D0 05F5E0FF
+
+;Missing Checksum Info

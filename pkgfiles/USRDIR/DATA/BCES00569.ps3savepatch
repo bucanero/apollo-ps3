@@ -1,0 +1,11 @@
+; Gran Turismo 5
+; BCES00569
+;From Game Genie For PS3
+
+:BCES00569-GAME\GT5.0
+; type: none
+
+[Max Money]
+80010004 00000609
+88000004 04000000
+28000005 3B9AC9FF

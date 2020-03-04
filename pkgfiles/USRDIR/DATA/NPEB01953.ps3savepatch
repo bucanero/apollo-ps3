@@ -1,0 +1,35 @@
+; NPEB01953
+; "Darkside Princess"
+
+:DATA.BIN
+
+[Ability all max]
+42000024 FFC99A3B
+40030004 00000000
+
+[max exp]
+20000024 3F420F00
+20000028 3F420F00
+2000002C 3F420F00
+
+[max money]
+20000020 3F420F00
+
+[all missions clear]
+20001B7A FFFFFFFF
+20001B7E FFFFFFFF
+20001B82 FFFFFFFF
+00001B86 0000000F
+
+;Fulfill 1 Request to obtain "Workaholic" and "Reliable Worker" trophies-
+[Fulfill all Daemon Requests]
+42000768 01010101
+40260004 00000000
+
+[699999 Warl]
+20000020 5FAE0A00
+
+
+[700000 Warl]
+200005FC AE600B00
+

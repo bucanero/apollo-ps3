@@ -1,0 +1,127 @@
+[INFO: Same patches may not be supported by BSD yet]
+; Kingdom Hearts HD 1.5 ReMIX
+; BLJM60589
+; dark nachos 
+
+[Group:Kingdom Hearts Chain of Memories]
+
+[INFO: Checksum Info is missing]
+
+:SYS-**
+
+[Group:Kingdom Hearts Chain of Memories\Sora And Riku Codes]
+[Max Level]
+00002D57 00000063
+
+[Max HP]
+20002D38 0098967F
+
+[Max Experience]
+20002D50 0098967F
+
+[Max AP]
+10002D4A 0000270F
+
+[Have 99 Of All Map Cards]
+4000232A 00000008
+40FA0001 00000000
+
+[Set Difficulty to Beginner]
+00000481 00000000
+
+[Set Difficulty to Standard]
+00000481 00000001
+
+[Set Difficulty to Proud]
+00000481 00000002
+
+[Group:Kingdom Hearts Chain of Memories\Sora Codes]
+[Max Moogle Points]
+20002D58 0001869F
+
+[Have 9999 Moogle Points]
+10002D5A 0000270F
+
+[Max CP]
+10002D46 0000270F
+
+[Have All Sleights]
+40002D61 000000EE
+40130001 00000000
+20002D74 0EEDEEEE
+
+[Have All Attack Cards]
+40001FC4 00000063
+41E00001 00000000
+
+[Have Ultima Cards]
+00002059 00000008
+00002058 00000008
+00002057 00000008
+00002050 00000008
+00002140 00000008
+00002147 00000008
+00002148 00000008
+00002149 00000008
+00002329 00000008
+
+[Have All Magic Cards]
+400021A4 00000063
+41400001 00000000
+
+[Have All Item Cards]
+400022E4 00000063
+40460001 00000000
+
+[Have All Enemy Cards]
+40002424 00000063
+40200001 00000000
+
+[Have 99 of All Cards (including map cards)]
+40001FC4 00000063
+44800001 00000000
+
+[All Story Journal Entries]
+40002DC4 00000001
+40110001 00000000
+
+[All Character Journal Entries]
+40002DDB 00000001
+40680001 00000000
+
+[All Card Journal Entries]
+40002E7B 00000001
+40960001 00000000
+
+[All Minigame Journal Entries]
+40002F4E 00000001
+40060001 00000000
+
+[Group:Kingdom Hearts Chain of Memories\Riku Codes]
+[Max DP]
+10002D4E 0000270F
+
+[All Story D-Report Entries]
+40002DD5 00000001
+40060001 00000000
+
+[All Characters D-Report Entries]
+40002E43 00000001
+40380001 00000000
+
+[All Card D-Report Entries]
+40002F13 00000001
+403D0001 00000000
+
+:SYS-01
+
+:SYS-00
+
+;Cheksum By Dark Nacho
+[Update MD5 for SYS-01 (Required)]
+set range:0x000100,0x000035
+set [hash]:MD5
+write at 0x000034:[hash]
+
+
+

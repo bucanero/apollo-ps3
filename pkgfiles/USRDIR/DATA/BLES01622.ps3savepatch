@@ -1,0 +1,16 @@
+;BLES01622
+;Cartoon Network: Punch Time Explosion XL
+;From Game Genie PS3
+
+:GDATA
+
+[Max Points]
+2000001C 47C35000
+
+:GAME
+[Update CRC32 for GAME (Required)]
+;set range:0x000024,0x001043
+set pointer:eof+1
+set range:0x000024,pointer
+set [hash]:CRC32
+write at 0x000000:[hash]

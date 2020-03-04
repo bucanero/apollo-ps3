@@ -1,0 +1,28 @@
+; BLUS31441
+; Digimon all-star rumble
+
+:SAVEDATA
+
+[Max Bits Money ]
+write next 0x10A:0x7FFFFFFF
+
+[Checksum32 (Signed) hashes (required)]
+; Checksum offset is located within the checksum range.
+write at 0x000014:00000000   ;Initializing checksum with null bytes
+
+set pointer:read(0x14)
+write at 00000000
+set pointer:pointer  0x0
+set range: 0x185E, pointer
+uint num = Checksum32
+write at 0x14:[num]
+
+
+;[Checksum32 (Signed) hashes (required)]
+;; Checksum offset is located within the checksum range.
+;write at 0x14:0x00000000 ;Initializing checksum with null bytes
+;set range: 0x0,0x185E
+;set [num]:Checksum32
+;write at 0x14:[num]
+
+

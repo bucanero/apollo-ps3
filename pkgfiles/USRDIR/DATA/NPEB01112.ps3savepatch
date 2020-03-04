@@ -1,0 +1,14 @@
+; NPEB01112
+; FUSE
+
+:GAMESAVE
+
+[Max Money]
+write at 0x3740:0x0098967F
+write at 0x3A78:0x0098967F
+
+[Update CRC64 ECMA 182 for GAMESAVE (Required)]
+set range:0x000000,0x0068AF
+set [hash]:crc64_ecma
+write at 0x0068B0:[hash]
+

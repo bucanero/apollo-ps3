@@ -1,0 +1,64 @@
+;NPEB00345
+;Alien Breed 2: Assault (PSN)
+;From zeick & chaoszage
+ 
+:GAME.DAT
+ 
+[9999999 Money]
+search "env_Split"
+write next (32):00000098967F
+ 
+[Max Assault Rifle Ammo]
+search "ABWeap_AssaultRifle_"
+search next 0xFFFFFFFF
+write next (10):270F0000270F
+ 
+[Max ShotCannon Ammo]
+search "ABWeap_ShotCannon_"
+search next 0xFFFFFFFF
+write next (10):070F0000070F
+ 
+[Max FlameThrower Ammo]
+search "ABWeap_FlameThrower_"
+search next 0xFFFFFFFF
+write next (10):270F0000270F
+ 
+[Max HyperBlaster Ammo]
+search "ABWeap_HyperBlaster_"
+search next 0xFFFFFFFF
+write next (10):270F0000270F
+ 
+[99 LargeHealthKits]
+search "ABItem_LargeHealthKit"
+search next 0xFFFFFFFF
+write next (11):63
+ 
+[99 SmallHealthKits]
+search "ABItem_SmallHealthKit_"
+search next 0xFFFFFFFF
+write next (11):63
+ 
+[99 FragGrenades]
+search "ABItem_FragGrenade_"
+search next 0xFFFFFFFF
+write next (11):63
+ 
+[99 StunGrenades]
+search "ABItem_Flare_"
+search next 0xFFFFFFFF
+write next (11):63
+ 
+[99 SentryGuns]
+search "ABItem_SentryGun1_"
+search next 0xFFFFFFFF
+write next (11):63
+ 
+[99 HardenedArmour]
+search "ABItem_Armour_"
+search next 0xFFFFFFFF
+write next (11):63
+ 
+[default:Update crc32 (required)]
+set range:0xB0,0x2000A7
+set [crc]:crc32big
+write at 0xA8:[crc]

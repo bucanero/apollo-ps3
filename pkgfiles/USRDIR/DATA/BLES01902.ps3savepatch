@@ -1,0 +1,20 @@
+;BLES01902
+;PAYDAY 2
+
+Group: Update Checksums (Required)
+
+:INFO.BIN
+
+[Update MD5 for INFO.BIN (Required)]
+set pointer:lastbyte-0xF
+set range:0x000004,pointer
+set [hash]:MD5
+write next (0):[hash]
+
+:HEADER.BIN
+
+[Update MD5 for HEADER.BIN (Required)]
+set pointer:lastbyte-0xF
+set range:0x000004,pointer
+set [hash]:MD5
+write next (0):[hash]

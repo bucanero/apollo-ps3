@@ -1,0 +1,38 @@
+; NPUB30039
+; Söldner-X: Himmelsstürmer
+
+;from jeff
+
+:DATAA
+
+
+[Combo Mania trophy KILL 1 MORE TO WIN]
+20000AF0 00000BB6
+
+[DESTROYER TROPHY KILL 1 MORE TO WIN]
+20000AEC 0007A11F
+
+[GAMES PLAYED 255 AND BOSS KILLS]
+20000AF4 00FF00FF
+
+
+[all keys one more in the first stage trophy galaxy super star and utimate key collector to]
+20000AD4 00010101
+20000AD8 01010101
+20000ADC 01010101
+20000AE0 01010101
+20000AE4 01010101
+20000AEC 0007A11F
+
+
+:file
+
+
+
+
+
+
+
+
+
+

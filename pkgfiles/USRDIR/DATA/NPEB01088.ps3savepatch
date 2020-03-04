@@ -1,0 +1,9 @@
+; NPEB01088
+; Alien Rage (PSN)
+; From SHAkA
+
+:PAYLOAD2
+
+;Will unlock trophy and all perks!
+[Max Perks Points]
+write at 0x00000003:0x1A3B9AC9

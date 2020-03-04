@@ -1,0 +1,51 @@
+;BLUS31186
+;Killer Is Dead
+;From Bokosuka Games
+ 
+:PAYLOAD
+
+[INFO:Apply Cheat 1 at a Time]
+[INFO:Cheats Only work after Chapter 3]
+
+[Moon Crystal 9999]
+search 0x4D696E6572616C5F41:1
+write next C: 270F
+search 0x4D696E6572616C5F41:2
+write next C: 270F
+search 0x4D696E6572616C5F41:3
+write next C: 270F
+search 0x4D696E6572616C5F41:4
+write next C: 270F
+
+[Health Lv.99]
+search 0x4D696E6572616C5F42:1
+write next C: 270F
+search 0x4D696E6572616C5F42:2
+write next C: 270F
+search 0x4D696E6572616C5F42:3
+write next C: 270F
+search 0x4D696E6572616C5F42:4
+write next C: 270F
+
+[Blood Lv.99]
+search 0x4D696E6572616C5F43:1
+write next C: 270F
+search 0x4D696E6572616C5F43:2
+write next C: 270F
+search 0x4D696E6572616C5F43:3
+write next C: 270F
+search 0x4D696E6572616C5F43:4
+write next C: 270F
+
+[INFO:Will only work after Chapter 3]
+;From gingerbread
+[Cash 99,999,999]
+set pointer:0x0001F40D
+write next (5):0x05F5E0FF
+
+[default:Update crc32 (required)]
+set pointer:eof-3
+set range:0x0, pointer
+set [crc]:crc32big
+set pointer:eof-3
+write next (0):[crc]

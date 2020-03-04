@@ -1,0 +1,12 @@
+;BLUS30215
+;Karaoke Revolution Presents: American Idol Encore 2
+
+:GAMESAVE
+
+[Update CRC32Big:0 for GAMESAVE (Required)]
+;set range:0x00000C,0x0E716B
+set pointer:eof+1
+set range:0x00000C,pointer
+set [hash]:CRC32Big:0
+set [hash]:xor:FFFFFFFF
+write at 0x000008:[hash]

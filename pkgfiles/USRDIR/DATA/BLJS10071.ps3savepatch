@@ -1,0 +1,50 @@
+; BLJS10071
+; Sacred 2: Fallen Angel
+
+;chaoszage 
+
+
+
+;Steps to mod(Only for the 1st char):
+;1.Turn on Compression Check(located near bottom right near patch creator)
+;2.double click on save.dat
+;3.a small window pop up with 2 files list
+;4.right click on the xxx.neo file and click apply cheats.
+;5.select your desired cheats and close cheat select mode after cheats applied.
+;6. Highlight only xxx.neo file and close the extracted files windows.
+;7. click yes to recompress and input -w 15 then click ok
+;8. update pfd -> encrypt pfd -> verify pfd as usual
+
+:~extracted/*.neo
+
+[32767 Skill Points(Apply on xxx.neo file)]
+search 0xFFFFAA07
+write next 8:0x7FFF
+
+[32767 Attribute Points(Apply on xxx.neo file)]
+search 0xFFFFAA07
+write next A:0x7FFF
+
+[Lots of Gold(Apply on xxx.neo file)]
+search 0xFFFFAA07
+write next 19A:0x7FFFFFFF
+
+[Lots of Kills Counts(Apply on xxx.neo file)]
+search 0xFFFFAA07
+write next 1CC:0x7FFFFFFF
+
+
+[Kill 1 to max out level(Apply on xxx.neo file)]
+search 0xFFFFAA07
+write next C:0x03B86412
+
+[Max Gold(Apply on xxx.neo file)]
+search 0xFFFFAA07
+write next 19A:0x7FFFFFFF
+
+[Easy Leveling(Apply on xxx.neo file)]
+search 0xFFFFAA07
+write next 5:0x01
+search 0xFFFFAA07
+write next C:0x709e9cb7
+

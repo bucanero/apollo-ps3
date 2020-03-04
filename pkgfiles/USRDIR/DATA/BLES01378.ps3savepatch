@@ -1,0 +1,76 @@
+; BLES01378
+; RAGE ®
+
+[GROUP:AUTOSAVE]
+:BLES01378-GAMES-AUTOSAVE\_PROF
+
+[Update MD5_XOR for _PROF (Required)]
+;set range:0x000000,0x00039B
+set pointer:eof-7
+set range:0x000000,pointer
+set [hash]:MD5_XOR
+;write at 0x005951:[hash]
+set pointer:eof-7
+write next (0):[hash]
+set [hash]:0
+;set range:0x000000,0x00039E
+set pointer:eof-3
+set range:0x000000,pointer
+set [hash]:MD5_XOR
+;write at 0x00039F:[hash]
+set pointer:eof-3
+write next (0):[hash]
+
+:BLES01378-GAMES-AUTOSAVE\_PLAYER
+[Update MD5_XOR for _PLAYER (Required)]
+;set range:0x000000,0x005954
+set pointer:eof-3
+set range:0x000000,pointer
+set [hash]:MD5_XOR
+;write at 0x005955:[hash]
+set pointer:eof-3
+write next (0):[hash]
+
+:BLES01378-GAMES-AUTOSAVE\_DETAILS
+
+[Update MD5_XOR for _DETAILS (Required)]
+;set range:0x000000,0x00018F
+set pointer:eof-3
+set range:0x000000,pointer
+set [hash]:MD5_XOR
+;write at 0x000190:[hash]
+set pointer:eof-3
+write next (0):[hash]
+
+[GROUP:SAVE SLOT]
+
+:BLES01378-GAMES-RAGE_*\_DETAILS
+
+[Update MD5_XOR for _DETAILS (Required)]
+;set range:0x000000,0x00018F
+set pointer:eof-3
+set range:0x000000,pointer
+set [hash]:MD5_XOR
+;write at 0x000190:[hash]
+set pointer:eof-3
+write next (0):[hash]
+
+:BLES01378-GAMES-RAGE_*\_PLAYER
+
+[Update MD5_XOR for _PLAYER (Required)]
+;set range:0x000000,0x005950
+set pointer:eof-7
+set range:0x000000,pointer
+set [hash]:MD5_XOR
+;write at 0x005951:[hash]
+set pointer:eof-7
+write next (0):[hash]
+set [hash]:0
+;set range:0x000000,0x005954
+set pointer:eof-3
+set range:0x000000,pointer
+set [hash]:MD5_XOR
+;write at 0x005955:[hash]
+set pointer:eof-3
+write next (0):[hash]
+

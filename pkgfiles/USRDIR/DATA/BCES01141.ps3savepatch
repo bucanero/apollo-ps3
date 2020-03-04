@@ -1,0 +1,697 @@
+; Ratchet & Clank: All 4 One
+; BCES01141
+;From Game Genie For PS3
+
+:GAME.SAV
+
+; --- Ratchet ---
+
+[Max Bolts]
+20000638 05F5E0FF
+2000063C 05F5E0FF
+
+[Have All Weapons In Hand]
+42000650 00000006
+40100004 00000001
+
+[Unlock All Gadgets]
+000003D0 00000001
+000003EC 00000001
+00000408 00000001
+
+; --- Weapons ---
+
+; --- Arc Lasher ---
+
+[Max Ammo]
+20000460 41F00000
+2000046C 41F00000
+
+[Have All Upgrades]
+00000479 00000007
+
+[Unlock Weapon In Store]
+00000478 00000001
+
+; --- Blizer ---
+
+[Max Ammo]
+20000508 42100000
+20000514 42100000
+
+[Have All Upgrades]
+00000521 00000007
+
+[Unlock Weapon In Store]
+00000520 00000001
+
+; --- Combuster ---
+
+[Max Ammo]
+2000040C 43160000
+20000418 43160000
+
+[Have All Upgrades]
+00000425 00000007
+
+[Unlock Weapon In Store]
+00000424 00000001
+
+; --- Critter Strike ---
+
+[Max Ammo]
+20000540 42700000
+2000054C 42700000
+
+[Have All Upgrades]
+00000559 00000007
+
+[Unlock Weapon In Store]
+00000558 00000001
+
+; --- Darkstar Fission Tether ---
+
+[Max Ammo]
+200004EC 42700000
+200004F8 42700000
+
+[Have All Upgrades]
+00000505 00000007
+
+[Unlock Weapon In Store]
+00000504 00000001
+
+; --- Dopplebanger ---
+
+[Max Ammo]
+2000055C 41000000
+20000568 41000000
+
+[Have All Upgrades]
+00000575 00000007
+
+[Unlock Weapon In Store]
+00000574 00000001
+
+; --- Mr. Zurkon ---
+
+[Max Ammo]
+2000047C 40000000
+20000488 40000000
+
+[Have All Upgrades]
+00000495 00000007
+
+[Unlock Weapon In Store]
+00000494 00000001
+
+; --- Omegatech Frost Cannon ---
+
+[Max Ammo]
+200004D0 41F00000
+200004DC 41F00000
+
+[Have All Upgrades]
+000004E9 00000007
+
+[Unlock Weapon In Store]
+000004E8 00000001
+
+; --- Plasmabomb Launcher ---
+
+[Max Ammo]
+200004B4 41F00000
+200004C0 41F00000
+
+[Have All Upgrades]
+000004CD 00000007
+
+[Unlock Weapon In Store]
+000004CC 00000001
+
+; --- Pyro Blaster ---
+
+[Max Ammo]
+20000428 42700000
+20000434 42700000
+
+[Have All Upgrades]
+00000441 00000007
+
+[Unlock Weapon In Store]
+00000440 00000001
+
+; --- Ryno ---
+
+[Max Ammo]
+20000524 41400000
+20000530 41400000
+
+[Have All Upgrades]
+0000053D 00000007
+
+[Unlock Weapon In Store]
+0000053C 00000001
+
+; --- Thundersmack ---
+
+[Max Ammo]
+20000444 41A00000
+20000450 41A00000
+
+[Have All Upgrades]
+0000045D 00000007
+
+[Unlock Weapon In Store]
+0000045C 00000001
+
+; --- Warmonger ---
+
+[Max Ammo]
+20000498 41200000
+200004A4 41200000
+
+[Have All Upgrades]
+000004B1 00000007
+
+[Unlock Weapon In Store]
+000004B0 00000001
+
+; --- Clank ---
+
+[Max Bolts]
+20001828 05F5E0FF
+2000182C 05F5E0FF
+
+[Have All Weapons In Hand]
+42001840 00000006
+40100004 00000001
+
+[Unlock Gadgets]
+000015C0 00000001
+000015DC 00000001
+000015F8 00000001
+
+; --- Weapons ---
+
+; --- Arc Lasher ---
+
+[Max Ammo]
+20001650 41F00000
+2000165C 41F00000
+
+[Have All Upgrades]
+00001669 00000007
+
+[Unlock Weapon In Store]
+00001668 00000001
+
+; --- Blizer ---
+
+[Max Ammo]
+200016F8 42100000
+20001704 42100000
+
+[Blizer Max Have All Upgrades]
+00001711 00000007
+
+[Unlock Weapon In Store]
+00001710 00000001
+
+; --- Combuster ---
+
+[Max Ammo]
+200015FC 43160000
+20001608 43160000
+
+[Have All Upgrades]
+00001615 00000007
+
+[Unlock Weapon In Store]
+00001614 00000001
+
+; --- Critter Strike ---
+
+[Max Ammo]
+20001730 42700000
+2000173C 42700000
+
+[Have All Upgrades]
+00001749 00000007
+
+[Unlock Weapon In Store]
+00001748 00000001
+
+; --- Darkstar Fission Tether ---
+
+[Max Ammo]
+200016DC 42700000
+200016E8 42700000
+
+[Have All Upgrades]
+000016F5 00000007
+
+[Unlock Weapon In Store]
+000016F4 00000001
+
+; --- Dopplebanger ---
+
+[Max Ammo]
+2000174C 41000000
+20001758 41000000
+
+[Have All Upgrades]
+00001765 00000007
+
+[Unlock Weapon In Store]
+00001764 00000001
+
+; --- Mr. Zurkon ---
+
+[Max Ammo]
+2000166C 40000000
+20001678 40000000
+
+[Have All Upgrades]
+00001685 00000007
+
+[Unlock Weapon In Store]
+00001684 00000001
+
+; --- Omegatech Frost Cannon ---
+
+[Max Ammo]
+200016C0 41F00000
+200016CC 41F00000
+
+[Have All Upgrades]
+000016D9 00000007
+
+[Unlock Weapon In Store]
+000016D8 00000001
+
+; --- Pyro Blaster ---
+
+[Max Ammo]
+20001618 42700000
+20001624 42700000
+
+[Have All Upgrades]
+00001631 00000007
+
+[Unlock Weapon In Store]
+00001630 00000001
+
+; --- Plasmabomb Launcher ---
+
+[Max Ammo]
+200016A4 41F00000
+200016B0 41F00000
+
+[Have All Upgrades]
+000016BD 00000007
+
+[Unlock Weapon In Store]
+000016BC 00000001
+
+; --- Thundersmack ---
+
+[Max Ammo]
+20001634 41A00000
+20001640 41A00000
+
+[Have All Upgrades]
+0000164D 00000007
+
+[Unlock Weapon In Store]
+0000164C 00000001
+
+; --- Ryno ---
+
+[Max Ammo]
+20001714 43160000
+20001720 43160000
+
+[Have All Upgrades]
+0000172D 00000007
+
+[Unlock Weapon In Store]
+0000172C 00000001
+
+; --- Warmonger ---
+
+[Max Ammo]
+20001688 41200000
+20001694 41200000
+
+[Warmonger Have All Upgrades]
+000016A1 00000007
+
+[Unlock Weapon In Store]
+000016A0 00000001
+
+; --- Quark ---
+
+[Max Bolts]
+20002120 05F5E0FF
+20002124 05F5E0FF
+
+[Have All Weapons In Hand]
+42002138 00000006
+40100004 00000001
+
+[Unlock All Gadgets]
+00001EB8 00000001
+00001ED4 00000001
+00001EF0 00000001
+
+; --- Weapons ---
+
+; --- Arc Lasher ---
+
+[Max Ammo]
+20001F48 41F00000
+20001F54 41F00000
+
+[Have All Upgrades]
+00001F61 00000007
+
+[Unlock Weapon In Store]
+00001F60 00000001
+
+; --- Blizer ---
+
+[Max Ammo]
+20001FF0 42100000
+20001FFC 42100000
+
+[Have All Upgrades]
+00002009 00000007
+
+[Unlock Weapon In Store]
+00002008 00000001
+
+; --- Combuster ---
+
+[Max Ammo]
+20001EF4 43160000
+20001F00 43160000
+
+[Have All Upgrades]
+00001F0D 00000007
+
+[Unlock Weapon In Store]
+00001F0C 00000001
+
+; --- Critter Strike ---
+
+[Max Ammo]
+20002028 42700000
+20002034 42700000
+
+[Have All Upgrades]
+00002041 00000007
+
+[Unlock Weapon In Store]
+00002040 00000001
+
+; --- Darkstar Fission Tether ---
+
+[Max Ammo]
+20001FD4 42700000
+20001FE0 42700000
+
+[Have All Upgrades]
+00001FED 00000007
+
+[Unlock Weapon In Store]
+00001FEC 00000001
+
+; --- Dopplebanger ---
+
+[Max Ammo]
+20002044 41000000
+20002050 41000000
+
+[Have All Upgrades]
+0000205D 00000007
+
+[Unlock Weapon In Store]
+0000205C 00000001
+
+; --- Mr. Zurkon ---
+
+[Max Ammo]
+20001F64 40000000
+20001F70 40000000
+
+[Have All Upgrades]
+00001F7D 00000007
+
+[Unlock Weapon In Store]
+00001F7C 00000001
+
+; --- Omegatech Frost Cannon ---
+
+[Max Ammo]
+20001FB8 41F00000
+20001FC4 41F00000
+
+[Have All Upgrades]
+00001FD1 00000007
+
+[Unlock Weapon In Store]
+00001FD0 00000001
+
+; --- Plasmabomb Launcher ---
+
+[Max Ammo]
+20001F9C 41F00000
+20001FA8 41F00000
+
+[Have All Upgrades]
+00001FB5 00000007
+
+[Unlock Weapon In Store]
+00001FB4 00000001
+
+; --- Pyro Blaster ---
+
+[Max Ammo]
+20001F10 42700000
+20001F1C 42700000
+
+[Have All Upgrades]
+00001F29 00000007
+
+[Unlock Weapon In Store]
+00001F28 00000001
+
+; --- Ryno ---
+
+[Max Ammo]
+2000200C 43160000
+20002018 43160000
+
+[Have All Upgrades]
+00002025 00000007
+
+[Unlock Weapon In Store]
+00002024 00000001
+
+; --- Thundersmack ---
+
+[Max Ammo]
+20001F2C 41A00000
+20001F38 41A00000
+
+[Have All Upgrades]
+00001F45 00000007
+
+[Unlock Weapon In Store]
+00001F44 00000001
+
+; --- Warmonger ---
+
+[Max Ammo]
+20001F80 41200000
+20001F8C 41200000
+
+[Have All Upgrades]
+00001F99 00000007
+
+[Unlock Weapon In Store]
+00001F98 00000001
+
+; --- Nefarious ---
+
+[Max Bolts]
+20000F30 05F5E0FF
+20000F34 05F5E0FF
+
+[Have All Weapons In Hand]
+42000F48 00000006
+40100004 00000001
+
+[Unlock All Gadgets]
+00000CC8 00000001
+00000CE4 00000001
+00000D00 00000001
+
+; --- Weapons ---
+
+; --- Arc Lasher ---
+
+[Max Ammo]
+20000D58 41F00000
+20000D64 41F00000
+
+[Have All Upgrades]
+00000D71 00000007
+
+[Unlock Weapon In Store]
+00000D70 00000001
+
+; --- Blizer ---
+
+[Max Ammo]
+20000E00 42100000
+20000E0C 42100000
+
+[Have All Upgrades]
+00000E19 00000007
+
+[Unlock Weapon In Store]
+00000E18 00000001
+
+; --- Combuster ---
+
+[Max Ammo]
+20000D04 43160000
+20000D10 43160000
+
+[Have All Upgrades]
+00000D1D 00000007
+
+[Unlock Weapon In Store]
+00000D1C 00000001
+
+; --- Critter Strike ---
+
+[Max Ammo]
+20000E38 42700000
+20000E44 42700000
+
+[Have All Upgrades]
+00000E51 00000007
+
+[Unlock Weapon In Store]
+00000E50 00000001
+
+; --- Darkstar Fission Tether ---
+
+[Max Ammo]
+20000DE4 42700000
+20000DF0 42700000
+
+[Have All Upgrades]
+00000DFD 00000007
+
+[Unlock Weapon In Store]
+00000DFC 00000001
+
+; --- Dopplebanger ---
+
+[Max Ammo]
+20000E54 41000000
+20000E60 41000000
+
+[Have All Upgrades]
+00000E6D 00000007
+
+[Unlock Weapon In Store]
+00000E6C 00000001
+
+; --- Mr. Zurkon ---
+
+[Max Ammo]
+20000D74 40000000
+20000D80 40000000
+
+[Have All Upgrades]
+00000D8D 00000007
+
+[Unlock Weapon In Store]
+00000D8C 00000001
+
+; --- Omegatech Frost Cannon ---
+
+[Max Ammo]
+20000DC8 41F00000
+20000DD4 41F00000
+
+[Have All Upgrades]
+00000DE1 00000007
+
+[Unlock Weapon In Store]
+00000DE0 00000001
+
+; --- Plasmabomb Launcher ---
+
+[Max Ammo]
+20000DAC 41F00000
+20000DB8 41F00000
+
+[Have All Upgrades]
+00000DC5 00000007
+
+[Unlock Weapon In Store]
+00000DC4 00000001
+
+; --- Pyro Blaster ---
+
+[Max Ammo]
+20000D20 42700000
+20000D2C 42700000
+
+[Have All Upgrades]
+00000D39 00000007
+
+[Unlock Weapon In Store]
+00000D38 00000001
+
+; --- Ryno ---
+
+[Max Ammo]
+20000E1C 43160000
+20000E28 43160000
+
+[Have All Upgrades]
+00000E35 00000007
+
+[Unlock Weapon In Store]
+00000E34 00000001
+
+; --- Thundersmack ---
+
+[Max Ammo]
+20000D3C 41A00000
+20000D48 41A00000
+
+[Have All Upgrades]
+00000D55 00000007
+
+[Unlock Weapon In Store]
+00000D54 00000001
+
+; --- Warmonger ---
+
+[Max Ammo]
+20000D90 41200000
+20000D9C 41200000
+
+[Have All Upgrades]
+00000DA9 00000007
+
+[Unlock Weapon In Store]
+00000DA8 00000001

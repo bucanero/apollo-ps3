@@ -1,0 +1,9 @@
+;BLES01395
+;Blades of Time
+;From chaoszage
+
+:PROFILE.BLK
+
+[Schoolgirl costume]
+search "hero_model_number"
+write next (20):"4"

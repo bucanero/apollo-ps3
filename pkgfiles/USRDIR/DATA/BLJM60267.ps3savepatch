@@ -1,0 +1,221 @@
+;BLJM60267
+;Fight Night Champion
+;From zeick & unostar
+ 
+:BLJM6026702*/SYS-DATA
+
+[Group:Legacy Mode]
+
+[Group:Legacy Mode\Created Boxer]
+
+[Money $9999999]
+write at 0x1D0DD8:0098967F
+
+[XP 99999]
+write at 0x1D0D48:0001869F
+
+[Strength 100]
+write at 0x1D0C28:00000064
+
+[Speed 100]
+write at 0x1D0C2C:00000064
+
+[Endurance 100]
+write at 0x1D0C30:00000064
+
+[Conditioning 100]
+write at 0x1D0C34:00000064
+
+[Toughness 100]
+write at 0x1D0C38:00000064
+
+[Reflexes 100]
+write at 0x1D0C3C:00000064
+
+[Cuts 100]
+write at 0x1D0C40:00000064
+
+[Swelling 100]
+write at 0x1D0C44:00000064
+
+[Group:Legacy Mode\Imported Boxer]
+
+[Money $9999999]
+write at 0x5f1e90:0098967F
+
+[XP 99999]
+write at 0x5f1e00:0001869F
+
+[Strength 100]
+write at 0x5F1CE0:00000064
+
+[Speed 100]
+write at 0x5F1CE4:00000064
+
+[Endurance 100]
+write at 0x5F1CE8:00000064
+
+[Conditioning 100]
+write at 0x5F1CEC:00000064
+
+[Toughness 100]
+write at 0x5F1CF0:00000064
+
+[Reflexes 100]
+write at 0x5F1CF4:00000064
+
+[Cuts 100]
+write at 0x5F1CF8:00000064
+
+[Swelling 100]
+write at 0x5F1CFC:00000064
+
+[Group:Legacy Mode\Max Skills]
+
+[Jab Head 20]
+write at 0x1D0BE4:00000014
+
+[Straight Head 20]
+write at 0x1D0BE8:00000014
+
+[Jab Body 20]
+write at 0x1D0BEC:00000014
+
+[Straight Body 20]
+write at 0x1D0BF0:00000014
+
+[Left Hook Head 20]
+write at 0x1D0BF4:00000014
+
+[Right Hook Head 20]
+write at 0x1D0BF8:00000014
+
+[Left Uppercut Head 20]
+write at 0x1D0BFC:00000014
+
+[Right Uppercut Head 20]
+write at 0x1D0C00:00000014
+
+[Left Hook Body 20]
+write at 0x1D0C04:00000014
+
+[Right Hook Body 20]
+write at 0x1D0C08:00000014
+
+[Left Uppercut Body 20]
+write at 0x1D0C0C:00000014
+
+[Right Uppercut Body 20]
+write at 0x1D0C10:00000014
+
+[Combinations 20]
+write at 0x1D0C14:00000014
+
+[Blocking 20]
+write at 0x1D0C18:00000014
+
+[Head Movement 20]
+write at 0x1D0C1C:00000014
+
+[Heart 20]
+write at 0x1D0C20:00000014
+
+[Chin 20]
+write at 0x1D0C24:00000014
+
+[Group:Legacy Mode\Checksum]
+
+[default:Update CRC32 (required)]
+set range:0x1C,0x81B33B
+set [hash]:crc32
+write at 0x10:[hash]
+
+:BLJM6026706*/SYS-DATA
+
+[Group:Online Boxer]
+
+[Group:Online Boxer\Max Skills]
+
+[Jab Head 20]
+write at 0x1DC:00000014
+
+[Straight Head 20]
+write at 0x1E0:00000014
+
+[Jab Body 20]
+write at 0x1E4:00000014
+
+[Straight Body 20]
+write at 0x1E8:00000014
+
+[Left Hook Head 20]
+write at 0x1EC:00000014
+
+[Right Hook Head 20]
+write at 0x1F0:00000014
+
+[Left Uppercut Head 20]
+write at 0x1F4:00000014
+
+[Right Uppercut Head 20]
+write at 0x1F8:00000014
+
+[Left Hook Body 20]
+write at 0x1FC:00000014
+
+[Right Hook Body 20]
+write at 0x200:00000014
+
+[Left Uppercut Body 20]
+write at 0x204:00000014
+
+[Right Uppercut Body 20]
+write at 0x208:00000014
+
+[Combinations 20]
+write at 0x20C:00000014
+
+[Blocking 20]
+write at 0x210:00000014
+
+[Head Movement 20]
+write at 0x214:00000014
+
+[Heart 20]
+write at 0x218:00000014
+
+[Chin 20]
+write at 0x21C:00000014
+
+[Group:Online Boxer\Physical]
+
+[Strength 100]
+write at 0x220:00000064
+
+[Speed 100]
+write at 0x224:00000064
+
+[Endurance 100]
+write at 0x228:00000064
+
+[Conditioning 100]
+write at 0x22C:00000064
+
+[Toughness 100]
+write at 0x230:00000064
+
+[Reflexes 100]
+write at 0x234:00000064
+
+[Cuts 100]
+write at 0x238:00000064
+
+[Swelling 100]
+write at 0x23C:00000064
+
+[Group:Online Boxer\Checksum]
+
+[default:Update CRC32 (required)]
+set range:0x1C,0x81B33B
+set [hash]:crc32
+write at 0x10:[hash]

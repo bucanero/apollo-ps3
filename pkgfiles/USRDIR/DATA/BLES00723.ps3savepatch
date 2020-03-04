@@ -1,0 +1,43 @@
+;BLES00723
+;Dark Void
+;From zeick
+
+:PROFILE.DVP
+
+[group: 999999 Points]
+Decompress PROFILE.DVP
+:BLES00723_PROFILE\~extracted\00000020.dat
+[Apply cheat]
+write at 0x0000004C:0x000F423F
+:BLES00723_PROFILE\PROFILE.DVP
+[Fix Compression]
+delete at 0x30:0x4ff
+[Compress PROFILE.DVP]
+Compress PROFILE.DVP,-w 15
+
+
+Group: Update Checksums (Required)
+
+:BLES00723_PROFILE\PROFILE.DVP
+
+[Update SHA1 for PROFILE.DVP (Required)]
+set pointer:eof+1
+set range:0x00001C,pointer
+set [hash]:SHA1
+write at 0x000008:[hash]
+
+[Update CRC32Big for PROFILE.DVP (Required)]
+set pointer:eof+1
+set range:0x000008,pointer
+set [hash]:CRC32Big
+write at 0x000004:[hash]
+
+
+:BLES00723_SAVE_AUTOSAVE\CHKPT.SAV
+
+[Update CRC32Big for CHKPT.SAV (Required)]
+;set range:0x000008,0x009743
+set pointer:eof+1
+set range:0x000008,pointer
+set [hash]:CRC32Big
+write at 0x000004:[hash]

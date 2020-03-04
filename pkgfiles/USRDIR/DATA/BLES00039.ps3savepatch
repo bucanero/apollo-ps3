@@ -1,0 +1,8 @@
+; Armored Core 4
+; BLES00039
+;From Game Genie For PS3
+
+:BLES00039GAMEDAT*\PDATA.DAT
+
+[Max Money]
+20000044 3B9AC9FF

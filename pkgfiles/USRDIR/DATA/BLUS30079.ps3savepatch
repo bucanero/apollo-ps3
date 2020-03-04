@@ -1,0 +1,13 @@
+; BLUS30079
+; LEGO® Star Wars: The Complete Saga
+
+:SAVEDATA.DAT
+
+[Update DWADD for SAVEDATA.DAT(Required)]
+set pointer:EOF-4
+set [csum]:0x5C0999
+;set [csum]:dwadd(0x000000,0x007E4B)
+set [csum]:dwadd(0x000000,pointer)
+;write at 0x0x007E4C:[csum]
+set pointer:EOF-3
+write next 0:[csum]

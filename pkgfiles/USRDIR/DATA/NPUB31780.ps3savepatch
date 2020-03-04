@@ -1,0 +1,22 @@
+; NPUB31780
+; NASCAR '15: VICTORY EDITION
+
+
+:SYS-DATA
+
+[Update ADD for SYS-DATA (Required)]
+set [csum]:0
+;set [csum]:add(0x00000C,0x07FFFF)
+set pointer:eof+1
+set [csum]:add(0x00000C,pointer)
+write at 0x000008:[csum]
+
+:SYS-TU1.001
+
+[Update ADD for SYS-TU1.001 (Required)]
+set [csum]:0
+;set [csum]:add(0x00000C,0x07FFFF)
+set pointer:eof+1
+set [csum]:add(0x00000C,pointer)
+write at 0x000008:[csum]
+

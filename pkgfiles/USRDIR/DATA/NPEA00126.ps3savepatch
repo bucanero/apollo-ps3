@@ -1,0 +1,12 @@
+; NPEA00126
+; Zuma
+
+; by chaoszage
+
+:USER.DAT
+
+[Max Lives]
+search "LVL"
+write next (-158):63
+
+

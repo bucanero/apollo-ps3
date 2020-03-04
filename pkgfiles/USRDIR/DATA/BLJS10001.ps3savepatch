@@ -1,0 +1,12 @@
+;BLJS10001
+;Ridge Racer 7
+; From savedata.jp
+
+:GAME
+
+[CR9999999]
+20000285 7F969800
+
+;I leave it here,please report if you know max value for FP :)
+[FP]
+20000289 xxxx0000

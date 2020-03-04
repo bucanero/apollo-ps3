@@ -1,0 +1,13 @@
+; BLES01796
+; Farming Simulator 2013
+; From aldostools
+
+
+:META.BIN
+
+;requires BSD 4.1.2 or higher
+[money]
+search "money="
+set pointer:pointer+7
+delete next (0):until 0x22
+insert next (0):3939393939393939

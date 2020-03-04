@@ -1,0 +1,15 @@
+;NPEB01238
+;Urban Trial Freestyle (PSN)
+;From SHAkA
+
+:SYS-DATA
+
+[MAX CASH]
+write at 0x000002A3:0x1869F069
+
+[Update DWADD for SYS-DATA (Required)]
+set [csum]:0
+;set [csum]:dwadd(0x000078,0x0E7FFF)
+set pointer:eof+1
+set [csum]:dwadd(0x000078,pointer)
+write at 0x000034:[csum]

@@ -1,0 +1,78 @@
+; BLUS31432
+; Risen 3 - Titan Lords (Disc)
+
+; BSD cheat version by chaoszage
+
+
+
+[read me]
+[Open BSD and turn on "Compression Check"]
+[Double click on savegame.sav and a window will pop up]
+[Right click on 00000008.gar and Click "Apply Cheats"]
+[Apply any cheats you want.]
+[Close the extracted window and type -w -15 to recompress the save.]
+[wait a while then update partial -> encrypt -> verify pfd as usual. ]
+
+
+:~extracted\00000008.gar
+
+[Max Melee]
+search "Player":2
+write next 75:0x64
+
+[Max Ranged]
+search "Player":2
+write next 81:0x64
+
+[Max Cunning]
+search "Player":2
+write next 8D:0x64
+
+[Max Influence]
+search "Player":2
+write next 99:0x64
+
+[Max Toughness]
+search "Player":2
+write next A5:0x64
+
+[Max Dexterity]
+search "Player":2
+write next B1:0x64
+
+[Max Magic]
+search "Player":2
+write next BD:0x64
+
+[Max Spirit]
+search "Player":2
+write next C9:0x64
+
+[Max All Stats]
+search "Player":2
+write next 75:0x64
+write next 81:0x64
+write next 8D:0x64
+write next 99:0x64
+write next A5:0x64
+write next B1:0x64
+write next BD:0x64
+write next C9:0x64
+
+[Max Health]
+search "Player":2
+write next D2:0x77359400
+search "Player":2
+write next DE:0x77359400
+
+[Max Glory]
+search "Player":2
+write next EA:0x77359400
+
+[Max Souls]
+search "Player":2
+write next F9:0x64
+
+
+
+

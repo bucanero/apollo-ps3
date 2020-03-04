@@ -1,0 +1,17 @@
+; NPEB01297
+; Strider
+
+:SAVEGAME
+
+[Update CRC32 for SAVEGAME (Required)]
+set range:0x000004,0x077FF
+set [hash]:CRC32
+write at 0x000000:[hash]
+set [hash]:0
+;set range:0x007804,0x0FFFFF
+set pointer:eof+1
+set range:0x007804,pointer
+set [hash]:CRC32
+write at 0x007800:[hash]
+
+

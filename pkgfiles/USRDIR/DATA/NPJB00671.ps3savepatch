@@ -1,0 +1,14 @@
+; NPJB00671
+; DRAGONBALL XENOVERSE
+
+:SDATA000.DAT
+
+[Max Money Zeni ]
+write next 0x28:0x7FFFFFFF
+
+[Update  md5 hashes (required)]
+set pointer:read(0x20)
+set pointer:pointer -0x8
+set range:0x8, pointer
+set [md5]:md5
+write at 0x10:[md5]

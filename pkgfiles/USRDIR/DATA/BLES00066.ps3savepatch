@@ -1,0 +1,11 @@
+;BLES00066
+;Pirates of the Caribbean: At World's End
+
+:SAVE.DAT
+
+[Update CRC32 (Required)]
+;set range:0x000004,0x184F17
+set pointer:eof+1
+set range:0x000004,pointer
+set [hash]:CRC32
+write at 0x000000:[hash]

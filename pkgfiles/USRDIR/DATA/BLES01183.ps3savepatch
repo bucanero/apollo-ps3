@@ -1,0 +1,87 @@
+;BLES01183
+;Warriors: Legends of Troy
+;From chaoszage
+
+:PROFILE
+
+[Max Kleos]
+search 0x420067006D:1
+search next 0x290049007400:1
+write next (-11):0x05F5E0FF
+
+[All Stages in All Difficulties Cleared - GAME MUST BE COMPLETED ONCE]
+; Complete any stage in any difficulty will unlock Helen art 3 and All Cheats
+search 0x4700300031  ;stage 1 Landing
+write next 1D:0x01010101
+search 0x4700300033  ;stage 2 Perimeter
+write next 1B:0x01010101
+search 0x5400300033  ;stage 3 StormFont
+write next 1D:0x01010101
+search 0x5400300036  ;stage 4 Honour
+write next 15:0x01010101
+search 0x4700300035  ;stage 5 Conquest
+write next 19:0x01010101
+search 0x5400300034  ;stage 6 Blood
+write next 13:0x01010101
+search 0x4700300036  ;stage 7 Renown
+write next 15:0x01010101
+search 0x4700300037  ;stage 8 Plague
+write next 1B:0x01010101
+search 0x5400300038  ;stage 9 Champion
+write next 19:0x01010101
+search 0x4700300038  ;stage 10 Nightfall
+write next 1B:0x01010101
+search 0x5400300039  ;stage 11 Tide
+write next 25:0x01010101
+search 0x4700300039  ;stage 12 Desperation
+write next 1F:0x01010101
+search 0x5400310030  ;stage 12 Breach
+write next 19:0x01010101
+search 0x4700310030  ;stage 13 Glory
+write next 13:0x01010101
+search 0x5400310031  ;stage 14 Purification
+write next 21:0x01010101
+search 0x4700310031  ;stage 15 Wrath
+write next 13:0x01010101
+search 0x5400310034  ;stage 16 Justice
+write next 17:0x01010101
+search 0x5400310035  ;stage 17 Redemption
+write next 1D:0x01010101
+search 0x4700310035  ;stage 18 Madness
+write next 17:0x01010101
+search 0x4700310036  ;stage 19 Fall
+write next 17:0x01010101
+search 0x5400310036  ;stage 20 Survival
+write next 19:0x01010101
+
+:SCENARIO
+[SCENARIO: Update CRC32 (Required)]
+set pointer:eof-3
+set range:0x000000,pointer
+set [hash]:CRC32
+set pointer:eof-3
+write next(0):[hash]
+
+:PROFILE
+[PROFILE: Update CRC32 (Required)]
+set pointer:eof-3
+set range:0x000000,pointer
+set [hash]:CRC32
+set pointer:eof-3
+write next(0):[hash]
+
+:SCENARIO
+[SCENARIO: Update CRC32 (Required)]
+set pointer:eof-3
+set range:0x000000,pointer
+set [hash]:CRC32
+set pointer:eof-3
+write next(0):[hash]
+
+:SETTINGS
+[SETTINGS: Update CRC32 (Required)]
+set pointer:eof-3
+set range:0x000000,pointer
+set [hash]:CRC32
+set pointer:eof-3
+write next(0):[hash]

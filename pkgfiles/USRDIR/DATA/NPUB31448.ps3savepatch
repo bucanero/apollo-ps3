@@ -1,0 +1,63 @@
+; NPUB31448
+; FEZ
+
+;From aldotools
+:SAVE.DAT
+
+Group: Update CRC32 Checksums
+
+[DEFAULT:Update Settings for SAVE.DAT]
+search "Settings"
+set [begin]:pointer+0x20
+set [size]:read([begin],4)
+set [end_of_range]:[begin]+[size]-1
+set [begin]:[begin]+4
+set range:[begin],[end_of_range]
+set [hash]:CRC32
+set pointer:[end_of_range]+1
+write next (0):[hash]
+
+[DEFAULT:Update SaveSlot0 for SAVE.DAT]
+search "SaveSlot0"
+set [begin]:pointer+0x20
+set [size]:read([begin],4)
+set [end_of_range]:[begin]+[size]-1
+set [begin]:[begin]+4
+set range:[begin],[end_of_range]
+set [hash]:CRC32
+set pointer:[end_of_range]+1
+write next (0):[hash]
+
+[DEFAULT:Update SaveSlot1 for SAVE.DAT]
+search "SaveSlot1"
+set [begin]:pointer+0x20
+set [size]:read([begin],4)
+set [end_of_range]:[begin]+[size]-1
+set [begin]:[begin]+4
+set range:[begin],[end_of_range]
+set [hash]:CRC32
+set pointer:[end_of_range]+1
+write next (0):[hash]
+
+[DEFAULT:Update SaveSlot2 for SAVE.DAT]
+search "SaveSlot2"
+set [begin]:pointer+0x20
+set [size]:read([begin],4)
+set [end_of_range]:[begin]+[size]-1
+set [begin]:[begin]+4
+set range:[begin],[end_of_range]
+set [hash]:CRC32
+set pointer:[end_of_range]+1
+write next (0):[hash]
+
+[DEFAULT:Update SaveSlot3 for SAVE.DAT]
+search "SaveSlot3"
+set [begin]:pointer+0x20
+set [size]:read([begin],4)
+set [end_of_range]:[begin]+[size]-1
+set [begin]:[begin]+4
+set range:[begin],[end_of_range]
+set [hash]:CRC32
+set pointer:[end_of_range]+1
+write next (0):[hash]
+

@@ -1,0 +1,12 @@
+;BLES00660
+;Vancouver 2010 - The Official Video Game of the Olympic Winter Games
+
+
+:SAVE.BIN
+
+[Update CRC32 for SAVE.BIN (Required)]
+;set range:0x10,0x000407
+set pointer:eof+1
+set range:0x10,pointer
+set [hash]:CRC32
+write at 0x000008:[hash]

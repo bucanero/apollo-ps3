@@ -1,0 +1,23 @@
+;NPEB00110
+;Crystal Defenders (PSN)
+;From SHAkA
+
+:DATA-SYS
+
+[Wave 1-999 money]
+write at 0x000003DE:0x03E7
+
+[999 crystal]
+write at 0x000003E2:0x03E7
+
+[Wave 2-999 money]
+write at 0x00000FFA:0x03E7
+
+[999 crystal]
+write at 0x00000FFE:0x03E7
+
+[Wave 3-999 money]
+write at 0x00001C16:0x03E7
+
+[999 crystal]
+write at 0x00001C1A:0x03E7

@@ -1,0 +1,58 @@
+;BLUS30853
+;Mass Effect™ 3
+;From zeick
+
+:QUICK
+:SAVE*
+
+[Renegade]
+search 0x000027B0
+write next (4):00000063
+
+[Paragon]
+search 0x000027AF
+write next (4):00000063
+
+[Reputation]
+search 0x0000288C
+write next (4):00000063
+
+[Medi Gel 9999999]
+search "hench_anderson"
+write next (-64):0098967F
+
+[MONEY 9999999]
+search "hench_anderson"
+write next (-68):0098967F
+
+:EXPORT
+[EXPORT - Update CRC32big (required)]
+set pointer:eof-3
+set range:0x0, pointer
+set [crc]:crc32big
+set pointer:eof-3
+write next (0):[crc]
+
+:QUICK
+[QUICK - Update CRC32big (required)]
+set pointer:eof-3
+set range:0x0, pointer
+set [crc]:crc32big
+set pointer:eof-3
+write next (0):[crc]
+
+:LEGEND
+[LEGEND - Update CRC32big (required)]
+set pointer:eof-3
+set range:0x0, pointer
+set [crc]:crc32big
+set pointer:eof-3
+write next (0):[crc]
+
+:SAVE*
+[SAVE - Update CRC32big (required)]
+set pointer:eof-3
+set range:0x0, pointer
+set [crc]:crc32big
+set pointer:eof-3
+write next (0):[crc]

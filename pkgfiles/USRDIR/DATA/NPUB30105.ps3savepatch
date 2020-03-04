@@ -1,0 +1,59 @@
+; NPUB30105
+; Söldner-X 2: Final Prototype
+;From boogersculptor & aldostools
+
+:DATAA
+
+[STAGE  1 TO 7 KEY JUST PICK THE FISRT TO TROPHY]
+200010E4 00010101 
+200010E8 01010101
+200010EC 01010101
+200010F0 01010101
+200010F4 01010101
+200010F8 01010101
+200010FC 01010101
+20001100 01010101
+20001104 01010100
+
+[30 continues ]
+20001139 98967F00
+
+;[max rings]
+;20001146 012FCF00
+
+[max chain levels]
+2000113C 000F423F 
+
+
+
+[All 50 Collected Keys]
+write at 0x10E4:repeat(0x32,0x01)
+
+[Lock first Collected Key to allow Trophy when unlocked]
+write at 0x10E4:00
+
+[Collected Extras]
+write at 0x1136:07FB
+
+[Enemies Killed]
+write at 0x113A:38D7
+
+[Chain Levels]
+write at 0x113E:020E
+
+[Collected Chain Rings]
+write at 0x1146:9329
+
+[Unlock 30 Challenges (w/DLC)]
+write at 0x1194:repeat(0x1E,00000000000100000000000000000000)
+
+
+
+:file
+
+
+
+
+
+
+

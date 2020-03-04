@@ -1,0 +1,13 @@
+; BLUS30997
+; Dragon Age™: Inquisition
+; From gold972
+
+
+:USR-DATA
+
+[Update Small CRC32 for USR-DATA (Required)]
+;set range:0x20,0x02ABFA
+set pointer:eof -20
+set range:0x20,pointer
+set [hash]: Small CRC32
+write at 0x1C:[hash]

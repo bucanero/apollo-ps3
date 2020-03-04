@@ -1,0 +1,11 @@
+;BLES00475
+;SEGA Mega Drive Ultimate Collection
+
+:PAYLOAD
+
+[Update CRC32 (Required)]
+;set range:0x000004,0x0B8481
+set pointer:eof+1
+set range:0x000004,pointer
+set [hash]:CRC32
+write at 0x000000:[hash]

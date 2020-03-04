@@ -1,0 +1,20 @@
+; LEGO Batman: The Videogame
+; BLES00332
+;From Game Genie For PS3
+
+:SAVEDATA.DAT
+
+[Max Studs]
+80010008 45610000
+000186A0 00000000
+28000094 000000E8
+28000098 D4A50FFF
+
+[Update DWADD for SAVEDATA.DAT(Required)]
+set pointer:EOF-4
+set [csum]:0x5C0999
+;set [csum]:dwadd(0x000000,0x007E1B)
+set [csum]:dwadd(0x000000,pointer)
+;write at 0x0x007E1C:[csum]
+set pointer:EOF-3
+write next 0:[csum]

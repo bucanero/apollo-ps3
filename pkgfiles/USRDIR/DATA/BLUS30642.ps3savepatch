@@ -1,0 +1,9 @@
+;BLUS30642
+;Captain America: Super Soldier
+
+:SAVE1.SAV
+
+[Update CRC32 for SAVE1.SAV (Required)]
+set range:0x000008,0x005C88
+set [hash]:CRC32
+write at 0x000004:[hash]

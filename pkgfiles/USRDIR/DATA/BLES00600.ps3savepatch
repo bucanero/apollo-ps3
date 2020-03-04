@@ -1,0 +1,12 @@
+; BLES00600
+; Winter Sports 3: The Great Tournament AKA Winter Sports 2010
+
+:SAVEGAME.DAT
+
+[Update CRC32 for SAVEGAME.DAT(Required)]
+;set range:0x000004,0x00FBFF
+set pointer:eof+1
+set range:0x000004,pointer
+set [hash]:CRC32
+set [hash]:[hash]-1
+write at 0x000000:[hash]

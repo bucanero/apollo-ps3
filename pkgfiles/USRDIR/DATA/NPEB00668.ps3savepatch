@@ -1,0 +1,15 @@
+; NPEB00668
+; Trine™ 2
+
+:SAVEDATA.BIN
+
+[99 Skill Points]
+write at 0x6A:0x63
+
+[Update MD5 for SAVEDATA.BIN (Required)]
+;set range:0x0003E0,0x010535
+set pointer:eof+1
+set range:0x0003E0,pointer
+set [hash]:MD5
+write at 0x0003D0:[hash]
+

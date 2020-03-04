@@ -1,0 +1,14 @@
+; Valkyria Chronicles
+; BLUS30196
+;From Game Genie For PS3
+
+:BLUS30196-PLAY-*\PLAYDATA
+
+[Max EXP]
+2005DE08 05F5E0FF
+
+[Max DCT]
+20094DEC 05F5E0FF
+
+[Reset Game Save Time]
+2000002C 00000000

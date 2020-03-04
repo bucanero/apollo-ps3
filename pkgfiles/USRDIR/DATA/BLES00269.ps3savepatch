@@ -1,0 +1,72 @@
+[INFO: Same patches may not be supported by BSD yet]
+; Prototype
+; BLES00269
+;From Game Genie For PS3
+
+:BLES00269-DATA-*\CRC.BIN
+; type: hidden
+
+:BLES00269-DATA-*\USERDATA.BIN
+; dependency: CRC.BIN
+
+[Max Current Evolution Points]
+20000C24 0098967F
+200012A4 0098967F
+
+[Max Total Evolution Points Collected]
+20001BA0 0098967F
+
+[Max Hydras Killed]
+200007E4 000F423F
+
+[No Hydras Killed]
+200007E4 00000000
+
+[Max Alerts Caused]
+2000083C 000F423F
+
+[No Alerts Caused]
+2000083C 00000000
+
+[Max Deaths]
+20000968 000F423F
+
+[No Deaths]
+20000968 00000000
+
+[Max Hunters Killed]
+20001628 000F423F
+
+[No Hunters Killed]
+20001628 00000000
+
+[Max Infected Water Towers Destroyed]
+20001664 000F423F
+
+[No Infected Water Towers Destroyed]
+20001664 00000000
+
+[Max Infected Hives Destroyed]
+200022A0 000F423F
+
+[No Infected Hives Destroyed]
+200022A0 00000000
+
+[Max Infected Civilians Killed]
+20002B54 000F423F
+
+[No Infected Civilians Killed]
+20002B54 00000000
+
+[Max Alerts Escaped]
+20002D1C 000F423F
+
+[No Alerts Escaped]
+20002D1C 00000000
+
+[Max Evolved Infected Killed]
+200037B4 000F423F
+
+[No Evolved Infected Killed]
+200037B4 00000000
+

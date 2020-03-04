@@ -1,0 +1,11 @@
+; Sonic Generations
+; BLES01236
+;From Game Genie For PS3
+
+:SYS-DATA
+
+[Max Lives]
+00009FFF 00000063
+
+[Max PT(s)]
+2000A110 0001869F

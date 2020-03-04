@@ -1,0 +1,12 @@
+; Darkstalkers Resurrection
+; BLJM60567
+;From KE-HA
+
+:SYS-DATA
+
+[Lv.20(Max)/Total GP 99990]
+0000046F 00000014
+20000470 00018696
+
+[Carry GP 99990]
+20000474 00018696

@@ -1,0 +1,15 @@
+; NPEB00169
+; Hamilton's Great Adventure
+
+;From aldo tools
+
+:AUTOSAVE.SAV
+
+[Update CRC32 for AUTOSAVE.SAV (Required)]
+;set range:0x000004,0x0002BF
+set pointer:eof+1
+set range:0x000004,pointer
+set [hash]:CRC32
+write at 0x000000:[hash]
+
+

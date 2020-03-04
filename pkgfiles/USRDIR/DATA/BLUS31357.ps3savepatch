@@ -1,0 +1,8 @@
+; Saint Seiya: Brave Soldiers
+;BLUS31357
+;From let_die
+
+:SAVEDATA.DAT
+
+[Max Points]
+write at 0x000000E8:0x0098967F

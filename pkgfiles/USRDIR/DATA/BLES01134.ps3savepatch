@@ -1,0 +1,12 @@
+; BLES01134
+; Bulletstorm
+
+
+:PAYLOAD0
+
+[Update SHA1 for PAYLOAD0 (Required)]
+;set range:0x000014,0x00024F
+set pointer:eof+1
+set range:0x000014,pointer
+set [hash]:SHA1
+write at 0x000000:[hash]

@@ -1,0 +1,11 @@
+;NPUB30251
+;Dungeon Defenders (PSN)
+
+:PAYLOAD
+
+[Update CRC32Big for PAYLOAD (Required)]
+;set range:0x000014,0x009D81
+set pointer:eof+1
+set range:0x000014,pointer
+set [hash]:CRC32Big
+write at 0x000010:[hash]

@@ -1,0 +1,17 @@
+; BLJM55023
+; LOST PLANET 2 [PlayStation®3 the Best]
+
+; By Dark Nacho
+
+:DATA0.DAT
+
+[All Abilities]
+20003A34 FFFFFFFF
+20003A38 FFFFFFFF
+
+[99999999 Credits]
+20003BEC 05F5E0FF
+
+[All Characters to level 99]
+420006FC 05F5E0FF
+40050004 00000000

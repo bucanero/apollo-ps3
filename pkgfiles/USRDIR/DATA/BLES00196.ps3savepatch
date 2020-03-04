@@ -1,0 +1,49 @@
+; Turning Point: Fall Of Liberty
+; BLES00196
+;From Game Genie For PS3
+
+:BLES00196-AUTO-\DEF_CHKP.SAV
+
+; --- Max Ammo ---
+
+; You must have this weapon equipped.
+[Gewehr 47]
+8000000C 436F6E74
+656E742E 47343700
+2800000C 00000032
+28000010 000003E7
+
+; You must have this weapon equipped.
+[Grenades]
+8000000C 656E742E
+4772656E 61646500
+2800000C 00000001
+28000010 00000003
+
+; You must have this weapon equipped.
+[M1 Garand]
+8000000C 65436F6E
+74656E74 2E4D3100
+2800000C 00000008
+28000010 000003E7
+
+; You must have this weapon equipped.
+[MP50]
+8000000C 6F6E7465
+6E742E4D 50353000
+2800000C 00000032
+28000010 000003E7
+
+; You must have this weapon equipped.
+[Thompson Submachine Gun]
+8000000C 6E742E54
+686F6D70 736F6E00
+2800000C 00000032
+28000010 000003E7
+
+[Update SHA1 for PROFILE.BIN (Required)]
+;set range:0x000014,0x000129
+set pointer:eof+1
+set range:0x000014,pointer
+set [hash]:SHA1
+write at 0x000000:[hash]

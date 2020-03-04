@@ -1,0 +1,47 @@
+; BLES01368
+; The Sims 3 Pets
+
+; checksum fixer by chaoszage
+
+Group: Update MD5 Checksum (Required)
+
+:BAKED
+[Get MD5 BAKED (Required)]
+set [MD5_BAKED]:md5
+
+;dependency: BAKED.MD5
+
+:BAKED.MD5
+[Update MD5 on BAKED.MD5 (required)]
+write at 0x0:[MD5_BAKED]
+
+:PERSIST
+
+[Get MD5 PERSIST (Required)]
+set [MD5_PERSIST]:md5
+
+;dependency: PERSIST.MD5
+
+:PERSIST.MD5
+[Update MD5 on PERSIST.MD5 (required)]
+write at 0x0:[MD5_PERSIST]
+
+:SCRIPT
+[Get MD5 SCRIPT (Required)]
+set [MD5_SCRIPT]:md5
+
+;dependency: SCRIPT.MD5
+
+:SCRIPT.MD5
+[Update MD5 on CRIPT.MD5 (required)]
+write at 0x0:[MD5_SCRIPT]
+
+:SIMS3
+[Get MD5 SIMS3 (Required)]
+set [MD5_SIMS3T]:md5
+
+;dependency: SIMS3.MD5
+
+:SIMS3.MD5
+[Update MD5 on SIMS3.MD5 (required)]
+write at 0x0:[MD5_SIMS3]

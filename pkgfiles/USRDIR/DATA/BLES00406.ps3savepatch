@@ -1,0 +1,10 @@
+; BLES00406
+; Quantum of Solace
+
+:SAVEGAME.SVG
+[Update CRC32 for SAVEGAME.SVG (Required)]
+;set range:0x000454,0x08440E
+set pointer:eof+1
+set range:0x000454,pointer
+set [hash]:CRC32
+write at 0x000008:[hash]

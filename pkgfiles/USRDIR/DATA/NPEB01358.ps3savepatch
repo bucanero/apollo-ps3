@@ -1,0 +1,12 @@
+; NPEB01358
+; STEALTH INC. A Clone in the Dark
+
+; By Dark Nacho
+
+:DATA_0.BIN
+
+[255 Skip Points]
+00000007 000000FF
+
+[Unlock All Equipement]
+0000000B 0000000F

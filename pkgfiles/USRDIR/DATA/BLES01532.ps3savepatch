@@ -1,0 +1,272 @@
+[INFO: Same patches may not be supported by BSD yet]
+; Prototype 2
+; BLES01532
+;From Game Genie For PS3
+
+:BLES01532-DATA-*\CRC.BIN
+; type: hidden
+
+:BLES01532-DATA-*\USERDATA.BIN
+; dependency: CRC.BIN
+
+[Max Evolution]
+200017C4 00269AD0
+
+[Unlock Mass]
+00004AC8 0000000F
+
+
+; --- Have Powers ---
+
+; --- Claw ---
+[Level 1]
+00004A99 0000000F
+
+[Level 2]
+00004A98 0000000F
+
+[Level 3/4]
+00004A9E 0000000F
+
+
+; --- Whipfist ---
+[Level 1]
+00004A9D 0000000F
+
+[Level 2]
+00004A9C 0000000F
+
+[Level 3/4]
+00004AA2 0000000F
+
+
+; --- Blade ---
+[Level 1]
+00004AA1 0000000F
+
+[Level 2]
+00004AA0 0000000F
+
+[Level 3/4]
+00004AA6 0000000F
+
+
+; --- Tendrils ---
+[Level 1]
+00004AA5 0000000F
+
+[Level 2]
+00004AA4 0000000F
+
+[Level 3/4]
+00004AAA 0000000F
+
+
+; --- Hammerfist ---
+[Level 1]
+00004AA9 0000000F
+
+[Level 2]
+00004AA8 0000000F
+
+[Level 3/4]
+00004AAE 0000000F
+
+
+; --- Have Skills ---
+
+; --- Helicopters ---
+[Level 1]
+00004AD2 0000000F
+
+[Level 2/3]
+00004AD0 0000000F
+
+[Level 4]
+00004AD7 0000000F
+
+
+; --- Armor ---
+[Level 1]
+00004AD6 0000000F
+
+[Level 2/3]
+00004AD4 0000000F
+
+[Level 4]
+00004ADB 0000000F
+
+
+; --- Rifles ---
+[Level 1]
+00004ADA 0000000F
+
+[Level 2]
+00004AD9 0000000F
+
+[Level 3]
+00004AD8 0000000F
+
+
+; --- Launchers ---
+[Level 1]
+00004ADF 0000000F
+
+[Level 2]
+00004ADE 0000000F
+
+[Level 3]
+00004ADD 0000000F
+
+
+; --- Have Abilities ---
+
+; --- Pack Leader ---
+[Level 1]
+00004AE2 0000000F
+
+[Level 2]
+00004AE1 0000000F
+
+[Level 3/4]
+00004AE7 0000000F
+
+[Level 5]
+00004AE6 0000000F
+
+
+; --- Bio-Bomb ---
+[Level 1]
+00004AE5 0000000F
+
+[Level 2]
+00004AE4 0000000F
+
+[Level 3]
+00004AEB 0000000F
+
+[Level 4]
+00004AEA 0000000F
+
+[Level 5]
+00004AE9 0000000F
+
+
+; --- Shield ---
+[Level 1]
+00004AED 0000000F
+
+[Level 2]
+00004AEC 0000000F
+
+
+; --- Have Mutation ---
+
+; --- Offensive ---
+[Death From Above]
+00004B01 0000000F
+
+[Melee Expert]
+00004B00 0000000F
+
+[Rocket Arm]
+00004B07 0000000F
+
+[Devastatingly Beautiful]
+00004B06 0000000F
+
+[Strike Force]
+00004B05 0000000F
+
+[Good Little Soldier]
+00004B04 0000000F
+
+[Revenge Boost]
+00004B09 0000000F
+
+[Heller's Angels]
+00004B0B 0000000F
+
+[Darwinism]
+00004B0A 0000000F
+
+
+; --- Defensive ---
+[Bulletproof]
+00004B16 0000000F
+
+[Hard Boiled]
+00004B15 0000000F
+
+[Shields Up]
+00004B14 0000000F
+
+[Personal Space]
+00004B1B 0000000F
+
+[Impaler]
+00004B1A 0000000F
+
+[Healthy Appetite]
+00004B19 0000000F
+
+
+; --- Locomotion ---
+[Jumpy]
+00004B0E 0000000F
+
+[Dashing]
+00004B0D 0000000F
+
+[God Speed]
+00004B0C 0000000F
+
+[Cheetah]
+00004B13 0000000F
+
+[Jet Propulsion]
+00004B12 0000000F
+
+[Extra Dashing]
+00004B11 0000000F
+
+
+; --- Predator ---
+[Protein Boost]
+00004B1E 0000000F
+
+[Inconspicuous]
+00004B1D 0000000F
+
+[Hungry Boy]
+00004B1C 0000000F
+
+[Submission Specialist]
+00004B23 0000000F
+
+[Mass-Terful Strikes]
+00004B22 0000000F
+
+[The Big Bang]
+00004B20 0000000F
+
+[Speedy Recovery]
+00004B21 0000000F
+
+
+; --- Power Specialist ---
+[Eventful Horizon]
+00004B25 0000000F
+
+[Jungle Cat]
+00004B24 0000000F
+
+[Go Ballistic]
+00004B2B 0000000F
+
+[Spiked Punch]
+00004B2A 0000000F
+
+[Twisted]
+00004B29 0000000F
+

@@ -1,0 +1,50 @@
+; Deadly Premonition: The Director's Cut
+; BLES01776
+;From bruticus0 (CMP)
+
+:USER.DAT
+
+;From primetime00
+[$100000000]
+100001C8 4CBEBC20
+
+; --- Current Inventory Mods ---
+
+[99 Cheese Wedge lol]
+1000BFD4 00000063
+
+[99 Smokes]
+1000BFA8 00000063 
+
+[99 BullettWorm Bait]
+1000C00C 00000063
+
+[99 KnifeWorm Bait]
+1000C010 00000063
+
+[99 CapsuleWorm Bait]
+1000C014 00000063
+
+[9999 10mm Bulletts]
+1000BF58 0000270F
+
+; --- Tool Chest Inventory Mods ---
+
+[First Aid Small 99]
+1000B984 00000063
+
+[First Aid Medium 99]
+1000B988 00000063
+
+[First Aid Large 99]
+1000B98C 00000063
+
+[Coffee (Milk) 99]
+1000B990 00000063
+
+[Coffee (Black) 99]
+1000B998 00000063
+
+[Root Beer 99]
+1000B99C 00000063
+

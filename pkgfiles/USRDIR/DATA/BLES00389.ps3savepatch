@@ -1,0 +1,13 @@
+;BLES00389
+;Prince of Persia
+
+:187B080C.DE
+
+[Update CRC32 (Required)]
+;set range:0x000000,0x012105
+set pointer:eof-3
+set range:0x000000,pointer
+set [hash]:CRC32
+;write at 0x012106:[hash]
+set pointer:eof-3
+write next (0):[hash]

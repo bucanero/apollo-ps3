@@ -1,0 +1,13 @@
+; Plants Vs Zombies (PSN)
+; NPUA30059
+;From Game Genie For PS3
+
+:USER.DAT
+
+; Use this cheat if you are using v1.01.
+[Max Money]
+20000024 000F423F
+
+; Use this cheat if you are using v1.00 or lower.
+[Max Money]
+20000034 000F423F

@@ -1,0 +1,328 @@
+;BLUS30729
+;Binary Domain
+;From krustytoe
+
+:PRG*.PP
+
+[Max Credits]
+2000093C 05F5E0FF
+
+[MAX Trust (all characters)]
+420009BC 00009C40
+40080030 00000000
+
+[All NanoMachines]
+20000888 FFFFFFFF
+2000088C FFFFFFFF
+20000890 FFFFFFFF
+
+Group: Dan PRIMARY WEAPON UPGRADES
+[Weapon Ammo Round Per Clip]
+00000C04 00000005
+
+[Weapon Power]
+00000C05 00000007
+
+[Weapon Range]
+00000C06 00000005
+
+[Weapon Accuracy]
+00000C07 00000005
+
+[Weapon Firerate]
+00000C08 00000005
+
+[Burst]
+00000C09 00000004
+
+[Charge]
+00000C0A 00000005
+
+Group: Big Bo WEAPON UPGRADES
+[Weapon Ammo Round Per Clip]
+00000C14 00000005
+
+[Weapon Power]
+00000C15 00000005
+
+[Weapon Range]
+00000C16 00000003
+
+[Weapon Accuracy]
+00000C17 00000003
+
+[Weapon Firerate]
+00000C18 00000003
+
+Group: Charlie WEAPON UPGRADES
+[Weapon Ammo Round Per Clip]
+00000C24 00000005
+
+[Weapon Power]
+00000C25 00000003
+
+[Weapon Range]
+00000C26 00000003
+
+[Weapon Accuracy]
+00000C27 00000003
+
+[Weapon Firerate]
+00000C28 00000005
+
+Group: Rachel WEAPON UPGRADES
+[Weapon Ammo Round Per Clip]
+00000C34 00000005
+
+[Weapon Power]
+00000C35 00000005
+
+[Weapon Range]
+00000C36 00000003
+
+[Weapon Accuracy]
+00000C37 00000003
+
+[Weapon Firerate]
+00000C38 00000003
+
+Group: Faye WEAPON UPGRADES
+[Weapon Ammo Round Per Clip]
+00000C44 00000003
+
+[Weapon Power]
+00000C45 00000005
+
+[Weapon Range]
+00000C46 00000003
+
+[Weapon Accuracy]
+00000C47 00000005
+
+[Weapon Firerate]
+00000C48 00000003
+
+Group: Cain WEAPON UPGRADES
+[Weapon Ammo Round Per Clip]
+00000C54 00000005
+
+[Weapon Power]
+00000C55 00000005
+
+[Weapon Range]
+00000C56 00000003
+
+[Weapon Accuracy]
+00000C57 00000003
+
+[Weapon Firerate]
+00000C58 00000003
+
+Group: Shindo WEAPON UPGRADES
+[Weapon Ammo Round Per Clip]
+00000C64 00000005
+
+[Weapon Power]
+00000C65 00000005
+
+[Weapon Range]
+00000C66 00000003
+
+[Weapon Accuracy]
+00000C67 00000003
+
+[Weapon Firerate]
+00000C68 00000003
+
+Group: Update CRC32 Checksum (Required)
+
+:SYSDATA.CFG
+
+[Update CRC32 for SYSDATA.CFG (Required)]
+;set range:0x10,0x001AFF
+set pointer:eof+1
+set range:0x10,pointer
+set [hash]:CRC32
+write at 0x000008:[hash]
+
+:PRG00.PP
+
+[Update CRC32 for PRG00.PP (Required)]
+;set range:0x10,0x0316C7
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]
+
+:PRG01.PP
+
+[Update CRC32 for PRG01.PP (Required)]
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]
+
+:PRG02.PP
+
+[Update CRC32 for PRG02.PP (Required)]
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]
+
+:PRG03.PP
+
+[Update CRC32 for PRG03.PP (Required)]
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]
+
+:PRG04.PP
+
+[Update CRC32 for PRG04.PP (Required)]
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]
+
+:PRG05.PP
+
+[Update CRC32 for PRG05.PP (Required)]
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]
+
+:PRG06.PP
+
+[Update CRC32 for PRG06.PP (Required)]
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]
+
+:PRG07.PP
+
+[Update CRC32 for PRG07.PP (Required)]
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]
+
+:PRG08.PP
+
+[Update CRC32 for PRG08.PP (Required)]
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]
+
+:PRG09.PP
+
+[Update CRC32 for PRG09.PP (Required)]
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]
+
+:PRG10.PP
+
+[Update CRC32 for PRG10.PP (Required)]
+;set range:0x10,0x0316C7
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]
+
+:PRG11.PP
+
+[Update CRC32 for PRG11.PP (Required)]
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]
+
+:PRG12.PP
+
+[Update CRC32 for PRG12.PP (Required)]
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]
+
+:PRG13.PP
+
+[Update CRC32 for PRG13.PP (Required)]
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]
+
+:PRG14.PP
+
+[Update CRC32 for PRG14.PP (Required)]
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]
+
+:PRG15.PP
+
+[Update CRC32 for PRG15.PP (Required)]
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]
+
+:PRG16.PP
+
+[Update CRC32 for PRG16.PP (Required)]
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]
+
+:PRG17.PP
+
+[Update CRC32 for PRG17.PP (Required)]
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]
+
+:PRG18.PP
+
+[Update CRC32 for PRG18.PP (Required)]
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]
+
+:PRG19.PP
+
+[Update CRC32 for PRG19.PP (Required)]
+set [endrange]:read(10,4)
+set [endrange]:[endrange]-1
+set range:0x10,[endrange]
+set [hash]:CRC32
+write at 0x8:[hash]

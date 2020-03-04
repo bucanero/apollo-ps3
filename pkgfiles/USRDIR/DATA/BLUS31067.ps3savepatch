@@ -1,0 +1,26 @@
+; Rise Of The Guardians
+; BLUS31067
+;From Game Genie For PS3
+
+:BLUS31067-ROTG*\SYS-DATA
+
+[Lots Of Crystals]
+10000059 00000F42
+0000005B 0000003F
+
+[Unlock Gallery]
+2000000D 1FFFFFFF
+
+; --- Game Stats ---
+
+[Shadow Enemies Destroyed]
+20000011 3B9AC9FF
+
+[Total Crystals Spent]
+20000019 3B9AC9FF
+
+[Total Crystals Collected]
+20000015 3B9AC9FF
+
+[Highest Combo]
+2000001D 3B9AC9FF

@@ -1,0 +1,40 @@
+; NPUB31595
+; Frozen Synapse Prime
+
+
+:MCCEBVH
+
+[Update CRC32 for MCCEBVH (Required)]
+;set range:0x000018,0x000022
+set pointer:eof+1
+set range:0x000018,pointer
+set [hash]:CRC32
+write at 0x000004:[hash]
+
+:XGQAVNK
+
+[Update CRC32 for XGQAVNK (Required)]
+;set range:0x18,0x000FB8
+set pointer:eof+1
+set range:0x18,pointer
+set [hash]:CRC32
+write at 0x000004:[hash]
+
+:FWDCBXH
+
+[Update CRC32 for FWDCBXH (Required)]
+;set range:0x18,0x0055BF
+set pointer:eof+1
+set range:0x18,pointer
+set [hash]:CRC32
+write at 0x000004:[hash]
+
+:CPJKSHI
+
+[Update CRC32 for CPJKSHI (Required)]
+;set range:0x000018,0x000D6B
+set pointer:eof+1
+set range:0x000018,pointer
+set [hash]:CRC32
+write at 0x000004:[hash]
+

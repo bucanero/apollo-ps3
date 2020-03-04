@@ -1,0 +1,61 @@
+; NPEB01789
+; Wolfenstein®: The New Order
+
+
+; By Dark Nacho
+
+:_MAPCHK0
+
+[Laserkraftwerk Max Ammo]
+search "ammo/laserkraftwerk":2
+write next (70):0x270F
+
+[Assualt Rifle 1960 Max Ammo]
+search "ammo/assaultrifle1960":3
+write next (24):0xFF
+search "ammo/assaultrifle1960":4
+write next (24):0xFF
+
+[Shotgun Ammo]
+search "ammo/shotgun":2
+write next (15):0xFF
+
+[Handgun Max Ammo *Without Suppressor]
+search "ammo/handgun":3
+write next (15):0xFF
+search "ammo/handgun":5
+write next (15):0xFF
+
+
+:_PROF
+[Update MD5_XOR for _PROF (Required)]
+;set range:0x000000,0x000590
+set pointer:eof-3
+set range:0x000000,pointer
+set [hash]:MD5_XOR
+;write at 0x000591:[hash]
+set pointer:eof-3
+write next (0):[hash]
+
+:_MAPSTR0
+[Update MD5_XOR for _MAPSTR0 (Required)]
+;set range:0x000000,0x000BF2
+set pointer:eof-3
+set range:0x000000,pointer
+set [hash]:MD5_XOR
+;write at 0x000BF3:[hash]
+set pointer:eof-3
+write next (0):[hash]
+
+:_MAPCHK0
+[Update MD5_XOR for _MAPCHK0 (Required)]
+;set range:0x000000,0x00BCAE
+set pointer:eof-3
+set range:0x000000,pointer
+set [hash]:MD5_XOR
+;write at 0x00BCAF:[hash]
+set pointer:eof-3
+write next (0):[hash]
+
+
+

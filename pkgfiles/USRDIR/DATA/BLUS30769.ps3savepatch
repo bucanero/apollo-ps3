@@ -1,0 +1,64 @@
+; Bleach: Soul Resurreccion
+; BLUS30769
+;From Game Genie For PS3
+
+:BLUS30769-BLEACH_*\GAME.DAT
+
+; --- Max Soul ---
+
+[Barragan]
+20001E88 0098967F
+
+[Byakuya Kuchiki]
+20001E40 0098967F
+
+[Gin Ichimaru]
+20001E70 0098967F
+
+[Grimmjoy]
+20001E68 0098967F
+
+[Halibel]
+20001E90 0098967F
+
+[Hollowfied Ichigo]
+20001EA0 0098967F
+
+[Ichigo Kurosaki]
+20001E20 0098967F
+
+[Kenpachi Zaraki]
+20001E58 0098967F
+
+[Kokuto]
+20001EB0 0098967F
+
+[Nnoitora]
+20001E98 0098967F
+
+[Rukia Kuchiki]
+20001E28 0098967F
+
+[Shunsui Kyoraku]
+20001E48 0098967F
+
+[Soi Fon]
+20001E38 0098967F
+
+[Sosuke Aizen]
+20001E78 0098967F
+
+[Stark]
+20001E80 0098967F
+
+[Toshiro Hitsugaya]
+20001E50 0098967F
+
+[Ulquiorra]
+20001E60 0098967F
+
+[Uryu Ishida]
+20001E30 0098967F
+
+[Yoruichi Shihoin]
+20001EA8 0098967F

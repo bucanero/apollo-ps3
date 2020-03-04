@@ -1,0 +1,10 @@
+;NPEB00526
+;Altered Beast (PSN)
+
+:PAYLOAD
+[Update CRC32 (Required)]
+;set range:0x000004,0x0C668F
+set pointer:eof+1
+set range:0x000004,pointer
+set [hash]:CRC32
+write at 0x000000:[hash]

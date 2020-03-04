@@ -1,0 +1,11 @@
+;BLES00750
+;Sonic & Sega All-Stars Racing
+
+:PROFILE.DAT
+
+[Update DWADD for PROFILE.DAT (Required)]
+set [csum]:0
+;set [csum]:dwadd(0x000004,0x0A5FFF)
+set pointer:eof+1
+set [csum]:dwadd(0x000004,pointer)
+write at 0x000000:[csum]

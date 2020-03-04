@@ -1,0 +1,10 @@
+; NPUB31425
+; Titan Attacks
+; From shaka
+
+:DATA_0.BIN
+
+
+
+[Max Cash]
+write at 0x10:0x270F270F

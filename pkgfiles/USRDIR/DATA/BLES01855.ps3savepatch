@@ -1,0 +1,23 @@
+; BLES01855
+; GRID 2
+
+
+:PROGRESS.DAT
+
+[Update SHA256 for PROGRESS.DAT (Required)]
+;set range:0x000000,0x002F9B
+set pointer:lastbyte-0x1F
+set range:0x000000,pointer
+set [hash]:SHA256
+write next (0):[hash]
+
+
+:SECUINFO.BIN
+
+[Update CRC32 for SECUINFO.BIN (Required)]
+;set range:0x000004,0x000027
+set pointer:eof+1
+set range:0x000004,pointer
+set [hash]:CRC32
+write at 0x000000:[hash]
+

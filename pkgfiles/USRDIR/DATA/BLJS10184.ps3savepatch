@@ -1,0 +1,54 @@
+; Macross 30: Ginga o Tsunagu Utagoe
+; BLJS10184
+; From KE-HA, Sixthman & Pu
+
+:SAVEDATA.BIN
+
+;From KE-HA
+[Kitai Kaihatsu All Unlock]
+40047A00 000000FF
+40800001 00000000
+ 
+[Money 999,999,999]
+20047B48 5F5E0FF
+ 
+[Exp 9999999 - Leon Sakaki]
+20092BB0 0098967F
+ 
+[Exp 9999999 - Aisha Blanchette]
+ 20092C10 0098967F
+ 
+[Exp 9999999 - Mina Forte]
+20092C70 0098967F
+
+;From Sixthman
+[Money 2byte Exchange]
+51047B4A 00000002
+51047B48 00000000
+10047B4A 00000000
+
+[Exp 2byte Exchange - Leon Sakaki]
+51092BB2 00000002
+51092BB0 00000000
+10092BB2 00000000
+
+;From Pu
+[Exp 2byte Exchange - Aisha Blanchette]
+51092C12 00000002
+51092C10 00000000
+10092C12 00000000
+
+[Exp 2byte Exchange - Mina Forte]
+51092C72 00000002
+51092C70 00000000
+10092C72 00000000
+
+[Update ADD Checksum for SAVEDATA.BIN (Required)]
+set [csum]:0 
+set [csum]:add(0x000000,0x0479EB) 
+set [csum]:right([csum],2) 
+write at 0x0479EC:[csum]
+set [csum]:0 
+set [csum]:add(0x0479F0,0x093CDB) 
+set [csum]:right([csum],2) 
+write at 0x093CDC:[csum]

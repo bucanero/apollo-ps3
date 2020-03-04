@@ -1,0 +1,12 @@
+;BLUS30313
+;DiRT 2
+
+:SAVEDATA
+
+[Update DWADD for SAVEDATA (Required)]
+set [csum]:0
+;set [csum]:dwadd(0xC,0x01FFE7)
+set pointer:eof+1
+set [csum]:dwadd(0xC,pointer)
+set [csum]:xor:FFFFFFFF
+write at 0x000000:[csum]

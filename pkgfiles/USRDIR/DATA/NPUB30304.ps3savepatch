@@ -1,0 +1,10 @@
+; Pac-Man Championship Edition DX (PSN)
+; NPUB30304
+;From Game Genie For PS3
+
+:NPUB30304PCEDX-SAVEDATA\SAVE0
+
+; In order to use this cheat, you must have at least one stage completed.
+[Unlock All Courses]
+42000098 00000000
+4083006C 00000000

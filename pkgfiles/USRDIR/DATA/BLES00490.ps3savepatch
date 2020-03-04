@@ -1,0 +1,15 @@
+;BLES00490
+;Monsters vs. Aliens
+;From chaoszage
+
+:GAMEDATA
+
+[99999999 DNA Points]
+write at 0x44:05F5E0FF
+
+[Update CRC32 (Required)]
+;set range:0x000004,0x000AA3
+set pointer:eof+1
+set range:0x000004,pointer
+set [hash]:CRC32
+write at 0x000000:[hash]

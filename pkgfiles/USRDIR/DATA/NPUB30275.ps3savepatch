@@ -1,0 +1,11 @@
+;NPUB30275
+;Absolute Supercars (PSN)
+
+:SYS-DATA
+
+[Update ADD (Required)]
+set [csum]:0
+;set [csum]:add(0x00000C,0x112703)
+set pointer:eof+1
+set [csum]:add(0x00000C,pointer)
+write at 0x000008:[csum]

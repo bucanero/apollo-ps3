@@ -1,0 +1,96 @@
+;BLES01876
+;FIFA 14
+
+
+Group: Update CRC32 for DATA0000
+
+Group: Update CRC32 for DATA0000\Update DATA0000
+
+:DATA0000
+
+[Update CRC32 in DATA0000]
+set pointer:eof+1
+set range:0x1C,pointer
+set [hash]:crc32
+write at 0x10:[hash]
+
+
+Group: Update CRC32 for DATA0000\Update DATA0000-DATA0001
+
+:DATA0000
+
+[get CRC32 for DATA0000]
+set crc_bandwidth:32
+set crc_polynomial:0x4C11DB7
+set crc_initial_value:0xFFFFFFFF
+set crc_output_xor:0
+set crc_reflection_input:1
+set crc_reflection_output:0
+set pointer:eof+1
+set range:0x1C,pointer
+set [hash]:crc
+
+:DATA0001
+
+[get CRC32 for DATA0001]
+set crc_bandwidth:32
+set crc_polynomial:0x4C11DB7
+set crc_initial_value:[hash]
+set crc_output_xor:0xFFFFFFFF
+set crc_reflection_input:1
+set crc_reflection_output:1
+set pointer:eof+1
+set range:0x0,pointer
+set [hash]:crc
+
+:DATA0000
+
+[Update CRC32 in DATA0000]
+write at 0x10:[hash]
+
+
+Group: Update CRC32 for DATA0000\Update DATA0000-DATA0002
+
+:DATA0000
+
+[Get CRC32 for DATA0000]
+set crc_bandwidth:32
+set crc_polynomial:0x4C11DB7
+set crc_initial_value:0xFFFFFFFF
+set crc_output_xor:0
+set crc_reflection_input:1
+set crc_reflection_output:0
+set pointer:eof+1
+set range:0x1C,pointer
+set [hash]:crc
+
+:DATA0001
+
+[Get CRC32 for DATA0001]
+set crc_bandwidth:32
+set crc_polynomial:0x4C11DB7
+set crc_initial_value:[hash]
+set crc_output_xor:0
+set crc_reflection_input:1
+set crc_reflection_output:0
+set pointer:eof+1
+set range:0x0,pointer
+set [hash]:crc
+
+:DATA0002
+
+[Get CRC32 for DATA0002]
+set crc_bandwidth:32
+set crc_polynomial:0x4C11DB7
+set crc_initial_value:[hash]
+set crc_output_xor:0xFFFFFFFF
+set crc_reflection_input:1
+set crc_reflection_output:1
+set pointer:eof+1
+set range:0x0,pointer
+set [hash]:crc
+
+:DATA0000
+
+[Update CRC32 in DATA0000]
+write at 0x10:[hash]

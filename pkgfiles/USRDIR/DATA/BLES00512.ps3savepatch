@@ -1,0 +1,103 @@
+;BLES00512
+;Mini Ninjas
+;ngu-tripate for ps3cheating.net
+;all code are found and tested by me ofw 4.46/cfw 4.30.2
+
+:SYS-DATA
+
+
+[RED:INFO:ngu-tripate for ps3cheating.net ]
+[RED:INFO:all code are found and tested by me ofw 4.46/cfw 4.30.2]
+
+[GROUP:Chapters and levels]
+[level 15 max + unlocked all chapters(Working)]
+write at 0x000002E3:1746
+
+[GROUP: Money]
+[max money 65535 (Working)]
+write at 0x000002EA:FFFF
+
+[max money 16,777,215 (Working)]
+write at 0x000002E9:FFFFFF
+
+[GROUP: Item ]
+
+[shuriken 255 (note after use shuriken you have 99) (Working)]
+write at 0x0000033B:FF
+
+
+
+
+[GROUP: Item\Warning]
+[RED: INFO: you need have 1 item to use or freez]
+[item x70 after have 1 item to unlock box(Working)]
+write at 0x00000313:46
+write at 0x00000317:46
+write at 0x0000031B:46
+write at 0x0000031F:46
+write at 0x00000323:46
+write at 0x0000032B:46
+write at 0x0000032F:46
+write at 0x00000333:46
+write at 0x00000337:46
+write at 0x0000033B:46
+write at 0x0000039B:46
+write at 0x00000413:46
+write at 0x00000417:46
+write at 0x0000041B:46
+write at 0x00000423:46
+write at 0x00000427:46
+write at 0x00000433:46
+write at 0x00000437:46
+write at 0x0000043B:46
+write at 0x0000043F:46
+write at 0x00000493:46
+write at 0x0000035F:46
+write at 0x0000036F:46
+write at 0x00000347:46
+write at 0x00000363:46
+write at 0x000003A3:46
+write at 0x000003A7:46
+write at 0x0000042B:46
+write at 0x0000042F:46
+write at 0x0000041F:46
+
+[GROUP: Flower]
+
+[INFO: use this code unlock directly box flower]
+
+[fleur de bardane/Burdock Flower(Working)]
+write at 0x000003E3:63
+
+[Anemone/Anemone(Working)]
+write at 0x000003E7:63
+
+[petale bleu/Blue Petal(Working)]
+write at 0x000003EB:63
+
+[lys tachete/?????(Working)]
+write at 0x000003EF:63
+
+[pleurote en huitre/?????(Working)]
+write at 0x000003F3:63
+
+[morille de feu/?????(Working)]
+write at 0x000003F7:63
+
+[pique d'ashida/Spear of Ashida(Working)]
+write at 0x000003FB:63
+
+[coiffe de pierre/Stone Cap(Working)]
+write at 0x000003FF:63
+
+[racine de ginseng/Ginseng Root(Working)]
+write at 0x00000403:63
+
+[prêles/?????(Working)]
+write at 0x00000407:63
+
+[persil sauvage/Wild Parsley(Working)]
+write at 0x0000040B:63
+
+[lotus sacré/Sacred Lotus(Working)]
+write at 0x0000040F:63

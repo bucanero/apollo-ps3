@@ -1,0 +1,140 @@
+; BlazBlue: Continuum Shift Extend
+; BLUS30869
+;From Game Genie For PS3
+
+:BLUS30869-SYSTEM\SYSTEM.DAT
+
+[Unlock All Gallery Visuals]
+41000160 0000202
+40F90002 0000000
+
+;From Ngu-tripate Ps3Cheating.net
+:SYSTEM.DAT
+
+[GROUP:Ngu-tripate for ps3cheating]
+
+[16777215 P$ (Working)]
+write at 0x000E3161:FFFFFF
+
+[lvl 33 (Working)]
+write at 0x000E316D:017BCF
+
+[lvl 100 (Working)]
+write at 0x000E316D:FF423F
+
+[All Gallery Unlock(Working)]
+write at 0x00000160:repeat(200,01)
+
+
+[GROUP:Ngu-tripate for ps3cheating\Tutorial]
+
+[Beginner Clear(Working)]
+write at 0x000E2AF0:03020202
+
+[Intermediate Clear(Working)]
+write at 0x000E2B0E:03020202020202
+
+[Advance Clear(Working)]
+write at 0x000E2B2C:030202
+
+[Strategies Clear(Working)]
+write at 0x000E2B4A:03020202020202020202020202020202020202
+
+[GROUP:Ngu-tripate for ps3cheating\Abyss Mode]
+
+[Reward points (Working)]
+write at 0x000E344A:FFFF
+[INFO:for apply the code Reward points you need have create save on abyss mode]
+
+[Unlock Level selection Abyss Mode (Working)]
+write at 0x000E343B:03
+
+[Unlock all Item Shop (Working)]
+write at 0x000E3240:repeat(79,00000002)
+write at 0x000E3420:00000002000000020000000200000002
+write at 0x000E3430:0000000200000002
+
+[GROUP:Ngu-tripate for ps3cheating\Story Mode]
+
+[Unlock all Story Character true end also (clear 0%) and "complete : EX1 & EX2" (Working)]
+write at 0x00020A30:repeat(160,01)
+
+
+[INFO:Apply this code after have use code to unlock all story]
+[complete(Working)]
+write at 0x00000560:0000FFFF0000FFFF0000FFFF000000FF
+write at 0x00000570:000000FF000000FF000000FF000000FF
+write at 0x00000580:0000FFFF000000FF000000FF000000FF
+write at 0x00000590:000000FF000000FF000000FF000000FF
+write at 0x000005A0:000000FF000000FF00000000000000FF
+
+
+[GROUP:Ngu-tripate for ps3cheating\Challenge Mode]
+
+[Ragna The Bloodedge 100%(Working)]
+write at 0x000E2B68:010101010101010101010101010101
+
+[Jin Kisaragi 100%(Working)]
+write at 0x000E2B7C:010101010101010101010101010101
+
+[Noel Vermillion 100%(Working)]
+write at 0x000E2B90:010101010101010101010101010101
+
+[Rachel Alucard 100%(Working)]
+write at 0x000E2BA4:010101010101010101010101010101
+
+[Taokaka 100%(Working)]
+write at 0x000E2Bb8:010101010101010101010101010101
+
+[Iron Tager 100%(Working)]
+write at 0x000E2BCC:010101010101010101010101010101
+
+[Litchi Faye Ling 100%(Working)]
+write at 0x000E2BE0:010101010101010101010101010101
+
+[Arakune 100%(Working)]
+write at 0x000E2BF4:010101010101010101010101010101
+
+[Bang Shishigami 100%(Working)]
+write at 0x000E2C08:010101010101010101010101010101
+
+[Carl Clover 100%(Working)]
+write at 0x000E2C1C:010101010101010101010101010101
+
+[Haku Men 100%(Working)]
+write at 0x000E2C30:010101010101010101010101010101
+
+[A 11 100%(Working)]
+write at 0x000E2C44:010101010101010101010101010101
+
+[Tsubaki Yayoi 100%(Working)]
+write at 0x000E2C58:010101010101010101010101010101
+
+[Hazama 100%(Working)]
+write at 0x000E2C6C:010101010101010101010101010101
+
+[U 12 100%(Working)]
+write at 0x000E2C80:010101010101010101010101010101
+
+[Makoto Nanaya 100%(Working)]
+write at 0x000E2C94:010101010101010101010101010101
+
+[Walkenhayn R Hellsing 100%(Working)]
+write at 0x000E2CA8:010101010101010101010101010101
+
+[Platinum The Trinity 100%(Working)]
+write at 0x000E2CBC:010101010101010101010101010101
+
+[Reluis Clover 100%(Working)]
+write at 0x000E2CD0:010101010101010101010101010101
+
+
+[GROUP:csum need ending place for work code]
+
+[Update WADD Checksum (Required)]
+set [csum]:0
+carry(2)
+set pointer:eof+1
+set [csum]:wadd(0x000004,pointer)
+set [csum]:xor:FFFF
+write at 0x000000:[csum]

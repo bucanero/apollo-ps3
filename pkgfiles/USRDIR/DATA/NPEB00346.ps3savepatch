@@ -1,0 +1,69 @@
+;NPEB00346
+;Alien Breed 3: Descent (PSN)
+;From zeick & chaoszage
+ 
+:GAME.DAT
+ 
+[999999 Money]
+search "Env_Split"
+write next (18):0098967F
+ 
+[Max AssaultRifle Ammo]
+search "ABWeap_AssaultRifle_"
+search next 0xFFFFFFFF
+write next (10):270F0000270F
+ 
+[Max ShotCannon Ammo]
+search "ABWeap_ShotCannon_"
+search next 0xFFFFFFFF
+write next (10):270F0000270F
+ 
+[Max FlameThrower Ammo]
+search "ABWeap_FlameThrower_"
+search next 0xFFFFFFFF
+write next (10):270F0000270F
+ 
+[Max ElectroLinkGun Ammo]
+search "ABWeap_ElectroLinkGun_"
+search next 0xFFFFFFFF
+write next (10):270F0000270F
+ 
+[Max ProjectX Ammo]
+search "ABWeap_ProjectX_"
+search next 0xFFFFFFFF
+write next (10):270F0000270F
+ 
+[99 SmallHealthKits]
+search "ABItem_SmallHealthKit_"
+search next 0xFFFFFFFF
+write next (11):63
+ 
+[99 FragGrenades]
+search "ABItem_FragGrenade_"
+search next 0xFFFFFFFF
+write next (11):63
+ 
+[99 LargeHealthKits]
+search "ABItem_LargeHealthKit_"
+search next 0xFFFFFFFF
+write next (11):63
+ 
+[99 StunGrenades]
+search "ABItem_Flare_"
+search next 0xFFFFFFFF
+write next (11):63
+ 
+[99 SentryGun]
+search "ABItem_SentryGun1_"
+search next 0xFFFFFFFF
+write next (11):63
+ 
+[99 Armour]
+search "ABItem_Armour_"
+search next 0xFFFFFFFF
+write next (11):63
+ 
+[default:Update crc32 (required)]
+set range:0x100,0x2000F7
+set [crc]:crc32big
+write at 0xF8:[crc]

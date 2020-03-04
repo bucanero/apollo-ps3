@@ -1,0 +1,13 @@
+;NPEB00924
+;Jet Set Radio (PSN)
+
+:SLOT*.DAT
+
+[Update QWADD (Required)]
+set [csum]:0
+;set [csum]:qwadd(0x000000,0x04044B)
+set pointer:eof-4
+set [csum]:qwadd(0x000000,pointer)
+;write at 0x04044C:[csum]
+set pointer:eof-3
+write next (0):[csum]

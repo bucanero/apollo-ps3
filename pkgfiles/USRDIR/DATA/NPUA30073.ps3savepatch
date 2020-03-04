@@ -1,0 +1,21 @@
+;NPUA30073
+;Payday: The Heist (PSN)
+
+:HEADER.BIN
+
+[Update MD5 for HEADER.BIN (Required)]
+;set range:0x000004,0x000514
+set pointer:lastbyte-0xF
+set range:0x000004,pointer
+set [hash]:MD5
+write next (0):[hash]
+
+
+:INFO.BIN
+
+[Update MD5 for INFO.BIN (Required)]
+;set range:0x000004,0x00380B
+set pointer:lastbyte-0xF
+set range:0x000004,pointer
+set [hash]:MD5
+write next (0):[hash]

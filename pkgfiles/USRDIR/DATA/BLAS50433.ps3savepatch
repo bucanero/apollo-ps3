@@ -1,0 +1,18 @@
+; BLAS50433
+; Dragon's Dogma
+
+;From aldotools
+
+:DATA0.DAT
+
+[Update CRC32 for DATA0.DAT (Required)]
+set [end]:read(0x8,4)
+set [end]:[end]+1F
+set range:0x000020,[end]
+set [hash]:CRC32
+set [hash]:xor:FFFFFFFF
+write at 0x000018:[hash]
+
+
+
+

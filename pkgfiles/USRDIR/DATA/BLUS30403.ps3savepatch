@@ -1,0 +1,44 @@
+; WET
+; BLUS30403
+
+:BLUS30403-WETSAVEGAME\ACHIEVE.DAT
+[Update CRC32 (Required)]
+set range:0x00000C,0x000113
+set [hash]:CRC32
+write at 0x000004:[hash]
+
+:BLUS30403-WETSAVEGAME\CHKPTS.DAT
+[Update CRC32 (Required)]
+set range:0x00000C,0x00668D
+set [hash]:CRC32
+write at 0x000004:[hash]
+
+:BLUS30403-WETSAVEGAME\COLLECT.DAT
+[Update CRC32 (Required)]
+set range:0x00000C,0x00047B
+set [hash]:CRC32
+write at 0x000004:[hash]
+
+:BLUS30403-WETSAVEGAME\GAMEPTS.DAT
+[Update CRC32 (Required)]
+set range:0x00000C,0x0000FB
+set [hash]:CRC32
+write at 0x000004:[hash]
+
+:BLUS30403-WETSAVEGAME\OPTIONS.DAT
+[Update CRC32 (Required)]
+set range:0x00000C,0x000023
+set [hash]:CRC32
+write at 0x000004:[hash]
+
+:BLUS30403-WETSAVEGAME\PROGRESS.DAT
+[Update CRC32 (Required)]
+set range:0x00000C,0x00002F
+set [hash]:CRC32
+write at 0x000004:[hash]
+
+:BLUS30403-WETSAVEGAME\RUBIUPG.DAT
+[Update CRC32 (Required)]
+set range:0x00000C,0x00008F
+set [hash]:CRC32
+write at 0x000004:[hash]

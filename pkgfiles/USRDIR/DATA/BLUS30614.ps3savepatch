@@ -1,0 +1,42 @@
+;BLUS30614
+;Rio™
+
+; dependency: SAVE.BIN
+
+group: Update CRC32 (Required)
+
+:66600004.DAT
+
+[Get CRC32 for 66600004.DAT (Required)]
+set [hash_66600004.DAT]:CRC32
+set [size_66600004.DAT]:eof+1
+
+:6660000E.DAT
+
+[Get CRC32 for 6660000E.DAT (Required)]
+set [hash_6660000E.DAT]:CRC32
+set [size_6660000E.DAT]:eof+1
+
+:66600011.DAT
+
+[Get CRC32 for 66600011.DAT (Required)]
+set [hash_66600011.DAT]:CRC32
+set [size_66600011.DAT]:eof+1
+
+; dependency: SAVE.BIN
+
+:SAVE.BIN
+
+[Update CRC32 for 56600001.DAT and 96600000.DAT (Required)]
+write at 0x000014:[size_66600004.DAT]
+write at 0x000018:[hash_66600004.DAT]
+write at 0x000024:[size_6660000E.DAT]
+write at 0x000028:[hash_6660000E.DAT]
+write at 0x000034:[size_66600011.DAT]
+write at 0x000038:[hash_66600011.DAT]
+
+;set range:0x000010,0x000223
+set pointer:eof+1
+set range:0x000010,pointer
+set [hash]:CRC32
+write at 0x000008:[hash]

@@ -1,0 +1,9 @@
+;BLUS30120
+;Lost: Via Domus
+
+:LOST00
+
+[Update CRC32 (Required)]
+set range:0x00003C,0x20003B
+set [hash]:CRC32
+write at 0x000008:[hash]

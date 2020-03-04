@@ -1,0 +1,18 @@
+;Arcania: The Complete Tale
+;BLUS31158
+; From chaoszage
+
+:BLUS31158-MAIN-QUICK\SAVEGAME.DAT
+
+[Lv 999]
+search 0x7F7FFFFF:
+write next 4A:03E7
+
+[Gold 999999999]
+search 0x7F7FFFFF
+write next 4C:3B9AC9FF
+
+;Must have at least 1 Potion
+[Health Potion x999] 
+search 0x3836373332
+write next 8:03E7

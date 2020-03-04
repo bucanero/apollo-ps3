@@ -1,0 +1,35 @@
+; NPEB00092
+; BATTLEFIELD 1943™
+
+;checksum fixer by chaoszage
+:USR-DATA
+
+[Update CUSTOM MD5 for USR-DATA (Required)]
+;set range:0x000010,0x0158CB
+set pointer:eof+1
+set range:0x000010,pointer
+set [hash]:MD5
+write at 0xF9FF0:[hash]
+set [hash1a]:read(F9FF0,1)
+set [hash1b]:read(F9FF1,1)
+set [hash1c]:read(F9FF2,1)
+set [hash1d]:read(F9FF3,1)
+write at 0xF9FE0:[hash1d]
+write at 0xF9FE1:[hash1c]
+write at 0xF9FE2:[hash1b]
+write at 0xF9FE3:[hash1a]
+set [hash2a]:read(F9FF4,1)
+set [hash2b]:read(F9FF5,1)
+set [hash2c]:read(F9FF6,1)
+set [hash2d]:read(F9FF7,1)
+write at 0xF9FE4:[hash2b]
+write at 0xF9FE5:[hash2a]
+write at 0xF9FE6:[hash2d]
+write at 0xF9FE7:[hash2c]
+set [hash3]:read(F9FF8,4)
+set [hash4]:read(F9FFC,4)
+write at 0xF9FE8:[hash3]
+write at 0xF9FEC:[hash4]
+set [fhash]:read(F9FE0,10)
+write at 0x00:[fhash]
+write at 0xF9FE0:repeat(0x20,0x00)

@@ -1,0 +1,22 @@
+; BLES01195
+; The Tomb Raider Trilogy
+
+; By Dark Nacho
+
+[Group:Tomb Raider Legend]
+
+:PROFILE.DAT
+
+[Unlock All]
+42000160 FFFFFFFF
+409B0004 00000000
+420003D0 FFFFFFFF
+40160004 00000000
+
+[Group:Tomb Raider Anniversary]
+
+:PROFILE.DAT
+
+[Unlock Almost All *This Don't Unlock The cheats from the game]
+42000040 FFFFFFFF
+40D90004 00000000

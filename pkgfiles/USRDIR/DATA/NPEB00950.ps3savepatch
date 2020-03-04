@@ -1,0 +1,24 @@
+; NPEB00950
+; Disney Epic Mickey: The Power of Two
+
+; by Game Genie For PS3
+
+:SAVEGAME
+
+[Max eTicket]
+search "CurrencyData"
+write next 10:0x0001869F
+
+[Max Pin]
+search "CurrencyData"
+write next 14:0x0001869F
+
+[Max Scap]
+search "CurrencyData"
+write next 18:0x0001869F
+
+[Max Cloth]
+search "CurrencyData"
+write next 1C:0x0001869F
+
+

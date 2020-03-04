@@ -1,0 +1,48 @@
+; Resident Evil 5
+; BLES00485
+;From Game Genie For PS3
+
+:DATA0.DAT
+
+[Max Money]
+200000E0 05F5E0FF
+
+[Max Points]
+200000E4 05F5E0FF
+
+[Increase All Items In Storage Box To 9999]
+4100315A 0000270F
+4036000C 00000000
+
+[Have 9999 All Ammo/Items In Chris's Inventory]
+41003696 0000270F
+4009002C 00000000
+
+[Have 9999 All Ammo/Items In Sheva's Inventory]
+41003AB6 0000270F
+4009002C 00000000
+
+[Give All Weapons In Storage Box Infinite Ammo]
+4000315E 00000034
+4036000C 00000000
+
+[Infinite Ammo, All Weapons In Chris's Inventory]
+400036AF 00000034
+4009002C 00000000
+
+[Rapid Fire, All Weapons In Chris's Inventory]
+400036AD 000000FF
+4009002C 00000000
+
+[Infinite Ammo, All Weapons In Sheva's Inventory]
+40003ACF 00000034
+4009002C 00000000
+
+[Rapid Fire, All Weapons In Sheva's Inventory]
+40003ACD 000000FF
+4009002C 00000000
+
+[default:Update checksum (required)]
+set [csum]:0
+set [csum]:dwadd(10,4BBF)
+write at 0x8:[csum]

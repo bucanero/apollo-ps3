@@ -1,0 +1,12 @@
+; BLUS31270
+; Call of Duty: Ghosts
+
+
+:SAVEGAME.SVG
+
+[Update Adler32 for SAVEGAME.SVG (Required)]
+;set range:0x000500,0x0B0677
+set pointer:eof+1
+set range:0x000500,pointer
+set [hash]:Adler32
+write at 0x000008:[hash]

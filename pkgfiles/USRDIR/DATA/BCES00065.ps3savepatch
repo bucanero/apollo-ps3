@@ -1,0 +1,16 @@
+;Uncharted: Drake's Fortune
+;BCES00064
+;GameGenie EU Codes
+
+:BCES00064_NDI_UNCHARTED_DF_*\USR-DATA
+
+[Unlock All Chapters]
+80010004 A5EF05C7
+4A00001C 00000003
+414F0020 00000000
+
+[Update CRC32Big:0 for USR-DATA (Required)]
+set range:0x000005,0x00DF41
+set [hash]:CRC32Big:0
+set [hash]:xor:FFFFFFFF
+write at 0x000000:[hash]

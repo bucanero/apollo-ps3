@@ -1,0 +1,101 @@
+; Yakuza: Dead Souls
+; BLES01399
+;From Game Genie For PS3 & krustytoe
+
+:USER01
+
+[Max Money]
+20008B48 3B9AC9FF
+
+[Max EXP]
+2001CAFC 05F5E0FF
+
+[Max Soul Points]
+0001CB06 000000FF
+
+[Max Casino Chips]
+20008B4C 05F5E0FF
+
+[Max Wooden Tag]
+20008B50 05f5E0FF
+
+[Max Mahjong Sticks]
+20008B54 05f5E0FF
+
+[Max PachinKO Balls]
+20008B74 05f5E0FF
+
+[Max Slots Token]
+20008B78 0098967F
+
+[Max Zombies Reward Points]
+20008B7C 05F5E0FF
+
+[Max All Storage Items (Except Weapons)]
+41005BDA 0000270F
+412B0008 00000000
+
+[Inf Ammo(Must Clear Slot 1-6 in inventory or it will be replace)]
+10005B14 00000019
+10005B1A 0000FFFF
+10005B1C 0000001B
+10005B22 0000FFFF
+10005B24 0000001D
+10005B2A 0000FFFF
+10005B2C 0000001F
+10005B32 0000FFFF
+10005B34 00000021
+10005B3A 0000FFFF
+10005B3C 00000023
+10005B42 0000FFFF
+
+;from www55.atwiki.jp
+[9999/9999 HP]
+2001CAE4 270F270F
+
+;from savedata.jp
+[GROUP:Difficulty Modifer(Choose One)]
+[Normal]
+10000014 00000101
+[Hard]
+10000014 00000202
+[Ex-Hard]
+10000014 00000303
+[Dead Souls/Of The End]
+;US/JP
+10000014 00000404
+
+; --- Minigame Challenge ---
+
+[Top Pachinko Payout]
+20019EC4 0000270f
+
+[Top Slots Payout]
+20019EC8 0000270f
+
+[Cee-Lo]
+20018B84 000F423F
+
+[Cho-Han]
+20018C14 000F423F
+
+[Koi-Koi]
+20018CBC 000F423F
+
+[Oicho-Kabu]
+200196A8 000F423F
+
+[Roulette]
+20018D48 000F423F
+
+[Poker]
+20018DD8 000F423F
+
+[Blackjack]
+20018E64 000F423F
+
+[Baccarat]
+2001A274 000F423F
+
+[Boxcelios]
+0001A167 00000064

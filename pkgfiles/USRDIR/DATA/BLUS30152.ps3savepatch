@@ -1,0 +1,11 @@
+;BLUS30152
+;THE INCREDIBLE HULK™
+
+:HULK.SAV
+
+[Update CRC32 for HULK.SAV (Required)]
+;set range:0xC,0x005E9F
+set pointer:eof+1
+set range:0xC,pointer
+set [hash]:CRC32
+write at 0x000000:[hash]

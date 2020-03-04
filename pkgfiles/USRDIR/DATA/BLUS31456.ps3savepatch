@@ -1,0 +1,11 @@
+; BLUS31456
+; NBA 2K15
+
+:USERDATA
+
+[Update CRC32 for USERDATA (Required)]
+;set range:0x000004,0x7E8C1E
+set pointer:eof+1
+set range:0x000004,pointer
+set [hash]:CRC32
+write at 0x000000:[hash]

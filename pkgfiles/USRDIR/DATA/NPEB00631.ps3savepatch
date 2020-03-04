@@ -1,0 +1,8 @@
+;NPEB00631
+;DeathSpank: The Baconing (PSN)
+; From SHAkA
+
+:SLOT1.SAV
+
+[Max Money]
+write at 0x0000395C:0x3B9AC9FF

@@ -1,0 +1,20 @@
+; BLES00481
+; Street Fighter IV
+
+:SF4-SAVE.DAT
+
+[Update CRC32 for SF4-SAVE.DAT (Required)]
+;set range:0x000004,0x004BCE
+set pointer:eof+1
+set range:0x000004,pointer
+set [hash]:CRC32
+write at 0x000000:[hash]
+
+:SF4SVEXT.DAT
+
+[Update CRC32 for SF4SVEXT.DAT (Required)]
+;set range:0x000004,0x003F83
+set pointer:eof+1
+set range:0x000004,pointer
+set [hash]:CRC32
+write at 0x000000:[hash]

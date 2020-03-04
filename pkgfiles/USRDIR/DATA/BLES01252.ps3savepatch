@@ -1,0 +1,20 @@
+; Street Fighter X Tekken
+; BLES01252
+;From Game Genie For PS3
+
+:SAVEDATA
+
+[Unlock All Battle Titles]
+80010004 55544600
+4A000015 FFFFFFFF
+40130004 00000000
+
+[Unlock All EX Battle Titles]
+80010004 55544600
+4A00006D FFFFFFFF
+40030004 00000000
+
+[default:Update crc32 (required)]
+set range:0x4,0x11E676
+set [crc]:crc-32
+write at 0x0:[crc]

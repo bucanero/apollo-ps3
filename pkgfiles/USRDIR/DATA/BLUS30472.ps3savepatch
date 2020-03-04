@@ -1,0 +1,33 @@
+;BLUS30472
+;Majin and the Forsaken Kingdom
+; From SHAkA
+
+:SAVEDATA
+
+[Max Shared and life]
+write at 0x00004D35:0x98967F00
+write at 0x00004D39:0x98967F00
+write at 0x00004D45:0x98967F00
+
+[Max Blue Fruit]
+write at 0x00005359:0x98967F00
+
+; From chaoszage
+
+[Health Lv10]
+000053A7 0000000A 
+
+[Strength Lv10]
+000053AB 0000000A 
+
+[Wind Lv4]
+000053AF 00000004
+ 
+[Lightning Lv4]
+000053B3 00000004
+
+[Flame Lv4]
+000053B7 00000004
+
+[Purification Lv4]
+000053BB 00000004

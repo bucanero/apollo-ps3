@@ -1,0 +1,17 @@
+;BLUS30570
+;Rapala® Pro Bass Fishing
+
+:USRDATA
+
+[Update CRC-16 CCITT for USRDATA (Required)]
+set crc_bandwidth:16
+set crc_polynomial:0x1021
+set crc_initial_value:0xFFFF
+set crc_output_xor:0
+set crc_reflection_input:0
+set crc_reflection_output:0
+set range:0x000000,0x01BFFB
+set [hash]:crc
+;write at 0x01BFFE:[hash]
+set pointer:eof-1
+write next (0):[hash]

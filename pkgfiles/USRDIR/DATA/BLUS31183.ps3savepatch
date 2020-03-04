@@ -1,0 +1,13 @@
+; BLUS31183
+; Rayman Legends
+; From SHAkA
+
+:SYS-DATA
+
+[Max Lums]
+write at 0x00002A99:0x3B9AC9FF
+
+[Max LUMS]
+search "FB5A99A7":x1 times
+write next (+56):0x7fffffff 
+

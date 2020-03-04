@@ -1,0 +1,63 @@
+;BLES00705
+;Darksiders
+;From zeick
+ 
+:*\~extracted\00000035.dat
+
+red:INSTRUCTIONS
+red:1 decrypt save
+red:2 double click DSSAVE (A new window will open)
+red:3 right click 00000035.dat
+red:4 click apply cheats and tick cheats you want click apply
+red:5 close window showing 00000035.dat file
+red:It will ask DO YOU WANT TO RECOMPRESS click yes
+red:6 new window will open asking for packzip settings use -w 15 click ok
+red:7 encrypt pfd and load on PS3
+
+[Max Health]
+search "Health"
+write next (7):FFC99A3B
+
+[Max Souls]
+search "Souls"
+write next (6):286B6E4E
+
+[Max Wrath]
+search "Wrath"
+write next (6):286B6E4E
+
+[Max Chaos]
+search "Chaos"
+write next (6):286B6E4E
+
+[Max Sword Level]
+search "sword/warsword"
+write next (35):05
+
+[159 Kills On Angelic Beast]
+search "NumberOfKillsOnBird"
+write next (20):9F
+
+[665 Demons Killed]
+search "NumberOfDemonsKilled"
+write next (21):9902
+
+[149 Demons Killed On Horseback]
+search "NumberOfDemonsKilledOnHorseback"
+write next (32):95
+
+[149 Demons Killed With Enviroment]
+search "NumberOfEnemiesKilledWithEnvironment"
+write next (37):95
+
+[99 Miles Travelled]
+search "DistanceTraveledMounted"
+write next (24):0000C642
+
+[149 Chests Searched]
+search "NumberOfChestsOpened"
+write next (21):95
+
+[26 Artifacts Collected]
+search "NumberOfArtifactsCollected"
+write next (27):1A

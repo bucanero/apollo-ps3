@@ -1,0 +1,13 @@
+; NPEB00158
+; Tank Battles
+
+
+
+
+:USR-DATA
+[Update XOR for USR-DATA (Required)]
+set [hash]:0
+;set [hash]:xor(0x000008,0x0003EF,4)
+set pointer:eof+1
+set [hash]:xor(0x000008,pointer,4)
+write at 0x000010:[hash]

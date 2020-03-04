@@ -1,0 +1,15 @@
+;NPUB30903
+;Yu-Gi-Oh! 5D's Decade Duels Plus (PSN)
+;Code created by Zephyer - Checksum created by Zeick
+
+:AUTOSAVE
+
+[Have All Cards (x3)]
+400020F0 00000006
+4F3C0004 00000000
+
+[default:Update crc32 (required)]
+set range:0x10,0x5E50
+set [hash]:crc32
+write at 0x0C:[hash]
+write at 0x0C:xor:B7554EF7

@@ -1,0 +1,15 @@
+;BLUS30805
+;Pro Evolution Soccer 2012
+
+
+:DATA.BIN
+
+[Update CRC32 for DATA.BIN (Required)]
+; Checksum offset is located within the checksum range.
+write at 0x000008:00000000   ;Initializing checksum with null bytes
+;----------------------------
+;set range:0x000000,0x791987
+set pointer:eof+1
+set range:0x000000,pointer
+set [hash]:CRC32
+write at 0x000008:[hash]

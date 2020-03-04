@@ -1,0 +1,20 @@
+; NPUB31615
+; Jetpack Joyride Deluxe
+;from shaka
+
+
+:SAVEDATA.SAV
+
+
+[Max Money]
+
+write at 0x1109:0x3B9AC9FF
+
+
+[Update CRC32 for SAVEDATA.SAV (Required)]
+;set range:0x000004,0x00FFFF
+set pointer:eof+1
+set range:0x000004,pointer
+set [hash]:CRC32
+write at 0x000000:[hash]
+

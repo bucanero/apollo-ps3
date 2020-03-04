@@ -1,0 +1,30 @@
+;BLUS30116
+;Dark Sector
+
+Group: Update MD5 Checksum (Required)
+
+:BLUS30116\??.SAV
+
+[Update MD5 for 01.SAV (Required)]
+;set range:0x000010,0x0158CB
+set pointer:eof+1
+set range:0x000010,pointer
+set [hash]:MD5
+write at 0x000000:[hash]
+
+:SETTINGS
+[Update MD5 for SETTINGS (Required)]
+;set range:0x000010,0x0005F5
+set pointer:eof+1
+set range:0x000010,pointer
+set [hash]:MD5
+write at 0x000000:[hash]
+
+
+:CONTINUE.SAV
+[Update MD5 for CONTINUE.SAV (Required)]
+;set range:0x000010,0x010568
+set pointer:eof+1
+set range:0x000010,pointer
+set [hash]:MD5
+write at 0x000000:[hash]

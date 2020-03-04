@@ -1,0 +1,79 @@
+; Resident Evil 5: Gold Edition
+; BLES00816
+;From Game Genie For PS3
+
+:DATA0.DAT
+
+[Max Money]
+200000E0 05F5E0FF
+
+[Max Points]
+200000E4 05F5E0FF
+
+[Increase All Items In Storage Box To 9999]
+4100315A 0000270F
+4036000C 00000000
+
+[Have 9999 All Ammo/Items In Chris's Inventory]
+41003696 0000270F
+4009002C 00000000
+
+[Have 9999 All Ammo/Items In Sheva's Inventory]
+41003AB6 0000270F
+4009002C 00000000
+
+[Give All Weapons In Storage Box Infinite Ammo]
+4000315E 00000034
+4036000C 00000000
+
+[Infinite Ammo, All Weapons In Chris's Inventory]
+400036AF 00000034
+4009002C 00000000
+
+[Rapid Fire, All Weapons In Chris's Inventory]
+400036AD 000000FF
+4009002C 00000000
+
+[Infinite Ammo, All Weapons In Sheva's Inventory]
+40003ACF 00000034
+4009002C 00000000
+
+[Rapid Fire, All Weapons In Sheva's Inventory]
+40003ACD 000000FF
+4009002C 00000000
+
+[Have All BSAA Emblems]
+20000118 FFFFFFFF
+
+[All S Rank Medals]
+400008D8 00000001
+4040000C 00000000
+
+[All Items and Upgrades In Item Management]
+20000094 FFFFFFFF
+
+[Unlock All Files]
+10000082 0000FFFF
+
+[Unlock All Cutscenes]
+2000008C FFFFFFFF
+20000091 FFFFFFFF
+
+[Unlock All Bonus Features]
+200000A4 FFFFFFFF
+200000A8 FFFFFFFF
+200000AC FFFFFFFF
+
+[Have All Main Game Figurines]
+20000084 FFFFFFFF
+1000008A 0000FFFF
+
+[Unlock All Chapters and Professional Mode]
+0000010B 000000FF
+1000010E 0000FFFF
+10000116 0000FFFF
+
+[default:Update checksum (required)]
+set [csum]:0
+set [csum]:dwadd(10,4BBF)
+write at 0x8:[csum]

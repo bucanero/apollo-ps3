@@ -1,0 +1,149 @@
+;Game Title/Name
+;Game ID
+;Author/Source
+
+;-- How to set Path and Save data --
+The Path command is optional, and it only needs the folder name (without any file name). The program uses it to NOT allow the cheats if a different folder name is used.
+For instance, if the cheat only works in the profile folder. Needed Save Data Name. Only Need to declare once. A more flexible alternative to Path command is using:
+
+:BLES00049GAME002\EM_GAME.DAT
+
+If only the file name is used, the folder is not validated. Example:
+
+:EM_GAME.DAT
+
+If the file name is not provided, the program will use the first file found in the folder (excluding PARAM.PFD, PARAM.SFO, ICON0.PNG, EBOOT.BIN, EBOOT.ELF). I recommend to always specify at least the file name.
+
+;-- Game Genie Type --
+:PLAY.DAT
+[Max SP]
+2000006C 0001869F
+
+;-- BSD Type --
+BSD patch format, require the 0x at the begining of the line and the parameters are variable size.
+:SYS-DATA
+[Unlock All Difficulties]
+0x00000028 60
+
+;-- Human readable script implemented in BSD. --
+[TEST1]
+search "difficulty" ;Searches for the word "difficulty" as text.
+write next 0: "Difficulty" ;Overwrites with the text at 0 bytes after the found offset in this case "next 0" is at the found offset. "next (10)" or "next A" would write 10 bytes after the found offset.
+
+[TEST2]
+; (67) = 0x43 ;Addresses enclosed in parenthesis are treated as decimal.
+write at (67): 446966666963756C7479
+
+The following 3 lines are equivalent:
+write at (67): 446966666963756C7479
+write at 43: "Difficulty"
+write at 0x43: "Difficulty"
+
+[TEST3]
+search 646966666963756C7479:1 ;":1" means repeat search 1 time (default). ":3" at the end would set the pointer to the 3rd occurrence of the searched text
+write next 0: 446966666963756C7479
+
+[TEST4]
+set pointer: 43 ;Sets the file pointer to a specific address.
+write next 0: 446966666963756C7479 ;Overwrites 0 bytes after the file pointer address.
+
+[TEST5]
+write at 43: "Difficulty" ;3 different ways to indicate the same.
+
+[TEST6]
+write at 0x43: 446966666963756C747
+
+
+;-- Using Cheat Status --
+"Cheats Status" is detected in the cheat name.
+If the cheat name starts with "INFO: " the text is displayed in bold
+If it contains the text "partial working" the text is displayed in orange
+If it contains the text "not working" the text is displayed in red
+If it contains the text "working" the text is displayed in blue
+Otherwise the text is displayed in black
+
+[INFO: Patches may not be supported by BSD yet] ;The text is displayed in bold
+
+[Unlock All Character Bios (Not Working)] ;The text is displayed in red.
+94000000 00000018
+4A000000 00000001
+402A0004 00000000
+
+[Unlock All Character Bios (Partial Working)] ;The text is displayed in Orange.
+94000000 00000018
+4A000000 00000001
+402A0004 00000000
+
+[Unlock All Character Bios (Working)] ;The text is displayed in Blue.
+94000000 00000018
+4A000000 00000001
+402A0004 00000000
+
+;-- Using Labels and Groupings --
+group: -> The labels of patches that follow this label are grouped as child.
+default: -> The patch is checked by default.
+yellow: -> The label is displayed with yellow background.
+Other available colors are:
+cyan:
+blue:
+green:
+red:
+orange:
+gray:
+
+Example :
+
+[group:orange:Group #1]
+[default:Cheat 1]
+00000000 00000000
+
+[red:info:Cheat below does not work]
+
+[Cheat 2 (partial working)]
+00000000 00000000
+
+[Cheat 3 (not working)]
+00000000 00000000
+
+
+;-- Using Hash, crc32, md5 commands for saves that has Dependency --
+Example 1:
+set [hash]:md5
+
+[hash] is the variable. it can be any name. you can have many variables.
+md5 is a function
+the md5 hash is calculated for the current file, and stored in the variable [hash]
+
+Example 2:
+:SAVE.DAT
+set [crc32_of_file]:crc32
+
+same as the example 1, but stores the crc32 for SAVE.DAT. 
+
+Example 3:
+set [myvariable2]:"hello" 
+
+sets the text "hello" into the variable [myvariable2]
+
+Example 4:
+:SAVE.DAT
+set [anyname1]:read(0x100, (10)) 
+
+read(offset, length) is a function that reads n bytes from current file
+0x100 is the offset in hex
+(10) is the length in decimal
+
+the example 4 reads 10 bytes starting from offset 0x100 and store them in the variable [anyname1]
+
+Example 5:
+:SAVE.DAT
+write at 0x100:[anyname1]
+
+Overwrites the content of the variable [anyname1] starting at offset 0x100.
+
+Example 6:
+msgbox "The CRC32 is:\n" [crc32_of_file]
+
+displays a message dialog with [OK] and the label:
+The CRC32 is:
+aabbccdd <-- is is the content of the variable [crc32_of_file]

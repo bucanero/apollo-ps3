@@ -1,0 +1,40 @@
+; Uncharted 2: Among Thieves
+; BCES00509
+;From Game Genie For PS3
+
+:BCES00509_NDI_UNCHARTED2_BT_P\USR-DATA
+
+[Unlock Crushing Difficulty]
+20000A78 0000001F
+
+:BCES00509_NDI_UNCHARTED2_BT_*\USR-DATA
+
+[Unlock All Chapters]
+42000AE0 00000000
+41D90020 00000000
+
+; You must have a weapon equipped to use this cheat.
+[Start With Max Ammo For Left Weapon]
+200048D0 000003E7
+
+; You must have a weapon equipped to use this cheat.
+[Start With Max Ammo For Right Weapon]
+200048DC 000003E7
+
+; You must have a weapon equipped to use this cheat.
+[Start With Max Grenades]
+200048F4 00000009
+
+[Update CRC32 checksum for USR-DATA (Required)]
+set [block_length]:read(0x58C,4)
+set [block_length]:[block_length]+0x587
+set range:0x58C,[block_length]
+set [hash]:crc32
+write at 0x588:[hash]
+
+[Update HMAC SHA1 checksum for USR-DATA (Required)]
+set pointer:EOF-0x23
+set range:0x000008,pointer
+set [hash]:hmac_sha1(*)
+set pointer:EOF-0x23
+write next (0):[hash]

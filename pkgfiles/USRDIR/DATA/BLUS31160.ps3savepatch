@@ -1,0 +1,33 @@
+; BLUS31160
+; Earth Defense Force 2025
+
+:MAIN.GST
+
+[Ranger Armor 999999]
+20000014 0020E0F5
+200000E0 0020E0F5
+
+[Wingdiver Armor 999999]
+20000018 0041C2BE
+200000E4 0041C2BE
+
+[Airraider Armor 999999]
+2000001C 0020E0F5
+200000E8 0020E0F5
+
+[Fencer Armor 999999]
+20000020 001A4D3A
+200000EC 001A4D3A
+
+[All Weapon Unlock]
+42002074 00000001
+43160004 00000000
+
+[Default: Update crc32 (required)]
+set range: 0x14, 0x4073
+set [hash]: crc32
+write at 0x10: [hash]
+
+
+
+

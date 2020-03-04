@@ -1,0 +1,12 @@
+;BLES00387
+;MONOPOLY®
+
+:USR-DATA
+
+[Update CRC32 for USR-DATA (Required)]
+;set range:0x000008,0x001FFF
+set pointer:eof+1
+set range:0x000008,pointer
+set [hash]:CRC32
+set [hash]:xor:FFFFFFFF
+write at 0x000000:[hash]

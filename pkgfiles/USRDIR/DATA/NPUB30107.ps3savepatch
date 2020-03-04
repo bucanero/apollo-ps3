@@ -1,0 +1,12 @@
+;NPUB30107
+;TMNT: Turtles in Time Re-Shelled (PSN)
+;From SHAkA
+
+:SAVEGM01.DAT
+
+[Max Points,this will pop trophy]
+write at 0x00000002:0x1F3F0000
+
+
+[9999 Life]
+write at 0x00000012:0x270F0000

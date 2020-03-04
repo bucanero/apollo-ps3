@@ -1,0 +1,13 @@
+;NPEB00308
+;Medal of Honor Frontline (PSN)
+
+:NPEB00308-00\SYS-DATA
+
+[Update CRC32 (Required)]
+;set range:0x000000,0x001447
+set pointer:eof-3
+set range:0x000000,pointer
+set [hash]:CRC32
+;write at 0x001448:[hash]
+set pointer:eof-3
+write next (0):[hash]

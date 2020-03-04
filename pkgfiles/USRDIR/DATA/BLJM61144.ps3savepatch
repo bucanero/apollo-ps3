@@ -1,0 +1,125 @@
+; BLJM61144
+; Sengoku Musou 4 / Samurai Warriors 4
+
+
+
+;ported from JP version,original cheats from savedata.jp
+
+
+:DATA.BIN
+
+[Max Gold]
+20007842 000F423F
+
+[Max Kills]
+2000784A 05F5E0ff
+
+[All Gems Max]
+200078BC 63636363
+200078C0 63636363
+
+[All Chars Proficiency Max]
+42000C44 14141414
+403C0044 00000000
+
+[All 1st weapon become rare]
+40003883 00000000
+403c0110 00000002
+
+[All 1st weapon skills mod]
+42003884 05050505
+403c0110 00000000
+42003888 05050505
+403c0110 00000000
+4200388c aabbccdd
+403c0110 00000000
+42003890 eeffgghh
+403c0110 00000000
+42003894 05050505
+403c0110 00000000
+42003898 05050505
+403c0110 00000000
+4200389c 02020202
+403c0110 00000000
+420038A0 02020202
+403c0110 00000000
+
+[all 1st weapon rare]
+40003883 00000001
+403C0110 00000002
+
+[All 1st weapon become rare and skills lv 5]
+40003883 00000001
+403c0110 00000002
+42003884 05050505
+403c0110 00000000
+42003888 05050505
+403c0110 00000000
+4200388c aabbccdd
+403c0110 00000000
+42003890 eeffgghh
+403c0110 00000000
+42003894 05050505
+403c0110 00000000
+42003898 05050505
+403c0110 00000000
+4200389c 02020202
+403c0110 00000000
+420038A0 02020202
+403c0110 00000000
+
+[EXP 2,078,000 for every char]
+42000C22 001FB530
+40370044 00000000
+
+[Musou Gauge x50]
+40000c56 00000032
+40370044 00000000
+
+
+
+;http://www.gamefaqs.com/ps3/730732-samurai-warriors-4/faqs/69237
+;use link above to refer the skills effects
+;fill aa,bb,cc,dd,ee,ff,gg,hh with value below:
+
+;00   Potency
+;01   Range
+;02   Counrage
+;03   Impact
+;04   Fury
+;05   Underdog
+;06   Momentum
+;07   Clarity
+;08   Verity
+;09   Concentration
+;0A   Fortitude
+;0B   Stability
+;0C   Elasticity
+;0D   Bravery
+;0E   Determination
+;0F   Resolve
+;10   Nullification
+;11   Zeal
+;12   Conviction
+;13   Resurrection
+;14   Alacrity
+;15   Blaze
+;16   Shock
+;17   Frost
+;18   Wind
+;19   Diamond
+;1A   Reaper
+;1B   Rampage
+;1C   Impulse
+;1D   Awakening
+;1E   Cavalry
+;1F   Equestrian
+;20   Connoisseur
+;21   Collector
+;22   Hoarder
+;23   Constitution
+;24   Expert
+;25   Endurance
+;26   Paladin
+;27   Stimulus
+

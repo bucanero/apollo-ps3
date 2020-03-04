@@ -1,0 +1,17 @@
+; NPEB01940
+; The Swapper
+;from aldotools
+
+
+:DATA_0.BIN
+
+[Update CRC32Big:0 for DATA_0.BIN (Required)]
+;set range:0x000000,0x00002F
+set pointer:eof-3
+set range:0x000000,pointer
+set [hash]:CRC32Big:0
+set [hash]:xor:FFFFFFFF
+;write at 0x000030:[hash]
+set pointer:eof-3
+write next (0):[hash]
+

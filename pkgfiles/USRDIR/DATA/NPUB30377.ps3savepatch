@@ -1,0 +1,12 @@
+; NPUB30377
+; BloodRayne Betrayal
+
+:SAVE.DAT
+
+[Update Adler32 for SAVE.DAT (Required)]
+;set range:0x000110,0x00040F
+set pointer:eof+1
+set range:0x000110,pointer
+set [hash]:Adler32
+write at 0x000025:[hash]
+

@@ -1,0 +1,983 @@
+; CPCS01102
+; Group: chars 
+
+; NPUB31552
+; RESIDENT EVIL™ HD Remaster / BioHazard HD Remaster
+
+; By Dark Nacho
+
+:DATA0.DAT
+
+Group: Slot 1
+
+[Have all weapons in chest (SAVESLOT 1) codes by h0rr0r0]
+;NOTE this will overwrite other items in the first 11 rows/slots down,
+;so if you have items there move them to other slots
+;all the weapons will be in the chest first time you open it
+
+2001643C 00000001
+20016440 00000001
+20016444 00000003
+20016448 0000000F
+2001644C 00000005
+20016450 0000000F
+20016454 0000000B
+20016458 0000000F
+2001645C 00000006
+20016460 0000000F
+20016464 0000000D
+20016468 0000000F
+2001646C 0000000C
+20016470 0000000F
+20016474 00000008
+20016478 0000000F
+2001647C 00000007
+20016480 0000000F
+20016484 00000009
+20016488 0000000F
+2001648C 0000000A
+20016490 0000000F
+
+[Ink Ribbons 9999]
+200163FC 00000044
+
+[Time Play 00:00:00]
+2000E074 00000000
+
+[0 Times Save]
+0000DFB3 00000000
+
+[Change Difficulty Super Easy]
+00000466 00000003
+
+[Change Difficulty Easy]
+00000466 00000000
+
+[Change Difficulty Normal]
+00000466 00000001
+
+[Change Difficulty Hard]
+00000466 00000002
+
+[Max Self-Defense Dagger]
+0001B454 000000FF
+
+[Shoot Fired]
+1001BE2E 0000ffff
+
+[Healing Object Use]
+1001BE32 0000ffff
+
+[9999 Ammo All Weapon/Item BOX]
+4101644A 0000270F
+42580008 00000000
+
+Group: Slot 2
+
+[Ink Ribbons 9999]
+2002432C 00000044
+
+[Time Play 00:00:00]
+2001BFA4 00000000
+
+[0 Times Save]
+0001BEE3 00000000
+
+[Change Difficulty Super Easy]
+0000E396 00000003
+
+[Change Difficulty Easy]
+0000E396 00000000
+
+[Change Difficulty Normal]
+0000E396 00000001
+
+[Change Difficulty Hard]
+0000E396 00000002
+
+
+[Max Self-Defense Dagger]
+00029384 000000FF
+
+[Shoot Fired]
+10029D5E 0000ffff
+
+[Healing Object Use]
+10029D62 0000ffff
+
+[9999 Ammo All Weapon/Item BOX]
+4102437A 0000270F
+42580008 00000000
+
+Group: Slot 3
+
+[Ink Ribbons 9999]
+2003225C 00000044
+
+[Time Play 00:00:00]
+20029ED4 00000000
+
+[0 Times Save]
+00029E13 00000000
+
+[Change Difficulty Super Easy]
+0001C2C6 00000003
+
+[Change Difficulty Easy]
+0001C2C6 00000000
+
+[Change Difficulty Normal]
+0001C2C6 00000001
+
+[Change Difficulty Hard]
+0001C2C6 00000002
+
+
+[Max Self-Defense Dagger]
+000372B4 000000FF
+
+[Shoot Fired]
+10037C8E 0000ffff
+
+[Healing Object Use]
+10037C92 0000ffff
+
+[9999 Ammo All Weapon/Item BOX]
+410322AA 0000270F
+42580008 00000000
+
+Group: Slot 4
+
+[Ink Ribbons 9999]
+2004018C 00000044
+
+[Time Play 00:00:00]
+20037E04 00000000
+
+[0 Times Save]
+00037D43 00000000
+
+[Change Difficulty Super Easy]
+0002A1F6 00000003
+
+[Change Difficulty Easy]
+0002A1F6 00000000
+
+[Change Difficulty Normal]
+0002A1F6 00000001
+
+[Change Difficulty Hard]
+0002A1F6 00000002
+
+
+[Max Self-Defense Dagger]
+000451E4 000000FF
+
+[Shoot Fired]
+10045BBE 0000ffff
+
+[Healing Object Use]
+10045BC2 0000ffff
+
+[9999 Ammo All Weapon/Item BOX]
+410401DA 0000270F
+42580008 00000000
+
+Group: Slot 5
+
+[Ink Ribbons 9999]
+2004E0BC 00000044
+
+[Time Play 00:00:00]
+20045D34 00000000
+
+[0 Times Save]
+00045C73 00000000
+
+[Change Difficulty Super Easy]
+00038126 00000003
+
+[Change Difficulty Easy]
+00038126 00000000
+
+[Change Difficulty Normal]
+00038126 00000001
+
+[Change Difficulty Hard]
+00038126 00000002
+
+
+[Max Self-Defense Dagger]
+00053114 000000FF
+
+[Shoot Fired]
+10053AEE 0000ffff
+
+[Healing Object Use]
+10053AF2 0000ffff
+
+[9999 Ammo All Weapon/Item BOX]
+4104E10A 0000270F
+42580008 00000000
+
+Group: Slot 6
+
+[Ink Ribbons 9999]
+2005BFEC 00000044
+
+[Time Play 00:00:00]
+20053C64 00000000
+
+[0 Times Save]
+00053BA3 00000000
+
+[Change Difficulty Super Easy]
+00046056 00000003
+
+[Change Difficulty Easy]
+00046056 00000000
+
+[Change Difficulty Normal]
+00046056 00000001
+
+[Change Difficulty Hard]
+00046056 00000002
+
+
+[Max Self-Defense Dagger]
+00061044 000000FF
+
+[Shoot Fired]
+10061A1E 0000ffff
+
+[Healing Object Use]
+10061A22 0000ffff
+
+[9999 Ammo All Weapon/Item BOX]
+4105C03A 0000270F
+42580008 00000000
+
+Group: Slot 7
+
+[Time Play 00:00:00]
+20061B94 00000000
+
+[0 Times Save]
+00061AD3 00000000
+
+[Change Difficulty Super Easy]
+00053F86 00000003
+
+[Change Difficulty Easy]
+00053F86 00000000
+
+[Change Difficulty Normal]
+00053F86 00000001
+
+[Change Difficulty Hard]
+00053F86 00000002
+
+
+[Max Self-Defense Dagger]
+0006EF74 000000FF
+
+[Shoot Fired]
+1006F94E 0000ffff
+
+[Healing Object Use]
+1006F952 0000ffff
+
+[9999 Ammo All Weapon/Item BOX]
+41069F6A 0000270F
+42580008 00000000
+
+Group: Slot 8
+
+[Ink Ribbons 9999]
+20069F1C 00000044
+
+[Time Play 00:00:00]
+2006FAD4 00000000
+
+[0 Times Save]
+0006FA03 00000000
+
+[Change Difficulty Super Easy]
+00000466 00000003
+
+[Change Difficulty Easy]
+00000466 00000000
+
+[Change Difficulty Normal]
+00000466 00000001
+
+[Change Difficulty Hard]
+00000466 00000002
+
+
+[Max Self-Defense Dagger]
+0007CEA4 000000FF
+
+[Shoot Fired]
+1007D87E 0000ffff
+
+[Healing Object Use]
+1007D882 0000ffff
+
+[9999 Ammo All Weapon/Item BOX]
+41077E9A 0000270F
+42580008 00000000
+
+[Update SHA1 for DATA0.DAT (Required)]
+;set range:0x000040,0x06FA9F
+set pointer:eof+1
+set range:0x000040,pointer
+set [hash]:SHA1
+write at 0x00000C:[hash]
+
+;Select Difficulty Code:
+03= Super Easy
+00= Easy
+01= Normal
+02= Hard
+
+;Select a Value Code:
+0000= 0
+270F= 9999
+7FFF= 32767
+FFFF= 65535
+
+
+Group: SAVESLOT 1
+[Self-defense StunGun battery packs / Flash grenades 999]
+2001b458 000003e7
+Group:\
+
+Group: Have weapon in inventory-slot 1 (SAVESLOT 1) (Choose one)
+[Handgun - Stars custom 9mm]
+200163ec 00000003
+200163f0 0000000f
+
+[Handgun - S&W .40]
+200163ec 00000004
+200163f0 0000000f
+
+[Handgun - S&W .40 (INFINITE AMMO)]
+200163ec 00000005
+200163f0 0000000f
+
+[Shotgun]
+200163ec 00000006
+200163f0 0000000f
+
+[Grenade Launcher - Normal (Jill)]
+200163ec 00000007
+200163f0 0000000f
+
+[Grenade Launcher - Acid (Jill)]
+200163ec 00000008
+200163f0 0000000f
+
+[Grenade Launcher - Incendiary (Jill)]
+200163ec 00000009
+200163f0 0000000f
+
+[Rocket Launcher]
+200163ec 0000000a
+200163f0 0000000f
+
+[Magnum Revolver]
+200163ec 0000000b
+200163f0 0000000f
+
+[Flame Thrower (Chris)]
+200163ec 0000000c
+200163f0 0000000f
+
+[Assault shotgun]
+200163ec 0000000d
+200163f0 0000000f
+
+[Rocket Launcher]
+200163ec 0000000e
+200163f0 0000000f
+
+[Barrys 44 Magnum]
+200163ec 0000000f
+200163f0 0000000f
+Group:\
+
+Group: Have ammo in inventory-slot 2 (SAVESLOT 1) (Choose one)
+[Grenade Shells]
+200163f4 00000010
+200163f8 000003e7
+
+[Handgun Magazine Clip]
+200163f4 00000011
+200163f8 000003e7
+
+[Shotgun shells]
+200163f4 00000012
+200163f8 000003e7
+
+[Acid shells]
+200163f4 00000013
+200163f8 000003e7
+
+[Incendiary shells]
+200163f4 00000014
+200163f8 000003e7
+
+[Magnum rounds]
+200163f4 00000019
+200163f8 000003e7
+Group:\
+
+Group: Have item in inventory-slot 3 (SAVESLOT 1) (Choose one)
+[Ink ribbons 999]
+200163fc 00000044
+20016400 000003e7
+
+[Fuel Canteen 999]
+200163fc 0000001b
+20016400 000003e7
+Group:\
+
+Group: Have item in inventory-slot 4 (SAVESLOT 1)
+[Have item in slot 4]
+;replace yyyyyyyy with an ID from item-list below
+20016404 yyyyyyyy
+20016408 00000001
+Group:\
+
+Group: Have item in inventory-slot 5 (SAVESLOT 1)
+[Have item in slot 5]
+;replace yyyyyyyy with an ID from item-list below
+2001640c yyyyyyyy
+20016410 00000001
+Group:\
+
+Group: Have item in inventory-slot 6 (SAVESLOT 1)
+[Have item in slot 6]
+;replace yyyyyyyy with an ID from item-list below
+20016414 yyyyyyyy
+20016418 00000001
+Group:\
+
+Group: Have item in inventory-slot 7 (SAVESLOT 1)
+[Have item in slot 7]
+;replace yyyyyyyy with an ID from item-list below
+2001641c yyyyyyyy
+20016420 00000001
+Group:\
+
+Group: Have item in inventory-slot 8 (SAVESLOT 1)
+[Have item in slot 8]
+;replace yyyyyyyy with an ID from item-list below
+20016424 yyyyyyyy
+20016428 00000001
+Group:\
+
+
+;Group: List of item IDs to replace yyyyyyyy (only list not codes)
+
+ 
+;Silver survival knife (Jill)
+; 00000001
+
+;Grey survival knife (Chris)
+; 00000002
+
+;Handgun - Stars custom 9mm
+; 00000003
+
+;Self defense gun
+; 00000004
+
+;Handgun - S&W .40 (inf. ammo)
+; 00000005
+
+;Shotgun
+; 00000006
+
+;Grenade Launcher - Normal (Jill)
+; 00000007
+
+;Grenade Launcher - Acid (Jill)
+; 00000008
+
+;Grenade Launcher - Incendiary (Jill)
+; 00000009
+
+;Rocket Launcher
+; 0000000A
+
+;Magnum Revolver
+; 0000000B
+
+;Flame Thrower (Chris)
+; 0000000C
+
+;Assault shotgun
+; 0000000D
+
+;Rocket Launcher - Fire and Forget
+; 0000000E
+
+;Barrys 44 Magnum
+; 0000000F
+
+;Grenade Shells
+; 00000010
+
+;Handgun Magazine
+; 00000011
+
+;Shotgun shells
+; 00000012
+
+;Acid shells
+; 00000013
+
+;Incendiary shells
+; 00000014
+
+;Golden Arrow
+; 00000015
+
+;Book of curse
+; 00000016
+
+;Coin
+; 00000017
+
+;Collar
+; 00000018
+
+;Magnum rounds
+; 00000019
+
+;Broach
+; 0000001A
+
+;Fuel Canteen
+; 0000001B
+
+;Arrowhead
+; 0000001C
+
+;Imitation of a key
+; 0000001D
+
+;Residence key - Gallery
+; 0000001E
+
+;Fuel supply capsule
+; 0000001F
+
+;Musical score - incomplete
+; 00000020
+
+;First aid spray
+; 00000021
+
+;Green herb
+; 00000022
+
+;Red herb
+; 00000023
+
+;Blue herb
+; 00000024
+
+;Mixed herb - Green/small
+; 00000025
+
+;Mixed herb - Green/large
+; 00000026
+
+;Mixed herb - Red/green/small
+; 00000027
+
+;Mixed herb - Red/green/large
+; 00000028
+
+;Mixed herb - Blue/green/small
+; 00000029
+
+;Mixed herb - Blue/green/large
+; 0000002A
+
+;Lockpicks
+; 0000002B
+
+;Old key
+; 0000002C
+
+;Sword key
+; 0000002D
+
+;Armor key
+; 0000002E
+
+;Shield key
+; 0000002F
+
+;Helmet key
+; 00000030
+
+;Room 001 key
+; 00000031
+
+;Room 003 key
+; 00000032
+
+;Medal of eagle
+; 00000033
+
+;Medal of wolf
+; 00000034
+
+;Stone & metal object
+; 00000035
+
+;Lab key - Power
+; 00000036
+
+;Master key
+; 00000037
+
+;Star crest
+; 00000038
+
+;Wind crest
+; 00000039
+
+;Sun crest
+; 0000003A
+
+;Moon crest
+; 0000003B
+
+;Crank - square
+; 0000003C
+
+;Crank - Hex
+; 0000003D
+
+;Closet key
+; 0000003E
+
+;Emblem key
+; 0000003F
+
+;Stone ring
+; 00000040
+
+;Metal object
+; 00000041
+
+;Survival knife 2
+; 00000042
+
+;Battery
+; 00000043
+
+;Ink ribbons
+; 00000044
+
+;Emblem
+; 00000045
+
+;Gold emblem
+; 00000046
+
+;Musical score - complete
+; 00000047
+
+;Red gemstone
+; 00000048
+
+;Blue gemstone
+; 00000049
+
+;Yellow gemstone
+; 0000004A
+
+;Broken shotgun
+; 0000004B
+
+;Herbicide
+; 0000004C
+
+;Lighter
+; 0000004D
+
+;Serum
+; 0000004E
+
+;Transceiver
+; 0000004F
+
+;Empty acid bottle
+; 00000050
+
+;Water bottle
+; 00000051
+
+;UMB No 3 bottle
+; 00000052
+
+;NP-004 bottle
+; 00000053
+
+;Yellow - 6 bottle
+; 00000054
+
+;UMB No 7 bottle
+; 00000055
+
+;UMB No 10 bottle
+; 00000056
+
+;VP - 017 bottle
+; 00000057
+
+;V jolt bottle
+; 00000058
+
+;Red book
+; 0000005A
+
+;Last book vol 1
+; 0000005B
+
+;Last book vol 2
+; 0000005C
+
+;MO disc
+; 0000005D
+
+;MO disc1
+; 0000005E
+
+;MO disc2
+; 0000005F
+
+;Dog whistle
+; 00000060
+
+;Fuse unit
+; 00000061
+
+;Capsule
+; 00000062
+
+;Jewellery box - white
+; 00000063
+
+;Insecticide spray
+; 00000064
+
+;First aid box
+; 00000065
+
+;Jewellery box - orange
+; 00000066
+
+;Jewellery box - white 2
+; 00000067
+
+;First aid box1
+; 00000068
+
+;First aid box2
+; 00000069
+
+;First aid box3
+; 00000083
+
+;First aid box4
+; 00000084
+
+;Signal rockets
+; 0000006A
+
+;Broken flamethrower
+; 0000006B
+
+;Wooden mount
+; 0000006C
+
+;Slide filter
+; 0000006D
+
+;Control room key
+; 0000006E
+
+;Fuel supply capsule1
+; 0000006F
+
+;Selfdefense dagger
+; 00000070
+
+;Flash grenade
+; 00000071
+
+;Stun gun
+; 00000072
+
+;Bee specimen
+; 00000073
+
+;Lure of a bee
+; 00000074
+
+;Fish hook
+; 00000075
+
+;Lure of a bee + fish hook
+; 00000076
+
+;X-Ray - 'Clark David'
+; 00000077
+
+;X-Ray - 'Gail Holland'
+; 00000078
+
+;Battery pack
+; 00000079
+
+;Shaft
+; 0000007A
+
+;Cylinder
+; 0000007B
+
+;Cylinder shaft
+; 0000007C
+
+;Death mask - no eyes,nose or mouth
+; 0000007D
+
+;Death mask - no eyes
+; 0000007E
+
+;Death mask - no nose
+; 0000007F
+
+;Death mask - mouth
+; 00000080
+
+;Musical score - 1 page
+; 00000081
+
+;Map
+; 00000082
+ 
+Group:\
+
+
+
+Group: chars 
+[claire max sp]
+2000C1B8 0000270F
+
+[barry max SP]
+2000BD68 0000270f
+
+[gina max sp]
+2000D2F8 0000270f
+
+[wesker max sp]
+2000D8B8 0000270F
+
+[hunk max sp]
+2000DA28 0000270f
+
+[moira max sp]
+2000C778 0000270f
+
+[Jill max SP]
+2000D748 0000270f
+
+[cipher max SP]
+2000DB98 0000270f
+
+[Leon max Sp]
+2000D5D8 0000270f
+
+[Pedro max SP]
+2000CD38 0000270f
+
+[Gabe max SP]
+2000D018 0000270f
+
+[Group:Max LV Raid]
+
+[JILL lv100]
+2000B918 00000064
+
+[HUNK lvl100]
+2000B923 00000064
+
+[BARRY lvl100]
+2000B8D3 00000064
+
+[CLAIRE lvl100]
+2000B8DF 00000064
+
+[MOIRA lvl100]
+2000B8EF 00000064
+
+[PEDRO lvl100]
+2000B8FF 00000064
+
+[GINA lvl100]
+2000B90F 00000064
+
+[LEON lvl100]
+2000B917 00000064
+
+[GABE lvl100]
+2000B907 00000064
+
+[Cipher lvl100]
+2000B927 00000064
+
+[WESKER lvl100]
+2000B917 00000064
+
+[Group:Gun Mod Raid]
+
+[Sniper Modd]
+write at 0x0000DDC6:0x01280000
+write at 0x0000DDD3:0x64000000
+write at 0x0000DDD6:0x00060000
+write at 0x0000DDDB:0x59000040
+write at 0x0000DDDa:0x01630000
+write at 0x0000DDDE:0x03630000
+write at 0x0000DDE2:0x29630000
+write at 0x0000DDE6:0x39590000
+write at 0x0000DDEA:0x42590000
+write at 0x0000DDEE:0x53500000
+write at 0x0000DDF2:0x270F0000
+write at 0x0000DDF7:0xFF000000
+write at 0x0000DDFB:0xFF000000
+
+[pistolet modd]
+write at 0x0000DFF6:0x01090000
+write at 0x0000E003:0x64000000
+write at 0x0000E006:0x00060000
+write at 0x0000DFF7:0x09000000
+write at 0x0000E00A:0x01630000
+write at 0x0000E00E:0x03630000
+write at 0x0000E012:0x29630000
+write at 0x0000E016:0x39590000
+write at 0x0000E01A:0x42590000
+write at 0x0000E01E:0x53500000
+write at 0x0000E022:0x270F0000
+write at 0x0000E027:0xFF000000
+write at 0x0000E02B:0xFF000001
+
+Group

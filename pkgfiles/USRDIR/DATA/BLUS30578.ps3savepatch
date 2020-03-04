@@ -1,0 +1,11 @@
+;BLUS30578
+;Hasbro Family Game Night 3
+
+:PROFILE.DAT
+
+[Update DWADD (Required)]
+set [csum]:0
+;set [csum]:dwadd(0x000004,0x0007FF)
+set pointer:eof+1
+set [csum]:dwadd(0x000004,pointer)
+write at 0x000000:[csum]

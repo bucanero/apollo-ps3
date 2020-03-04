@@ -1,0 +1,17 @@
+; BLJM6107
+; Hatsune Miku Project Diva F2nd
+
+[9999999 DIVA point]
+20037AC0 0098967F
+
+[9999999 Total DIVA point]
+20037AC4 0098967F
+
+
+
+[Update CRC32 for SECURE.BIN (Required)]
+;set range:0x000010,0x03A65F
+set pointer:eof+1
+set range:0x000010,pointer
+set [hash]:CRC32
+write at 0x000008:[hash]

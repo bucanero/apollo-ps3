@@ -1,0 +1,669 @@
+;NPUB30181
+;Castle Crashers (PSN)
+From zeick (Using BSD's Patch Creator)
+
+:CC_0.DAT
+
+; --- GREEN KNIGHT ---
+[money 999999]
+write at 0x0000003B:000F423F
+[xp points lvl99]
+write at 0x0000002A:0FFFFFFF
+[Strength max]
+write at 0x00000030:19
+[magic max]
+write at 0x00000031:19
+[defense max]
+write at 0x00000032:19
+[agility]
+write at 0x00000033:19
+[99 potion]
+write at 0x00000037:63
+[99 sandwich]
+write at 0x00000038:63
+[99 bomb]
+write at 0x00000039:63
+[goldskull unlock insane difficulty]
+write at 0x0000005D:02
+
+; --- RED KNIGHT ---
+[money 999999]
+write at 0x0000007B:000F423F
+[xp points lvl99]
+write at 0x0000006A:0FFFFFFF
+[Strength max]
+write at 0x00000070:19
+[magic max]
+write at 0x00000071:19
+[defense max]
+write at 0x00000072:19
+[agility]
+write at 0x00000073:19
+[99 potion]
+write at 0x00000077:63
+[99 sandwich]
+write at 0x00000078:63
+[99 bomb]
+write at 0x00000079:63
+[goldskull unlock insane difficulty]
+write at 0x0000009D:02
+
+; --- BLUE KNIGHT ---
+[money 999999]
+write at 0x000000BB:000F423F
+[xp points lvl99]
+write at 0x000000AA:0FFFFFFF
+[Strength max]
+write at 0x000000B0:19
+[magic max]
+write at 0x000000B1:19
+[defense max]
+write at 0x000000B2:19
+[agility]
+write at 0x000000B3:19
+[99 potion]
+write at 0x000000B7:63
+[99 sandwich]
+write at 0x000000B8:63
+[99 bomb]
+write at 0x000000B9:63
+[goldskull unlock insane difficulty]
+write at 0x000000DD:02
+
+; --- ORANGE KNIGHT ---
+[money 999999]
+write at 0x000000FB:000F423F
+[xp points lvl99]
+write at 0x000000EA:0FFFFFFF
+[Strength max]
+write at 0x000000F0:19
+[magic max]
+write at 0x000000F1:19
+[defense max]
+write at 0x000000F2:19
+[agility]
+write at 0x000000F3:19
+[99 potion]
+write at 0x000000F7:63
+[99 sandwich]
+write at 0x000000F8:63
+[99 bomb]
+write at 0x000000F9:63
+[goldskull unlock insane difficulty]
+write at 0x0000011D:02
+
+; --- GREY KNIGHT ---
+[unlock GREY KNIGHT]
+write at 0x00000128:80
+[money 999999]
+write at 0x0000013B:000F423F
+[xp points lvl99]
+write at 0x0000012A:0FFFFFFF
+[Strength max]
+write at 0x00000130:19
+[magic max]
+write at 0x00000131:19
+[defense max]
+write at 0x00000132:19
+[agility]
+write at 0x00000133:19
+[99 potion]
+write at 0x00000137:63
+[99 sandwich]
+write at 0x00000138:63
+[99 bomb]
+write at 0x00000139:63
+[goldskull unlock insane difficulty]
+write at 0x0000015D:02
+
+; --- BARBARIAN ---
+[unlock BARBARIAN]
+write at 0x00000168:80
+[money 999999]
+write at 0x0000017B:000F423F
+[xp points lvl99]
+write at 0x0000016A:0FFFFFFF
+[Strength max]
+write at 0x00000170:19
+[magic max]
+write at 0x00000171:19
+[defense max]
+write at 0x00000172:19
+[agility]
+write at 0x00000173:19
+[99 potion]
+write at 0x00000177:63
+[99 sandwich]
+write at 0x00000178:63
+[99 bomb]
+write at 0x00000179:63
+[goldskull unlock insane difficulty]
+write at 0x0000019D:02
+
+; --- THIEF ---
+[unlock THIEF]
+write at 0x000001A8:80
+[money 999999]
+write at 0x000001BB:000F423F
+[xp points lvl99]
+write at 0x000001AA:0FFFFFFF
+[Strength max]
+write at 0x000001B0:19
+[magic max]
+write at 0x000001B1:19
+[defense max]
+write at 0x000001B2:19
+[agility]
+write at 0x000001B3:19
+[99 potion]
+write at 0x000001B7:63
+[99 sandwich]
+write at 0x000001B8:63
+[99 bomb]
+write at 0x000001B9:63
+[goldskull unlock insane difficulty]
+write at 0x000001DD:02
+
+; --- FENCER ---
+[unlock FENCER]
+write at 0x000001E8:80
+[money 999999]
+write at 0x000001FB:000F423F
+[xp points lvl99]
+write at 0x000001EA:0FFFFFFF
+[Strength max]
+write at 0x000001F0:19
+[magic max]
+write at 0x000001F1:19
+[defense max]
+write at 0x000001F2:19
+[agility]
+write at 0x000001F3:19
+[99 potion]
+write at 0x000001F7:63
+[99 sandwich]
+write at 0x000001F8:63
+[99 bomb]
+write at 0x000001F9:63
+[goldskull unlock insane difficulty]
+write at 0x0000021D:02
+
+; --- KILLER BEEKEEPER ---
+[unlock KILLER BEEKEEPER]
+write at 0x00000228:80
+[money 999999]
+write at 0x0000023B:000F423F
+[xp points lvl99]
+write at 0x0000022A:0FFFFFFF
+[Strength max]
+write at 0x00000230:19
+[magic max]
+write at 0x00000231:19
+[defense max]
+write at 0x00000232:19
+[agility]
+write at 0x00000233:19
+[99 potion]
+write at 0x00000237:63
+[99 sandwich]
+write at 0x00000238:63
+[99 bomb]
+write at 0x00000239:63
+[goldskull unlock insane difficulty]
+write at 0x0000025D:02
+
+; --- INDUSTRIALIST ---
+[unlock INDUSTRIALIST]
+write at 0x00000268:80
+[money 999999]
+write at 0x0000027B:000F423F
+[xp points lvl99]
+write at 0x0000026A:0FFFFFFF
+[Strength max]
+write at 0x00000270:19
+[magic max]
+write at 0x00000271:19
+[defense max]
+write at 0x00000272:19
+[agility]
+write at 0x00000273:19
+[99 potion]
+write at 0x00000277:63
+[99 sandwich]
+write at 0x00000278:63
+[99 bomb]
+write at 0x00000279:63
+[goldskull unlock insane difficulty]
+write at 0x0000029D:02
+
+; --- ALIEN ---
+[unlock ALIEN]
+write at 0x000002A8:80
+[money 999999]
+write at 0x000002BB:000F423F
+[xp points lvl99]
+write at 0x000002AA:0FFFFFFF
+[Strength max]
+write at 0x000002B0:19
+[magic max]
+write at 0x000002B1:19
+[defense max]
+write at 0x000002B2:19
+[agility]
+write at 0x000002B3:19
+[99 potion]
+write at 0x000002B7:63
+[99 sandwich]
+write at 0x000002B8:63
+[99 bomb]
+write at 0x000002B9:63
+[goldskull unlock insane difficulty]
+write at 0x000002DD:02
+
+; --- KING ---
+[unlock KING]
+write at 0x000002E8:80
+[money 999999]
+write at 0x000002FB:000F423F
+[xp points lvl99]
+write at 0x000002EA:0FFFFFFF
+[Strength max]
+write at 0x000002F0:19
+[magic max]
+write at 0x000002F1:19
+[defense max]
+write at 0x000002F2:19
+[agility]
+write at 0x000002F3:19
+[99 potion]
+write at 0x000002F7:63
+[99 sandwich]
+write at 0x000002F8:63
+[99 bomb]
+write at 0x000002F9:63
+[goldskull unlock insane difficulty]
+write at 0x0000031D:02
+
+; --- BRUTE ---
+[unlock BRUTE]
+write at 0x00000328:80
+[money 999999]
+write at 0x0000033B:000F423F
+[xp points lvl99]
+write at 0x0000032A:0FFFFFFF
+[Strength max]
+write at 0x00000330:19
+[magic max]
+write at 0x00000331:19
+[defense max]
+write at 0x00000332:19
+[agility]
+write at 0x00000333:19
+[99 potion]
+write at 0x00000337:63
+[99 sandwich]
+write at 0x00000338:63
+[99 bomb]
+write at 0x00000339:63
+[goldskull unlock insane difficulty]
+write at 0x0000035D:02
+
+; --- SNAKEY ---
+[unlock SNAKEY]
+write at 0x00000368:80
+[money 999999]
+write at 0x0000037B:000F423F
+[xp points lvl99]
+write at 0x0000036A:0FFFFFFF
+[Strength max]
+write at 0x00000370:19
+[magic max]
+write at 0x00000371:19
+[defense max]
+write at 0x00000372:19
+[agility]
+write at 0x00000373:19
+[99 potion]
+write at 0x00000377:63
+[99 sandwich]
+write at 0x00000378:63
+[99 bomb]
+write at 0x00000379:63
+[goldskull unlock insane difficulty]
+write at 0x0000039D:02
+
+; --- SARACEN ---
+[unlock SARACEN]
+write at 0x000003A8:80
+[money 999999]
+write at 0x000003BB:000F423F
+[xp points lvl99]
+write at 0x000003AA:0FFFFFFF
+[Strength max]
+write at 0x000003B0:19
+[magic max]
+write at 0x000003B1:19
+[defense max]
+write at 0x000003B2:19
+[agility]
+write at 0x000003B3:19
+[99 potion]
+write at 0x000003B7:63
+[99 sandwich]
+write at 0x000003B8:63
+[99 bomb]
+write at 0x000003B9:63
+[goldskull unlock insane difficulty]
+write at 0x000003DD:02
+
+; --- ROYAL GUARD ---
+[unlock ROYAL GUARD]
+write at 0x000003E8:80
+[money 999999]
+write at 0x000003FB:000F423F
+[xp points lvl99]
+write at 0x000003EA:0FFFFFFF
+[Strength max]
+write at 0x000003F0:19
+[magic max]
+write at 0x000003F1:19
+[defense max]
+write at 0x000003F2:19
+[agility]
+write at 0x000003F3:19
+[99 potion]
+write at 0x000003F7:63
+[99 sandwich]
+write at 0x000003F8:63
+[99 bomb]
+write at 0x000003F9:63
+[goldskull unlock insane difficulty]
+write at 0x0000041D:02
+
+; --- STOVE FACE ---
+[unlock STOVE FACE]
+write at 0x00000428:80
+[money 999999]
+write at 0x0000043B:000F423F
+[xp points lvl99]
+write at 0x0000042A:0FFFFFFF
+[Strength max]
+write at 0x00000430:19
+[magic max]
+write at 0x00000431:19
+[defense max]
+write at 0x00000432:19
+[agility]
+write at 0x00000433:19
+[99 potion]
+write at 0x00000437:63
+[99 sandwich]
+write at 0x00000438:63
+[99 bomb]
+write at 0x00000439:63
+[goldskull unlock insane difficulty]
+write at 0x0000045D:02
+
+; --- PEASANT ---
+[unlock PEASANT]
+write at 0x00000468:80
+[money 999999]
+write at 0x0000047B:000F423F
+[xp points lvl99]
+write at 0x0000046A:0FFFFFFF
+[Strength max]
+write at 0x00000470:19
+[magic max]
+write at 0x00000471:19
+[defense max]
+write at 0x00000472:19
+[agility]
+write at 0x00000473:19
+[99 potion]
+write at 0x00000477:63
+[99 sandwich]
+write at 0x00000478:63
+[99 bomb]
+write at 0x00000479:63
+[goldskull unlock insane difficulty]
+write at 0x0000049D:02
+
+; --- BEAR ---
+[unlock BEAR]
+write at 0x000004A8:80
+[money 999999]
+write at 0x000004BB:000F423F
+[xp points lvl99]
+write at 0x000004AA:0FFFFFFF
+[Strength max]
+write at 0x000004B0:19
+[magic max]
+write at 0x000004B1:19
+[defense max]
+write at 0x000004B2:19
+[agility]
+write at 0x000004B3:19
+[99 potion]
+write at 0x000004B7:63
+[99 sandwich]
+write at 0x000004B8:63
+[99 bomb]
+write at 0x000004B9:63
+[goldskull unlock insane difficulty]
+write at 0x000004DD:02
+
+; --- NECROMANCER ---
+[unlock NECROMANCER]
+write at 0x000004E8:80
+[money 999999]
+write at 0x000004FB:000F423F
+[xp points lvl99]
+write at 0x000004EA:0FFFFFFF
+[Strength max]
+write at 0x000004F0:19
+[magic max]
+write at 0x000004F1:19
+[defense max]
+write at 0x000004F2:19
+[agility]
+write at 0x000004F3:19
+[99 potion]
+write at 0x000004F7:63
+[99 sandwich]
+write at 0x000004F8:63
+[99 bomb]
+write at 0x000004F9:63
+[goldskull unlock insane difficulty]
+write at 0x0000051D:02
+
+; --- CONE HEAD ---
+[unlock CONE HEAD]
+write at 0x00000528:80
+[money 999999]
+write at 0x0000053B:000F423F
+[xp points lvl99]
+write at 0x0000052A:0FFFFFFF
+[Strength max]
+write at 0x00000530:19
+[magic max]
+write at 0x00000531:19
+[defense max]
+write at 0x00000532:19
+[agility]
+write at 0x00000533:19
+[99 potion]
+write at 0x00000537:63
+[99 sandwich]
+write at 0x00000538:63
+[99 bomb]
+write at 0x00000539:63
+[goldskull unlock insane difficulty]
+write at 0x0000055D:02
+
+; --- CIVILIAN ---
+[unlock CIVILIAN]
+write at 0x00000568:80
+[money 999999]
+write at 0x0000057B:000F423F
+[xp points lvl99]
+write at 0x0000056A:0FFFFFFF
+[Strength max]
+write at 0x00000570:19
+[magic max]
+write at 0x00000571:19
+[defense max]
+write at 0x00000572:19
+[agility]
+write at 0x00000573:19
+[99 potion]
+write at 0x00000577:63
+[99 sandwich]
+write at 0x00000578:63
+[99 bomb]
+write at 0x00000579:63
+[goldskull unlock insane difficulty]
+write at 0x0000059D:02
+
+; --- OPEN FACED GREY KNIGHT ---
+[unlock OPEN FACED GREY KNIGHT]
+write at 0x000005A8:80
+[money 999999]
+write at 0x000005BB:000F423F
+[xp points lvl99]
+write at 0x000005AA:0FFFFFFF
+[Strength max]
+write at 0x000005B0:19
+[magic max]
+write at 0x000005B1:19
+[defense max]
+write at 0x000005B2:19
+[agility]
+write at 0x000005B3:19
+[99 potion]
+write at 0x000005B7:63
+[99 sandwich]
+write at 0x000005B8:63
+[99 bomb]
+write at 0x000005B9:63
+[goldskull unlock insane difficulty]
+write at 0x000005DD:02
+
+; --- FIRE DEMON ---
+[unlock FIRE DEMON]
+write at 0x000005E8:80
+[money 999999]
+write at 0x000005FB:000F423F
+[xp points lvl99]
+write at 0x000005EA:0FFFFFFF
+[Strength max]
+write at 0x000005F0:19
+[magic max]
+write at 0x000005F1:19
+[defense max]
+write at 0x000005F2:19
+[agility]
+write at 0x000005F3:19
+[99 potion]
+write at 0x000005F7:63
+[99 sandwich]
+write at 0x000005F8:63
+[99 bomb]
+write at 0x000005F9:63
+[goldskull unlock insane difficulty]
+write at 0x0000061D:02
+
+; --- SKELETON ---
+[unlock SKELETON]
+write at 0x00000628:80
+[money 999999]
+write at 0x0000063B:000F423F
+[xp points lvl99]
+write at 0x0000062A:0FFFFFFF
+[Strength max]
+write at 0x00000630:19
+[magic max]
+write at 0x00000631:19
+[defense max]
+write at 0x00000632:19
+[agility]
+write at 0x00000633:19
+[99 potion]
+write at 0x00000637:63
+[99 sandwich]
+write at 0x00000638:63
+[99 bomb]
+write at 0x00000639:63
+[goldskull unlock insane difficulty]
+write at 0x0000065D:02
+
+; --- ICESKIMO ---
+[unlock ICESKIMO]
+write at 0x00000668:80
+[money 999999]
+write at 0x0000067B:000F423F
+[xp points lvl99]
+write at 0x0000066A:0FFFFFFF
+[Strength max]
+write at 0x00000670:19
+[magic max]
+write at 0x00000671:19
+[defense max]
+write at 0x00000672:19
+[agility]
+write at 0x00000673:19
+[99 potion]
+write at 0x00000677:63
+[99 sandwich]
+write at 0x00000678:63
+[99 bomb]
+write at 0x00000679:63
+[goldskull unlock insane difficulty]
+write at 0x0000069D:02
+
+; --- NINJA ---
+[unlock NINJA]
+write at 0x00000668:80
+[money 999999]
+write at 0x0000067B:000F423F
+[xp points lvl99]
+write at 0x0000066A:0FFFFFFF
+[Strength max]
+write at 0x00000670:19
+[magic max]
+write at 0x00000671:19
+[defense max]
+write at 0x00000672:19
+[agility]
+write at 0x00000673:19
+[99 potion]
+write at 0x00000677:63
+[99 sandwich]
+write at 0x00000678:63
+[99 bomb]
+write at 0x00000679:63
+[goldskull unlock insane difficulty]
+write at 0x0000069D:02
+
+; --- CULT MINION ---
+[unlock CULT MINION]
+write at 0x000006A8:80
+[money 999999]
+write at 0x000006BB:000F423F
+[xp points lvl99]
+write at 0x000006AA:0FFFFFFF
+[Strength max]
+write at 0x000006B0:19
+[magic max]
+write at 0x000006B1:19
+[defense max]
+write at 0x000006B2:19
+[agility]
+write at 0x000006B3:19
+[99 potion]
+write at 0x000006B7:63
+[99 sandwich]
+write at 0x000006B8:63
+[99 bomb]
+write at 0x000006B9:63
+[goldskull unlock insane difficulty]
+write at 0x000006DD:02

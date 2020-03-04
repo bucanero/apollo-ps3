@@ -1,0 +1,38 @@
+; BLUS31444
+; RESIDENT EVIL REVELATIONS 2
+
+ By Dark Nacho
+:DATA0.DAT
+
+[Max PB]
+20000E68 3B9AC9FF
+
+[Max Blue Heart]
+0001547B 00000063
+
+[Max Gold Coins]
+2000B9EC 3B9AC9FF
+
+[All Raid Weapons MAX]
+4000DDD3 00000005
+40180070 00000000
+4000DDD7 00000064
+40180070 00000000
+
+[Unlimited RocktLuncher Raid (Slot1)]
+1000DDC6 0000013B
+
+
+Group: how to use
+
+
+[1.- Download my Save Editor for RE REv2]
+[2.- Decrypt with BSD]
+[3.- On my SE go to extra tools -> Decrypter -> Decrypt , and decrypt the sabe]
+[4.- Apply Cheats on BSD]
+[5.- On my SE Extra tools -> Checksum Fixer and apply it]
+[6.- On my SE Extra tools -> Decrypter -> Enrypt and encrypt the sabe]
+[7.- On BSD Encrypt the save]
+[8.- Enjoy your mod save]
+
+Group:

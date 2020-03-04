@@ -1,0 +1,11 @@
+;BLES00962
+;Homefront
+
+:PAYLOAD
+
+[Update CRC32Big for PAYLOAD (Required)]
+;set range:0x000004,0x0004EE
+set pointer:eof+1
+set range:0x000004,pointer
+set [hash]:CRC32Big
+write at 0x000000:[hash]

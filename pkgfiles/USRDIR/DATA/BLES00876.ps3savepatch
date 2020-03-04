@@ -1,0 +1,17 @@
+;BLES00876
+;Toy Story 3
+
+:SAVE
+
+[Update CRC-16 CCITT for SAVE (Required)]
+set crc_bandwidth:16
+set crc_polynomial:0x1021
+set crc_initial_value:0xFFFF
+set crc_output_xor:0xFFFFFFFF
+set crc_reflection_input:0
+set crc_reflection_output:0
+;set range:0x0000E4,0x031FFF
+set pointer:eof+1
+set range:0x0000E4,pointer
+set [hash]:crc
+write at 0x000064:[hash]

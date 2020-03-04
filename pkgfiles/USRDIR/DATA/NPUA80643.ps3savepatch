@@ -1,0 +1,8 @@
+; Ratchet & Clank (PSN) / Ratchet & Clank Collection
+; NPUA80643
+;From Game Genie For PS3
+
+:NPUA80643_RC1_SAVEDATA_*\USR-DATA
+
+[Max Bolts]
+20000024 05F5E0FF

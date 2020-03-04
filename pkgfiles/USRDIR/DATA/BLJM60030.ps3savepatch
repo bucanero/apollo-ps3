@@ -1,0 +1,20 @@
+; BLJM60030
+; Tony Hawk's Project 8
+
+;From aldotools
+
+:ABCA1484.PRG
+
+[Update CRC32 for ABCA1484.PRG (Required)]
+; Checksum offset is located within the checksum range.
+write at 0x000000:00000000  ;Initializing checksum with null bytes
+;----------------------------
+set [eof]:read(0xC,4)
+set [eof]:[eof]-1
+set range:0x000000,[eof]
+set [hash]:CRC32
+set [hash]:xor:FFFFFFFF
+write at 0x000000:[hash]
+;write at 0x000000:B22F5599
+
+

@@ -1,0 +1,95 @@
+; NPEB01970
+; DYNASTY WARRIORS 8: Xtreme Legends / Shin Sangoku Musou 7: Xtreme Legends
+
+:SAVEDATA\APP.BIN
+
+[All Generals Max Exp]
+42007FE4 002C7905
+40520048 00000000
+
+[All Generals Attack/Defense/Physical Strength Max]
+42007FD5 DC05DC05
+40520048 00000000
+41007FD9 0000E803
+40520048 00000000
+
+[All Generals Aptitude 4-Stars]
+42007FDB 64646464
+40520048 00000000
+
+[All Weapon Atributes LV.10]
+4200E721 0A0A0A0A
+47260018 00000000
+4100E725 00000A0A
+47260018 00000000
+
+[Max Gold]
+20000105 7F969800
+
+[Facility Materials/Weapons Materials Max]
+2001F6D1 0F270F27
+
+[All Bonds Max]
+41009BF1 00006363
+4346000C 00000000
+
+[All Guards Battle Skill LV.9]
+40009BE9 00000009
+4346000C 00000000
+
+[All Support Beasts Movement Speed 400]
+4101DF11 00009001
+40460018 00000000
+
+[All Weapon Attack Power 255]
+4000E71a 000000FF
+47260018 00000000
+
+;Zero4ph
+
+[All Weapon Attributes Slots Attribute]
+4200E71b 03070c14
+47260018 00000000
+4100E71f 00001521
+47260018 00000000
+
+[Beast Breakthrough Power Max]
+4101DF17 000003E8
+40460018 00000000
+
+[Beast 3 Skills]
+4101DF1d 0a0b0c0d
+40460018 00000000
+
+[Breakthrough Power Max]
+4101DF17 0000FFFF
+40460018 00000000
+
+[All Abilities Skill LV.20]
+4100C63D 00000114
+40120002 00000000
+
+
+; ---easy trophys ---
+
+[Group:Challenge Mode Codes]
+
+[Rampage 1st Place Score Mod (Just Win for Trophy)]
+1001FF2D 00000000
+
+[Bridge Melee 1st Place Score Mod (Just Win for Trophy)]
+100200BD 00000000
+
+[Speed Run 1st Place Time Mod (Just Win for Trophy)]
+1002024D 0000FFFF
+
+[Arena 1st Place Score Mod (Just Win for Trophy)]
+100203DD 00000000
+
+[Inferno Times 1st Place Score Mod (Just Win for Trophy)]
+1002056D 0000FFFF
+
+
+
+
+

@@ -1,0 +1,11 @@
+; NPEB01280
+; Magrunner: Dark Pulse (PSN)
+
+:PAYLOAD
+
+[Update SHA1 for PAYLOAD (Required)]
+;set range:0x000018,0x002ED7
+set pointer:eof+1
+set range:0x000018,pointer
+set [hash]:SHA1
+write at 0x000000:[hash]

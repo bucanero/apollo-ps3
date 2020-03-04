@@ -1,0 +1,20 @@
+;BLUS30935
+;Star Trek
+
+:SETTINGS
+
+[Update MD5 (Required)]
+;set range:0x000010,0x04218B
+set pointer:eof+1
+set range:0x000010,pointer
+set [hash]:MD5
+write at 0x000000:[hash]
+
+:CONTINUE.SAV
+
+[Update MD5 (Required)]
+;set range:0x000010,0x04218B
+set pointer:eof+1
+set range:0x000010,pointer
+set [hash]:MD5
+write at 0x000000:[hash]

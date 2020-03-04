@@ -1,0 +1,86 @@
+;BLES00599
+;Bayonetta
+;From zeick
+ 
+:CNTDAT
+
+[9999999 Halos]
+write at 0x0000EF44:0098967F
+write at 0x0000EF48:0098967F
+
+[99999 Compound Yellow]
+write at 0x0000EF5A:270F
+
+[99999 Compound Green]
+write at 0x0000EF5E:270F
+
+[99999 Compound Red]
+write at 0x0000EF62:270F
+
+[99999 Green Herb]
+write at 0x0000EF66:270F
+
+[99999 Mega Green]
+write at 0x0000EF6A:270F
+
+[99999 Purple Magic]
+write at 0x0000EF6E:270F
+
+[99999 Mega Purple]
+write at 0x0000EF72:270F
+
+[99999 Bloody Rose]
+write at 0x0000EF76:270F
+
+[99999 Mega Bloody]
+write at 0x0000EF7A:270F
+
+[99999 Yellow Moon]
+write at 0x0000EF7E:270F
+
+[99999 Mega Yellow]
+write at 0x0000EF82:270F
+
+[99999 Broken Heart]
+write at 0x0000EF96:270F
+
+[99999 Broken Pearl]
+write at 0x0000EF9E:270F
+
+[99999 Arcade Bullet]
+write at 0x0000EF8A:270F
+
+[99999 Red Hot Shot]
+write at 0x0000EF8E:270F
+
+[99999 Magic Flute]
+write at 0x0000EF86:270F
+
+Group: Update XOR Checksum (Required)
+
+:USRDAT
+
+[Update XOR for USRDAT (Required)]
+set [hash]:0
+;set [hash]:xor(0x000018,0x01294F,4)
+set pointer:eof+1
+set [hash]:xor(0x000018,pointer,4)
+write at 0x000014:[hash]
+
+:SYSDAT
+
+[Update XOR for SYSDAT (Required)]
+set [hash]:0
+;set [hash]:xor(0x000018,0x00153F,4)
+set pointer:eof+1
+set [hash]:xor(0x000018,pointer,4)
+write at 0x000014:[hash]
+
+:CNTDAT
+
+[Update XOR for CNTDAT (Required)]
+set [hash]:0
+;set [hash]:xor(0x000018,0x01294F,4)
+set pointer:eof+1
+set [hash]:xor(0x000018,pointer,4)
+write at 0x000014:[hash]

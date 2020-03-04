@@ -1,0 +1,15 @@
+; Dynasty Warriors: Gundam 3
+; BLES01301
+;From Game Genie For PS3
+
+:DATA.BIN
+
+[Max Money]
+2005353C 05F5E0FF
+
+[Mobile Suit Lab Max Exp]
+20044154 000F423F
+
+[Unlock All Licenses]
+00053547 000000FF
+20053548 FFFFFFFF

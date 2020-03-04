@@ -1,0 +1,11 @@
+; BioShock
+; BLES00316
+;From Game Genie For PS3
+
+:BLES00316-*\MAINSAVE.BSG
+
+; You MUST have at least 1 Dollar to use this cheat.
+[Max Money]
+80010008 02000000
+00220000 00000000
+18000008 0000270F

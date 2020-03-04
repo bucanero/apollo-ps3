@@ -1,0 +1,219 @@
+;BLUS30937
+;Zone of the Enders HD Collection
+; Codes created by Wildfire (AKA Zephyer)
+
+:BLUS30937-ZOE1\GAMEDATA.DAT
+
+[Group:Zone of the Enders HD Edition]
+
+[Group:Zone of the Enders HD Edition\Save Slot 01]
+
+[MAX Level]
+00000001 00000008
+
+[MAX Javelin AMMO]
+1000002E 0000FFFF
+
+[MAX Geyser AMMO]
+10000030 0000FFFF
+
+[MAX Bounder AMMO]
+10000032 0000FFFF
+
+[MAX Phalanx AMMO]
+10000034 0000FFFF
+
+[MAX Halberd AMMO]
+10000036 0000FFFF
+
+[MAX Comet AMMO]
+10000038 0000FFFF
+
+[MAX Gauntlet AMMO]
+1000003A 0000FFFF
+
+[MAX Sniper AMMO]
+1000003C 0000FFFF
+
+[MAX Decoy AMMO]
+1000003E 0000FFFF
+
+[MAX Mummy AMMO]
+10000040 0000FFFF
+
+[MAX Defeated]
+10000046 0000270F
+
+[Number Of Times Saved Always 0]
+10000048 00000000
+
+[Number Of Times Continued Always 0]
+1000004A 00000000
+
+[Towns saved S-Rank]
+2000004C 01010101
+00000050 00000001
+
+[Group:Zone of the Enders HD Edition\Save Slot 02]
+
+[MAX Level]
+0000D0FD 00000008
+
+[Max AMMO - Javelin]
+1000D12A 0000FFFF
+
+[Max AMMO - Geyser]
+1000D12C 0000FFFF
+
+[Max Ammo - Bounder]
+1000D12E 0000FFFF
+
+[Max AMMO - Phalanx]
+1000D130 0000FFFF
+
+[Max AMMO - Halberd]
+1000D134 0000FFFF
+
+[Max AMMO - Comet]
+1000D136 0000FFFF
+
+[Max AMMO - Gauntlet]
+1000D138 0000FFFF
+
+[Max Ammo - Sniper]
+1000D13A 0000FFFF
+
+[Max AMMO - Decoy]
+1000D13C 0000FFFF
+
+[Max AMMO - Mummy]
+1000D13E 0000FFFF
+
+[Max Defeated]
+1000D142 0000270F
+
+[Number Of Times Saved Always 0]
+1000D144 00000000
+
+[Number Of Times Continued Always 0]
+1000D146 00000000
+
+[Towns saved S-Rank]
+2000D148 01010101
+0000D14C 00000001
+
+[Group:Zone of the Enders HD Edition\Save Slot 03]
+
+[MAX Level]
+0001A1F9 00000008
+
+[Max AMMO - Javelin]
+1001A226 000003E7
+
+[Max AMMO - Geyser]
+1001A228 000003E7
+
+[Max AMMO - Bounder]
+1001A22A 000003E7
+
+[Max AMMO - Phalanx]
+1001A22C 000003E7
+
+[Max AMMO - Halberd]
+1001A22E 000003E7
+
+[Max AMMO - Comet]
+1001A230 000003E7
+
+[Max AMMO - Gauntlet]
+1001A232 000003E7
+
+[Max AMMO - Sniper]
+1001A234 000003E7
+
+[Max AMMO - Decoy]
+1001A236 000003E7
+
+[Max AMMO - Mummy]
+1001A238 000003E7
+
+[Max Defeated]
+1001A23E 0000270F
+
+[Number Of Times Saved Always 0]
+1001A240 00000000
+
+[Number Of Times Continued Always 0]
+1001A242 00000000
+
+[Towns saved S-Rank]
+2001A244 01010101
+0001A248 00000001
+
+[Group:Zone of the Enders HD Edition\Save Slot 04]
+
+[Max Level/EXP]
+000272F5 00000008
+
+[Max AMMO - Javelin]
+10027322 000003E7
+
+[Max AMMO - Geyser]
+10027324 000003E7
+
+[Max AMMO - Bounder]
+10027326 000003E7
+
+[Max AMMO - Phalanx]
+10027328 000003E7
+
+[Max AMMO - Halberd]
+1002732A 000003E7
+
+[Max AMMO - Comet]
+1002732C 000003E7
+
+[Max AMMO - Gauntlet]
+1002732E 000003E7
+
+[Max AMMO - Sniper]
+10027330 000003E7
+
+[Max AMMO - Decoy]
+10027332 000003E7
+
+[Max AMMO - Mummy]
+10027334 000003E7
+
+[Max Defeated]
+1002733A 0000270F
+
+[Number Of Times Saved Always 0]
+1002733C 00000000
+
+[Number Of Times Continued Always 0]
+1002733E 00000000
+
+[Towns saved S-Rank]
+20027340 01010101
+00027344 00000001
+
+[Group:Checksum]
+[Update XOR for GAMEDATA.DAT (Required)]
+set [hash]:0
+set [hash]:xor(0x000000,0x7F,1)
+write at 0xCC80:[hash]
+set [hash]:0
+set [hash]:xor(0x00D0FC,0xD17B,1)
+write at 0x19D7C:[hash]
+set [hash]:0
+set [hash]:xor(0x01A1F8,0x1A277,1)
+write at 0x26E78:[hash]
+set [hash]:0
+set [hash]:xor(0x0272F4,0x27373,1)
+write at 0x33F74:[hash]
+
+:BLUS30937-ZOE2\GAMEDATA.DAT
+
+[GROUP:Zone of the Enders: The 2nd Runner HD Edition (Not Working)]
+[INFO:BSD can't decrypt the 2nd layer for this game as of yet and also there is an unknown checksum in place to prevent modifying as well.]

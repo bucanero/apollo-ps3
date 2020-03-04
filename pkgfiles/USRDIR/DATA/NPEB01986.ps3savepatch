@@ -1,0 +1,21 @@
+; NPEB01986
+; Naruto Shippuden: Ultimate Ninja Storm Revolution
+;from danilo_scala
+
+
+:STORMR.S
+
+[Max Ryo]
+write at 0x000001F9:0x98967F
+
+[Max Medals]
+write at 0x000001FD:0x98967F
+
+
+[Infinite Lucky Ticket]
+write at 0x0001872D:0x98967F
+
+[Infinite Ticket]
+write at 0x00018745:0x98967F
+
+

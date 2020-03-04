@@ -1,0 +1,29 @@
+[INFO: Same patches may not be supported by BSD yet]
+; Army of TWO: The Devil's Cartel
+; BLES01767
+; From KE-HA
+
+:USR-DATA
+[Cash $999000]
+8001000A 57616C6C
+65744361 73680000
+2800000F 39393930
+18000013 00003030
+
+;From X-GHOST-X (Using BSD's Patch Creator)
+[Level 25]
+search 0x000B436172656572436173680000000005
+write at 0x000021E1:0x393939303030
+
+;Works after Tutorial 
+[Max Career Cash & Bank Credit (Alt)]
+search "CareerCash"
+write next (15):"999000"
+search "BankCr"
+write next (15):"999000"
+
+[default:Update crc32 (required)]
+set range:0x4,0x63FFF
+set [hash]:crc32
+write at 0x0:[hash]
+write at 0x0:xor:CF012886

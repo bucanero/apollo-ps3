@@ -1,0 +1,10 @@
+; BLES01798
+; Truck Racer
+
+:GAMEDATA
+
+[Max Money]
+
+write at 0x000016F5:0x98967F
+
+

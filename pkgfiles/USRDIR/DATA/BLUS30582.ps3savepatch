@@ -1,0 +1,9 @@
+; BLES01001
+; Knights Contract
+; From SHAkA
+
+:SAVEDATA.DAT
+
+[Max Upgrade Points]
+write at 0x00000809:0x98967F00
+

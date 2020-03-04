@@ -1,0 +1,11 @@
+; BLUS30543
+; VANQUISH
+
+:SAVE2
+
+[Update XOR for SAVE2 (Required)]
+set [hash]:0
+set [hash]:xor(0x000000,0x0000CB,4)
+write at 0x0023AC:[hash]
+
+

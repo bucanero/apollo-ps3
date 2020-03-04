@@ -1,0 +1,258 @@
+[red:INFO: Instructions]
+[red:INFO: Step 1 - Load Save into BSD]
+[red:INFO: Step 2 - Download FFXIII Encryptor from http://ps3cheating.net/external-save-editors/]
+[red:INFO: Step 3 - Press DIRECTORY to load your Save data]
+[red:INFO: Step 4 - Press Decrypt]
+[red:INFO: Step 5 - Copy "~files_decrypted_by_pfdtool.txt" file into the Save Data's root folder]
+[red:INFO: Step 6 - Hit "Refresh" button in BSD. Apply Cheats.]
+[red:INFO: Step 7 - Go back to FFXIII Multi Encryptor and Press Encrypt]
+[red:INFO: Step 8 - Delete "~files_decrypted_by_pfdtool.txt" file from your save folder]
+; Final Fantasy XIII
+; MRTC00003
+;From Game Genie For PS3
+
+:MRTC00003-*\APP.DAT
+
+[Max Money]
+200046B4 3B9AC9FF
+
+[Reset Save Time]
+20004724 00000000
+
+[Group:Main Characters]
+
+[Group:Main Characters\Fang]
+
+[Max CP]
+200246B1 3B9AC9FF
+
+[Max HP]
+200246BD 0001869F
+
+[Max ATB]
+200246C5 0000003C
+
+[Max Strength]
+200246CD 3B9AC9FF
+
+[Max Magic]
+200246D1 3B9AC9FF
+
+[Group:Main Characters\Hope]
+
+[Max CP]
+200261B1 3B9AC9FF
+
+[Max HP]
+200261BD 0001869F
+
+[Max ATB]
+200261C5 0000003C
+
+[Max Strength]
+200261CD 3B9AC9FF
+
+[Max Magic]
+200261D1 3B9AC9FF
+
+[Group:Main Characters\Lightning]
+
+[Max CP]
+20027CB1 3B9AC9FF
+
+[Max HP]
+20027CBD 0001869F
+
+[Max ATB]
+20027CC5 0000003C
+
+[Max Strength]
+20027CCD 3B9AC9FF
+
+[Max Magic]
+20027CD1 3B9AC9FF
+
+[Group:Main Characters\Sazh]
+
+[Max CP]
+20028A31 3B9AC9FF
+
+[Max HP]
+20028A3D 0001869F
+
+[Max ATB]
+20028A45 0000003C
+
+[Max Strength]
+20028A4D 3B9AC9FF
+
+[Max Magic]
+20028A51 3B9AC9FF
+
+[Group:Main Characters\Snow]
+
+[Max CP]
+2002A531 3B9AC9FF
+
+[Max HP]
+2002A53D 0001869F
+
+[Max ATB]
+2002A545 0000003C
+
+[Max Strength]
+2002A54D 3B9AC9FF
+
+[Max Magic]
+2002A551 3B9AC9FF
+
+[Group:Main Characters\Vanille]
+
+[Max CP]
+2002B2B1 3B9AC9FF
+
+[Max HP]
+2002B2BD 0001869F
+
+[Max ATB]
+2002B2C5 0000003C
+
+[Max Strength]
+2002B2CD 3B9AC9FF
+
+[Max Magic]
+2002B2D1 3B9AC9FF
+
+[Group:Main Characters (ngu-tripate)]
+[INFO:No change value or you pass in negative stats,it is max value (No Working)]
+
+[Group:Main Characters (ngu-tripate)\Lightning]
+[Lightning Attack - tested ok vfr(Working)]
+write at 0x00027CC9:0F
+
+[Lightning Magic - tested ok vfr(Working)]
+write at 0x00027CD5:8F
+
+[Max CP - tested ok vfr(Working)]
+write at 0x00027CB5:9F
+
+[Max HP - tested ok vfr(Working)]
+write at 0x00027CB9:5F
+
+
+[Group:Main Characters (ngu-tripate)\Hope]
+[hope Attack - tested ok vfr(Working)]
+write at 0x000261C9:63
+
+[hope Magic - tested ok vfr(Working)]
+write at 0x000261D5:09
+
+[hope Max CP - tested ok vfr(Working)]
+write at 0x000261B5:9F
+
+[hope Max HP - tested ok vfr(Working)]
+write at 0x000261B9:5F
+
+[Group:Main Characters (ngu-tripate)\Fang]
+
+[fang Attack - tested ok vfr(Working)]
+write at 0x000246C9:8F
+
+[fang Magic - tested ok vfr(Working)]
+write at 0x000246D5:8F
+
+[fang Max CP - tested ok vfr(Working)]
+write at 0x000246B5:9F
+
+[fang Max HP - tested ok vfr(Working)]
+write at 0x000246B9:5F
+
+[Group:Main Characters (ngu-tripate)\Sazh]
+[sazh Attack - tested ok vfr(Working)]
+write at 0x00028A49:8F
+
+[sazh Magic - tested ok vfr(Working)]
+write at 0x00028A55:09
+
+[sazh Max CP - tested ok vfr(Working)]
+write at 0x00028A35:9F
+
+[sazh Max HP - tested ok vfr(Working)]
+write at 0x00028A39:0F
+
+; --- snow ok---
+[snow Attack - tested ok vfr(Working)]
+write at 0x0002A549:5F
+
+[snow Magic - tested ok vfr(Working)]
+write at 0x0002A555:5F
+
+[snow Max CP - (Partial Working)]
+write at 0x0002A52D:0F
+
+[snow Max HP - tested ok vfr(Working)]
+write at 0x0002A539:8F
+
+[Group:Main Characters (ngu-tripate)\Vanille ok]
+[Vanille Attack - tested ok vfr(Working)]
+write at 0002B2C9:0F
+
+[Vanille Magic - tested ok vfr(Working)]
+write at 0x0002B2D5:09
+
+[Vanille Max CP - tested ok vfr(Working)]
+write at 0x0002B2B5:0F
+
+[Vanille Max HP - tested ok vfr(Working)]
+write at 0x0002B2B9:F0
+
+[Group:\]
+
+[Money 15M] 
+; on start save have 15m , on other save have 10m
+write at 0x000046B1:6F
+
+[Group:Main Characters Reset(ngu-tripate)]
+
+[INFO:RISQUED IF POSSIBLE HAVE STATS NEGATIVE OR FREEZ (Partial Working)]
+[INFO:IF POSSIBLE NO USE ATB RESET (Partial Working)]
+[INFO:THIS IS ALPHA TEST , USE THIS CODE ON YOUR RISK(Partial Working)]
+
+[Red:Lightning reset ]
+;write at 0x00027CC9:000006a4
+write at 0x00027CC8:06a4
+;write at 0x00027CD5:000006a4
+;write at 0x00027CD4:06a4
+write at 0x00027CB5:00
+;write at 0x00027CB9:00004E20
+;write at 0x00027CB8:04E20
+
+[Red:hope reset ]
+write at 0x000261C9:81
+write at 0x000261D5:01
+write at 0x000261B5:00
+write at 0x000261B9:59
+
+[Red:fang reset ]
+write at 0x000246C9:70
+write at 0x000246D5:01
+write at 0x000246B5:00
+write at 0x000246B9:BC
+
+[Red:sazh reset ]
+write at 0x00028A49:43
+write at 0x00028A55:00
+write at 0x00028A35:00
+write at 0x00028A39:3F
+
+[Red:snow reset ]
+write at 0x0002A549:A6
+write at 0x0002A555:00
+write at 0x0002A535:00
+write at 0x0002A539:D8
+
+[Red:Vanille reset ]
+write at 0x0002B2C9:D4
+write at 0x0002B2D5:00
+write at 0x0002B2B5:00
+write at 0x0002B2B9:08

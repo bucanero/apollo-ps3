@@ -1,0 +1,11 @@
+; NPUB30442
+; Sonic the Hedgehog (PSN)
+
+:PAYLOAD
+
+[Update CRC32 for PAYLOAD (Required)]
+;set range:0x000004,0x0B8479
+set pointer:eof+1
+set range:0x000004,pointer
+set [hash]:CRC32
+write at 0x000000:[hash]

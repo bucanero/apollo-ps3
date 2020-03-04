@@ -1,0 +1,13 @@
+;NPEB00163
+;Planet Minigolf (PSN)
+
+:DATA
+
+[Update CRC32 for DATA (Required)]
+;set range:0x000000,0x0015B5
+set pointer:eof-3
+set range:0x000000,pointer
+set [hash]:CRC32
+;write at 0x0015B6:[hash]
+set pointer:eof-3
+write next (0):[hash]

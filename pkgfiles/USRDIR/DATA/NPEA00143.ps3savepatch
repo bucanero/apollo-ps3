@@ -1,0 +1,184 @@
+; NPEA00143
+; DEAD NATION™ Road Of Devastation
+;From startuga (Using BSD's Patch Creator)
+
+:SAVEDATA.DAT
+
+[Group:unlimited ammo and max items single player]
+[999999999 money]
+write at 0x005D07:3B9AC9FF
+write at 0x001816:3B9AC9FF
+
+[unlimited ammo assault rifle]
+write at 0x005D5B:03E7FFFF
+write at 0x00186A:03E7FFFF
+
+[unlimited ammo smg]
+write at 0x005D7B:03E7FFFF
+write at 0x00188A:03E7FFFF
+
+[unlimited ammo shotgun]
+write at 0x005D9B:03E7FFFF
+write at 0x0018AA:03E7FFFF
+
+[unlimited ammo flamethrower]
+write at 0x005DBB:03E7FFFF
+write at 0x0018ca:03E7FFFF
+
+[unlimited ammo blade cannon]
+write at 0x005DDB:03E7FFFF
+write at 0x0018ea:03E7FFFF
+
+[unlimited ammo launcher]
+write at 0x005DFB:03E7FFFF
+write at 0x00190A:03E7FFFF
+
+[unlimited ammo shocker]
+write at 0x005E1B:03E7FFFF
+write at 0x00192a:03E7FFFF
+
+[999 ammo FLARE]
+write at 0x005E3B:03E7
+write at 0x00194a:03E7
+
+[999 ammo grenade]
+write at 0x005E5B:03E7
+write at 0x00196a:03E7
+
+[999 ammo mine]
+write at 0x005E7B:03E7
+write at 0x00198A:03E7
+
+[999 ammo molotov]
+write at 0x005E9B:03E7
+write at 0x0019AA:03E7
+
+[999 ammo dynamite]
+write at 0x005EbB:03E7
+write at 0x0019CA:03E7
+
+[Group:local local Co-Op Player 1]
+[999999999 money]
+write at 0x00002556:3B9AC9FF
+write at 0x00004e90:3B9AC9FF
+
+[unlimited ammo assault rifle]
+write at 0x0025AA:03E7FFFF
+write at 0x004ee4:03E7FFFF
+
+[unlimited ammo smg]
+write at 0x0025ca:03E7FFFF
+write at 0x004f04:03E7FFFF
+
+[unlimited ammo shotgun]
+write at 0x0025ea:03E7FFFF
+write at 0x004f24:03E7FFFF
+
+[unlimited ammo flamethrower]
+write at 0x00260a:03E7FFFF
+write at 0x004f44:03E7FFFF
+
+[unlimited ammo blade cannon]
+write at 0x00262a:03E7FFFF
+write at 0x004f64:03E7FFFF
+
+[unlimited ammo launcher]
+write at 0x00264a:03E7FFFF
+write at 0x004f84:03E7FFFF
+
+[unlimited ammo shocker]
+write at 0x00266a:03E7FFFF
+write at 0x004fa4:03E7FFFF
+
+[999 ammo FLARE]
+write at 0x00268a:03E7
+write at 0x004fc4:03E7
+
+[999 ammo grenade]
+write at 0x0026aa:03E7
+write at 0x004fe4:03E7
+
+[999 ammo mine]
+write at 0x0026ca:03E7
+write at 0x005004:03E7
+
+[999 ammo molotov]
+write at 0x0026ea:03E7
+write at 0x005024:03E7
+
+[999 ammo dynamite]
+write at 0x00270a:03E7
+write at 0x005044:03E7
+
+[Group:local local Co-Op Player 2]
+[999999999 money]
+write at 0x00002756:3B9AC9FF
+write at 0x00005090:3B9AC9FF
+
+[unlimited ammo assault rifle]
+write at 0x0027aa:03E7FFFF
+write at 0x0050e4:03E7FFFF
+
+[unlimited ammo smg]
+write at 0x0027ca:03E7FFFF
+write at 0x005104:03E7FFFF
+
+[unlimited ammo shotgun]
+write at 0x0027ea:03E7FFFF
+write at 0x005124:03E7FFFF
+
+[unlimited ammo flamethrower]
+write at 0x00280a:03E7FFFF
+write at 0x005144:03E7FFFF
+
+[unlimited ammo blade cannon]
+write at 0x00282a:03E7FFFF
+write at 0x005164:03E7FFFF
+
+[unlimited ammo launcher]
+write at 0x00284a:03E7FFFF
+write at 0x005184:03E7FFFF
+
+[unlimited ammo shocker]
+write at 0x00286a:03E7FFFF
+write at 0x0051a4:03E7FFFF
+
+[999 ammo FLARE]
+write at 0x00288a:03E7
+write at 0x0051c4:03E7
+
+[999 ammo grenade]
+write at 0x0028aa:03E7
+write at 0x0051e4:03E7
+
+[999 ammo mine]
+write at 0x0028ca:03E7
+write at 0x005204:03E7
+
+[999 ammo molotov]
+write at 0x0028ea:03E7
+write at 0x005224:03E7
+
+[999 ammo dynamite]
+write at 0x00290a:03E7
+write at 0x005244:03E7
+
+; --- DLC Only ---
+; by chaoszage
+[Max Money]
+20004004 7FFFFFFF
+
+[All Ammo Max]
+41004058 00007FFF
+400C0020 00000000
+
+; --- others ---
+;From wishie
+
+[16777215 money for local Co-Op Player 1]
+write at 0x00002556:00FFFFFF
+
+[16777215 money for local Co-Op Player 2]
+write at 0x00002756:00FFFFFF
+
+

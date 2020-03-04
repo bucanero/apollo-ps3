@@ -1,0 +1,13 @@
+;NPEB01085
+;Guardians of Middle-Earth (PSN)
+
+:FILENAME.SAV
+
+[Update ADD for FILENAME.SAV (Required)]
+set [csum]:0
+;set [csum]:add(0x000000,0x00FC2E)
+set pointer:eof-4
+set [csum]:add(0x000000,pointer)
+;write at 0x00FC2F:[csum]
+set pointer:eof-3
+write next (0):[csum]

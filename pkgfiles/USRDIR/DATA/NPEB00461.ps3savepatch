@@ -1,0 +1,11 @@
+; NPEB00461
+; Dead Block (PSN)
+
+:PAYLOAD
+
+[Update SHA1 for PAYLOAD (Required)]
+;set range:0x000014,0x000133
+set pointer:eof+1
+set range:0x000014,pointer
+set [hash]:SHA1
+write at 0x000000:[hash]

@@ -1,0 +1,11 @@
+; BLUS30075
+; World Series of Poker 2008: Battle for the Bracelets
+
+:SAVEFILE.SAV
+
+[Update CRC32 for SAVEFILE.SAV (Required)]
+;set range:0x000008,0x030FFF
+set pointer:eof+1
+set range:0x000008,pointer
+set [hash]:CRC32
+write at 0x000000:[hash]

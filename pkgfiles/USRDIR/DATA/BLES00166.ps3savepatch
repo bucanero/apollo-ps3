@@ -1,0 +1,11 @@
+;BLES00166
+;Ferrari Challenge Trofeo Pirelli
+
+:SYS-DATA
+
+[Update ADD for SYS-DATA (Required)]
+set [csum]:0
+;set [csum]:add(0x14,0x112703)
+set pointer:eof+1
+set [csum]:add(0x14,pointer)
+write at 0x000008:[csum]

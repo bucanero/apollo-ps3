@@ -1,0 +1,18 @@
+; BLES01989
+; The Amazing Spider-Man 2
+
+;From ced909
+ 
+:GAMEDATA
+
+[Tech Upgrades (999999)]
+200057BC 000F423F
+
+[Update CRC32 for GAMEDATA (Required)]
+;set range:0x000004,0x024EA3
+set pointer:eof+1
+set range:0x000004,pointer
+set [hash]:CRC32
+write at 0x000000:[hash]
+
+

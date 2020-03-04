@@ -1,0 +1,41 @@
+; GoldenEye 007: Reloaded
+; BLUS30755
+;From Game Genie For PS3
+
+:BLUS30755AUTOSAVE*\66600001.DAT
+
+[Infinite Ammo]
+80010004 5CABFACE
+93000000 00000014
+18000000 00007FFF
+18000006 00007FFF
+1800000C 00007FFF
+
+
+Group: Update CRC32 Checksum (Required)
+
+:BLUS30755AUTOSAVE*\66600001.DAT
+[Get CRC32 & file size of 66600001.DAT (Required)]
+set [crc32_66600001.DAT]:crc32
+set [size_66600001.DAT]:eof+1
+
+:BLUS30755AUTOSAVE*\96600000.DAT
+[Get CRC32 & file size of 96600000.DAT (Required)]
+set [crc32_96600000.DAT]:crc32
+set [size_96600000.DAT]:eof+1
+
+; dependency: SAVE.BIN
+
+:BLUS30755AUTOSAVE*\SAVE.BIN
+[Update CRC32 on SAVE.BIN (required)]
+write at 0x14:[size_66600001.DAT]
+write at 0x18:[crc32_66600001.DAT]
+write at 0x24:[size_96600000.DAT]
+write at 0x28:[crc32_96600000.DAT]
+
+;[Update CRC32 for SAVE.BIN]
+;set range:0x10,0x000223
+set pointer:eof+1
+set range:0x10,pointer
+set [hash]:CRC32
+write at 0x000008:[hash]

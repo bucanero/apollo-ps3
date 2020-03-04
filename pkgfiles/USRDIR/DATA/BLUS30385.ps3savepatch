@@ -1,0 +1,11 @@
+;BLUS30385
+;FIFA Soccer 10
+
+:SYS-DATA
+
+[Update CRC32 for SYS-DATA (Required)]
+;set range:0x00001C,0x01CC23
+set pointer:eof+1
+set range:0x00001C,pointer
+set [hash]:CRC32
+write at 0x000010:[hash]

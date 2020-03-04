@@ -1,0 +1,12 @@
+;BLES01349
+;Phineas And Ferb: Across The 2nd Dimension
+
+:SAVEGAME.BIN
+
+[Update CRC32:0 (Required)]
+;set range:0x000008,0x0040AF
+set pointer:eof+1
+set range:0x000008,pointer
+set [hash]:CRC32:0
+set [hash]:xor:FFFFFFFF
+write at 0x000004:[hash]

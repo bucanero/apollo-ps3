@@ -1,0 +1,44 @@
+;BLJM60522
+;World Soccer: Winning Eleven 2013
+;From Bokosuka Games
+ 
+:BLJM60522ML**/DATA.BIN
+
+[Master League - Money Yen 999,999,900,000]
+001B75FF 000000E8
+201B7600 D4A38960
+
+[Master League - GP 999,900]
+201B82C0 000F41DC
+
+[Master League - Check Sum Update crc32]
+write at 0x8: 00000000
+set range:0x0,0x891987
+set [hash]:crc32
+write at 0x8:[hash]
+
+:BLJM60522BL**/DATA.BIN
+
+[Become a Legend - Money Yen 999,999,900,000]
+001B82C7 000000E8
+201B82C8 D4A38960
+[Become a Legend - GP 999,900]
+201B82C0 000F41DC
+
+[Become a Legend - Check Sum Update crc32]
+write at 0x8: 00000000
+set range:0x0,0x891987
+set [hash]:crc32
+write at 0x8:[hash]
+
+:BLJM60522EOPTION/DATA.BIN
+
+[System Data - Consumption Item All 99]
+400123B9 00000063
+40210002 00000000
+
+[System Data - Check Sum Update crc32]
+write at 0x8: 00000000
+set range:0x0,0x6E3BF
+set [hash]:crc32
+write at 0x8:[hash]

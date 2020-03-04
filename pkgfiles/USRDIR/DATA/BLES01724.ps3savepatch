@@ -1,0 +1,22 @@
+;BLES01724
+;FUSE
+;by chaoszage
+
+:GAMESAVE
+
+[Max Money]
+write at 0x3740:0x0098967F
+write at 0x3A78:0x0098967F
+
+[Update CRC64 ECMA 182 for GAMESAVE (Required)]
+set range:0x000000,0x0068AF
+set [hash]:crc64_ecma
+write at 0x0068B0:[hash]
+
+;[Update CRC64 ECMA 182 for GAMESAVE (Required)]
+;set [size]:read(8,4)
+;set [size]:[size]-1
+;set range:0x000000,[size]
+;set [hash]:crc64_ecma
+;set pointer:eof-0x7
+;write next (0):[hash]

@@ -1,0 +1,11 @@
+;BLUS30689
+;NBA 2K11
+; By unostar
+
+; --- My Player ---
+
+:USERDATA
+
+[Skill Points (99999999)]
+write at 0xC:05F5E0FF
+write at 0xC924:05F5E0FF

@@ -1,0 +1,11 @@
+; NPEB00630
+; Daytona USA
+
+:SYSTEM.DAT
+
+[Update CRC32 for SYSTEM.DAT (Required)]
+;set range:0x000010,0x000557
+set pointer:eof+1
+set range:0x000010,pointer
+set [hash]:CRC32
+write at 0x000008:[hash]

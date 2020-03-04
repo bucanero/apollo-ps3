@@ -1,0 +1,51 @@
+;BLUS30347
+;Call of Juarez® Bound in Blood
+;Created by startuga
+
+:*\~extracted\0000000a.dat
+
+red:INSTRUCTIONS
+red:only works with save settings
+red:1 decrypt save
+red:2 double click COJ2-DAT (A new window will open)
+red:3 right click 00000035.dat
+red:4 click apply cheats and tick cheats you want click apply
+red:5 close window showing 0000000a.dat file
+red:6 It will ask DO YOU WANT TO RECOMPRESS click yes
+red:7 new window will open asking for packzip settings use -w -15 click ok
+red:8 encrypt pfd and load on PS3
+red:9 not necessary to update checksum
+
+[Green:goldrush! and on the rigat track 1$ more(Working)]
+search "AchGRush_G"
+write next (25):0x00000F423F
+search "AchOTRT_G"
+write next (23):0x0000030D3F
+
+[Green:Unforgiven one more (Working)]
+search "AchUnfor_G"
+write next (25):0x0000000009
+
+[Green:Well Invested one more (Working)]
+search "AchWellInv_G"
+write next (29):0x0000090013
+
+[Green:max cash thomas (Working)]
+search "Cash1"
+write next (5):0x0000ffffff
+
+[Green:max cash ray  (Working)]
+search "Cash0"
+write next (5):0x0000ffffff
+
+[Green:max cash multiplayer (Working)]
+search "Cash"
+write next (4):0x0000ffffff
+
+[Green:god mode (Working)]
+search "CheatGodMode"
+write next (12):0x0000000001
+
+[Green:magic ammo (Working)]
+search "CheatMagicAmmo"
+write next (14):0x0000000001

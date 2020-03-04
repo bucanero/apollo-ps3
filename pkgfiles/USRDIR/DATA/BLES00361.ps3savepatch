@@ -1,0 +1,11 @@
+;BLES00361
+;WWE SmackDown! vs. RAW 2009
+
+:SAVE.DAT
+
+[Update ADD for SAVE.DAT (Required)]
+set [csum]:0
+;set [csum]:add(0x20,0x4A8A87)
+set pointer:eof-8
+set [csum]:add(0x20,pointer)
+write at 0x000018:[csum]

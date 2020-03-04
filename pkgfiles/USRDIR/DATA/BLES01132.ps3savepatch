@@ -1,0 +1,12 @@
+; Mortal Kombat
+; BLES01132
+;From Game Genie For PS3
+
+:BLES01132MK9PSET\MK9PSET
+
+[Max Krypt Koins]
+2000014C 05F5E0FF
+
+[Unlock All Characters & Costumes]
+20000FC8 FFFFFFFF
+20000FCC FFFFFFFF

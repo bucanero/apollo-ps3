@@ -1,0 +1,16 @@
+; NPUB31132
+; Star Wars Pinball
+
+;from shaka
+
+:PROFILE.DAT
+
+[Update CRC32 (required)]
+set range:0x8,0x6D51
+set [hash]:crc32
+write at 0x4:[hash]
+
+
+[1 mil score]
+
+write at 0x00006D45:0x3B9ACADA

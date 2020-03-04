@@ -1,0 +1,48 @@
+[INFO: Same patches may not be supported by BSD yet]
+; Lollipop Chainsaw
+; BLJS10168
+;From KE-HA
+
+:PAYLOAD
+[Gold Medal 99,999]
+20000088 0001869F
+
+[Platinum Medal 999]
+1000008E 000003E7
+
+[Nick Ticket 9]
+0000009F 00000009
+
+[Lollipop 9]
+000000A3 00000009
+
+[Health 99999]
+200000B0 0001869F
+
+[Lollopop Health Bars 99999]
+200000C4 0001869F
+
+[Damage Resistance 99999.99]
+200000C8 47C34FFF
+
+;from bokosuka
+[All Stages Unlocked]
+0000012F 00000001
+00000133 00000001
+00000137 00000001
+0000013B 00000001
+0000013F 00000001
+00000143 00000001
+
+[All 35 Zombie Albums Unlocked]
+400056CB 00000001
+40230010 00000000
+
+[All 40 Lollipop Cases Gained]
+400059CB 00000001
+40280010 00000000
+
+[default:Update crc32 (required)]
+set range:0x8,0x60BF
+set [crc]:crc32big
+write at 0x4:[crc]

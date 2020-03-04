@@ -1,0 +1,17 @@
+; BioShock
+; BLUS30166
+;From Game Genie For PS3
+
+:BLUS30166-*\MAINSAVE.BSG
+
+; You MUST have at least 1 Dollar to use this cheat.
+[Max Money]
+80010008 02000000
+00220000 00000000
+18000008 0000270F
+
+; You MUST have at least 1 ADAM use this cheat.
+[Max ADAM]
+80010008 02000000
+00220000 00000000
+18000012 0000270F

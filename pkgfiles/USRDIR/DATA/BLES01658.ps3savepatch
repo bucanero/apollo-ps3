@@ -1,0 +1,36 @@
+; Dragon Ball Z Budokai: HD Collection
+; BLES01658
+;From Game Genie For PS3
+
+:BLES01658DBZ1\DBZ1DATA
+
+[Max Zenie]
+200000B8 000186A0
+
+[Unlock All Characters]
+720000BC 003FFFFF
+
+[Unlock Story Mode]
+700000C0 00000001
+A00000A3 00000011
+7F03FF0F FF007F03
+FF0FFF00 7F03FF0F
+FF000000 00000000
+
+[Unlock All Dual Mode Stages]
+000000B4 00000009
+
+[Unlock All World Match Difficulties]
+0000009F 00000002
+
+[Unlock The Legend Of Mr Satan]
+000000A0 00000001
+
+:BLES01658DBZ3\DBZ3DATA
+
+[Max Zenie]
+20000098 000186A0
+
+[Unlock All System Capsules]
+4000D626 00000001
+40790001 00000000

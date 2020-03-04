@@ -1,0 +1,11 @@
+; NPEB00682
+; NASCAR 2011: The Game (PSN)
+
+:SYS-DATA
+
+[Update ADD for SYS-DATA (Required)]
+set [csum]:0
+;set [csum]:add(0x00000C,0x01869F)
+set pointer:eof+1
+set [csum]:add(0x00000C,pointer)
+write at 0x000008:[csum]

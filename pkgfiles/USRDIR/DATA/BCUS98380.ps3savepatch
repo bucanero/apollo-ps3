@@ -1,0 +1,12 @@
+; Ratchet & Clank: Full Frontal Assault
+; BCUS98380
+;From Game Genie For PS3
+
+:BCUS98380_SAVE_*\GAME.SAV
+
+; Can only be used when saved on a planet.
+[Max Bolts]
+8001000D 706C6179
+65725F62 6F6C7473
+00000000 00000000
+2800000E 47C34F80

@@ -1,0 +1,10 @@
+; BLES02103
+; MOTORCYCLE CLUB
+
+;from shaka
+
+:GAMEDATA
+
+[Max Credits]
+
+write at 0x494:0x3B9AC9FF

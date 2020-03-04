@@ -1,0 +1,17 @@
+; Marvel: Ultimate Alliance
+; BLUS30010
+;From Game Genie For PS3
+
+:BLUS30010-F-OPTIONS\SYS-DATA
+
+[Unlock All Characters]
+200002E4 FFFFFFFF
+
+[Unlock All Costumes]
+200003E0 FFFFFFFF
+100003E4 0000FFFF
+
+:BLUS30010-L-*\SYS-DATA
+
+[Max S.H.I.E.L.D. Credits]
+20000100 05F5E0FF

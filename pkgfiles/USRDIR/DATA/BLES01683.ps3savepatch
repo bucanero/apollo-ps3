@@ -1,0 +1,888 @@
+; BLES01683
+; RESIDENT EVIL 6
+
+;From Game Genie For PS3 & KE-HA & Skiller
+
+:DATA0.DAT
+
+[All Emblems]
+write at 0x000015F0:0x00000000450F78D200000000463589B4
+write at 0x00001600:0x0000000045CF869C0000000000000000
+
+[80 Emblems and The Heirloom Trophy]
+write at 0x000015F0:0x0000000046D96E42000000004896C59D
+write at 0x00001600:0x0000000047C6F7200000000000000000
+
+[All Bonus]
+4000DD22 000000FF
+40200001 00000000
+
+[Dog Tags Complete]
+400000CC 00000003
+40150001 00000000
+400000E5 00000003
+40320001 00000000
+00000004 40000114
+40E40001 00000000
+
+[Max Skill Points]
+200006F8 0098967F
+20000980 0098967F
+
+[Max All Weapon Stats Time Used]
+42000A8C 0098967F
+402B002C 00000000
+
+[Max All Weapon Stats Kills]
+42000A90 0098967F
+402B002C 00000000
+
+;Codes by BK201 and CrazyGreenNinja
+[500 Health Pills All Characters - Including Ada]
+10004B22 000001F4
+10004B92 000001F4
+10004C02 000001F4
+10004C72 000001F4
+10004CE2 000001F4
+10004D52 000001F4
+10004DC2 000001F4
+
+[SKILL POINT 9,999,999]
+200006F8 0098967F
+20000980 0098967F
+
+[ALL SKILL GET]
+40000701 00000003
+40510001 00000000
+
+[ALL SKILL Purchase is possible]
+40000701 00000002
+40510001 00000000
+
+[ALL CHARACTER Health Pills 255]
+40004B23 000000FF
+40070070 00000000
+
+[Mercenaries Character&Costumes Unlock]
+20000978 FFFFFFFF
+
+[All Chapter S_Rank Clear]
+4200164C 00000007
+40AF000C 00000000
+42001650 00000000
+40AF000C 00000000
+42001654 45005356
+40AF000C 00000000
+
+[All Character Weapon Unlock]
+10004B06 00005A5A
+41004B0E 00007530
+40040004 00000000
+41004B76 00007530
+40060004 00000000
+41004BEA 00007530
+40050004 00000000
+41004C56 00007530
+40050004 00000000
+41004CCA 00007530
+40050004 00000000
+41004D3A 00007530
+40050004 00000000
+10004DA6 00005A5A
+41004DAA 00007530
+40040004 00000000
+
+[All Character Rocket Launcher Ammo 30,000]
+42004B34 011B7530
+40070070 00000000
+
+[Skill Training for all DLCs]
+20003260 00000054
+20003284 00000054
+200032A8 00000054
+200032CC 00000054
+
+[All skill for Agent Hunt]
+200006F8 0098967F
+20000980 0098967F
+40000701 00000003
+40510001 00000000
+40000701 00000002
+40510001 00000000
+
+[500 health pill all characters]
+41004B22 000001F4
+40070070 00000000
+
+[All Itens]
+40004B43 000000FF
+40090004 00000000
+40004BB3 000000FF
+40090004 00000000
+000000FF 40004C23
+40090004 00000000
+40004C93 000000FF
+40090004 00000000
+40004D03 000000FF
+40090004 00000000
+40004D73 000000FF
+40090004 00000000
+40004DE3 000000FF
+40090004 00000000
+40004E53 000000FF
+40090004 00000000
+
+[All weapons]
+10004B06 00005A5A
+41004B0E 00007530
+40040004 00000000
+41004B76 00007530
+40060004 00000000
+41004BEA 00007530
+40050004 00000000
+41004C56 00007530
+40050004 00000000
+41004CCA 00007530
+40050004 00000000
+41004D3A 00007530
+40050004 00000000
+10004DA6 00005A5A
+41004DAA 00007530
+40040004 00000000
+
+[All Costumes]
+20000978 FFFFFFFF
+
+;From X-GHOST-X (Using BSD's Patch Creator)
+[Green:Mercs Training Skill Set 8 (Working)]
+search 0x00000960
+write next (11):0x54000000
+
+
+;By Dark Nacho
+
+
+Group: Codes by Dark Nacho
+
+[99999999 on Mercenarios]
+4100235C 00000100
+4060000C 00000000
+42002360 05F5E0FF
+4060000C 00000000
+41002ADC 00000100
+4060000C 00000000
+42002AE0 05F5E0FF
+4060000C 00000000
+
+[99 Wins on Survivors]
+420034A8 63636363
+400D0004 00000000
+420034DB 63636363
+40030004 00000000
+420034E4 63636363
+40140004 00000000
+42003531 63636363
+40020003 00000000
+42003538 63636363
+40040004 00000000
+
+[Max Stadistics on Survivors]
+42002224 0098967F
+4002000C 00000000
+42002234 0098967F
+40030004 00000000
+42002240 00000000
+40020004 00000000
+
+[Max Stadistics on Predator]
+420022A0 0098967F
+40020018 00000000
+420022C0 0098967F
+40020004 00000000
+200022C8 00000000
+
+[Max Stadistics on Siege]
+42002300 0098967F
+4002000C 00000000
+42002314 0098967F
+40040004 00000000
+20002324 00000000
+
+;This is for the leaderboard Points
+[Survivors Points]
+20003358 00??????
+
+;This is for the leaderboard Points
+[Onslaught Points]
+20003354 00??????
+
+;This is for the leaderboard Points
+[Predator Points]
+20003360 00??????
+
+;This is for the leaderboard Points
+[Siege Points]
+20003354 00??????
+
+;Only BSD
+[Onslaught  99 Wins]
+write at 0x00003368:0x63636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363
+
+:Only for BSD
+[Predator  99 Wins]
+write at 0x00003548:0x63636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363
+
+:Only for BSD
+[Siege  99 Wins]
+write at 0x000035E8:0x63636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363
+
+[Story Skill set 1]
+2000076C 000000??
+20000770 000000??
+20000774 000000??
+
+Group: Codes by Dark Nacho\Mercenaries Skills
+
+[Mercenaries SKill 1]
+20000917 000000??
+
+[Mercenaries SKill 2]
+20000923 000000??
+
+[Mercenaries SKill 3]
+2000092F 000000??
+
+[Mercenaries SKill 4]
+2000093B 000000??
+
+[Mercenaries SKill 5]
+20000947 000000??
+
+[Mercenaries SKill 6]
+20000953 000000??
+
+[Mercenaries SKill 7]
+2000095F 000000??
+
+[Mercenaries SKill 8]
+2000096B 000000??
+
+
+[Mercenaries SKill 1]
+20000917 000000??
+
+[Mercenaries SKill 2]
+20000923 000000??
+
+[Mercenaries SKill 3]
+2000092F 000000??
+
+[Mercenaries SKill 4]
+2000093B 000000??
+
+[Mercenaries SKill 5]
+20000947 000000??
+
+[Mercenaries SKill 6]
+20000953 000000??
+
+[Mercenaries SKill 7]
+2000095F 000000??
+
+[Mercenaries SKill 8]
+2000096B 000000??
+
+Group: Codes by Dark Nacho\Survivors Skills
+
+[Survivors SKill 1]
+20003287 000000??
+
+[Survivors SKill 2]
+2000328B 000000??
+
+[Survivors SKill 3]
+2000328F 000000??
+
+[Survivors SKill 4]
+20003293 000000??
+
+[Survivors SKill 5]
+20003297 000000??
+
+[Survivors SKill 6]
+2000329B 000000??
+
+[Survivors SKill 7]
+2000329F 000000??
+
+[Survivors SKill 8]
+200032A3 000000??
+
+Group: More Codes
+
+[Max Skill Points]
+200006F8 0098967F
+20000980 0098967F
+
+[Max All Weapon Stats Time Used]
+42000A8C 0098967F
+402B002C 00000000
+
+[Max All Weapon Stats Kills]
+42000A90 0098967F
+402B002C 00000000
+
+;Codes by BK201 and CrazyGreenNinja
+[500 Health Pills All Characters - Including Ada]
+10004B22 000001F4
+10004B92 000001F4
+10004C02 000001F4
+10004C72 000001F4
+10004CE2 000001F4
+10004D52 000001F4
+10004DC2 000001F4
+
+[SKILL POINT 9,999,999]
+200006F8 0098967F
+20000980 0098967F
+
+[ALL SKILL GET]
+40000701 00000003
+40510001 00000000
+
+[ALL SKILL Purchase is possible]
+40000701 00000002
+40510001 00000000
+
+[ALL CHARACTER Health Pills 255]
+40004B23 000000FF
+40070070 00000000
+
+[Mercenaries All Costumes Unlock]
+20000978 FFFFFFFF
+
+[All Chapter S_Rank Clear]
+4200164C 00000007
+40AF000C 00000000
+42001650 00000000
+40AF000C 00000000
+42001654 45005356
+40AF000C 00000000
+
+[All Character Weapon Unlock]
+10004B06 00005A5A
+41004B0E 00007530
+40040004 00000000
+41004B76 00007530
+40060004 00000000
+41004BEA 00007530
+40050004 00000000
+41004C56 00007530
+40050004 00000000
+41004CCA 00007530
+40050004 00000000
+41004D3A 00007530
+40050004 00000000
+10004DA6 00005A5A
+41004DAA 00007530
+40040004 00000000
+
+[All Character Rocket Launcher Ammo 30,000]
+42004B34 011B7530
+40070070 00000000
+
+[Skill Training for all DLCs]
+20003260 00000054
+20003284 00000054
+200032A8 00000054
+200032CC 00000054
+
+[All skill for Agent Hunt]
+200006F8 0098967F
+20000980 0098967F
+40000701 00000003
+40510001 00000000
+40000701 00000002
+40510001 00000000
+
+[500 health pill all characters]
+41004B22 000001F4
+40070070 00000000
+
+[All Items]
+40004B43 000000FF
+40090004 00000000
+40004BB3 000000FF
+40090004 00000000
+000000FF 40004C23
+40090004 00000000
+40004C93 000000FF
+40090004 00000000
+40004D03 000000FF
+40090004 00000000
+40004D73 000000FF
+40090004 00000000
+40004DE3 000000FF
+40090004 00000000
+40004E53 000000FF
+40090004 00000000
+
+[All weapons]
+10004B06 00005A5A
+41004B0E 00007530
+40040004 00000000
+41004B76 00007530
+40060004 00000000
+41004BEA 00007530
+40050004 00000000
+41004C56 00007530
+40050004 00000000
+41004CCA 00007530
+40050004 00000000
+41004D3A 00007530
+40050004 00000000
+10004DA6 00005A5A
+41004DAA 00007530
+40040004 00000000
+
+;From X-GHOST-X (Using BSD's Patch Creator)
+[Green:Mercs Training Skill Set 8 (Working)]
+search 0x00000960
+write next (11):0x54000000
+
+
+Group: More Codes\Mercenaries Skills
+
+[Mercenaries SKill 1 Firearms Lv1]
+20000917 00000001
+
+[Mercenaries SKill 2 Firearms Lv2]
+20000923 00000002
+
+[Mercenaries SKill 3 Firearms Lv3]
+2000092F 00000003
+
+[Mercenaries SKill 4 Melee Lv1]
+2000093B 00000004
+
+
+[Mercenaries SKill 5 Melee Lv2]
+20000947 00000005
+
+[Mercenaries SKill 6 Melee Lv3]
+20000953 00000006
+
+[Mercenaries SKill 7 Defense Lv1]
+2000095F 00000007
+
+[Mercenaries SKill 8 Defense Lv2]
+2000096B 00000008
+
+
+[Mercenaries SKill 1 Defense Lv3]
+20000917 00000009
+
+[Mercenaries SKill 2 Critical Rate Lv1]
+20000923 0000000A
+
+[Mercenaries SKill 3 Critical Rate Lv2]
+2000092F 0000000B
+
+[Mercenaries SKill 4 Critical Rate Lv3]
+2000093B 0000000C
+
+[Mercenaries SKill 5 Piercing Lv1]
+20000947 0000000D
+
+[Mercenaries SKill 6 Piercing Lv2]
+20000953 0000000E
+
+[Mercenaries SKill 7 Piercing Lv3]
+2000095F 0000000F
+
+[Mercenaries SKill 8 J'avo Killer Lv1]
+2000096B 00000010
+
+Group: More Codes\Survivors Skills
+
+[Survivors SKill 1 J'avo Killer Lv2]
+20003287 00000011
+
+[Survivors SKill 2 Zombie Hunter Lv1]
+2000328B 00000012
+
+[Survivors SKill 3 Zombie Hunter Lv2 ]
+2000328F 00000013
+
+[Survivors SKill 4 Hand Grenade Master]
+20003293 00000014
+
+[Survivors SKill 5 Hand Gun Master]
+20003297 00000015
+
+[Survivors SKill 6 Shotgun Master]
+2000329B 00000016
+
+[Survivors SKill 7 Magnum Master]
+2000329F 00000017
+
+[Survivors SKill 8 Sniper Rifle Master]
+200032A3 00000018
+
+
+[Story Skill set 1]
+2000076C 000000??
+20000770 000000??
+20000774 000000??
+
+Group: More Codes\Mercenaries Skills
+
+[Mercenaries SKill 1 Machine Pistol Master]
+20000917 00000019
+
+[Mercenaries SKill 2 Assault Rifle Master]
+20000923 0000001A
+
+[Mercenaries SKill 3 Grenade Launcher Master]
+2000092F 0000001B
+
+[Mercenaries SKill 4 Crossbow Master]
+2000093B 0000001C
+
+[Mercenaries SKill 5 Infinite Handgun]
+20000947 0000001D
+
+[Mercenaries SKill 6 Infinite Shotgun]
+20000953 0000001E
+
+[Mercenaries SKill 7 Infinite Magnum]
+2000095F 0000001F
+
+[Mercenaries SKill 8 Infinite Sniper Rifle]
+2000096B 00000020
+
+
+[Mercenaries SKill 1 Infinite Machine Pistol]
+20000917 00000021
+
+[Mercenaries SKill 2 Infinite Assault Rifle]
+20000923 00000022
+
+[Mercenaries SKill 3 Infinite Grenade Launcher]
+2000092F 00000023
+
+[Mercenaries SKill 4 Infinite Crossbow]
+2000093B 00000024
+
+[Mercenaries SKill 5 AR Ammo Pickup Increase]
+20000947 00000025
+
+[Mercenaries SKill 6 Shotgun Shell Pickup Increase]
+20000953 00000026
+
+[Mercenaries SKill 7 Magnum Ammo Pickup Increase]
+2000095F 00000027
+
+[Mercenaries SKill 8 Rifle Ammo Pickup Increase]
+2000096B 00000028
+
+Group: More Codes\Survivors Skills
+
+[Survivors SKill 1 Grenade Pickup Increase]
+20003287 00000029
+
+[Survivors SKill 2 Arrow Pickup Increase]
+2000328B 0000002A
+
+[Survivors SKill 3 Last Shot]
+2000328F 0000002B
+
+[Survivors SKill 4 Run Silent (footsteps disappears)]
+20003293 0000002C
+
+[Survivors SKill 5 Quick Reload]
+20003297 0000002D
+
+[Survivors SKill 6 Lock-On Lv1]
+2000329B 0000002E
+
+[Survivors SKill 7 Lock-On Lv2]
+2000329F 0000002F
+
+[Survivors SKill 8 Rock Steady Lv1]
+200032A3 00000030
+
+Group: More Codes\Mercenaries Skills
+
+[Mercenaries SKill 1 Rock Steady Lv2]
+20000917 00000031
+
+[Mercenaries SKill 2 Breakout]
+20000923 00000032
+
+[Mercenaries SKill 3 Item Drop Increase]
+2000092F 00000033
+
+[Mercenaries SKill 4Recovery Lv1]
+2000093B 00000034
+
+[Mercenaries SKill 5 Recovery Lv2]
+20000947 00000035
+
+[Mercenaries SKill 6 Combat Gauge Boost Lv1]
+20000953 00000036
+
+[Mercenaries SKill 7 Combat Gauge Boost Lv2]
+2000095F 00000037
+
+[Mercenaries SKill 8 Eagle Eye]
+2000096B 00000038
+
+
+[Mercenaries SKill 1 Team-up (SP]
+20000917 00000039
+
+[Mercenaries SKill 2 Field Medic Lv1 (SP)]
+20000923 0000003A
+
+[Mercenaries SKill 3 Field Medic Lv2 (SP)]
+2000092F 0000003B
+
+[Mercenaries SKill 4 Lone Wolf (SP)]
+2000093B 0000003C
+
+[Mercenaries SKill 5 Shooting Wild]
+20000947 0000003D
+
+[Mercenaries SKill 6 Go For Broke!]
+20000953 0000003E
+
+[Mercenaries SKill 7 Time Bonus +]
+2000095F 0000003F
+
+[Mercenaries SKill 8 Combo Bonus +]
+2000096B 00000040
+
+Group: More Codes\Survivors Skills
+
+[Survivors SKill 1 Limit Breaker]
+20003287 00000041
+
+[Survivors SKill 2 Blitz Play]
+2000328B 00000042
+
+[Survivors SKill 3 Quick Shot Damage Increase]
+2000328F 00000043
+
+[Survivors SKill 4 Power Counter]
+20003293 00000044
+
+[Survivors SKill 5 Second Wind]
+20003297 00000045
+
+[Survivors SKill 6 Martial Arts Master]
+2000329B 00000046
+
+[Survivors SKill 7 Target Master]
+2000329F 00000047
+
+[Survivors SKill 8 Last Stand]
+200032A3 00000048
+
+Group: More Codes\Mercenaries Skills
+
+[Mercenaries SKill 1 Revenge? (Attack power up to 49 players who beat his revenge) (for PvP?)]
+20000917 00000049
+
+[Mercenaries SKill 2 Preemptive Strike]
+20000923 0000004A
+
+[Mercenaries SKill 3 Gunslinger (Increase Firepower and Reload Speed)]
+2000092F 0000004B
+
+[Mercenaries SKill 4 Dying Breath]
+2000093B 0000004C
+
+[Mercenaries SKill 5 Pharmacist]
+20000947 0000004D
+
+[Mercenaries SKill 6 Medic]
+20000953 0000004E
+
+[Mercenaries SKill 7 First Responder]
+2000095F 0000004F
+
+[Mercenaries SKill 8 Take It Easy]
+2000096B 00000050
+
+
+[Mercenaries SKill 1 Natural Healing]
+20000917 00000051
+
+[Mercenaries SKill 2 Creature Point Boost]
+20000923 00000052
+
+[Mercenaries SKill 3 Creature Points UP]
+2000092F 00000053
+
+[Mercenaries SKill 4 Training]
+2000093B 00000054
+
+[Mercenaries SKill 5 Creature Offense Lv1]
+20000947 00000055
+
+[Mercenaries SKill 6 Creature Offense Lv2]
+20000953 00000056
+
+[Mercenaries SKill 7 Creature Offense Lv3]
+2000095F 00000057
+
+[Mercenaries SKill 8 Creature Defense Lv1]
+2000096B 00000058
+
+Group: More Codes\Survivors Skills
+
+[Survivors SKill 1 Creature Defense Lv2]
+20003287 00000059
+
+[Survivors SKill 2 Creature Defense Lv3]
+2000328B 0000005A
+
+[Survivors SKill 3 Creature Health Lv1]
+2000328F 0000005B
+
+[Survivors SKill 4 Creature Health Lv2]
+20003293 0000005C
+
+[Survivors SKill 5 Creature Health Lv3]
+20003297 0000005D
+
+[Survivors SKill 6 Creature Stamina Lv1]
+2000329B 0000005E
+
+[Survivors SKill 7 Creature Stamina Lv2]
+2000329F 0000005F
+
+[Survivors SKill 8 Creature Stamina Lv3]
+200032A3 00000060
+
+
+Group: Update Checksum (Required)
+
+[DEFAULT: Update DWADD Checksum (Required)]
+set [csum]:0
+set [csum]:dwadd(C,5FFF)
+write at 0x8:[csum]
+
+
+;Select a Skill Code:
+;00= None
+;01= Firearms Lv1
+;02= Firearms Lv2
+;03= Firearms Lv3
+;04= Melee Lv1
+;05= Melee Lv2
+;06= Melee Lv3
+;07= Defense Lv1
+;08= Defense Lv2
+;09= Defense Lv3
+;0A= Critical Rate Lv1
+;0B= Critical Rate Lv2
+;0C= Critical Rate Lv3
+;0D= Piercing Lv1
+;0E= Piercing Lv2
+;0F= Piercing Lv3
+;10= J'avo Killer Lv1
+;11= J'avo Killer Lv2
+;12= Zombie Hunter Lv1
+;13= Zombie Hunter Lv2
+;14= Hand Grenade Master
+;15= Hand Gun Master
+;16= Shotgun Master
+;17= Magnum Master
+;18= Sniper Rifle Master
+;19= Machine Pistol Master
+;1A= Assault Rifle Master
+;1B= Grenade Launcher Master
+;1C= Crossbow Master
+;1D= Infinite Handgun
+;1E= Infinite Shotgun
+;1F= Infinite Magnum
+;20= Infinite Sniper Rifle
+;21= Infinite Machine Pistol
+;22= Infinite Assault Rifle
+;23= Infinite Grenade Launcher
+;24= Infinite Crossbow
+;25= AR Ammo Pickup Increase
+;26= Shotgun Shell Pickup Increase
+;27= Magnum Ammo Pickup Increase
+;28= Rifle Ammo Pickup Increase
+;29= Grenade Pickup Increase
+;2A= Arrow Pickup Increase
+;2B= Last Shot
+;2C= Run Silent (footsteps disappears)
+;2D= Quick Reload
+;2E= Lock-On Lv1
+;2F= Lock-On Lv2
+;30= Rock Steady Lv1
+;31= Rock Steady Lv2
+;32= Breakout
+;33= Item Drop Increase
+;34= Recovery Lv1
+;35= Recovery Lv2
+;36= Combat Gauge Boost Lv1
+;37= Combat Gauge Boost Lv2
+;38= Eagle Eye
+;39= Team-up (SP)
+;3A= Field Medic Lv1 (SP)
+;3B= Field Medic Lv2 (SP)
+;3C= Lone Wolf (SP)
+;3D= Shooting Wild
+;3E= Go For Broke!
+;3F= Time Bonus +
+;40= Combo Bonus +
+;41= Limit Breaker
+;42= Blitz Play
+;43= Quick Shot Damage Increase
+;44= Power Counter
+;45= Second Wind
+;46= Martial Arts Master
+;47= Target Master
+;48= Last Stand
+;49= Revenge? (Attack power up to 49 players who beat his revenge) (for PvP?)
+;4A= Preemptive Strike
+;4B= Gunslinger (Increase Firepower and Reload Speed)
+;4C= Dying Breath
+;4D= Pharmacist
+;4E= Medic
+;4F= First Responder
+;50= Take It Easy
+;51= Natural Healing
+;52= Creature Point Boost
+;53= Creature Points UP
+;54= Training
+;55= Creature Offense Lv1
+;56= Creature Offense Lv2
+;57= Creature Offense Lv3
+;58= Creature Defense Lv1
+;59= Creature Defense Lv2
+;5A= Creature Defense Lv3
+;5B= Creature Health Lv1
+;5C= Creature Health Lv2
+;5D= Creature Health Lv3
+;5E= Creature Stamina Lv1
+;5F= Creature Stamina Lv2
+;60= Creature Stamina Lv3
+
+;[Select a Score]
+;0F4240= 1,000,000
+;98967F= 9,999,999
+;FFFFFF= 16,777,215
+
+
+
+
+
+
+
+

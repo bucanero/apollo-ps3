@@ -1,0 +1,40 @@
+;BLES01495
+;INVERSION™
+;From chaoszage
+
+:SAVES.CFG
+
+;by chaoszage
+[219999 XP]
+search 0x56657273696F6E:1
+set pointer:pointer+31
+write next (0):0x00035b5f
+;Earn 1 xp to gain xp trophy
+
+[429999 XP]
+search 0x56657273696F6E:1
+set pointer:pointer+31
+write next (0):0x00068faf
+;Earn 1 xp to gain xp trophy
+
+[799999 XP]
+search 0x56657273696F6E:1
+set pointer:pointer+31
+write next (0):0x000c34ff
+;Earn 1 xp to gain xp trophy
+
+[Update CRC32 for SAVES.CFG (Required)]
+set range:0x00000C,0x01F
+set [hash]:CRC32
+write at 0x8:[hash]
+search 0x56657273696F6E:1
+set [offset]:pointer+18
+set range:0x0024,[offset]
+set [hash]:CRC32
+write at 0x0020:[hash]
+set [start]:pointer+23
+set [end]:pointer+389
+set range:[start],[end]
+set [hash]:CRC32
+set pointer:pointer+19
+write next (0):[hash]

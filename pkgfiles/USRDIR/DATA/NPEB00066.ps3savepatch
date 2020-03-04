@@ -1,0 +1,13 @@
+;NPEB00066
+;Lumines Supernova (PSN)
+
+:SYS-DATA
+
+[Update CRC32 for SYS-DATA (Required)]
+;set range:0x000000,0x00EDEF
+set pointer:eof-3
+set range:0x000000,pointer
+set [hash]:CRC32
+;write at 0x00EDF0:[hash]
+set pointer:eof-3
+write next (0):[hash]

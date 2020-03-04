@@ -1,0 +1,517 @@
+;NPUB30720 (PSN)
+;Okami HD
+;From chaoszage
+
+:OKAMI
+
+Group: OKAMI - Slot 1
+
+[Reset Playtime]
+write at 0x0000D8:00000000
+
+[Max Yen]
+write at 0x0000F0:7FFFFFFF
+
+[Max HP]
+write at 0x000020:7FFFFFFF
+
+Group: OKAMI - Slot 2
+
+[Reset Playtime]
+write at 0x017358:00000000
+
+[Max Yen]
+write at 0x017370:7FFFFFFF
+
+[Max HP]
+write at 0x0172A0:7FFFFFFF
+
+Group: OKAMI - Slot 3
+
+[Reset Playtime]
+write at 0x02E5D8:00000000
+
+[Max Yen]
+write at 0x02E5F0:7FFFFFFF
+
+[Max HP]
+write at 0x02E520:7FFFFFFF
+
+Group: OKAMI - Slot 4
+
+[Reset Playtime]
+write at 0x045858:00000000
+
+[Max Yen]
+write at 0x045870:7FFFFFFF
+
+[Max HP]
+write at 0x0457A0:7FFFFFFF
+
+Group: OKAMI - Slot 5
+
+[Reset Playtime]
+write at 0x05CAD8:00000000
+
+[Max Yen]
+write at 0x05CAF0:7FFFFFFF
+
+[Max HP]
+write at 0x05CA20:7FFFFFFF
+
+Group: OKAMI - Slot 6
+
+[Reset Playtime]
+write at 0x073D58:00000000
+
+[Max Yen]
+write at 0x073D70:7FFFFFFF
+
+[Max HP]
+write at 0x073CA0:7FFFFFFF
+
+Group: OKAMI - Slot 7
+
+[Reset Playtime]
+write at 0x08AFD8:00000000
+
+[Max Yen]
+write at 0x08AFF0:7FFFFFFF
+
+[Max HP]
+write at 0x08AF20:7FFFFFFF
+
+Group: OKAMI - Slot 8
+
+[Reset Playtime]
+write at 0x0A2258:00000000
+
+[Max Yen]
+write at 0x0A2270:7FFFFFFF
+
+[Max HP]
+write at 0x0A21A0:7FFFFFFF
+
+Group: OKAMI - Slot 9
+
+[Reset Playtime]
+write at 0x0B94D8:00000000
+
+[Max Yen]
+write at 0x0B94F0:7FFFFFFF
+
+[Max HP]
+write at 0x0B9420:7FFFFFFF
+
+Group: OKAMI - Slot 10
+
+[Reset Playtime]
+write at 0x0D0758:00000000
+
+[Max Yen]
+write at 0x0D0770:7FFFFFFF
+
+[Max HP]
+write at 0x0D06A0:7FFFFFFF
+
+Group: OKAMI - Slot 11
+
+[Reset Playtime]
+write at 0x0E79D8:00000000
+
+[Max Yen]
+write at 0x0E79F0:7FFFFFFF
+
+[Max HP]
+write at 0x0E7920:7FFFFFFF
+
+Group: OKAMI - Slot 12
+
+[Reset Playtime]
+write at 0x0FEC58:00000000
+
+[Max Yen]
+write at 0x0FEC70:7FFFFFFF
+
+[Max HP]
+write at 0x0FEBA0:7FFFFFFF
+
+Group: OKAMI - Slot 13
+
+[Reset Playtime]
+write at 0x115ED8:00000000
+
+[Max Yen]
+write at 0x115EF0:7FFFFFFF
+
+[Max HP]
+write at 0x115E20:7FFFFFFF
+
+Group: OKAMI - Slot 14
+
+[Reset Playtime]
+write at 0x12D158:00000000
+
+[Max Yen]
+write at 0x12D170:7FFFFFFF
+
+[Max HP]
+write at 0x12D0A0:7FFFFFFF
+
+Group: OKAMI - Slot 15
+
+[Reset Playtime]
+write at 0x1443D8:00000000
+
+[Max Yen]
+write at 0x1443F0:7FFFFFFF
+
+[Max HP]
+write at 0x144320:7FFFFFFF
+
+Group: OKAMI - Slot 16
+
+[Reset Playtime]
+write at 0x15B658:00000000
+
+[Max Yen]
+write at 0x15B670:7FFFFFFF
+
+[Max HP]
+write at 0x15B5A0:7FFFFFFF
+
+Group: OKAMI - Slot 17
+
+[Reset Playtime]
+write at 0x1728D8:00000000
+
+[Max Yen]
+write at 0x1728F0:7FFFFFFF
+
+[Max HP]
+write at 0x172820:7FFFFFFF
+
+Group: OKAMI - Slot 18
+
+[Reset Playtime]
+write at 0x189B58:00000000
+
+[Max Yen]
+write at 0x189B70:7FFFFFFF
+
+[Max HP]
+write at 0x189AA0:7FFFFFFF
+
+Group: OKAMI - Slot 19
+
+[Reset Playtime]
+write at 0x1A0DD8:00000000
+
+[Max Yen]
+write at 0x1A0DF0:7FFFFFFF
+
+[Max HP]
+write at 0x1A0D20:7FFFFFFF
+
+Group: OKAMI - Slot 20
+
+[Reset Playtime]
+write at 0x1B8058:00000000
+
+[Max Yen]
+write at 0x1B8070:7FFFFFFF
+
+[Max HP]
+write at 0x1B7FA0:7FFFFFFF
+
+Group: OKAMI - Slot 21
+
+[Reset Playtime]
+write at 0x1CF2D8:00000000
+
+[Max Yen]
+write at 0x1CF2F0:7FFFFFFF
+
+[Max HP]
+write at 0x1CF220:7FFFFFFF
+
+Group: OKAMI - Slot 22
+
+[Reset Playtime]
+write at 0x1E6558:00000000
+
+[Max Yen]
+write at 0x1E6570:7FFFFFFF
+
+[Max HP]
+write at 0x1E64A0:7FFFFFFF
+
+Group: OKAMI - Slot 23
+
+[Reset Playtime]
+write at 0x1FD7D8:00000000
+
+[Max Yen]
+write at 0x1FD7F0:7FFFFFFF
+
+[Max HP]
+write at 0x1FD720:7FFFFFFF
+
+Group: OKAMI - Slot 24
+
+[Reset Playtime]
+write at 0x214A58:00000000
+
+[Max Yen]
+write at 0x214A70:7FFFFFFF
+
+[Max HP]
+write at 0x2149A0:7FFFFFFF
+
+Group: OKAMI - Slot 25
+
+[Reset Playtime]
+write at 0x22BCD8:00000000
+
+[Max Yen]
+write at 0x22BCF0:7FFFFFFF
+
+[Max HP]
+write at 0x22BC20:7FFFFFFF
+
+Group: OKAMI - Slot 26
+
+[Reset Playtime]
+write at 0x242F58:00000000
+
+[Max Yen]
+write at 0x242F70:7FFFFFFF
+
+[Max HP]
+write at 0x242EA0:7FFFFFFF
+
+Group: OKAMI - Slot 27
+
+[Reset Playtime]
+write at 0x25A1D8:00000000
+
+[Max Yen]
+write at 0x25A1F0:7FFFFFFF
+
+[Max HP]
+write at 0x25A120:7FFFFFFF
+
+Group: OKAMI - Slot 28
+
+[Reset Playtime]
+write at 0x271458:00000000
+
+[Max Yen]
+write at 0x271470:7FFFFFFF
+
+[Max HP]
+write at 0x2713A0:7FFFFFFF
+
+Group: OKAMI - Slot 29
+
+[Reset Playtime]
+write at 0x2886D8:00000000
+
+[Max Yen]
+write at 0x2886F0:7FFFFFFF
+
+[Max HP]
+write at 0x288620:7FFFFFFF
+
+Group: OKAMI - Slot 30
+
+[Reset Playtime]
+write at 0x29F958:00000000
+
+[Max Yen]
+write at 0x29F970:7FFFFFFF
+
+[Max HP]
+write at 0x29F8A0:7FFFFFFF
+
+Group: Update XOR checksums for OKAMI
+
+[Update XOR checksum for OKAMI - Slot 1]
+write at 0x00000C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x00000C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 2]
+write at 0x01728C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x01728C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 3]
+write at 0x02E50C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x02E50C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 4]
+write at 0x04578C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x04578C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 5]
+write at 0x05CA0C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x05CA0C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 6]
+write at 0x073C8C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x073C8C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 7]
+write at 0x08AF0C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x08AF0C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 8]
+write at 0x0A218C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x0A218C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 9]
+write at 0x0B940C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x0B940C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 10]
+write at 0x0D068C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x0D068C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 11]
+write at 0x0E790C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x0E790C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 12]
+write at 0x0FEB8C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x0FEB8C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 13]
+write at 0x115E0C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x115E0C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 14]
+write at 0x12D08C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x12D08C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 15]
+write at 0x14430C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x14430C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 16]
+write at 0x15B58C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x15B58C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 17]
+write at 0x17280C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x17280C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 18]
+write at 0x189A8C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x189A8C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 19]
+write at 0x1A0D0C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x1A0D0C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 20]
+write at 0x1B7F8C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x1B7F8C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 21]
+write at 0x1CF20C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x1CF20C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 22]
+write at 0x1E648C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x1E648C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 23]
+write at 0x1FD70C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x1FD70C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 24]
+write at 0x21498C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x21498C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 25]
+write at 0x22BC0C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x22BC0C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 26]
+write at 0x242E8C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x242E8C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 27]
+write at 0x25A10C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x25A10C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 28]
+write at 0x27138C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x27138C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 29]
+write at 0x28860C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x28860C:[hash]
+
+[Update XOR checksum for OKAMI - Slot 30]
+write at 0x29F88C:00000000   ;Initializing checksum with null bytes
+set [hash]:0
+set [hash]:xor(0x0,0x2B6AFF,4)
+write at 0x29F88C:[hash]

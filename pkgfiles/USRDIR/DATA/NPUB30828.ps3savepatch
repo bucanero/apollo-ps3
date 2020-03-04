@@ -1,0 +1,11 @@
+; Naughty Bear: Panic In Paradise (PSN)
+; NPUB30828
+
+:TOSG.DAT
+
+[Update CRC32 (Required)]
+;set range:0x00000C,0x0020CA
+set pointer:eof+1
+set range:0x00000C,pointer
+set [hash]:CRC32
+write at 0x000004:[hash]

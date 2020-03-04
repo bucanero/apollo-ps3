@@ -1,0 +1,193 @@
+; Dynasty Warriors 6
+; BLUS30110
+;From krustytoe (CMP)
+
+:APP.BIN
+
+[INFO: For all xxxx values, visit http://ps3cheating.net/forum/?mingleforumaction=viewtopic&t=390]
+
+[Horse Max Stat - Slot 1]
+200029F0 000001F4
+200029F4 000001F4
+200029F8 000001F4
+200029FC 000001F4
+20002A00 000001F4
+
+[Horse Max Stat - Slot 2]
+20002A2C 000001F4
+20002A30 000001F4
+20002A34 000001F4
+20002A38 000001F4
+20002A3C 000001F4
+
+[Horse Max Stat - Slot 3]
+20002A68 000001F4
+20002A6C 000001F4
+20002A70 000001F4
+20002A74 000001F4
+20002A78 000001F4
+
+[Horse Max Stat - Slot 4]
+20002AA4 000001F4
+20002AA8 000001F4
+20002AAC 000001F4
+20002AB0 000001F4
+20002AB4 000001F4
+
+[Horse Max Stat - Slot 5]
+20002AE0 000001F4
+20002AE4 000001F4
+20002AE8 000001F4
+20002AEC 000001F4
+20002AF0 000001F4
+
+[Horse Max Stat - Slot 6]
+20002B1C 000001F4
+20002B20 000001F4
+20002B24 000001F4
+20002B28 000001F4
+20002B2C 000001F4
+
+[Horse Max Stat - Slot 7]
+20002B58 000001F4
+20002B5C 000001F4
+20002B60 000001F4
+20002B64 000001F4
+20002B68 000001F4
+
+[Horse Max Stat - Slot 8]
+20002B94 000001F4
+20002B98 000001F4
+20002B9C 000001F4
+20002BA0 000001F4
+20002BA4 000001F4
+
+[Horse Element - Slot 1]
+100029EA 000000xx
+
+[Horse Element - Slot 2]
+10002A26 000000xx
+
+[Horse Element - Slot 3]
+10002A62 000000xx
+
+[Horse Element - Slot 4]
+10002A9E 000000xx
+
+[Horse Element - Slot 5]
+10002ADA 000000xx
+
+[Horse Element - Slot 6]
+10002B16 000000xx
+
+[Horse Element - Slot 7]
+10002B52 000000xx
+
+[Horse Element - Slot 8]
+10002B8E 000000xx
+
+[Horse Atrribute - Slot 1]
+100029EE 0000xxxx
+
+[Horse Atrribute - Slot 2]
+10002A2A 0000xxxx
+
+[Horse Atrribute - Slot 3]
+10002A66 0000xxxx
+
+[Horse Atrribute - Slot 4]
+10002AA2 0000xxxx
+
+[Horse Atrribute - Slot 5]
+10002ADE 0000xxxx
+
+[HorseAtrribute - Slot 6]
+10002B1A 0000xxxx
+
+[Horse Atrribute - Slot 7]
+10002B56 0000xxxx
+
+[Horse Atrribute - Slot 8]
+10002B92 0000xxxx
+
+[Weapon Max Power(Atk) - Slot 1-8 - All Characters]
+40000B27 00000064
+402900A8 00000000
+40000B37 00000064
+402900A8 00000000
+40000B47 00000064
+402900A8 00000000
+40000B57 00000064
+402900A8 00000000
+40000B67 00000064
+402900A8 00000000
+40000B77 00000064
+402900A8 00000000
+40000B87 00000064
+402900A8 00000000
+40000B97 00000064
+402900A8 00000000
+
+[Weapon Element - Slot 1 - All Characters]
+41000B2A 000000xx
+402900A8 00000000
+
+[Weapon Element - Slot 2 - All Characters]
+41000B3A 000000xx
+402900A8 00000000
+
+[Weapon Element - Slot 3 - All Characters]
+41000B4A 000000xx
+402900A8 00000000
+
+[Weapon Element - Slot 4 - All Characters]
+41000B5A 000000xx
+402900A8 00000000
+
+[Weapon Element - Slot 5 - All Characters]
+41000B6A 000000xx
+402900A8 00000000
+
+[Weapon Element - Slot 6 - All Characters]
+41000B7A 000000xx
+402900A8 00000000
+
+[Weapon Element - Slot 7 - All Characters]
+41000B8A 000000xx
+402900A8 00000000
+
+[Weapon Element - Slot 8 - All Characters]
+41000B9A 000000xx
+402900A8 00000000
+
+[Weapon Attribute - Slot 1 - All Characters]
+41000B2E 0000xxxx
+402900A8 00000000
+
+[Weapon Attribute - Slot 2 - All Characters]
+41000B3E 0000xxxx
+402900A8 00000000
+
+[Weapon Attribute - Slot 3 - All Characters]
+41000B4E 0000xxxx
+402900A8 00000000
+
+[Weapon Attribute - Slot 4 - All Characters]
+41000B5E 0000xxxx
+402900A8 00000000
+
+[Weapon Attribute - Slot 5 - All Characters]
+41000B6E 0000xxxx
+402900A8 00000000
+
+[Weapon Attribute - Slot 6 - All Characters]
+41000B7E 0000xxxx
+402900A8 00000000
+
+[Weapon Attribute - Slot 7 - All Characters]
+41000B8E 0000xxxx
+402900A8 00000000
+
+[Weapon Attribute - Slot 8 - All Characters]
+41000B9E 0000xxxx
+402900A8 00000000

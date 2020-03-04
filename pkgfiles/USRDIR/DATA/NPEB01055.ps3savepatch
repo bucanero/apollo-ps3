@@ -1,0 +1,53 @@
+; NPEB01055
+; Kingdoms of Amalur: Reckoning
+
+; BLUS30710
+; Kingdoms of Amalur: Reckoning
+;From unostar, SHAkA & chaoszage
+
+:SAVE.SAV
+
+[Current Inventory 10000(Can be Higher)]
+20000074 00002710
+
+[Inventory Slot Increase by 200 when Purchase(Can be Higher)]
+10000082 000000C8
+
+;some how health and mana decrease when you level up just apply the cheat again
+[Max XP]
+write at 0x0003AA9B:0x7A1BA81F
+
+[Max Mana]
+write at 0x000354C0:0x0F423F00
+write at 0x000354C8:0x0F423F3F
+
+[HP - 999999]
+search 0x3C6560423C656042
+write next (-8):0x000F423F000F423F
+
+[Max Inventory]
+write at 0x0000008D:0x3B9ACA00
+
+[Gold]
+write at 0x00099F7D:0x3B9AC9FF
+
+[Bull in a China Shop Trophy!]
+write at 0x0003AA6E:0x7A1BA81F
+
+[INFO:Click edit mode and type your name]
+[Max Gold] 
+search "#typeyournamehere"
+write next (-8):0x05F5E0FF
+;if your name is Apple,do like this,search "Apple"
+;It is case sensitive
+;incase you forgot your name,you can look at your .SFO , you should see (name)(level)(job) in sub-title,get your name here
+
+[INFO:Click edit mode for details how to edit mana.]
+[Max Mana]
+search xxxxxxxx00000000yyyyyyyy 
+write next (0):0x000F423F00000000000F423F
+;fill current mana(hex) into xxxxxxxx
+;fill max mana(hex) into yyyyyyyy
+;if you have 100/101 mana in game,you need to put 00000064 into xxxxxxxx and 00000065 into yyyyyyyy
+
+

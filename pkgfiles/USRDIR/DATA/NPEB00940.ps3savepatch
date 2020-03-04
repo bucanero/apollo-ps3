@@ -1,0 +1,15 @@
+;NPEB00940
+;Realms Of Ancient War (PSN)
+
+Path: NPEB00940-GAMESAVE[0-9]
+
+:DATA.DAT
+
+[Update CRC32 (Required)]
+;set range:0x000000,0x006E27
+set pointer:eof-7
+set range:0x000000,pointer
+set [hash]:CRC32
+;write at 0x006E28:[hash]
+set pointer:eof-7
+write next (0):[hash]

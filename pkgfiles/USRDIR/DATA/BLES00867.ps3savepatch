@@ -1,0 +1,13 @@
+;BLES00867
+;Megamind: Ultimate Showdown
+
+:SYS-DATA
+
+[Update CRC32 (Required)]
+;set range:0x000000,0x00508B
+set pointer:eof-3
+set range:0x000000,pointer
+set [hash]:CRC32
+;write at 0x00508C:[hash]
+set pointer:eof-3
+write next (0):[hash]

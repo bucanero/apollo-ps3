@@ -1,0 +1,53 @@
+; BLES01026
+; MARVEL VS. CAPCOM 3
+;From Game Genie For PS3
+
+:DATA0.DAT
+
+[Max Player Points]
+2000003C 05F5E0FF
+
+[Max Battles Fought]
+200004A8 000F423F
+
+[All Mission Cleared]
+420006BC 000003FF
+40320004 00000000
+
+
+[Max Wins]
+200004B0 000F423F
+
+[No Losses]
+200004BC 00000000
+
+[No Draws]
+200004C8 00000000
+
+[Max Longest Win Streak]
+200004B8 000F423F
+
+[Max Hyper Combo Wins]
+200004D8 000F423F
+
+[Max Time Over Wins]
+200004D0 000F423F
+
+[Max Perfects]
+200004CC 000F423F
+
+[No Cheap Wins]
+200004E0 00000000
+
+[Unlock All Characters]
+200008D0 FFFFFFFF
+200008D4 FFFFFFFF
+
+[Update (required)]
+set range:0x20,0x19CF
+set [hash]:crc32:0xFFFFFFFF
+set [hash]:xor:FFFFFFFF
+write at 0x10:[hash]
+
+
+

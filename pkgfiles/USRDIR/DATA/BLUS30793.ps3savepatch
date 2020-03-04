@@ -1,0 +1,45 @@
+; BLUS30793
+; Super Street Fighter IV Arcade Edition
+
+;From Game Genie For PS3
+
+:SAVEDATA
+
+[Unlock All Normal Titles]
+42004FA4 01010101
+40740004 00000000
+10005174 00000101
+
+[Unlock All EX Titles]
+10005176 00000101
+42005178 01010101
+40070004 00000000
+
+[Unlock All Character Colors]
+42004D4C 01010101
+40030004 00000000
+
+[Update CRC32 (Required)]
+;set range:0x000004,0x01226B
+set pointer:eof+1
+set range:0x000004,pointer
+set [hash]:CRC32
+write at 0x000000:[hash]
+
+:SWANSAVE
+
+[Update CRC32 for SWANSAVE (Required)]
+;set range:0x000004,0x00C184
+set pointer:eof+1
+set range:0x000004,pointer
+set [hash]:CRC32
+write at 0x000000:[hash]
+
+:SWANRPLY
+
+[Update CRC32 for SWANRPLY (Required)]
+;set range:0x000004,0x00AC25
+set pointer:eof+1
+set range:0x000004,pointer
+set [hash]:CRC32
+write at 0x000000:[hash]

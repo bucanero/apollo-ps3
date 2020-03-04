@@ -1,0 +1,9 @@
+; BLES00464
+; F.E.A.R. 2: Project Origin
+
+:FILENAME.SAV
+
+[Update ADD for FILENAME.SAV (Required)]
+set [csum]:0
+set [csum]:add(0x000000,0x12FF1B)
+write at 0x12FF1C:[csum]

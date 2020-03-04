@@ -1,0 +1,106 @@
+; Dynasty Warriors: Gundam
+; BLUS30058
+;From Game Genie For PS3
+
+:BLUS30058-*\DATA.BIN
+
+; --- Pilots ---
+
+; --- Amuro Ray ---
+
+[Max Pilot Points]
+20000188 05F5E0FF
+
+[Level 30]
+00000198 0000001D
+
+[Have All Skills]
+400001A5 000000FF
+40070001 00000000
+
+; --- Kamille Bidan ---
+
+[Max Pilot Points]
+2000049C 05F5E0FF
+
+[Level 30]
+000004AC 0000001D
+
+[Have All Skills]
+400004B9 000000FF
+40070001 00000000
+
+; --- Judau Ashta ---
+
+[Max Pilot Points]
+2000093A 05F5E0FF
+
+[Level 30]
+0000094A 0000001D
+
+[Have All Skills]
+40000957 000000FF
+40070001 00000000
+
+; --- Domon Kasshu ---
+
+[Max Pilot Points]
+20000AC4 05F5E0FF
+
+[Level 30]
+00000AD4 0000001D
+
+[Have All Skills]
+40000AE1 000000FF
+40070001 00000000
+
+; --- Heero Yuy ---
+
+[Max Pilot Points]
+20000DD8 05F5E0FF
+
+[Level 30]
+00000DE8 0000001D
+
+[Have All Skills]
+40000DF5 000000FF
+40070001 00000000
+
+; --- Loran Cehack ---
+
+[Max Pilot Points]
+200010EC 05F5E0FF
+
+[Level 30]
+000010FC 0000001D
+
+[Have All Skills]
+40001109 000000FF
+40070001 00000000
+
+; --- Mobile Suits ---
+
+; --- Amuro Ray-Gundam ---
+
+[Max Mobile Suit Points]
+20000020 0098967F
+
+[Level 10]
+00000032 00000009
+
+; --- Kamille Bidan-Gundam MK-II ---
+
+[Max Mobile Suit Points]
+20000370 0098967F
+
+[Level 10]
+00000382 00000009
+
+Group:\
+
+[Update ADD for DATA.BIN (Required)]
+set [csum]:0
+;set [csum]:add(0x000020,0x088FFF)
+set pointer:eof+1
+set [csum]:add(0x000020,pointer)
+write at 0x000010:[csum]

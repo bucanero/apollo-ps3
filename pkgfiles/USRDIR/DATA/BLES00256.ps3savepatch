@@ -1,0 +1,11 @@
+;BLES00256
+;GRID
+
+:SAVEDATA
+
+[Update DWADD for SAVEDATA (Required)]
+set [csum]:0
+;set [csum]:dwadd(0x000008,0x04B5BB)
+set pointer:eof+1
+set [csum]:dwadd(0x000008,pointer)
+write at 0x000000:[csum]

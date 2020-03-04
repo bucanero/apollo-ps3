@@ -1,0 +1,43 @@
+; Accel World: Kasoku no Chouten
+; BLJS10176
+; From KE-HA
+
+:SAVE0.DAT
+[Money 999900]
+20001088 DC410F00
+
+[Haruyuki Condition Very Good / Status Max]
+2000108C 02000000
+20001090 00000000
+20001094 00000000
+2000104C C8000000
+20001050 C8000000
+20001054 32000000
+
+[Silver Crow Aerial Combo and Spiral Kick S]
+10001078 00000600
+10001074 00009600
+1000107A 00000600
+10001076 00009600
+
+[Enjoyment Max - Kuroyukihime]
+20001058 96000000
+
+[Enjoyment Max - Takumu]
+2000105C 96000000
+
+[Enjoyment Max - Chiyuri]
+20001060 96000000
+
+[Enjoyment Max - Fuko]
+20001064 96000000
+
+[Enjoyment Max - Niko]
+2000106C 96000000
+
+[Enjoyment Max - Pado]
+20001070 96000000
+
+[Present Item All 99]
+40001256 00000063
+40300001 00000000

@@ -1,0 +1,15 @@
+;BLES01542
+;Brave: The Video Game
+;From Game Genie PS3
+
+:BRAVE0
+
+[Max Coins]
+2000062C 3B9AC9FF
+
+[Update CRC32 for BRAVE0 (Required)]
+;set range:0x00000C,0x0006E2
+set pointer:eof+1
+set range:0x00000C,pointer
+set [hash]:CRC32
+write at 0x000004:[hash]

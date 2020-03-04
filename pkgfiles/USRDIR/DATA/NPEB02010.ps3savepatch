@@ -1,0 +1,38 @@
+; NPEB02010
+; Yu-Gi-Oh! Millennium Duels
+
+:AUTOSAVE
+
+;by Neos
+[All Cards x3]
+41002252 0000F0F0
+4BBA0002 00000000
+
+[Unlocked all Opponents]
+400039DD 00000003
+40CA0004 00000000
+
+[Unlocked all Recipe/Characters]
+2000005C FFFFF000
+20000060 FFFFFFFF
+20000064 0FFFFFFF
+20000068 FFFFFFFF
+2000006C FFFFFFFF
+20000070 FFFFFFFF
+20000074 FFFFFFFF
+20000078 FFFFFFFF
+
+;by chaoszage
+[Update CRC32 for AUTOSAVE (Required)]
+; Checksum offset is located within the checksum range.
+write at 0x00000C:00000000   ;Initializing checksum with null bytes
+;----------------------------
+;set range:0x000000,0x003D01
+set pointer:eof+1
+set range:0x000000,pointer
+set [hash]:CRC32
+set [hash]:xor:FFFFFFFF
+write at 0x00000C:[hash]
+
+
+

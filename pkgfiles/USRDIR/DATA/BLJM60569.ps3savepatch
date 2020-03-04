@@ -1,0 +1,743 @@
+; BLJM60569
+; Devil May Cry HD Collection
+;From Game Genie For PS3 & chaoszage
+
+[Group:Devil May Cry 1]
+
+:BLUS30764-DMC1\DATA
+
+[INFO: For Modifier values - http://ps3cheating.net/devil-may-cry-hd-collection-blus30764/#comment-449
+
+[1st Slot 255 Vital Stars]
+20000270 020A00FF
+
+[2nd Slot 255 Devil Stars]
+20000274 020B00FF
+
+[Slot 1 Modifier]
+20000270 xxxx00vv
+[Slot 2 Modifier]
+20000274 xxxx00vv
+[Slot 3 Modifier]
+20000278 xxxx00vv
+[Slot 4 Modifier]
+2000027C xxxx00vv
+[Slot 5 Modifier]
+20000280 xxxx00vv
+[Slot 6 Modifier]
+20000284 xxxx00vv
+
+[Stage Start At Modifier]
+00000024 000000yy
+
+[Difficulty Modifier]
+00000026 000000zz
+
+[Total Red Orbs 99999 Collected]
+2000083C 0001869F
+
+[All Difficulties-All Stages-Rank S]
+420007BC 00000000
+40110004 00000000
+00000800 00000000
+
+
+;[All Difficulties-All Stages-Rank S]
+;420007BC 01010101
+;40110004 00000000
+;00000800 00000001
+
+; New game only.
+[Unlock All Characters And Difficulties]
+00005E68 000000FF
+
+[Group:Devil May Cry 1\File 1]
+
+[DMC 1 - 1 - Max Red Orbs]
+20000634 000F423F
+
+[DMC 1 - 1 - Max Yellow Orbs]
+10000620 000003E7
+
+[Group:Devil May Cry 1\File 2]
+
+[DMC 1 - 2 - Max Red Orbs]
+20000FA4 000F423F
+
+[DMC 1 - 2 - Max Yellow Orbs]
+10000F90 000003E7
+
+[Group:Devil May Cry 1\File 3]
+
+[DMC 1 - 3 - Max Red Orbs]
+20001914 000F423F
+
+[DMC 1 - 3 - Max Yellow Orbs]
+10001900 000003E7
+
+[Group:Devil May Cry 1\File 4]
+
+[DMC 1 - 4 - Max Red Orbs]
+20002284 000F423F
+
+[DMC 1 - 4 - Max Yellow Orbs]
+10002270 000003E7
+
+[Group:Devil May Cry 1\File 5]
+
+[DMC 1 - 5 - Max Red Orbs]
+20002BF4 000F423F
+
+[DMC 1 - 5 - Max Yellow Orbs]
+10002BE0 000003E7
+
+[Group:Devil May Cry 1\File 6]
+
+[DMC 1 - 6 - Max Red Orbs]
+20003564 000F423F
+
+[DMC 1 - 6 - Max Yellow Orbs]
+10003550 000003E7
+
+[Group:Devil May Cry 1\File 7]
+
+[DMC 1 - 7 - Max Red Orbs]
+20003ED4 000F423F
+
+[DMC 1 - 7 - Max Yellow Orbs]
+10003EC0 000003E7
+
+[Group:Devil May Cry 1\File 8]
+
+[DMC 1 - 8 - Max Red Orbs]
+20004844 000F423F
+
+[DMC 1 - 8 - Max Yellow Orbs]
+10004830 000003E7
+
+[Group:Devil May Cry 1\File 9]
+
+[DMC 1 - 9 - Max Red Orbs]
+200051B4 000F423F
+
+[DMC 1 - 9 - Max Yellow Orbs]
+100051A0 000003E7
+
+[Group:Devil May Cry 1\File 10]
+
+[DMC 1 - 10 - Max Red Orbs]
+20005B24 000F423F
+
+[DMC 1 - 10 - Max Yellow Orbs]
+10005B10 000003E7
+
+[Group:\]
+
+[Group:Devil May Cry 2]
+
+:BLUS30764DMC2_DMC2\DMC2
+
+[Unlock All Characters And Difficulties]
+10000066 0000FFFF
+
+[Group:Devil May Cry 2\Dante]
+
+[Group:Devil May Cry 2\Dante\File 1]
+
+[Unlock all stages in Normal/Hard/DMD mode]
+20000120 07111111
+
+[All Difficulties-All Stages-Rank S for dante and trish]
+420001B0 01010101
+401B0004 00000000
+
+[DMC2 - Dante - 1 - Max Red Orbs]
+2000011C 000F423F
+
+[DMC2 - Dante - 1 - Max Golden Orbs]
+10000150 000003E7
+
+[Group:Devil May Cry 2\Dante\File 2]
+
+[DMC2 - Dante - 2 - Max Red Orbs]
+2000031C 000F423F
+
+[DMC2 - Dante - 2 - Max Golden Orbs]
+10000350 000003E7
+
+[Group:Devil May Cry 2\Dante\File 3]
+
+[DMC2 - Dante - 3 - Max Red Orbs]
+2000051C 000F423F
+
+[DMC2 - Dante - 3 - Max Golden Orbs]
+10000550 000003E7
+
+[Group:Devil May Cry 2\Dante\File 4]
+
+[DMC2 - Dante - 4 - Max Red Orbs]
+2000071C 000F423F
+
+[DMC2 - Dante - 4 - Max Golden Orbs]
+10000750 000003E7
+
+[Group:Devil May Cry 2\Dante\File 5]
+
+[DMC2 - Dante - 5 - Max Red Orbs]
+2000091C 000F423F
+
+[DMC2 - Dante - 5 - Max Golden Orbs]
+10000950 000003E7
+
+[Group:Devil May Cry 2\Dante\File 6]
+
+[DMC2 - Dante - 6 - Max Red Orbs]
+20000B1C 000F423F
+
+[DMC2 - Dante - 6 - Max Golden Orbs]
+10000B50 000003E7
+
+[Group:Devil May Cry 2\Dante\File 7]
+
+[DMC2 - Dante - 7 - Max Red Orbs]
+20000D1C 000F423F
+
+[DMC2 - Dante - 7 - Max Golden Orbs]
+10000D50 000003E7
+
+[Group:Devil May Cry 2\Dante\File 8]
+
+[DMC2 - Dante - 8 - Max Red Orbs]
+20000F1C 000F423F
+
+[DMC2 - Dante - 8 - Max Golden Orbs]
+10000F50 000003E7
+
+[Group:Devil May Cry 2\Dante\File 9]
+
+[DMC2 - Dante - 9 - Max Red Orbs]
+2000111C 000F423F
+
+[DMC2 - Dante - 9 - Max Golden Orbs]
+10001150 000003E7
+
+[Group:Devil May Cry 2\Dante\File 10]
+
+[DMC2 - Dante - 10 - Max Red Orbs]
+2000131C 000F423F
+
+[DMC2 - Dante - 10 - Max Golden Orbs]
+10001350 000003E7
+
+[Group:Devil May Cry 2\Lucia]
+
+[All Difficulties-All Stages-Rank S for Lucia only]
+420015B0 01010101
+40090004 00000000
+200015D4 01010101
+200015D8 01010101
+200015DC 01010101
+200015DD 01010101
+
+[Group:Devil May Cry 2\Lucia\File 1]
+
+[Unlock all stages in Normal/Hard/DMD mode]
+20001520 070C0C0C
+
+;[All Difficulties-All Stages-Rank S for Lucia only]
+;420015B0 01010101
+;40090004 00000000
+;200015D4 01010100
+
+[DMC2 - Lucia - 1 - Max Red Orbs]
+2000151C 000F423F
+
+[DMC2 - Lucia - 1 - Max Golden Orbs]
+10001550 000003E7
+
+[Group:Devil May Cry 2\Lucia\File 2]
+
+[DMC2 - Lucia - 2 - Max Red Orbs]
+2000171C 000F423F
+
+[DMC2 - Lucia - 2 - Max Golden Orbs]
+10001750 000003E7
+
+[Group:Devil May Cry 2\Lucia\File 3]
+
+[DMC2 - Lucia - 3 - Max Red Orbs]
+2000191C 000F423F
+
+[DMC2 - Lucia - 3 - Max Golden Orbs]
+10001950 000003E7
+
+[Group:Devil May Cry 2\Lucia\File 4]
+
+[DMC2 - Lucia - 4 - Max Red Orbs]
+20001B1C 000F423F
+
+[DMC2 - Lucia - 4 - Max Golden Orbs]
+10001B50 000003E7
+
+[Group:Devil May Cry 2\Lucia\File 5]
+
+[DMC2 - Lucia - 5 - Max Red Orbs]
+20001D1C 000F423F
+
+[DMC2 - Lucia - 5 - Max Golden Orbs]
+10001D50 000003E7
+
+[Group:Devil May Cry 2\Lucia\File 6]
+
+[DMC2 - Lucia - 6 - Max Red Orbs]
+20001F1C 000F423F
+
+[DMC2 - Lucia - 6 - Max Golden Orbs]
+10001F50 000003E7
+
+[Group:Devil May Cry 2\Lucia\File 7]
+
+[DMC2 - Lucia - 7 - Max Red Orbs]
+2000211C 000F423F
+
+[DMC2 - Lucia - 7 - Max Golden Orbs]
+10002150 000003E7
+
+[Group:Devil May Cry 2\Lucia\File 8]
+
+[DMC2 - Lucia - 8 - Max Red Orbs]
+2000231C 000F423F
+
+[DMC2 - Lucia - 8 - Max Golden Orbs]
+10002350 000003E7
+
+[Group:Devil May Cry 2\Lucia\File 9]
+
+[DMC2 - Lucia - 9 - Max Red Orbs]
+2000251C 000F423F
+
+[DMC2 - Lucia - 9 - Max Golden Orbs]
+10002550 000003E7
+
+[Group:Devil May Cry 2\Lucia\File 10]
+
+[DMC2 - Lucia - 10 - Max Red Orbs]
+2000271C 000F423F
+
+[DMC2 - Lucia - 10 - Max Golden Orbs]
+10002750 000003E7
+
+[Group:Devil May Cry 3]
+
+:BLUS30764-DMC3SE\SYS-DATA
+
+[Group:Devil May Cry 3\File 1]
+;codes from codebreaker,ported by chaoszage
+;play any stage with all mode(ss rank) codes to unlock more costumes and difficulties.
+[Unlock Easy Mode with SS rank]
+20000A24 FF050505
+42000A28 05050505
+40040004 00000000
+00000A38 00000005
+
+[Unlock Normal Mode with SS rank]
+10000A3A 00000505
+42000A3C 05050505
+40040004 00000000
+10000A4C 00000505
+
+[Unlock Hard Mode with SS rank]
+00000A4F 00000005
+42000A50 05050505
+40040004 00000000
+20000A60 050505FF
+
+[Unlock Very Hard Mode with SS rank]
+42000A64 05050505
+40050004 00000000
+
+[Unlock DMD Mode with SS rank]
+20000A78 FF050505
+42000A7C 05050505
+40040004 00000000
+00000A8C 00000005
+
+[Unlock Heaven or Hell Mode with SS rank]
+10000A8E 00000505
+42000A90 05050505
+40040004 00000000
+10000AA0 00000505
+
+[DMC3 - 1 - Max Red Orbs]
+200003BC 000F423F
+
+[DMC3 - 1 - Max Gold Orbs]
+000003C5 00000063
+
+[DMC3 - 1 - Max Yellow Orbs]
+000003C6 00000063
+
+[Group:Devil May Cry 3\File 2]
+
+[DMC3 - 2 - Max Red Orbs]
+20000AC8 000F423F
+
+[DMC3 - 2 - Max Gold Orbs]
+00000AD1 00000063
+
+[DMC3 - 2 - Max Yellow Orbs]
+00000AD2 00000063
+
+[Group:Devil May Cry 3\File 3]
+
+[DMC3 - 3 - Max Red Orbs]
+200011D4 000F423F
+
+[DMC3 - 3 - Max Gold Orbs]
+000011DD 00000063
+
+[DMC3 - 3 - Max Yellow Orbs]
+000011DE 00000063
+
+[Group:Devil May Cry 3\File 4]
+
+[DMC3 - 4 - Max Red Orbs]
+200018E0 000F423F
+
+[DMC3 - 4 - Max Gold Orbs]
+000018E9 00000063
+
+[DMC3 - 4 - Max Yellow Orbs]
+000018EA 00000063
+
+[Group:Devil May Cry 3\File 5]
+
+[DMC3 - 5 - Max Red Orbs]
+20001FEC 000F423F
+
+[DMC3 - 5 - Max Gold Orbs]
+00001FF5 00000063
+
+[DMC3 - 5 - Max Yellow Orbs]
+00001FF6 00000063
+
+[Group:Devil May Cry 3\File 6]
+
+[DMC3 - 6 - Max Red Orbs]
+200026F8 000F423F
+
+[DMC3 - 6 - Max Gold Orbs]
+00002701 00000063
+
+[DMC3 - 6 - Max Yellow Orbs]
+00002702 00000063
+
+[Group:Devil May Cry 3\File 7]
+
+[DMC3 - 7 - Max Red Orbs]
+20002E04 000F423F
+
+[DMC3 - 7 - Max Gold Orbs]
+00002E0D 00000063
+
+[DMC3 - 7 - Max Yellow Orbs]
+00002E0E 00000063
+
+[Group:Devil May Cry 3\File 8]
+
+[DMC3 - 8 - Max Red Orbs]
+20003510 000F423F
+
+[DMC3 - 8 - Max Gold Orbs]
+00003519 00000063
+
+[DMC3 - 8 - Max Yellow Orbs]
+0000351A 00000063
+
+[Group:Devil May Cry 3\File 9]
+
+[DMC3 - 9 - Max Red Orbs]
+20003C1C 000F423F
+
+[DMC3 - 9 - Max Gold Orbs]
+00003C25 00000063
+
+[DMC3 - 9 - Max Yellow Orbs]
+00003C26 00000063
+
+[Group:Devil May Cry 3\File 10]
+
+[DMC3 - 10 - Max Red Orbs]
+20004328 000F423F
+
+[DMC3 - 10 - Max Gold Orbs]
+00004331 00000063
+
+[DMC3 - 10 - Max Yellow Orbs]
+00004332 00000063
+
+
+[Group:Devil May Cry 3\File 1\Styles Codes (Choose One)]
+[All Styles Max Level/EXP]
+00000473 00000002
+00000477 00000002
+0000047B 00000002
+0000047F 00000002
+42000488 47C34F80
+40030004 00000000
+
+["Trend Settler" trophy:Equip trickster style and kill one enemy to gain]
+00000473 00000002
+00000477 00000002
+0000047B 00000001
+0000047F 00000002
+20000488 47C34F80
+2000048C 47C34F80
+20000490 47C34F00
+20000494 47C34F80
+
+[Group:Devil May Cry 3\File 1\HP Codes (Choose One)]
+[HP Standard Max(20000)]
+20000464 469C4000
+
+[HP Super Max(like INF. HP)]
+20000464 50000000
+
+[Group:Devil May Cry 3\File 1\Devil Trigger Codes (Choose One)]
+
+[Devil Trigger Standard Max(10000)]
+20000468 461C4000
+
+[Devil Trigger Super Max(like INF. DT)]
+20000468 50000000
+
+[Group:Update Checksums]
+
+[Group:Update Checksums\Devil May Cry 1 Update Checksums]
+
+[Update ADD for DATA - SAVEFILE 1 (Required)]
+;DMC1 SAVEFILE 1 Checksums
+set [csum]:0
+carry(2)
+set [csum]:add(0x00000C,0x96F)
+write at 0x00000A:[csum]
+
+[Update ADD for DATA - SAVEFILE 2 (Required)]
+;DMC1 SAVEFILE 2 Checksums
+set [csum]:0
+carry(2)
+set [csum]:add(0x00097C,0x12DF)
+write at 0x00097A:[csum]
+
+[Update ADD for DATA - SAVEFILE 3 (Required)]
+;DMC1 SAVEFILE 3 Checksums
+set [csum]:0
+carry(2)
+set [csum]:add(0x0012EC,0x1C4F)
+write at 0x0012EA:[csum]
+
+[Update ADD for DATA - SAVEFILE 4 (Required)]
+;DMC1 SAVEFILE 4 Checksums
+set [csum]:0
+carry(2)
+set [csum]:add(0x001C5C,0x25BF)
+write at 0x001C5A:[csum]
+
+[Update ADD for DATA - SAVEFILE 5 (Required)]
+;DMC1 SAVEFILE 5 Checksums
+set [csum]:0
+carry(2)
+set [csum]:add(0x0025CC,0x2F2F)
+write at 0x0025CA:[csum]
+
+[Update ADD for DATA - SAVEFILE 6 (Required)]
+;DMC1 SAVEFILE 6 Checksums
+set [csum]:0
+carry(2)
+set [csum]:add(0x002F3C,0x389F)
+write at 0x002F3A:[csum]
+
+[Update ADD for DATA - SAVEFILE 7 (Required)]
+;DMC1 SAVEFILE 7 Checksums
+set [csum]:0
+carry(2)
+set [csum]:add(0x0038AC,0x420F)
+write at 0x0038AA:[csum]
+
+[Update ADD for DATA - SAVEFILE 8 (Required)]
+;DMC1 SAVEFILE 8 Checksums
+set [csum]:0
+carry(2)
+set [csum]:add(0x00412C,0x4B7F)
+write at 0x00412A:[csum]
+
+[Update ADD for DATA - SAVEFILE 9 (Required)]
+;DMC1 SAVEFILE 9 Checksums
+set [csum]:0
+carry(2)
+set [csum]:add(0x004B8C,0x54EF)
+write at 0x004B8A:[csum]
+
+[Update ADD for DATA - SAVEFILE 10 (Required)]
+;DMC1 SAVEFILE 10 Checksums
+set [csum]:0
+carry(2)
+set [csum]:add(0x0054FC,0x5E5F)
+write at 0x0054FA:[csum]
+
+[Group:Update Checksums\Devil May Cry 3 Update Checksums]
+[INFO: For XXXX Values Please follow the mini guide - http://ps3cheating.net/forum/?mingleforumaction=viewtopic&t=483]
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 1 (Required)]
+;DMC 3 SAVEFILE 1 Checksum
+10000AC2 0000xxxx
+
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 2 (Required)]
+;DMC 3 SAVEFILE 2 Checksum
+100011CE 0000xxxx
+
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 3 (Required)]
+;DMC 3 SAVEFILE 3 Checksum
+100018DA 0000xxxx
+
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 4 (Required)]
+;DMC 3 SAVEFILE 4 Checksum
+10001FE6 0000xxxx
+
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 5 (Required)] 
+;DMC 3 SAVEFILE 5 Checksum
+100026F2 0000xxxx
+
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 6 (Required)]
+;DMC 3 SAVEFILE 6 Checksum
+10002DFE 0000xxxx
+
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 7 (Required)]
+;DMC 3 SAVEFILE 7 Checksum
+1000350A 0000xxxx
+
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 8 (Required)]
+;DMC 3 SAVEFILE 8 Checksum
+10003c16 0000xxxx
+
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 9 (Required)]
+;DMC 3 SAVEFILE 9 Checksum
+10004322 0000xxxx
+
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 10 (Required)]
+;DMC 3 SAVEFILE 10 Checksum
+10004A2E 0000xxxx
+
+[Group:Update Checksums\Devil May Cry 3 Update Checksums (Not Working)]
+
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 1 (Not Working)]
+;DMC 3 SAVEFILE 1 Checksum
+set [csum]:0
+set [csum]:wsub(0x0003B8,0x000AC1) 
+write at 0x4A10:[csum]
+set [csum]:0 
+set [csum]:wadd(0x4A10,0x4A13)
+set [csum]:right([csum],2)
+write at 0xAC2:[csum]
+write at 0x4A10:00000000
+
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 2 (Not Working)]
+;DMC 3 SAVEFILE 2 Checksum
+set [csum]:0
+set [csum]:wsub(0x000AC4,0x0011CD) 
+write at 0x4A10:[csum]
+set [csum]:0 
+set [csum]:wadd(0x4A10,0x4A13)
+set [csum]:right([csum],2)
+write at 0x11CE:[csum]
+write at 0x4A10:00000000
+
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 3 (Not Working)]
+;DMC 3 SAVEFILE 3 Checksum
+set [csum]:0
+set [csum]:wsub(0x00011D0,0x0018D9) 
+write at 0x4A10:[csum]
+set [csum]:0 
+set [csum]:wadd(0x4A10,0x4A13)
+set [csum]:right([csum],2)
+write at 0x18DA:[csum]
+write at 0x4A10:00000000
+
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 4 (Not Working)]
+;DMC 3 SAVEFILE 4 Checksum
+set [csum]:0
+set [csum]:wsub(0x0018DC,0x001FE5) 
+write at 0x4A10:[csum]
+set [csum]:0 
+set [csum]:wadd(0x4A10,0x4A13)
+set [csum]:right([csum],2)
+write at 0x1FE6:[csum]
+write at 0x4A10:00000000
+
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 5 (Not Working)] 
+;DMC 3 SAVEFILE 5 Checksum
+set [csum]:0
+set [csum]:wsub(0x001FE8,0x0026F1) 
+write at 0x4A10:[csum]
+set [csum]:0 
+set [csum]:wadd(0x4A10,0x4A13)
+set [csum]:right([csum],2)
+write at 0x26F2:[csum]
+write at 0x4A10:00000000
+
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 6 (Not Working)]
+;DMC 3 SAVEFILE 6 Checksum
+set [csum]:0
+set [csum]:wsub(0x0026F4,0x002DFD) 
+write at 0x4A10:[csum]
+set [csum]:0 
+set [csum]:wadd(0x4A10,0x4A13)
+set [csum]:right([csum],2)
+write at 0x2DFE:[csum]
+write at 0x4A10:00000000
+
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 7 (Not Working)]
+;DMC 3 SAVEFILE 7 Checksum
+set [csum]:0
+set [csum]:wsub(0x002E00,0x003509) 
+write at 0x4A10:[csum]
+set [csum]:0 
+set [csum]:wadd(0x4A10,0x4A13)
+set [csum]:right([csum],2)
+write at 0x350A:[csum]
+write at 0x4A10:00000000
+
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 8 ((Not Working)]
+;DMC 3 SAVEFILE 8 Checksum
+set [csum]:0
+set [csum]:wsub(0x00350C,0x003C15) 
+write at 0x4A10:[csum]
+set [csum]:0 
+set [csum]:wadd(0x4A10,0x4A13)
+set [csum]:right([csum],2)
+write at 0x3C16:[csum]
+write at 0x4A10:00000000
+
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 9 (Not Working)]
+;DMC 3 SAVEFILE 9 Checksum
+set [csum]:0
+set [csum]:wsub(0x003C18,0x004321) 
+write at 0x4A10:[csum]
+set [csum]:0 
+set [csum]:wadd(0x4A10,0x4A13)
+set [csum]:right([csum],2)
+write at 0x4322:[csum]
+write at 0x4A10:00000000
+
+[Update WSUB Checksum for SYS-DATA - SAVEFILE 10 (Not Working)]
+;DMC 3 SAVEFILE 10 Checksum
+set [csum]:0
+set [csum]:wsub(0x004324,0x004A2D) 
+write at 0x4A10:[csum]
+set [csum]:0 
+set [csum]:wadd(0x4A10,0x4A13)
+set [csum]:right([csum],2)
+write at 0x4A2E:[csum]
+write at 0x4A10:00000000
+
+
+

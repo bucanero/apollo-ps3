@@ -1,0 +1,97 @@
+; NPEB02061
+; Borderlands: The Pre-Sequel
+
+; from shaka and chaoszage
+
+;:~extracted\00000018.dat
+
+;[9999999 token(Apply on 0000000018.dat)]
+;write at 0x00000320:0x98967F00
+
+;:PAYLOAD
+
+;[Update SHA1 for PAYLOAD (Required)]
+;set range:0x000014,0x000166
+;set pointer:eof+1
+;set range:0x000014,pointer
+;set [hash]:SHA1
+;write at 0x000000:[hash]
+
+
+;[Decompress PAYLOAD (Required)]
+;Decompress PAYLOAD
+
+;:XXXX\~extracted\00000018.dat
+;group: 9999999 Token
+;write at 0x00000320:0x98967F00
+
+;group: Compress PAYLOAD (Required)
+;Compress PAYLOAD,-w 15
+
+;:XXXX\PAYLOAD
+;group: SHA1 for PAYLOAD by chaoszage (Required)
+;[Update SHA1 for PAYLOAD (Required)]
+;set range:0x000014,0x000166
+;set pointer:eof+1
+;set range:0x000014,pointer
+;set [hash]:SHA1
+;write at 0x000000:[hash]
+
+
+:PAYLOAD
+[Decompress PAYLOAD (Required)]
+Decompress PAYLOAD
+
+:~extracted\00000018.dat
+[Max Badass Token]
+80010004 00008A01
+28000004 0098967F
+
+[+500% All Badass Bonus]
+80010004 00008A01
+2800001D 5A53504D
+28000021 45324D37
+28000025 564A5439
+28000029 50594342
+2800002D 41373954
+28000031 4B443958
+28000035 34384650
+28000039 354E4B43
+2800003D 5853504D
+28000041 45324D37
+28000045 564A5439
+28000049 47594342
+2800004D 41373954
+28000051 4B443958
+28000055 34394650
+28000059 354E4B38
+2800005D 5853504D
+28000061 45324D37
+28000065 564A5439
+28000069 4A594342
+2800006D 41373154
+28000071 4B443958
+28000075 34423700
+
+:PAYLOAD
+[Compress PAYLOAD (Required)]
+Compress PAYLOAD,-w 15
+
+:PAYLOAD
+[Update SHA1 for PAYLOAD (Required)]
+;set range:0x000014,0x000166
+set pointer:eof+1
+set range:0x000014,pointer
+set [hash]:SHA1
+write at 0x000000:[hash]
+
+:SAVE0001.SAV
+
+[Update SHA1 for SAVE0001.SAV (Required)]
+;set range:0x000014,0x00210F
+set pointer:eof+1
+set range:0x000014,pointer
+set [hash]:SHA1
+write at 0x000000:[hash]
+
+

@@ -1,0 +1,47 @@
+; Jetpack Joyride (PSN)
+; NPEB01240
+;From Game Genie For PS3
+
+:NPEB01240_JETPACK\SAVEDATA.SAV
+
+; --- Max ---
+
+[Coins]
+8001000C 44454641
+554C545F 48454144
+93000000 00000008
+28000000 05F5E0FF
+
+; You must have at least one Final Blast to use this cheat.
+[Final Blasts]
+80010014 434F4E53
+554D4142 4C455F42
+4F4D4200 00000000
+28000040 00000063
+
+; You must have at least one Headstart to use this cheat.
+[Headstarts]
+80010014 434F4E53
+554D4142 4C455F48
+45414453 54415254
+28000040 00000063
+
+; You must have at least one Super Headstart to use this cheat.
+[Super Headstarts]
+8001001C 434F4E53
+554D4142 4C455F53
+55504552 5F484541
+44535441 52540000
+28000040 00000063
+
+; You must have at least one Revive to use this cheat.
+[Revives]
+80010014 434F4E53
+554D4142 4C455F52
+45564956 45000000
+28000040 00000063
+
+[default:Update crc32 (required)]
+set range:0x4,0xFFFF
+set [crc]:crc32
+write at 0x0:[crc] 
