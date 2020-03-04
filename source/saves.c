@@ -499,8 +499,9 @@ option_entry_t * ReadOptions(code_entry_t code, int * count)
 	return ret;
 }
 
-void _setManualCode(code_entry_t* entry, const char* name, const char* code)
+void _setManualCode(code_entry_t* entry, uint8_t type, const char* name, const char* code)
 {
+	entry->type = type;
 	entry->activated = 0;
 	entry->options_count = 0;
 	entry->options = NULL;
@@ -551,7 +552,7 @@ int _count_codes(char* buffer)
 }
 
 // Expects buffer without CR's (\r)
-char* get_patch_code(char* buffer, int code_id)
+char* get_patch_code(char* buffer, int code_id, uint8_t* type)
 {
 	int i=0;
     char *tmp = NULL;
@@ -560,7 +561,7 @@ char* get_patch_code(char* buffer, int code_id)
 
     while (line)
     {
-    	if (wildcard_match_icase(line, "[*]") && (i++ == code_id))
+    	if (wildcard_match(line, "[*]") && (i++ == code_id))
     	{
 			LOG("Reading patch code for '%s'...", line);
 	    	line = strtok(NULL, "\n");
@@ -583,6 +584,8 @@ char* get_patch_code(char* buffer, int code_id)
 					res = tmp;
 
 //			    	LOG("%s", line);
+					if (!wildcard_match(line, "\?\?\?\?\?\?\?\? \?\?\?\?\?\?\?\?"))
+						*type = PATCH_BSD;
 			    }
 		    	line = strtok(NULL, "\n");
 		    }
@@ -592,6 +595,42 @@ char* get_patch_code(char* buffer, int code_id)
 
 //	LOG("Result (%s)", res);
 	return (res);
+}
+
+#define MENU_COPY_CMDS	2
+void _add_commands(code_entry_t * code)
+{
+	int count = 0;
+
+	_setManualCode(&code[count], PATCH_COMMAND, "\x0c Export save game to Zip", "");
+	code[count].options_count = 1;
+	code[count].options = _createOptions(2, "Export Zip to USB", CMD_EXPORT_ZIP_USB);
+	count++;
+
+	_setManualCode(&code[count], PATCH_COMMAND, "\x0b Copy save game to USB", "");
+	code[count].options_count = 1;
+	code[count].options = _createOptions(2, "Copy to USB", CMD_COPY_SAVE_USB);
+	count++;
+}
+
+int ReadCodesUSB(save_entry_t * save)
+{
+	int count = 0;
+	save->code_count = 3 + (save->flags & SAVE_FLAG_LOCKED) + MENU_COPY_CMDS;
+	code_entry_t * ret = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (save->code_count));
+
+	_setManualCode(&ret[count++], PATCH_COMMAND, "\x06 Apply changes & Resign", CMD_RESIGN_SAVE);
+	_setManualCode(&ret[count++], PATCH_SFO, "\x07 Remove Account ID", CMD_REMOVE_ACCOUNT_ID);
+	_setManualCode(&ret[count++], PATCH_SFO, "\x07 Remove Console ID", CMD_REMOVE_PSID);
+	if (save->flags & SAVE_FLAG_LOCKED)
+		_setManualCode(&ret[count++], PATCH_SFO, "\x08 Remove copy protection", CMD_UNLOCK_COPY);
+
+	_add_commands(&ret[count]);
+
+	LOG("USB code_count=%d", save->code_count);
+
+	save->codes = ret;
+	return (save->code_count);
 }
 
 /*
@@ -604,10 +643,9 @@ char* get_patch_code(char* buffer, int code_id)
  *	_count_count:	Pointer to int (set to the number of codes within the ncl)
  * Return:			Returns an array of code_entry, null if failed to load
  */
-#define CODEMENU_CMDS	5
-int ReadLocalCodes(save_entry_t * save)
+int ReadCodesHDD(save_entry_t * save)
 {
-    int code_count = CODEMENU_CMDS, cur_count = 0;
+    int code_count = MENU_COPY_CMDS, cur_count = 0;
 	code_entry_t * ret;
 	char filePath[256];
 
@@ -615,10 +653,8 @@ int ReadLocalCodes(save_entry_t * save)
 
 	if (file_exists(filePath) == SUCCESS)
 	{
-		char savefile[128];
 		char group[128] = "";
 		long bufferLen;
-		int x = 0;
 
 		char * buffer = readFile(filePath, &bufferLen);
 		buffer[bufferLen]=0;
@@ -628,10 +664,11 @@ int ReadLocalCodes(save_entry_t * save)
 
 	    _remove_char(buffer, bufferLen, '\r');
 		code_count += _count_codes(buffer);
+		code_count += (code_count > MENU_COPY_CMDS);
 
 		ret = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (code_count));
 
-	    if (code_count > CODEMENU_CMDS)
+	    if (code_count > MENU_COPY_CMDS)
 		{
 			// remove 0x00 from previous strtok(...)
 			_remove_char(buffer, bufferLen, '\0');
@@ -650,8 +687,14 @@ int ReadLocalCodes(save_entry_t * save)
 				}
 				else if (wildcard_match(line, ":*"))
 				{
-					strcpy(savefile, line+1);
-					LOG("FILE: %s\n", savefile);
+					strcpy(filePath, line+1);
+					LOG("FILE: %s\n", filePath);
+				}
+				else if (wildcard_match(line, "?=*") ||
+						 wildcard_match(line, "\?\?=*") ||
+						 wildcard_match(line, "\?\?\?\?=*"))
+				{
+					// options
 				}
 				else if (wildcard_match_icase(line, "PATH:*"))
 				{
@@ -665,13 +708,27 @@ int ReadLocalCodes(save_entry_t * save)
 				else if (wildcard_match(line, "[*]"))
 				{
 //					LOG("Line: '%s'\n", line);
+					if (wildcard_match_icase(line, "[DEFAULT:*"))
+					{
+						line += 6;
+						line[0] = '[';
+						line[1] = CHAR_TAG_WARNING;
+						line[2] = ' ';
+					}
+					if (wildcard_match_icase(line, "[INFO:*"))
+					{
+						line += 3;
+						line[0] = '[';
+						line[1] = CHAR_TAG_WARNING;
+						line[2] = ' ';
+					}
 
-					ret[cur_count].id = cur_count;
-					ret[cur_count].activated = wildcard_match_icase(line, "*(REQUIRED)*");
+					ret[cur_count].type = PATCH_GAMEGENIE;
+					ret[cur_count].activated = 0; //wildcard_match_icase(line, "*(REQUIRED)*");
 					ret[cur_count].codes = NULL;
 					ret[cur_count].options = NULL;
 					ret[cur_count].options_count = 0;
-					asprintf(&ret[cur_count].file, "%s", savefile);
+					asprintf(&ret[cur_count].file, "%s", filePath);
 
 					if (strlen(group))
 						asprintf(&ret[cur_count].name, "%s: %s", group, line+1);
@@ -686,14 +743,16 @@ int ReadLocalCodes(save_entry_t * save)
 				line = strtok(NULL, "\n");
 			}
 
-			for (x = 0; x < cur_count; x++)
+			for (int x = 0; x < cur_count; x++)
 			{
-				// remove 0x00 from previous strtok(...)	
+				// remove 0x00 from previous strtok(...)
 				_remove_char(buffer, bufferLen, '\0');
-				ret[x].codes = get_patch_code(buffer, x);
+				ret[x].codes = get_patch_code(buffer, x, &ret[x].type);
 
-				LOG("Name: %s\nFile: %s\nCode: %s\n", ret[x].name, ret[x].file, ret[x].codes);
+				LOG("Name: %s\nFile: %s\nCode (%d): %s\n", ret[x].name, ret[x].file, ret[x].type, ret[x].codes);
 			}
+
+			_setManualCode(&ret[cur_count++], PATCH_COMMAND, "\x06 Apply cheats", CMD_APPLY_CHEATS);
 		}
 
 		free (buffer);
@@ -705,20 +764,7 @@ int ReadLocalCodes(save_entry_t * save)
 
 	save->code_count = code_count;
 
-	_setManualCode(&ret[cur_count++], "\x08 Apply patches & Resign", CMD_RESIGN_SAVE);
-	_setManualCode(&ret[cur_count++], "\x07 Remove copy protection", CMD_UNLOCK_COPY);
-	_setManualCode(&ret[cur_count++], "\x08 Remove Account ID", CMD_REMOVE_ACCOUNT_ID);
-//	_setManualCode(&ret[cur_count++], "Remove Console ID", CMD_REMOVE_PSID);
-
-	_setManualCode(&ret[cur_count], "\x08 Export save game to Zip", "");
-	ret[cur_count].options_count = 1;
-	ret[cur_count].options = _createOptions(2, "Export Zip to USB", CMD_EXPORT_ZIP_USB);
-	cur_count++;
-
-	_setManualCode(&ret[cur_count], "\x08 Copy save game to USB", "");
-	ret[cur_count].options_count = 1;
-	ret[cur_count].options = _createOptions(2, "Copy to USB", CMD_COPY_SAVE_USB);
-	cur_count++;
+	_add_commands(&ret[cur_count]);
 
 	LOG("cur_count=%d,code_count=%d", cur_count, code_count);
 
@@ -727,7 +773,7 @@ int ReadLocalCodes(save_entry_t * save)
 }
 
 /*
- * Function:		ReadOnlineNCL()
+ * Function:		ReadOnlineSaves()
  * File:			saves.c
  * Project:			Apollo PS3
  * Description:		Downloads an entire NCL file into an array of code_entry
@@ -835,17 +881,17 @@ int LoadBackupCodes(save_entry_t * bup)
 	bup_count = 0;
 	LOG("Loading backup commands...");
 
-	_setManualCode(&ret[bup_count], "Export Licenses to .Zip", "");
+	_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0c Export Licenses to .Zip", "");
 	ret[bup_count].options_count = 1;
 	ret[bup_count].options = _createOptions(2, "Save .Zip to USB", CMD_EXP_EXDATA_USB);
 	bup_count++;
 
-	_setManualCode(&ret[bup_count], "Export Trophies to USB", "");
+	_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0b Export Trophies to USB", "");
 	ret[bup_count].options_count = 1;
 	ret[bup_count].options = _createOptions(2, "Save trophies to USB", CMD_EXP_TROPHY_USB);
 	bup_count++;
 
-	_setManualCode(&ret[bup_count], "Copy all HDD saves to USB", "");
+	_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0b Copy all HDD saves to USB", "");
 	ret[bup_count].options_count = 1;
 	ret[bup_count].options = _createOptions(2, "Copy saves to USB", CMD_EXP_SAVES_USB);
 	bup_count++;
@@ -999,6 +1045,7 @@ save_entry_t * ReadUserList(const char* userPath, int * gmc)
 
 	char sfoPath[256];
 	int cur_count = 0;
+	int len = strlen(userPath);
 
 	while ((dir = readdir(d)) != NULL)
 	{
@@ -1019,11 +1066,11 @@ save_entry_t * ReadUserList(const char* userPath, int * gmc)
 
 			ret[cur_count].codes = NULL;
 			ret[cur_count].code_count = 0;
-			ret[cur_count].code_sorted = 0;
 			ret[cur_count].flags = SAVE_FLAG_PS3;
 
 			asprintf(&ret[cur_count].path, "%s%s/", userPath, dir->d_name);
 			asprintf(&ret[cur_count].title_id, "%.9s", dir->d_name);
+			ret[cur_count].folder = ret[cur_count].path + len;
 
 			char *sfo_data = (char*) sfo_get_param_value(sfo, "TITLE");
 			asprintf(&ret[cur_count].name, "%s", sfo_data);
@@ -1122,7 +1169,6 @@ save_entry_t * ReadOnlineList(const char* urlPath, int * gmc)
 			ret[cur_count].codes = NULL;
 			ret[cur_count].flags = SAVE_FLAG_PS3;
 			ret[cur_count].code_count = 0;
-			ret[cur_count].code_sorted = 0;
 
 			asprintf(&ret[cur_count].title_id, "%.9s", content);
 

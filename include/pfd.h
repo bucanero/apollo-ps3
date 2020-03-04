@@ -184,6 +184,7 @@ int pfd_util_init(const char* game_id, const char* db_path);
 int pfd_util_process(pfd_cmd_t cmd, int partial_process);
 void pfd_util_end(void);
 int pfd_util_setup_keys(const u8* psid, u32 user_id);
+u8* get_secure_file_id(const char* game_id, const char* filename);
 
 
 #ifdef __cplusplus

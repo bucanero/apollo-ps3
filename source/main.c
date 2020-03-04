@@ -24,13 +24,14 @@
 #include <io/pad.h>
 
 #include <sysmodule/sysmodule.h>
-#include <pngdec/pngdec.h>
+//#include <pngdec/pngdec.h>
 
 #include <tiny3d.h>
 #include "libfont.h"
 #include "saves.h"
 #include "sfo.h"
 #include "pfd.h"
+#include "util.h"
 
 //From NzV's MAMBA PRX Loader (https://github.com/NzV/MAMBA_PRX_Loader)
 #include "common.h"
@@ -140,7 +141,7 @@ png_texture * menu_textures;                // png_texture array for main menu, 
 
 int idle_time = 0;                          // Set by readPad
 
-#define MENU_MAIN_DESCRIPTION   "PlayStation 3 Save Game Tool"
+#define MENU_MAIN_DESCRIPTION   "Apollo Save Tool"
 #define MENU_MAIN_FOOTER        "www.bucanero.com.ar"
 
 const char * menu_about_strings[] = { "Bucanero", "Developer",
@@ -198,7 +199,7 @@ save_list_t hdd_saves = {
     .count = 0,
     .path = "",
     .ReadList = &ReadUserList,
-    .ReadCodes = &ReadLocalCodes,
+    .ReadCodes = &ReadCodesHDD,
     .UpdatePath = &update_hdd_path,
 };
 
@@ -212,7 +213,7 @@ save_list_t usb_saves = {
     .count = 0,
     .path = "",
     .ReadList = &ReadUserList,
-    .ReadCodes = &ReadLocalCodes,
+    .ReadCodes = &ReadCodesUSB,
     .UpdatePath = &update_usb_path,
 };
 
@@ -235,12 +236,11 @@ save_list_t online_saves = {
 */
 save_entry_t user_backup = {
 	.name = "User Data Backup",
-	.code_sorted = 0,
 	.codes = NULL,
 };
 
-save_entry_t selected_entry;
-code_entry_t selected_centry;
+save_entry_t* selected_entry;
+code_entry_t* selected_centry;
 int option_index = 0;
 
 void release_all() {
@@ -676,6 +676,9 @@ void LoadTextures_Menu()
 	load_menu_texture(tag_psp, png);
 	load_menu_texture(tag_psv, png);
 	load_menu_texture(tag_warning, png);
+	load_menu_texture(tag_zip, png);
+	load_menu_texture(tag_apply, png);
+	load_menu_texture(tag_transfer, png);
 
 	u32 tBytes = free_mem - texture_mem;
 	LOG("LoadTextures_Menu() :: Allocated %db (%.02fkb, %.02fmb) for textures", tBytes, tBytes / (float)1024, tBytes / (float)(1024 * 1024));
@@ -903,39 +906,41 @@ void ReloadUserSaves(save_list_t* save_list)
     stop_loading_screen();
 }
 
-void LoadSaveDetails()
+code_entry_t* LoadSaveDetails()
 {
 	char sfoPath[256];
+	code_entry_t* centry = calloc(1, sizeof(code_entry_t));
 
-	snprintf(sfoPath, sizeof(sfoPath), "%s" "PARAM.SFO", selected_entry.path);
+	snprintf(sfoPath, sizeof(sfoPath), "%s" "PARAM.SFO", selected_entry->path);
 	LOG("Save Details :: Reading %s...", sfoPath);
 
 	sfo_context_t* sfo = sfo_alloc();
 	if (sfo_read(sfo, sfoPath) < 0) {
 		LOG("Unable to read from '%s'", sfoPath);
 		sfo_free(sfo);
-		return;
+		return centry;
 	}
 
 	char* subtitle = (char*) sfo_get_param_value(sfo, "SUB_TITLE");
 	sfo_params_ids_t* param_ids = (sfo_params_ids_t*)(sfo_get_param_value(sfo, "PARAMS") + 0x1C);
 	param_ids->user_id = ES32(param_ids->user_id);
 
-    asprintf(&selected_centry.name, selected_entry.title_id);
-    asprintf(&selected_centry.codes, "%s\n\n"
+    asprintf(&centry->name, selected_entry->title_id);
+    asprintf(&centry->codes, "%s\n\n"
         "Title: %s\n"
         "Sub-Title: %s\n"
         "Lock: %s\n\n"
         "User ID: %08d\n"
         "Account ID: %s (%s)\n"
-        "PSID: %016lX %016lX\n", selected_entry.path, selected_entry.name, subtitle, 
-        (selected_entry.flags & SAVE_FLAG_LOCKED ? "Copying Prohibited" : "Unlocked"),
+        "PSID: %016lX %016lX\n", selected_entry->path, selected_entry->name, subtitle, 
+        (selected_entry->flags & SAVE_FLAG_LOCKED ? "Copying Prohibited" : "Unlocked"),
         param_ids->user_id, param_ids->account_id, 
-        (selected_entry.flags & SAVE_FLAG_OWNER ? "Owner" : "Not Owner"),
+        (selected_entry->flags & SAVE_FLAG_OWNER ? "Owner" : "Not Owner"),
 		param_ids->psid[0], param_ids->psid[1]);
-	LOG(selected_centry.codes);
+	LOG(centry->codes);
 
 	sfo_free(sfo);
+	return (centry);
 }
 
 void SetMenu(int id)
@@ -949,16 +954,18 @@ void SetMenu(int id)
 		case MENU_USER_BACKUP: //Backup Menu
 		case MENU_SETTINGS: //Options Menu
 		case MENU_CREDITS: //About Menu
-		case MENU_PATCHES: //Cheat Selection Menu			
+		case MENU_PATCHES: //Cheat Selection Menu
 			break;
 
 		case MENU_SAVE_DETAILS:
 		case MENU_PATCH_VIEW: //Cheat View Menu
-			Draw_CheatsMenu_View_Ani_Exit();
+			if (apollo_config.doAni)
+				Draw_CheatsMenu_View_Ani_Exit();
 			break;
 
 		case MENU_CODE_OPTIONS: //Cheat Option Menu
-			Draw_CheatsMenu_Options_Ani_Exit();
+			if (apollo_config.doAni)
+				Draw_CheatsMenu_Options_Ani_Exit();
 			break;
 	}
 	
@@ -994,6 +1001,12 @@ void SetMenu(int id)
 			break;
 
 		case MENU_CREDITS: //About Menu
+			// set to display the PSID on the About menu
+			sprintf(psid_str1, "%016lX", apollo_config.psid[0]);
+			sprintf(psid_str2, "%016lX", apollo_config.psid[1]);
+			sprintf(user_id_str, "%08d", apollo_config.user_id);
+			sprintf(account_id_str, "%016lx", apollo_config.account_id);
+
 			if (apollo_config.doAni)
 				Draw_AboutMenu_Ani();
 			break;
@@ -1009,7 +1022,7 @@ void SetMenu(int id)
 				LoadBackupCodes(&user_backup);
     			qsort(user_backup.codes, user_backup.code_count, sizeof(code_entry_t), &qsortCodeList_Compare);
 			}
-			selected_entry = user_backup;
+			selected_entry = &user_backup;
 // ---------
 			last_menu_id[MENU_PATCHES] = 0;
 
@@ -1033,9 +1046,9 @@ void SetMenu(int id)
 			break;
 
 		case MENU_SAVE_DETAILS: //Save Detail View Menu
-    	    LoadSaveDetails();
+    	    selected_centry = LoadSaveDetails();
 			if (apollo_config.doAni)
-				Draw_CheatsMenu_View_Ani(selected_entry.name);
+				Draw_CheatsMenu_View_Ani(selected_entry->name);
 			break;
 
 		case MENU_CODE_OPTIONS: //Cheat Option Menu
@@ -1143,13 +1156,13 @@ void doSaveMenu(save_list_t * save_list)
     
     		if (apollo_config.doSort)
     			qsort(save_list->list[menu_sel].codes, save_list->list[menu_sel].code_count, sizeof(code_entry_t), &qsortCodeList_Compare);
-    		selected_entry = save_list->list[menu_sel];
+    		selected_entry = &save_list->list[menu_sel];
     		SetMenu(MENU_PATCHES);
     		return;
     	}
     	else if (paddata[0].BTN_TRIANGLE && save_list->UpdatePath)
     	{
-    		selected_entry = save_list->list[menu_sel];
+    		selected_entry = &save_list->list[menu_sel];
     		SetMenu(MENU_SAVE_DETAILS);
     		return;
     	}
@@ -1263,7 +1276,7 @@ void doPatchViewMenu()
 	int max = 0;
 	const char * str;
 
-	for(str = selected_centry.codes; *str; ++str)
+	for(str = selected_centry->codes; *str; ++str)
 		max += (*str == '\n');
 	//max += -((512 - (120*2))/18) + 1; //subtract the max per page
 	if (max <= 0)
@@ -1354,7 +1367,7 @@ void zipSave(const char* save_path, const char* exp_path)
 	FILE* f = fopen(export_file, "a");
 	if (f)
 	{
-		fprintf(f, "%08d.zip=[%s]%s\n", fid, selected_entry.title_id, selected_entry.name);
+		fprintf(f, "%08d.zip=[%s]%s\n", fid, selected_entry->title_id, selected_entry->name);
 		fclose(f);
 	}
 
@@ -1440,15 +1453,15 @@ void exportSaves(const char* exp_path)
 
 void doCodeOptionsMenu()
 {
-    code_entry_t* code = &selected_entry.codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]];
+    code_entry_t* code = &selected_entry->codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]];
 	// Check the pads.
 	if (readPad(0))
 	{
 		if(paddata[0].BTN_UP)
-			move_selection_back(selected_centry.options[option_index].size, 1);
+			move_selection_back(selected_centry->options[option_index].size, 1);
 
 		else if(paddata[0].BTN_DOWN)
-			move_selection_fwd(selected_centry.options[option_index].size, 1);
+			move_selection_fwd(selected_centry->options[option_index].size, 1);
 
 		else if (paddata[0].BTN_CIRCLE)
 		{
@@ -1469,13 +1482,13 @@ void doCodeOptionsMenu()
 
 			if (strncmp(codecmd, CMD_EXPORT_ZIP_USB, 10) == 0)
 			{
-				zipSave(selected_entry.path, codecmd[10] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0);
+				zipSave(selected_entry->path, codecmd[10] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0);
         		code->activated = 0;
 			}
 
 			if (strncmp(codecmd, CMD_COPY_SAVE_USB, 10) == 0)
 			{
-				copySave(selected_entry.path, codecmd[10] ? SAVES_PATH_USB1 : SAVES_PATH_USB0);
+				copySave(selected_entry->path, codecmd[10] ? SAVES_PATH_USB1 : SAVES_PATH_USB0);
         		code->activated = 0;
 			}
 
@@ -1527,38 +1540,151 @@ void doSaveDetailsMenu()
 		}
 		if (paddata[0].BTN_CIRCLE)
 		{
-			if (selected_centry.name)
-				free(selected_centry.name);
-			if (selected_centry.codes)
-				free(selected_centry.codes);
+			if (selected_centry->name)
+				free(selected_centry->name);
+			if (selected_centry->codes)
+				free(selected_centry->codes);
+			free(selected_centry);
 
 			SetMenu(last_menu_id[MENU_SAVE_DETAILS]);
 			return;
 		}
 	}
 	
-	Draw_CheatsMenu_View(selected_entry.name);
+	Draw_CheatsMenu_View(selected_entry->name);
 }
 
-void build_patch(sfo_patch_t* patch)
+void build_sfo_patch(sfo_patch_t* patch)
 {
     int j;
 
-	for (j = 0; j < selected_entry.code_count; j++)
+	for (j = 0; j < selected_entry->code_count; j++)
 	{
-		if (!selected_entry.codes[j].activated)
+		if (!selected_entry->codes[j].activated || selected_entry->codes[j].type != PATCH_SFO)
 		    continue;
 		    
-    	LOG("Active: [%s]", selected_entry.codes[j].name);
+    	LOG("Active: [%s]", selected_entry->codes[j].name);
 
-		if (strcmp(selected_entry.codes[j].codes, CMD_UNLOCK_COPY) == 0)
+		if (strcmp(selected_entry->codes[j].codes, CMD_UNLOCK_COPY) == 0)
 		    patch->flags = SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION;
 
-		if (strcmp(selected_entry.codes[j].codes, CMD_REMOVE_ACCOUNT_ID) == 0)
+		if (strcmp(selected_entry->codes[j].codes, CMD_REMOVE_ACCOUNT_ID) == 0)
 		    bzero(patch->account_id, SFO_ACCOUNT_ID_SIZE);
 
-		selected_entry.codes[j].activated = 0;
+		if (strcmp(selected_entry->codes[j].codes, CMD_REMOVE_PSID) == 0)
+		{
+		    bzero(psid_str1, SFO_PSID_SIZE);
+			patch->psid = (u8*) psid_str1;
+		}
+
+		selected_entry->codes[j].activated = 0;
 	}
+}
+
+int _is_decrypted(list_t* list, const char* fname) {
+	list_node_t *node = list->head;
+
+	while (node) {
+		if (strcmp(list_get(node), fname) == 0)
+			return 1;
+
+		node = node->next;
+	}
+
+	return 0;
+}
+
+int apply_cheat_patch()
+{
+    int j;
+	char tmpfile[256];
+	char* filename;
+	code_entry_t* code;
+	savedata_file_t save_file;
+	list_t* decrypted_files = list_alloc();
+
+    init_loading_screen("Applying cheats...");
+
+	for (j = 0; j < selected_entry->code_count; j++)
+	{
+		code = &selected_entry->codes[j];
+
+		if (!code->activated || code->type != PATCH_GAMEGENIE)
+		    continue;
+
+    	LOG("Code Active: [%s]", code->name);
+
+		if (strrchr(code->file, '\\'))
+			filename = strrchr(code->file, '\\')+1;
+		else
+			filename = code->file;
+
+		snprintf(tmpfile, sizeof(tmpfile), ONLINE_LOCAL_CACHE "%s", filename);
+
+		if (!_is_decrypted(decrypted_files, filename))
+		{
+			LOG("Decrypting '%s'...", filename);
+
+			strcpy(save_file.filename, filename);
+			strcpy(save_file.folder, selected_entry->folder);
+			*strrchr(save_file.folder, '/') = 0;
+			save_file.protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
+
+			if (load_game_file(&save_file))
+			{
+				write_buffer(tmpfile, save_file.data, save_file.size);
+				list_append(decrypted_files, filename);
+
+				free(save_file.data);
+			}
+			else
+			{
+				LOG("Error: failed to decrypt (%s)", filename);
+				continue;
+			}
+
+		}
+
+		if (!apply_ggenie_patch_code(tmpfile, code))
+		{
+			LOG("Error: failed to apply (%s)", code->name);
+		}
+
+		code->activated = 0;
+	}
+
+	list_node_t *node = list_head(decrypted_files);
+
+	while (node) {
+		filename = list_get(node);
+		snprintf(tmpfile, sizeof(tmpfile), ONLINE_LOCAL_CACHE "%s", filename);
+
+		LOG("Encrypting '%s'...", tmpfile);
+
+		strcpy(save_file.filename, filename);
+		strcpy(save_file.folder, selected_entry->folder);
+		*strrchr(save_file.folder, '/') = 0;
+		save_file.protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
+		
+		read_buffer(tmpfile, &save_file.data, &save_file.size);
+
+		if (save_game_file(&save_file))
+		{
+			free(save_file.data);
+		}
+		else
+		{
+			LOG("Error: failed to encrypt files.");
+		}
+
+		unlink_secure(tmpfile);
+		node = node->next;
+	}
+
+	list_free(decrypted_files);
+	stop_loading_screen();
+
+	return 1;
 }
 
 void doPatchMenu()
@@ -1567,32 +1693,30 @@ void doPatchMenu()
 	if (readPad(0))
 	{
 		if(paddata[0].BTN_UP)
-			move_selection_back(selected_entry.code_count, 1);
+			move_selection_back(selected_entry->code_count, 1);
 
 		else if(paddata[0].BTN_DOWN)
-			move_selection_fwd(selected_entry.code_count, 1);
+			move_selection_fwd(selected_entry->code_count, 1);
 
 		else if (paddata[0].BTN_LEFT)
-			move_selection_back(selected_entry.code_count, 5);
+			move_selection_back(selected_entry->code_count, 5);
 
 		else if (paddata[0].BTN_RIGHT)
-			move_selection_fwd(selected_entry.code_count, 5);
+			move_selection_fwd(selected_entry->code_count, 5);
 
 		else if (paddata[0].BTN_CIRCLE)
 		{
-			for (int j = 0; j < selected_entry.code_count; j++)
-				selected_entry.codes[j].activated = 0;
+			for (int j = 0; j < selected_entry->code_count; j++)
+				selected_entry->codes[j].activated = 0;
 
 			SetMenu(last_menu_id[MENU_PATCHES]);
 			return;
 		}
 		else if (paddata[0].BTN_CROSS)
 		{
-			selected_entry.codes[menu_sel].activated = !selected_entry.codes[menu_sel].activated;
+			selected_entry->codes[menu_sel].activated = !selected_entry->codes[menu_sel].activated;
 
-//            LOG("[X] %d - '%s'", selected_entry.codes[menu_sel].activated, selected_entry.codes[menu_sel].codes);
-
-			if (strcmp(selected_entry.codes[menu_sel].codes, CMD_RESIGN_SAVE) == 0)
+			if (strcmp(selected_entry->codes[menu_sel].codes, CMD_RESIGN_SAVE) == 0)
 			{
 				char in_file_path[256];
 				sfo_patch_t patch = {
@@ -1603,17 +1727,17 @@ void doPatchMenu()
 				};
 
 				asprintf(&patch.account_id, "%016lx", apollo_config.account_id);
-				build_patch(&patch);
+				build_sfo_patch(&patch);
 
-				snprintf(in_file_path, sizeof(in_file_path), "%s" "PARAM.SFO", selected_entry.path);
+				snprintf(in_file_path, sizeof(in_file_path), "%s" "PARAM.SFO", selected_entry->path);
 				LOG("Applying SFO patches '%s'...", in_file_path);
 
                 if (patch_sfo(in_file_path, &patch) == SUCCESS)
 	            {
-					LOG("Resigning save '%s'...", selected_entry.name);
-					if (pfd_util_init(selected_entry.title_id, selected_entry.path))
+					LOG("Resigning save '%s'...", selected_entry->name);
+					if (pfd_util_init(selected_entry->title_id, selected_entry->path))
 					{
-						if (pfd_util_process(PFD_CMD_UPDATE, 0) == SUCCESS)
+						if (pfd_util_process(PFD_CMD_UPDATE, 1) == SUCCESS)
 		                    show_message("Save file successfully resigned!");
     	                else
 	                        show_message("Error! Save file couldn't be resigned");
@@ -1631,22 +1755,34 @@ void doPatchMenu()
 				if(patch.account_id)
 				    free(patch.account_id);
 
-				selected_entry.codes[menu_sel].activated = 0;
+				selected_entry->codes[menu_sel].activated = 0;
 			}
-			
-			if (selected_entry.codes[menu_sel].activated)
+
+			if (strcmp(selected_entry->codes[menu_sel].codes, CMD_APPLY_CHEATS) == 0)
+			{
+				LOG("Applying cheats to '%s'...", selected_entry->name);
+
+				if (apply_cheat_patch())
+					show_message("Cheat codes successfully applied!");
+				else
+					show_message("Error! Cheat codes couldn't be applied");
+
+				selected_entry->codes[menu_sel].activated = 0;
+			}
+
+			if (selected_entry->codes[menu_sel].activated)
 			{
 				//Check if option code
-				if (!selected_entry.codes[menu_sel].options)
+				if (!selected_entry->codes[menu_sel].options)
 				{
 					int size;
-					selected_entry.codes[menu_sel].options = ReadOptions(selected_entry.codes[menu_sel], &size);
-					selected_entry.codes[menu_sel].options_count = size;
+					selected_entry->codes[menu_sel].options = ReadOptions(selected_entry->codes[menu_sel], &size);
+					selected_entry->codes[menu_sel].options_count = size;
 				}
 				
-				if (selected_entry.codes[menu_sel].options)
+				if (selected_entry->codes[menu_sel].options)
 				{
-					selected_centry = selected_entry.codes[menu_sel];
+					selected_centry = &selected_entry->codes[menu_sel];
 					option_index = 0;
 					SetMenu(MENU_CODE_OPTIONS);
 					return;
@@ -1655,9 +1791,13 @@ void doPatchMenu()
 		}
 		else if (paddata[0].BTN_TRIANGLE)
 		{
-			selected_centry = selected_entry.codes[menu_sel];
-			SetMenu(MENU_PATCH_VIEW);
-			return;
+			selected_centry = &selected_entry->codes[menu_sel];
+
+			if (selected_centry->type == PATCH_GAMEGENIE || selected_centry->type == PATCH_BSD)
+			{
+				SetMenu(MENU_PATCH_VIEW);
+				return;
+			}
 		}
 	}
 	
@@ -1738,6 +1878,9 @@ void registerSpecialChars()
 	RegisterSpecialCharacter(CHAR_TAG_LOCKED, 0, 1.5, &menu_textures[tag_lock_png_index]);
 	RegisterSpecialCharacter(CHAR_TAG_OWNER, 0, 1.5, &menu_textures[tag_own_png_index]);
 	RegisterSpecialCharacter(CHAR_TAG_WARNING, 0, 1.5, &menu_textures[tag_warning_png_index]);
+	RegisterSpecialCharacter(CHAR_TAG_APPLY, 0, 1.0, &menu_textures[tag_apply_png_index]);
+	RegisterSpecialCharacter(CHAR_TAG_ZIP, 0, 1.2, &menu_textures[tag_zip_png_index]);
+	RegisterSpecialCharacter(CHAR_TAG_TRANSFER, 0, 1.2, &menu_textures[tag_transfer_png_index]);
 
 	// Register button icons
 	RegisterSpecialCharacter(CHAR_BTN_X, 0, 1.2, &menu_textures[footer_ico_cross_png_index]);
@@ -1756,12 +1899,6 @@ s32 main(s32 argc, const char* argv[])
 	http_init();
 
 	load_app_settings(&apollo_config);
-
-	// set to display the PSID on the About menu
-    sprintf(psid_str1, "%016lX", apollo_config.psid[0]);
-    sprintf(psid_str2, "%016lX", apollo_config.psid[1]);
-    sprintf(user_id_str, "%08d", apollo_config.user_id);
-    sprintf(account_id_str, "%016lX", apollo_config.account_id);
 
 	pfd_util_setup_keys((u8*) &(apollo_config.psid[0]), apollo_config.user_id);
 

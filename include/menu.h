@@ -49,6 +49,9 @@ enum texture_index
 	tag_psp_png_index,
 	tag_psv_png_index,
 	tag_warning_png_index,
+	tag_transfer_png_index,
+	tag_zip_png_index,
+	tag_apply_png_index,
 
 	footer_ico_circle_png_index,
 	footer_ico_cross_png_index,
@@ -179,8 +182,8 @@ extern int menu_old_sel[];
 extern int last_menu_id[];
 extern const char * menu_pad_help[];
 
-extern struct save_entry selected_entry;
-extern struct code_entry selected_centry;
+extern struct save_entry * selected_entry;
+extern struct code_entry * selected_centry;
 extern int option_index;
 
 extern void DrawBackground2D(u32 rgba);

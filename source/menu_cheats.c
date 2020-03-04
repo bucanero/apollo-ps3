@@ -112,15 +112,15 @@ void Draw_CheatsMenu_Options_Ani_Exit(void)
 		Draw_CheatsMenu_Selection(menu_old_sel[5], (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
 		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
-		DrawHeader(cat_sav_png_index, left, "Cheat Option", selected_centry.name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
+		DrawHeader(cat_sav_png_index, left, "Cheat Option", selected_centry->name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 /*
 		int _game_a = (int)(icon_a - (max / 2)) * 2;
 		if (_game_a > 0xFF)
 			_game_a = 0xFF;
 		u8 game_a = (u8)(_game_a < 0 ? 0 : _game_a);
 */
-		//DrawOptions(selected_centry.options[option_index], game_a, 18, menu_old_sel[7]);
-		//DrawScrollBar2(menu_old_sel[7], selected_centry.options[option_index].size, 18, 700, game_a);
+		//DrawOptions(selected_centry->options[option_index], game_a, 18, menu_old_sel[7]);
+		//DrawScrollBar2(menu_old_sel[7], selected_centry->options[option_index].size, 18, 700, game_a);
 
 		tiny3d_Flip();
 
@@ -155,11 +155,11 @@ void Draw_CheatsMenu_Options_Ani(void)
 		Draw_CheatsMenu_Selection(menu_sel, (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
 		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
-		DrawHeader(cat_sav_png_index, left, "Cheat Option", selected_centry.name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
+		DrawHeader(cat_sav_png_index, left, "Cheat Option", selected_centry->name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
         
 		u8 game_a = (u8)(icon_a < 0x8F ? 0 : icon_a);
-		DrawOptions(&selected_centry.options[option_index], game_a, 20, menu_old_sel[7]);
-        DrawScrollBar(menu_old_sel[7], selected_centry.options[option_index].size, 20, 800, game_a);
+		DrawOptions(&selected_centry->options[option_index], game_a, 20, menu_old_sel[7]);
+        DrawScrollBar(menu_old_sel[7], selected_centry->options[option_index].size, 20, 800, game_a);
         
         tiny3d_Flip();
         
@@ -175,10 +175,10 @@ void Draw_CheatsMenu_Options(void)
 	Draw_CheatsMenu_Selection(menu_old_sel[5], 0xD0D0D0FF);
 
 	DrawTexture(&menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), 0x000000FF);
-	DrawHeader(cat_sav_png_index, MENU_SPLIT_OFF, "Cheat Option", selected_centry.name, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
+	DrawHeader(cat_sav_png_index, MENU_SPLIT_OFF, "Cheat Option", selected_centry->name, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
 
-	DrawOptions(&selected_centry.options[option_index], 0xFF, 20, menu_sel);
-	DrawScrollBar(menu_sel, selected_centry.options[option_index].size, 20, 800, 0xFF);
+	DrawOptions(&selected_centry->options[option_index], 0xFF, 20, menu_sel);
+	DrawScrollBar(menu_sel, selected_centry->options[option_index].size, 20, 800, 0xFF);
 }
 
 
@@ -371,7 +371,7 @@ void Draw_CheatsMenu_View_Ani_Exit(void)
 		Draw_CheatsMenu_Selection(menu_old_sel[5], (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
 		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
-		DrawHeader(cat_sav_png_index, left, "Patch View", selected_centry.name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
+		DrawHeader(cat_sav_png_index, left, "Patch View", selected_centry->name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 /*
 		int _game_a = (int)(icon_a - (max / 2)) * 2;
 		if (_game_a > 0xFF)
@@ -411,10 +411,10 @@ void Draw_CheatsMenu_View_Ani(const char* title)
 		Draw_CheatsMenu_Selection(menu_sel, (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
 		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
-		DrawHeader(cat_sav_png_index, left, (char*)title, selected_centry.name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
+		DrawHeader(cat_sav_png_index, left, (char*)title, selected_centry->name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 
 		u8 game_a = (u8)(icon_a < 0x8F ? 0 : icon_a);
-		int nlines = DrawCodes(&selected_centry, game_a, 20, left, menu_old_sel[6]);
+		int nlines = DrawCodes(selected_centry, game_a, 20, left, menu_old_sel[6]);
 		DrawScrollBar(menu_old_sel[6], nlines, 20, 800, game_a);
 		
 		tiny3d_Flip();
@@ -431,9 +431,9 @@ void Draw_CheatsMenu_View(const char* title)
 	Draw_CheatsMenu_Selection(menu_old_sel[5], 0xD0D0D0FF);
 
 	DrawTexture(&menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), 0x000000FF);
-	DrawHeader(cat_sav_png_index, MENU_SPLIT_OFF, (char*)title, selected_centry.name, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
+	DrawHeader(cat_sav_png_index, MENU_SPLIT_OFF, (char*)title, selected_centry->name, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
 
-    int nlines = DrawCodes(&selected_centry, 0xFF, 20, MENU_SPLIT_OFF, menu_sel);
+    int nlines = DrawCodes(selected_centry, 0xFF, 20, MENU_SPLIT_OFF, menu_sel);
     //DrawScrollBar2(menu_sel, nlines, 18, 700, 0xFF);
     DrawScrollBar(menu_sel, nlines, 20, 800, 0xFF);
 }
@@ -605,13 +605,13 @@ void Draw_CheatsMenu_Selection_Ani()
         
         u8 icon_a = (u8)(((ani * 2) > 0xFF) ? 0xFF : (ani * 2));
         
-		DrawHeader_Ani(cat_cheats_png_index, "Patches", selected_entry.name, APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
+		DrawHeader_Ani(cat_cheats_png_index, "Patches", selected_entry->name, APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
 
         int _game_a = (int)(icon_a - (MENU_ANI_MAX / 2)) * 2;
         if (_game_a > 0xFF)
             _game_a = 0xFF;
         u8 game_a = (u8)(_game_a < 0 ? 0 : _game_a);
-        DrawCheatsList(menu_old_sel[5], &selected_entry, game_a);
+        DrawCheatsList(menu_old_sel[5], selected_entry, game_a);
         
         tiny3d_Flip();
         
@@ -622,8 +622,8 @@ void Draw_CheatsMenu_Selection_Ani()
 
 void Draw_CheatsMenu_Selection(int menuSel, u32 rgba)
 {
-	DrawHeader(cat_cheats_png_index, 0, "Patches", selected_entry.name, APP_FONT_TITLE_COLOR | 0xFF, rgba, 0);
-    DrawCheatsList(menuSel, &selected_entry, (u8)rgba);
+	DrawHeader(cat_cheats_png_index, 0, "Patches", selected_entry->name, APP_FONT_TITLE_COLOR | 0xFF, rgba, 0);
+    DrawCheatsList(menuSel, selected_entry, (u8)rgba);
 }
 
 

@@ -71,139 +71,6 @@ static pfd_config_t config = {
 	};
 
 
-/*
-static void show_usage(void) {
-	show_version();
-
-	LOG("USAGE: pfdtool [options] command");
-	LOG("");
-	LOG("COMMANDS       Parameters              Explanation");
-	LOG(" -h, --help                            Print this help");
-	LOG(" -l, --list    dir                     List entries");
-	LOG(" -c, --check   dir                     Verify a database");
-	LOG(" -u, --update  dir                     Update an existing database");
-	LOG(" -e, --encrypt dir files...            Encrypt specified files and update a database");
-	LOG(" -d, --decrypt dir files...            Decrypt specified files and update a database");
-	LOG(" -b, --brute   dir elf offset files... Bruteforce a secure file IDs for specified files");
-	LOG("");
-	LOG("OPTIONS        Parameters              Explanation");
-	LOG(" -g, --game    product-code            Use a specified game setting set");
-	LOG(" -p, --partial                         Don't update/verify all hashes");
-	LOG(" -a, --advance                         The offset to advance each time while bruteforcing");
-
-//	exit(1);
-}
-
-static void parse_args(int argc, char *argv[]) {
-	int option_index;
-	int c;
-	pfd_cmd cmd;
-
-	static const char* short_options = "hl:c:u:e:d:b:g:a:p";
-	static struct option long_options[] = {
-		{ "help", ARG_NONE, ARG_NULL, 'h' },
-
-		{ "list", ARG_REQ, ARG_NULL, 'l' },
-		{ "check", ARG_REQ, ARG_NULL, 'c' },
-		{ "update", ARG_REQ, ARG_NULL, 'u' },
-		{ "encrypt", ARG_REQ, ARG_NULL, 'e' },
-		{ "decrypt", ARG_REQ, ARG_NULL, 'd' },
-		{ "brute", ARG_REQ, ARG_NULL, 'b' },
-
-		{ "game", ARG_REQ, ARG_NULL, 'g' },
-		{ "advance", ARG_NONE, ARG_NULL, 'a' },
-		{ "partial", ARG_REQ, ARG_NULL, 'p' },
-
-		{ ARG_NULL, ARG_NULL, ARG_NULL, ARG_NULL }
-	};
-
-	while ((c = option_index = getopt_long(argc, argv, short_options, long_options, &option_index)) != -1) {
-		switch (c) {
-			case 'e':
-//				cmd_encrypt = 1;
-				database_path = optarg;
-				goto get_args;
-			case 'd':
-//				cmd_decrypt = 1;
-				database_path = optarg;
-				goto get_args;
-			case 'b':
-//				cmd_brute = 1;
-				database_path = optarg;
-				goto get_args;
-
-			case 'g':
-				game = optarg;
-				break;
-			case 'p':
-				partial_process = 1;
-				break;
-			case 'a':
-				advance_offset = strtol(optarg, NULL, 10);
-				break;
-
-			default:
-				abort();
-		}
-	}
-
-get_args:;
-	if (cmd == PFD_CMD_encrypt) {
-		if (argc - optind < 1) {
-			LOG("[*] Error: Encrypt command needs input files!");
-			show_usage();
-		} else {
-			if (optind < argc) {
-				while (optind < argc) {
-					list_append(file_names, argv[optind++]);
-				}
-			} else {
-				LOG("[*] Error: Encrypt command needs file names!");
-				show_usage();
-			}
-		}
-		return;
-	}
-
-	if (cmd == PFD_CMD_decrypt) {
-		if (argc - optind < 1) {
-			LOG("[*] Error: Decrypt command needs input files!");
-			show_usage();
-		} else {
-			if (optind < argc) {
-				while (optind < argc) {
-					list_append(file_names, argv[optind++]);
-				}
-			} else {
-				LOG("[*] Error: Decrypt command needs file names!");
-				show_usage();
-			}
-		}
-		return;
-	}
-
-	if (cmd == PFD_CMD_brute) {
-		if (argc - optind < 3) {
-			LOG("[*] Error: Brute command needs additional parameters!");
-			show_usage();
-		} else {
-			brute_file_path = argv[optind++];
-			if (sscanf(argv[optind++], "%llu", &file_offset) < 1)
-				file_offset = 0;
-			if (optind < argc) {
-				while (optind < argc) {
-					list_append(file_names, argv[optind++]);
-				}
-			} else {
-				LOG("[*] Error: Brute command needs file names!");
-				show_usage();
-			}
-		}
-		return;
-	}
-}
-*/
-
 void setup_key(u8* key, int len) {
 	int i;
 
@@ -238,7 +105,7 @@ void pfd_util_end(void) {
 }
 
 game_keys_t* find_game_keys(const char* game_id) {
-	list_node_t *node = games_keys->head;
+	list_node_t *node = list_head(games_keys);
 	game_keys_t *game;
 
 	while (node) {
@@ -325,12 +192,31 @@ int pfd_util_setup_keys(const u8* console_id, u32 user_id) {
 	return result;
 }
 
+u8* get_secure_file_id(const char* game_id, const char* filename)
+{
+	list_node_t *node;
+	game_keys_t *game_key = find_game_keys(game_id);
+
+	if (!game_key)
+		return NULL;
+
+	node = list_head(game_key->secure_file_ids);
+	while (node) {
+		if (node->value) {
+			if (wildcard_match(filename, ((secure_file_id_t *)node->value)->file_name) != 0)
+				return ((secure_file_id_t *)node->value)->secure_file_id;
+
+		}
+		node = node->next;
+	}
+
+	return NULL;
+}
+
 int pfd_util_init(const char* game_id, const char* database_path) {
 	u8 *disc_hash_key = NULL;
 	list_t *secure_file_ids = NULL;
 	game_keys_t *game_key = NULL;
-
-//	file_names = list_alloc();
 
 	uint64_t* tmp = (uint64_t*)config.console_id;
 	LOG("pfdtool " PFDTOOL_VERSION " (c) 2012 by flatz");

@@ -326,7 +326,7 @@ int backend_cmd_encrypt(backend_t *ctx, list_t *file_names) {
 	if (pfd_export(ctx->pfd) < 0)
 		return -1;
 
-	return -1;
+	return 0;
 }
 
 int backend_cmd_decrypt(backend_t *ctx, list_t *file_names) {
@@ -358,7 +358,7 @@ int backend_cmd_decrypt(backend_t *ctx, list_t *file_names) {
 	if (pfd_export(ctx->pfd) < 0)
 		return -1;
 
-	return -1;
+	return 0;
 }
 
 int backend_cmd_brute(backend_t *ctx, const char *file_path, u64 file_offset, s64 advance_offset, list_t *file_names) {

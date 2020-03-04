@@ -27,6 +27,7 @@
 #define ONLINE_CACHE_TIMEOUT    24*3600     // 1-day local cache
 
 // Save commands
+#define CMD_APPLY_CHEATS        "APPLY_CHEAT"
 #define CMD_RESIGN_SAVE         "RESIGN_SAVE"
 #define CMD_UNLOCK_COPY         "UNLOCK_COPY"
 #define CMD_REMOVE_ACCOUNT_ID   "REMOVE_ACCT"
@@ -63,15 +64,36 @@ enum char_flag_enum
     CHAR_TAG_PS3,
     CHAR_TAG_PSP,
     CHAR_TAG_PSV,
-    CHAR_TAG_PCE,
-    CHAR_TAG_LOCKED,
+    CHAR_TAG_APPLY,
     CHAR_TAG_OWNER,
+    CHAR_TAG_LOCKED,
+    CHAR_TAG_PCE,
+    CHAR_RES_LF,
+    CHAR_TAG_TRANSFER,
+    CHAR_TAG_ZIP,
     CHAR_TAG_WARNING,
     CHAR_BTN_X = 0x10,
     CHAR_BTN_S = 0x11,
     CHAR_BTN_T = 0x12,
     CHAR_BTN_O = 0x13,
 };
+
+enum code_type_enum
+{
+    PATCH_COMMAND,
+    PATCH_SFO,
+    PATCH_GAMEGENIE,
+    PATCH_BSD,
+};
+
+typedef struct
+{
+    char folder[32];        //SYS_SAVE_MAX_DIRECTORY_NAME
+    char filename[13];      //SYS_SAVE_MAX_FILE_NAME
+    unsigned char* protected_file_id;
+    unsigned char* data;
+    long unsigned int size;
+} savedata_file_t;
 
 typedef struct option_entry
 {
@@ -85,7 +107,7 @@ typedef struct option_entry
 
 typedef struct code_entry
 {
-    int id;
+    unsigned char type;
     char * name;
     char * file;
     unsigned char activated;
@@ -99,9 +121,9 @@ typedef struct save_entry
     char * name;
 	char * title_id;
 	char * path;
+    char * folder;
 	unsigned int flags;
     int code_count;
-    unsigned char code_sorted;
     code_entry_t * codes;
 } save_entry_t;
 
@@ -130,7 +152,8 @@ int qsortCodeList_Compare(const void* A, const void* B);
 int isCodeLineValid(char * line);
 long getFileSize(const char * path);
 option_entry_t * ReadOptions(code_entry_t code, int * count);
-int ReadLocalCodes(save_entry_t * save);
+int ReadCodesHDD(save_entry_t * save);
+int ReadCodesUSB(save_entry_t * save);
 int ReadOnlineSaves(save_entry_t * game);
 int LoadBackupCodes(save_entry_t * bup);
 
@@ -148,3 +171,8 @@ void end_progress_bar(void);
 
 int init_loading_screen(const char* msg);
 void stop_loading_screen();
+
+int apply_ggenie_patch_code(const char* fpath, code_entry_t* code);
+
+int load_game_file(savedata_file_t* sfile);
+int save_game_file(savedata_file_t* sfile);
