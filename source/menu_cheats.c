@@ -71,7 +71,7 @@ void DrawOptions(option_entry_t* option, u8 alpha, int y_inc, int selIndex)
             SetFontColor(APP_FONT_COLOR | ((alpha * CalculateAlphaList(c, selIndex, maxPerPage)) / 0xFF), 0);
             
             if (option->name[c])
-                DrawString(MENU_SPLIT_OFF + MENU_ICON_OFF, yOff, option->name[c]);
+                DrawString(MENU_SPLIT_OFF + MENU_ICON_OFF + 20, yOff, option->name[c]);
             
             //Selector
             if (c == selIndex)
@@ -112,7 +112,7 @@ void Draw_CheatsMenu_Options_Ani_Exit(void)
 		Draw_CheatsMenu_Selection(menu_old_sel[5], (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
 		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
-		DrawHeader(cat_sav_png_index, left, "Cheat Option", selected_centry->name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
+		DrawHeader(cat_cheats_png_index, left, selected_centry->name, "Options", APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 /*
 		int _game_a = (int)(icon_a - (max / 2)) * 2;
 		if (_game_a > 0xFF)
@@ -155,7 +155,7 @@ void Draw_CheatsMenu_Options_Ani(void)
 		Draw_CheatsMenu_Selection(menu_sel, (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
 		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
-		DrawHeader(cat_sav_png_index, left, "Cheat Option", selected_centry->name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
+		DrawHeader(cat_cheats_png_index, left, selected_centry->name, "Options", APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
         
 		u8 game_a = (u8)(icon_a < 0x8F ? 0 : icon_a);
 		DrawOptions(&selected_centry->options[option_index], game_a, 20, menu_old_sel[7]);
@@ -175,94 +175,10 @@ void Draw_CheatsMenu_Options(void)
 	Draw_CheatsMenu_Selection(menu_old_sel[5], 0xD0D0D0FF);
 
 	DrawTexture(&menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), 0x000000FF);
-	DrawHeader(cat_sav_png_index, MENU_SPLIT_OFF, "Cheat Option", selected_centry->name, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
+	DrawHeader(cat_cheats_png_index, MENU_SPLIT_OFF, selected_centry->name, "Options", APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
 
 	DrawOptions(&selected_centry->options[option_index], 0xFF, 20, menu_sel);
 	DrawScrollBar(menu_sel, selected_centry->options[option_index].size, 20, 800, 0xFF);
-}
-
-
-/*
- * Cheats Codes View Menu
- */
-
-//Removed for now
-int GetLineDescriptor(char * buffer, char * line)
-{
-    return 0;
-    
-    if (!buffer || !line || !isCodeLineValid(line))
-        return 0;
-    
-    char cmd = line[0];
-    int arg1Len = 0, arg2Len = 0;
-    int spaceIndex = 0, wordIndex = 0, c = 1;
-    char arg0[20], arg1[20];
-    
-    while (line[c])
-    {
-        if (line[c] == ' ')
-        {
-            if (spaceIndex == 0)
-            {
-                memcpy(arg0, &line[1], c - 1);
-            }
-            else if (spaceIndex == 1)
-            {
-                arg1Len = wordIndex;
-                memcpy(arg1, &line[c-arg1Len], arg1Len);
-            }
-            else if (spaceIndex == 2)
-            {
-                arg2Len = wordIndex;
-            }
-            
-            wordIndex = 0;
-            spaceIndex++;
-        }
-        else
-            wordIndex++;
-        
-        c++;
-    }
-    if (!arg2Len)
-    {
-        arg2Len = wordIndex;
-    }
-    
-    //Parse command
-    switch (cmd)
-    {
-        case '0':
-            sprintf(buffer, "// Write the given %d bytes to 0x%s", arg2Len/2, arg1);
-            return 1;
-        case '1':
-            sprintf(buffer, "// Write the given %d letters to 0x%s", arg2Len, arg1);
-            return 1;
-        case '2':
-            sprintf(buffer, "// Write the given float to 0x%s", arg1);
-            return 1;
-        case '4':
-            //sprintf(buffer, "// Write the given float to 0x%s", arg2Len, arg1);
-            return 0;
-        case '6':
-            //sprintf(buffer, "// Reads the value at 0x%s and adds", arg1, arg2);
-            return 0;
-        case 'A':
-            if (arg0[0] == '1') //copy
-            {
-                //sprintf(buffer, "// Copies %d bytes from 0x%s", arg2Val, arg1);
-            }
-            else if (arg0[0] == '2') //paste
-            {
-                //sprintf(buffer, "// Reads the value at 0x%s and adds", arg1, arg2);
-            }
-            
-            return 0;
-    }
-    
-    //unsupported command
-    return 0;
 }
 
 int DrawCodes(code_entry_t* code, u8 alpha, int y_inc, int xOff, int selIndex)
@@ -314,13 +230,7 @@ int DrawCodes(code_entry_t* code, u8 alpha, int y_inc, int xOff, int selIndex)
                         SetFontColor(APP_FONT_COLOR | ((alpha * CalculateAlphaList(c, selIndex, maxPerPage)) / 0xFF), 0);
                         
                         //Draw line
-						float cX = DrawString(xOff + MENU_ICON_OFF, yOff, lines[c]);
-                        
-                        //Descriptor (removed)
-                        char * desc = (char *)calloc(1, 200);
-                        if (GetLineDescriptor(desc, lines[c]))
-							DrawString(xOff + cX + 20, yOff, desc);
-                        free (desc);
+						DrawString(xOff + MENU_ICON_OFF + 20, yOff, lines[c]);
                         
                         //Selector
                         if (c == selIndex)
@@ -371,7 +281,7 @@ void Draw_CheatsMenu_View_Ani_Exit(void)
 		Draw_CheatsMenu_Selection(menu_old_sel[5], (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
 		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
-		DrawHeader(cat_sav_png_index, left, "Patch View", selected_centry->name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
+		DrawHeader(cat_cheats_png_index, left, "Details", selected_centry->name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 /*
 		int _game_a = (int)(icon_a - (max / 2)) * 2;
 		if (_game_a > 0xFF)
@@ -411,7 +321,7 @@ void Draw_CheatsMenu_View_Ani(const char* title)
 		Draw_CheatsMenu_Selection(menu_sel, (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
 		DrawTexture(&menu_textures[edit_shadow_png_index], left - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), icon_a);
-		DrawHeader(cat_sav_png_index, left, (char*)title, selected_centry->name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
+		DrawHeader(cat_cheats_png_index, left, title, selected_centry->name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 
 		u8 game_a = (u8)(icon_a < 0x8F ? 0 : icon_a);
 		int nlines = DrawCodes(selected_centry, game_a, 20, left, menu_old_sel[6]);
@@ -431,7 +341,7 @@ void Draw_CheatsMenu_View(const char* title)
 	Draw_CheatsMenu_Selection(menu_old_sel[5], 0xD0D0D0FF);
 
 	DrawTexture(&menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - (menu_textures[edit_shadow_png_index].texture.width * 1) + 1, -apollo_config.marginV, 0, menu_textures[edit_shadow_png_index].texture.width, 512 + (apollo_config.marginV * 2), 0x000000FF);
-	DrawHeader(cat_sav_png_index, MENU_SPLIT_OFF, (char*)title, selected_centry->name, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
+	DrawHeader(cat_cheats_png_index, MENU_SPLIT_OFF, title, selected_centry->name, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
 
     int nlines = DrawCodes(selected_centry, 0xFF, 20, MENU_SPLIT_OFF, menu_sel);
     //DrawScrollBar2(menu_sel, nlines, 18, 700, 0xFF);
@@ -605,7 +515,7 @@ void Draw_CheatsMenu_Selection_Ani()
         
         u8 icon_a = (u8)(((ani * 2) > 0xFF) ? 0xFF : (ani * 2));
         
-		DrawHeader_Ani(cat_cheats_png_index, "Patches", selected_entry->name, APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
+		DrawHeader_Ani(cat_sav_png_index, selected_entry->name, selected_entry->title_id, APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
 
         int _game_a = (int)(icon_a - (MENU_ANI_MAX / 2)) * 2;
         if (_game_a > 0xFF)
@@ -622,7 +532,7 @@ void Draw_CheatsMenu_Selection_Ani()
 
 void Draw_CheatsMenu_Selection(int menuSel, u32 rgba)
 {
-	DrawHeader(cat_cheats_png_index, 0, "Patches", selected_entry->name, APP_FONT_TITLE_COLOR | 0xFF, rgba, 0);
+	DrawHeader(cat_sav_png_index, 0, selected_entry->name, selected_entry->title_id, APP_FONT_TITLE_COLOR | 0xFF, rgba, 0);
     DrawCheatsList(menuSel, selected_entry, (u8)rgba);
 }
 

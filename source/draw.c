@@ -91,23 +91,23 @@ void DrawSelector(int x, int y, int w, int h, int hDif, u8 alpha)
 	DrawTextureCentered(&menu_textures[mark_arrow_png_index], x, y, 0, w, h, 0xFFFFFF00 | alpha);
 }
 
-void _drawListBackground(int icon)
+void _drawListBackground(int off, int icon)
 {
 	switch (icon)
 	{
 		case cat_db_png_index:
 		case cat_usb_png_index:
 		case cat_hdd_png_index:
-		case cat_cheats_png_index:
+		case cat_sav_png_index:
+		case cat_opt_png_index:
 			DrawTexture(&menu_textures[help_png_index], help_png_x, help_png_y, 0, help_png_w, help_png_h, 0xFFFFFF00 | 0xFF);
 			break;
-		
-		case cat_opt_png_index:
-	//		DrawTexture(&menu_textures[list_bg_2_png_index], list_bg_png_x, list_bg_png_y, 0, menu_textures[list_bg_2_png_index].texture.width * SCREEN_W_ADJ, menu_textures[list_bg_2_png_index].texture.height * SCREEN_H_ADJ, 0xFFFFFF00 | 0xFF);
+
+		case cat_cheats_png_index:
+			DrawTexture(&menu_textures[help_png_index], off + MENU_ICON_OFF, help_png_y, 0, 800 - off - MENU_ICON_OFF, help_png_h, 0xFFFFFF00 | 0xFF);
 			break;
 
 		case cat_about_png_index:
-	//		DrawTexture(&menu_textures[list_bg_2_png_index], list_bg_png_x, list_bg_png_y, 0, menu_textures[list_bg_2_png_index].texture.width * SCREEN_W_ADJ, menu_textures[list_bg_2_png_index].texture.height * SCREEN_H_ADJ, 0xFFFFFF00 | 0xFF);
 			break;
 
 		default:
@@ -124,7 +124,7 @@ void DrawHeader_Ani(int icon, const char * headerTitle, const char * headerSubTi
 	//Background
 	DrawBackgroundTexture(0, (u8)bgrgba);
 
-	_drawListBackground(icon);
+	_drawListBackground(0, icon);
 	//------------- Menu Bar
 
 	int cnt, cntMax = ((ani * div) > 800) ? 800 : (ani * div);
@@ -168,7 +168,7 @@ void DrawHeader(int icon, int xOff, const char * headerTitle, const char * heade
 	//Background
 	DrawBackgroundTexture(xOff, (u8)bgrgba);
 
-	_drawListBackground(icon);
+	_drawListBackground(xOff, icon);
 	//------------ Menu Bar
 	int cnt = 0;
 	for (cnt = xOff + MENU_ICON_OFF; cnt < 800; cnt++)
@@ -362,4 +362,34 @@ void drawColumns(uint8_t alpha)
 	_drawColumn(column_5_png_index, column_5_png_x, column_5_png_y, alpha);
 	_drawColumn(column_6_png_index, column_6_png_x, column_6_png_y, alpha);
 	_drawColumn(column_7_png_index, column_7_png_x, column_7_png_y, alpha);
+}
+
+void drawJars(uint8_t alpha)
+{
+	SetFontAlign(3);
+	SetFontSize(APP_FONT_SIZE_MENU);
+	SetCurrentFont(font_comfortaa_regular);
+
+	//Empty
+	drawJar(jar_empty_png_index, jar_empty_png_x, jar_empty_png_y, "", alpha);
+
+	//USB save
+	drawJar(jar_usb_png_index, jar_usb_png_x, jar_usb_png_y, (alpha == 0xFF ? "USB Saves" : ""), alpha);
+	
+	//HDD save
+	drawJar(jar_hdd_png_index, jar_hdd_png_x, jar_hdd_png_y, (alpha == 0xFF ? "HDD Saves" : ""), alpha);
+
+	//Online cheats
+	drawJar(jar_db_png_index, jar_db_png_x, jar_db_png_y, (alpha == 0xFF ? "Online DB" : ""), alpha);
+	
+	//User Backup
+	drawJar(jar_bup_png_index, jar_bup_png_x, jar_bup_png_y, (alpha == 0xFF ? "User Backup" : ""), alpha);
+
+	//Options
+	drawJar(jar_opt_png_index, jar_opt_png_x, jar_opt_png_y, (alpha == 0xFF ? "Settings" : ""), alpha);
+	
+	//About
+	drawJar(jar_about_png_index, jar_about_png_x, jar_about_png_y, (alpha == 0xFF ? "About" : ""), alpha);
+
+	SetFontAlign(0);
 }

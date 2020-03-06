@@ -14,18 +14,12 @@ void _draw_AboutMenu(u8 alpha)
 	int cnt = 0;
     
     //------------- About Menu Contents
-    SetFontSize(APP_FONT_SIZE_SUBTITLE);
-    SetFontColor(APP_FONT_COLOR | alpha, 0);
+	DrawTextureCenteredX(&menu_textures[logo_text_png_index], 424, 70, 0, 245, 40, 0xFFFFFF00 | alpha);
+
     SetFontAlign(1);
 	SetCurrentFont(font_comfortaa_bold);
-	DrawString(0, 70, "Thanks for using Apollo!");
-	SetCurrentFont(font_comfortaa_regular);
-    SetFontSize(APP_FONT_SIZE_SUBTEXT);
-	DrawString(0, 95, "an open source save game tool");
-
-	SetCurrentFont(font_comfortaa_bold);
 	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
-	DrawString(0, 140, "PlayStation 3® version:");
+	DrawString(0, 120, "PlayStation 3® version:");
     
     for (cnt = 0; menu_about_strings[cnt] != NULL; cnt += 2)
     {
@@ -33,17 +27,17 @@ void _draw_AboutMenu(u8 alpha)
 
 		SetCurrentFont(font_comfortaa_regular);
         SetFontAlign(2);
-		DrawString((848 / 2) - 10, 170 + (cnt * 12), (char *)menu_about_strings[cnt]);
+		DrawString((848 / 2) - 10, 150 + (cnt * 12), menu_about_strings[cnt]);
         
 		SetCurrentFont(font_comfortaa_light);
 		SetFontAlign(0);
-		DrawString((848 / 2) + 10, 170 + (cnt * 12), (char *)menu_about_strings[cnt + 1]);
+		DrawString((848 / 2) + 10, 150 + (cnt * 12), menu_about_strings[cnt + 1]);
     }
 
 	SetFontAlign(1);
 	SetCurrentFont(font_comfortaa_bold);
 	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
-	DrawString(0, 170 + ((cnt + 3) * 12), "Console details:");
+	DrawString(0, 150 + ((cnt + 3) * 12), "Console details:");
 
 	int off = cnt + 5;
 	for (cnt = 0; menu_about_strings_project[cnt] != NULL; cnt += 2)
@@ -52,16 +46,16 @@ void _draw_AboutMenu(u8 alpha)
 
 		SetCurrentFont(font_comfortaa_regular);
 		SetFontAlign(2);
-		DrawString((848 / 2) - 10, 175 + ((cnt + off) * 12), (char *)menu_about_strings_project[cnt]);
+		DrawString((848 / 2) - 10, 155 + ((cnt + off) * 12), menu_about_strings_project[cnt]);
 
 		SetCurrentFont(font_comfortaa_light);
 		SetFontAlign(0);
-		DrawString((848 / 2) + 10, 175 + ((off + cnt) * 12), (char *)menu_about_strings_project[cnt + 1]);
+		DrawString((848 / 2) + 10, 155 + ((off + cnt) * 12), menu_about_strings_project[cnt + 1]);
 	}
 
 	SetFontAlign(1);
 	SetCurrentFont(font_comfortaa_regular);
-	DrawString(0, 420, "http://apollo.psdev.tk/");
+	DrawString(0, 430, "www.bucanero.com.ar");
 	SetFontAlign(0);
 }
 

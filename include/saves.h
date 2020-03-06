@@ -22,16 +22,13 @@
 #define EXPORT_PATH_USB0        USB0_PATH "EXPORT/"
 #define EXPORT_PATH_USB1        USB1_PATH "EXPORT/"
 
-#define ONLINE_URL				"http://apollo-dl.psdev.tk/"
+#define ONLINE_URL				"http://apollo-db.psdev.tk/"
 #define ONLINE_LOCAL_CACHE		APOLLO_PATH "CACHE/"
 #define ONLINE_CACHE_TIMEOUT    24*3600     // 1-day local cache
 
 // Save commands
 #define CMD_APPLY_CHEATS        "APPLY_CHEAT"
 #define CMD_RESIGN_SAVE         "RESIGN_SAVE"
-#define CMD_UNLOCK_COPY         "UNLOCK_COPY"
-#define CMD_REMOVE_ACCOUNT_ID   "REMOVE_ACCT"
-#define CMD_REMOVE_PSID         "REMOVE_PSID"
 #define CMD_DOWNLOAD_USB        "DNLOAD_USB"
 #define CMD_DOWNLOAD_HDD        "DNLOAD_HDD0"
 #define CMD_COPY_SAVE_USB       "COPYSG_USB"
@@ -46,6 +43,10 @@
 #define CMD_IMP_EXDATA_USB      "IMP_EXDATA"
 #define CMD_IMP_TROPHY_USB      "IMP_TROPHY"
 
+// SFO patches
+#define SFO_UNLOCK_COPY         "SFO_UNLOCK"
+#define SFO_REMOVE_ACCOUNT_ID   "SFO_RM_ACT"
+#define SFO_REMOVE_PSID         "SFO_RM_PSD"
 
 // Save flags
 #define SAVE_FLAG_LOCKED        1

@@ -7,10 +7,18 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 ### Added
 
 * Game Genie cheat patch support
+* Updated UI
 * Added `Remove Console ID` patch
 * Added Licenses backup to .Zip (`/dev_hdd0/home/000000XX/exdata/`)
 * Added bulk save-game copy to USB
 * Added Trophies backup to USB
+* Added `owner.txt` support to override auto-detected settings
+
+### Fixed
+
+* Solved issue when copying save-games from HDD to USB
+* Solved freeze bug when using `Clear local cache`
+* UI: Fixed improper titles and messages
 
 ## [v0.6.5](https://github.com/bucanero/apollo-ps3/releases/tag/v0.6.5) - 2020-02-17
 

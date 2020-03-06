@@ -29,13 +29,13 @@
 /* Allow 100 save games */
 #define SAVE_LIST_MAX_DIRECTORIES 10
 /* Max 3 files : icon, screenshot, save data */
-#define SAVE_LIST_MAX_FILES 3
+#define SAVE_LIST_MAX_FILES 32
 
 /* This should actually be the maximum between
  * (MAX_FILES * sizeof(sysSaveFileStatus)) and
  * (MAX_DIRECTORIES * sizeof(sysSaveDirectoryList))
  */
-#define BUFFER_SETTINGS_BUFSIZE (SAVE_LIST_MAX_DIRECTORIES * sizeof(sysSaveDirectoryList))
+#define BUFFER_SETTINGS_BUFSIZE (SAVE_LIST_MAX_FILES * sizeof(sysSaveFileStatus))
 #define MEMORY_CONTAINER_SIZE (5*1024*1024)
 
 #define SAVE_DATA_FOLDER   "NP0APOLLO-OPTIONS"
@@ -252,6 +252,9 @@ void saveload_game_file_cb (sysSaveCallbackResult *result, sysSaveFileIn *in, sy
         if (in->previousOperationResultSize != save_file->size) {
           result->result = SYS_SAVE_CALLBACK_RESULT_CORRUPTED;
           LOG("ERROR Reading data!");
+
+          if (save_file->data)
+            free(save_file->data);
         }
       }
       else if (save_data->flags & SAVE_UTIL_APOLLO) {
@@ -371,6 +374,8 @@ int save_game_file(savedata_file_t* sfile)
 int load_game_file(savedata_file_t* sfile)
 {
   save_file = sfile;
+  save_file->data = NULL;
+  save_file->size = 0;
   load_game_thread(0);
   wait_save_thread();
 

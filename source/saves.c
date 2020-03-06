@@ -620,10 +620,10 @@ int ReadCodesUSB(save_entry_t * save)
 	code_entry_t * ret = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (save->code_count));
 
 	_setManualCode(&ret[count++], PATCH_COMMAND, "\x06 Apply changes & Resign", CMD_RESIGN_SAVE);
-	_setManualCode(&ret[count++], PATCH_SFO, "\x07 Remove Account ID", CMD_REMOVE_ACCOUNT_ID);
-	_setManualCode(&ret[count++], PATCH_SFO, "\x07 Remove Console ID", CMD_REMOVE_PSID);
+	_setManualCode(&ret[count++], PATCH_SFO, "\x07 Remove Account ID", SFO_REMOVE_ACCOUNT_ID);
+	_setManualCode(&ret[count++], PATCH_SFO, "\x07 Remove Console ID", SFO_REMOVE_PSID);
 	if (save->flags & SAVE_FLAG_LOCKED)
-		_setManualCode(&ret[count++], PATCH_SFO, "\x08 Remove copy protection", CMD_UNLOCK_COPY);
+		_setManualCode(&ret[count++], PATCH_SFO, "\x08 Remove copy protection", SFO_UNLOCK_COPY);
 
 	_add_commands(&ret[count]);
 

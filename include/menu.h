@@ -30,6 +30,7 @@ enum texture_index
 	jar_opt_hover_png_index,
 	jar_about_hover_png_index,
 	logo_png_index,
+	logo_text_png_index,
 	cat_about_png_index,
 	cat_cheats_png_index,
 	cat_empty_png_index,
@@ -123,38 +124,37 @@ enum texture_index
 #define logo_png_x							722 * SCREEN_W_ADJ
 #define logo_png_y							45 * SCREEN_H_ADJ
 #define column_1_png_x						131 * SCREEN_W_ADJ
-#define column_1_png_y						876 * SCREEN_H_ADJ
+#define column_1_png_y						908 * SCREEN_H_ADJ
 #define column_2_png_x						401 * SCREEN_W_ADJ
-#define column_2_png_y						820 * SCREEN_H_ADJ
+#define column_2_png_y						831 * SCREEN_H_ADJ
 #define column_3_png_x						638 * SCREEN_W_ADJ
 #define column_3_png_y						871 * SCREEN_H_ADJ
 #define column_4_png_x						870 * SCREEN_W_ADJ
-#define column_4_png_y						765 * SCREEN_H_ADJ
+#define column_4_png_y						831 * SCREEN_H_ADJ
 #define column_5_png_x						1094 * SCREEN_W_ADJ
 #define column_5_png_y						942 * SCREEN_H_ADJ
 #define column_6_png_x						1313 * SCREEN_W_ADJ
-#define column_6_png_y						808 * SCREEN_H_ADJ
+#define column_6_png_y						828 * SCREEN_H_ADJ
 #define column_7_png_x						1665 * SCREEN_W_ADJ
 #define column_7_png_y						955 * SCREEN_H_ADJ
 #define jar_empty_png_x						159 * SCREEN_W_ADJ
-#define jar_empty_png_y						745 * SCREEN_H_ADJ
+#define jar_empty_png_y						777 * SCREEN_H_ADJ
 #define jar_usb_png_x						441 * SCREEN_W_ADJ
-#define jar_usb_png_y						688 * SCREEN_H_ADJ
+#define jar_usb_png_y						699 * SCREEN_H_ADJ
 #define jar_hdd_png_x						669 * SCREEN_W_ADJ
 #define jar_hdd_png_y						739 * SCREEN_H_ADJ
 #define jar_db_png_x						898 * SCREEN_W_ADJ
-#define jar_db_png_y						634 * SCREEN_H_ADJ
+#define jar_db_png_y						700 * SCREEN_H_ADJ
 #define jar_bup_png_x						1125 * SCREEN_W_ADJ
 #define jar_bup_png_y						810 * SCREEN_H_ADJ
 #define jar_opt_png_x						1353 * SCREEN_W_ADJ
-#define jar_opt_png_y						676 * SCREEN_H_ADJ
+#define jar_opt_png_y						696 * SCREEN_H_ADJ
 #define jar_about_png_x						1698 * SCREEN_W_ADJ
 #define jar_about_png_y						782 * SCREEN_H_ADJ
 #define cat_any_png_x						40 * SCREEN_W_ADJ
 #define cat_any_png_y						45 * SCREEN_H_ADJ
 #define app_ver_png_x						1828 * SCREEN_W_ADJ
 #define app_ver_png_y						67 * SCREEN_H_ADJ
-
 
 
 typedef struct t_png_texture
@@ -197,7 +197,7 @@ extern void DrawHeader_Ani(int icon, const char * headerTitle, const char * head
 extern void DrawBackgroundTexture(int x, u8 alpha);
 extern void DrawTextureRotated(png_texture* tex, int x, int y, int z, int w, int h, u32 rgba, float angle);
 
-void drawJar(uint8_t idx, int pos_x, int pos_y, const char* text, uint8_t alpha);
+void drawJars(uint8_t alpha);
 void drawColumns(uint8_t alpha);
 
 int load_app_settings(app_config_t* config);

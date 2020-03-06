@@ -103,7 +103,7 @@ void horm_callback(int sel);
 void verm_callback(int sel);
 void update_callback(int sel);
 void clearcache_callback(int sel);
-void up_appdata_callback(int sel);
+void upd_appdata_callback(int sel);
 
 void update_usb_path(char *p);
 void update_hdd_path(char *p);
@@ -128,7 +128,7 @@ const menu_option_t menu_options[] = {
 	{ .name = "Screen Vertical Margin", .options = NULL, .type = APP_OPTION_INC, .value = &apollo_config.marginV, .callback = verm_callback },
 	{ .name = "Version Update Check", .options = NULL, .type = APP_OPTION_BOOL, .value = &apollo_config.update, .callback = update_callback },
 	{ .name = "Clear Local Cache", .options = NULL, .type = APP_OPTION_CALL, .value = NULL, .callback = clearcache_callback },
-	{ .name = "Update Application Data", .options = NULL, .type = APP_OPTION_CALL, .value = NULL, .callback = up_appdata_callback },
+	{ .name = "Update Application Data", .options = NULL, .type = APP_OPTION_CALL, .value = NULL, .callback = upd_appdata_callback },
 	{ .name = NULL }
 };
 
@@ -142,12 +142,12 @@ png_texture * menu_textures;                // png_texture array for main menu, 
 int idle_time = 0;                          // Set by readPad
 
 #define MENU_MAIN_DESCRIPTION   "Apollo Save Tool"
-#define MENU_MAIN_FOOTER        "www.bucanero.com.ar"
 
 const char * menu_about_strings[] = { "Bucanero", "Developer",
 									"Berion", "GUI design",
 									"Dnawrkshp", "Artemis code",
 									"flatz", "PFD/SFO tools",
+									"aldostools", "Bruteforce Save Data",
 									NULL, NULL };
 
 char user_id_str[9] = "00000000";
@@ -155,9 +155,9 @@ char psid_str1[SFO_PSID_SIZE+1] = "0000000000000000";
 char psid_str2[SFO_PSID_SIZE+1] = "0000000000000000";
 char account_id_str[SFO_ACCOUNT_ID_SIZE+1] = "0000000000000000";
 
-const char * menu_about_strings_project[] = { psid_str1, psid_str2,
+const char * menu_about_strings_project[] = { "User ID", user_id_str,
 											"Account ID", account_id_str,
-											"User ID", user_id_str,
+											psid_str1, psid_str2,
 											NULL, NULL };
 
 /*
@@ -445,12 +445,8 @@ void Draw_MainMenu_Ani()
 		DrawTexture(&menu_textures[logo_png_index], logo_png_x, logo_png_y, 0, logo_png_w, logo_png_h, 0xFFFFFF00 | logo_a);
 		
 		//App description
-		SetFontAlign(1);
-		SetCurrentFont(font_comfortaa_light);
-		SetFontSize(APP_FONT_SIZE_DESCRIPTION);
-		SetFontColor(APP_FONT_COLOR | logo_a, 0);
-		DrawString(0, 210, MENU_MAIN_DESCRIPTION);
-		
+		DrawTextureCenteredX(&menu_textures[logo_text_png_index], 424, 250, 0, 306, 50, 0xFFFFFF00 | logo_a);
+
 		tiny3d_Flip();
 	}
 	
@@ -481,39 +477,12 @@ void Draw_MainMenu_Ani()
 		DrawTexture(&menu_textures[logo_png_index], logo_png_x, logo_png_y, 0, logo_png_w, logo_png_h, 0xFFFFFFFF);
 
 		//App description
-		SetFontAlign(1);
-		SetCurrentFont(font_comfortaa_light);
-		SetFontSize(APP_FONT_SIZE_DESCRIPTION);
-		SetFontColor(APP_FONT_COLOR | 0xFF, 0);
-		DrawString(0, 210, MENU_MAIN_DESCRIPTION);
+		DrawTextureCenteredX(&menu_textures[logo_text_png_index], 424, 250, 0, 306, 50, 0xFFFFFF00 | 0xFF);
 
 		drawColumns(icon_a);
 
-		SetFontSize(APP_FONT_SIZE_SUBTEXT);
-		DrawString(0, 490 + apollo_config.marginV, MENU_MAIN_FOOTER);
-		
 		//------------ Icons
-		
-		//Empty
-		drawJar(jar_empty_png_index, jar_empty_png_x, jar_empty_png_y, "", icon_a);
-
-		//USB save
-		drawJar(jar_usb_png_index, jar_usb_png_x, jar_usb_png_y, "", icon_a);
-		
-		//HDD save
-		drawJar(jar_hdd_png_index, jar_hdd_png_x, jar_hdd_png_y, "", icon_a);
-
-		//Online cheats
-		drawJar(jar_db_png_index, jar_db_png_x, jar_db_png_y, "", icon_a);
-		
-		//Online cheats
-		drawJar(jar_bup_png_index, jar_bup_png_x, jar_bup_png_y, "", icon_a);
-
-		//Options
-		drawJar(jar_opt_png_index, jar_opt_png_x, jar_opt_png_y, "", icon_a);
-		
-		//About
-		drawJar(jar_about_png_index, jar_about_png_x, jar_about_png_y, "", icon_a);
+		drawJars(icon_a);
 		
 		tiny3d_Flip();
 
@@ -533,46 +502,13 @@ void Draw_MainMenu()
 	DrawTexture(&menu_textures[logo_png_index], logo_png_x, logo_png_y, 0, logo_png_w, logo_png_h, 0xffffffff);
 	
 	//App description
-	SetFontAlign(1);
-	SetCurrentFont(font_comfortaa_light);
-	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
-	SetFontColor(APP_FONT_COLOR | 0xFF, 0);
-	DrawString(0, 210, MENU_MAIN_DESCRIPTION);
+	DrawTextureCenteredX(&menu_textures[logo_text_png_index], 424, 250, 0, 306, 50, 0xFFFFFF00 | 0xFF);
 
 	drawColumns(0xFF);
 
-	SetFontSize(APP_FONT_SIZE_SUBTEXT);
-	DrawString(0, 490 + apollo_config.marginV, MENU_MAIN_FOOTER);
-
 	//------------ Icons
-	SetFontAlign(3);
-	SetFontSize(APP_FONT_SIZE_MENU);
-	SetCurrentFont(font_comfortaa_regular);
+	drawJars(0xFF);
 
-//	drawColumns(0xFF);
-
-	//Empty
-	drawJar(jar_empty_png_index, jar_empty_png_x, jar_empty_png_y, "", 0xFF);
-
-	//USB saves
-	drawJar(jar_usb_png_index, jar_usb_png_x, jar_usb_png_y, "USB Saves", 0xFF);
-
-	//HDD saves
-	drawJar(jar_hdd_png_index, jar_hdd_png_x, jar_hdd_png_y, "HDD Saves", 0xFF);
-
-	//Online Cheats
-	drawJar(jar_db_png_index, jar_db_png_x, jar_db_png_y, "Online DB", 0xFF);
-
-	//User Backup
-	drawJar(jar_bup_png_index, jar_bup_png_x, jar_bup_png_y, "User Backup", 0xFF);
-
-	//Options
-	drawJar(jar_opt_png_index, jar_opt_png_x, jar_opt_png_y, "Settings", 0xFF);
-
-	//About
-	drawJar(jar_about_png_index, jar_about_png_x, jar_about_png_y, "About", 0xFF);
-
-	SetFontAlign(0);
 }
 
 void LoadTexture(int cnt)
@@ -667,6 +603,7 @@ void LoadTextures_Menu()
 	load_menu_texture(jar_usb, png);
 	load_menu_texture(jar_usb_hover, png);
 	load_menu_texture(logo, png);
+	load_menu_texture(logo_text, png);
 	load_menu_texture(tag_lock, png);
 	load_menu_texture(tag_own, png);
 	load_menu_texture(tag_pce, png);
@@ -794,9 +731,11 @@ void clearcache_callback(int sel)
 		}
 	}
 	closedir(d);
+
+	show_message("Local cache folder cleaned");
 }
 
-void up_appdata_callback(int sel)
+void upd_appdata_callback(int sel)
 {
 	if (http_download(ONLINE_URL, "appdata.zip", ONLINE_LOCAL_CACHE "tmpdata.zip", 1))
 	{
@@ -1241,7 +1180,8 @@ void doOptionsMenu()
 			else if (menu_options[menu_sel].type == APP_OPTION_INC)
 				(*menu_options[menu_sel].value)--;
 			
-			menu_options[menu_sel].callback(*menu_options[menu_sel].value);
+			if (menu_options[menu_sel].type != APP_OPTION_CALL)
+				menu_options[menu_sel].callback(*menu_options[menu_sel].value);
 		}
 		else if (paddata[0].BTN_RIGHT)
 		{
@@ -1255,7 +1195,8 @@ void doOptionsMenu()
 			else if (menu_options[menu_sel].type == APP_OPTION_INC)
 				*menu_options[menu_sel].value += 1;
 
-			menu_options[menu_sel].callback(*menu_options[menu_sel].value);
+			if (menu_options[menu_sel].type != APP_OPTION_CALL)
+				menu_options[menu_sel].callback(*menu_options[menu_sel].value);
 		}
 		else if (paddata[0].BTN_CROSS)
 		{
@@ -1328,6 +1269,18 @@ void _saveOwnerData(const char* path)
 	fclose(f);
 }
 
+void _loadOwnerData(const char* path)
+{
+	FILE* f = fopen(path, "r");
+	if (!f)
+		return;
+
+	fscanf(f, "%lx %lx\n", &apollo_config.psid[0], &apollo_config.psid[1]);
+	fscanf(f, "%lx\n", &apollo_config.account_id);
+	fscanf(f, "%d\n", &apollo_config.user_id);
+	fclose(f);
+}
+
 uint32_t get_filename_id(const char* dir)
 {
 	char path[128];
@@ -1350,7 +1303,10 @@ void zipSave(const char* save_path, const char* exp_path)
 	uint32_t fid;
 
 	if (mkdirs(exp_path) != SUCCESS)
+	{
+		show_message("Error! Export folder is not available");
 		return;
+	}
 
     init_loading_screen("Exporting save game...");
 
@@ -1385,8 +1341,14 @@ void copySave(const char* save_path, const char* exp_path)
 	char* copy_path;
 	char* tmp;
 
-	if ((strncmp(save_path, exp_path, strlen(exp_path)) == 0) || (mkdirs(exp_path) != SUCCESS))
+	if (strncmp(save_path, exp_path, strlen(exp_path)) == 0)
 		return;
+
+	if (mkdirs(exp_path) != SUCCESS)
+	{
+		show_message("Error! Export folder is not available");
+		return;
+	}
 
     init_loading_screen("Copying save game...");
 
@@ -1410,7 +1372,10 @@ void exportLicenses(const char* exp_path)
 	char* tmp;
 
 	if (mkdirs(exp_path) != SUCCESS)
+	{
+		show_message("Error! Export folder is not available");
 		return;
+	}
 
     init_loading_screen("Exporting user licenses...");
 
@@ -1432,16 +1397,19 @@ void exportLicenses(const char* exp_path)
     stop_loading_screen();
 }
 
-void exportSaves(const char* exp_path)
+void exportFolder(const char* src_path, const char* exp_path, const char* msg)
 {
 	char* save_path;
 
 	if (mkdirs(exp_path) != SUCCESS)
+	{
+		show_message("Error! Export folder is not available");
 		return;
+	}
 
-    init_loading_screen("Transfering all saves...");
+    init_loading_screen(msg);
 
-	asprintf(&save_path, SAVES_PATH_HDD, apollo_config.user_id);
+	asprintf(&save_path, src_path, apollo_config.user_id);
 
     LOG("Copying <%s> to %s...", save_path, exp_path);
 	copy_directory(save_path, save_path, exp_path);
@@ -1500,13 +1468,13 @@ void doCodeOptionsMenu()
 
 			if (strncmp(codecmd, CMD_EXP_TROPHY_USB, 10) == 0)
 			{
-//				exportLicenses(codecmd[10] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0);
+				exportFolder(TROPHY_PATH_HDD, codecmd[10] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0, "Copying trophies...");
         		code->activated = 0;
 			}
 
 			if (strncmp(codecmd, CMD_EXP_SAVES_USB, 10) == 0)
 			{
-				exportSaves(codecmd[10] ? SAVES_PATH_USB1 : SAVES_PATH_USB0);
+				exportFolder(SAVES_PATH_HDD, codecmd[10] ? SAVES_PATH_USB1 : SAVES_PATH_USB0, "Copying saves...");
         		code->activated = 0;
 			}
 
@@ -1565,13 +1533,13 @@ void build_sfo_patch(sfo_patch_t* patch)
 		    
     	LOG("Active: [%s]", selected_entry->codes[j].name);
 
-		if (strcmp(selected_entry->codes[j].codes, CMD_UNLOCK_COPY) == 0)
+		if (strcmp(selected_entry->codes[j].codes, SFO_UNLOCK_COPY) == 0)
 		    patch->flags = SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION;
 
-		if (strcmp(selected_entry->codes[j].codes, CMD_REMOVE_ACCOUNT_ID) == 0)
+		if (strcmp(selected_entry->codes[j].codes, SFO_REMOVE_ACCOUNT_ID) == 0)
 		    bzero(patch->account_id, SFO_ACCOUNT_ID_SIZE);
 
-		if (strcmp(selected_entry->codes[j].codes, CMD_REMOVE_PSID) == 0)
+		if (strcmp(selected_entry->codes[j].codes, SFO_REMOVE_PSID) == 0)
 		{
 		    bzero(psid_str1, SFO_PSID_SIZE);
 			patch->psid = (u8*) psid_str1;
@@ -1596,7 +1564,7 @@ int _is_decrypted(list_t* list, const char* fname) {
 
 int apply_cheat_patch()
 {
-    int j;
+    int j, ret = 1;
 	char tmpfile[256];
 	char* filename;
 	code_entry_t* code;
@@ -1612,7 +1580,7 @@ int apply_cheat_patch()
 		if (!code->activated || code->type != PATCH_GAMEGENIE)
 		    continue;
 
-    	LOG("Code Active: [%s]", code->name);
+    	LOG("Active code: [%s]", code->name);
 
 		if (strrchr(code->file, '\\'))
 			filename = strrchr(code->file, '\\')+1;
@@ -1633,13 +1601,14 @@ int apply_cheat_patch()
 			if (load_game_file(&save_file))
 			{
 				write_buffer(tmpfile, save_file.data, save_file.size);
-				list_append(decrypted_files, filename);
+				list_append(decrypted_files, strdup(filename));
 
 				free(save_file.data);
 			}
 			else
 			{
 				LOG("Error: failed to decrypt (%s)", filename);
+				ret = 0;
 				continue;
 			}
 
@@ -1648,6 +1617,7 @@ int apply_cheat_patch()
 		if (!apply_ggenie_patch_code(tmpfile, code))
 		{
 			LOG("Error: failed to apply (%s)", code->name);
+			ret = 0;
 		}
 
 		code->activated = 0;
@@ -1655,7 +1625,8 @@ int apply_cheat_patch()
 
 	list_node_t *node = list_head(decrypted_files);
 
-	while (node) {
+	while (node)
+	{
 		filename = list_get(node);
 		snprintf(tmpfile, sizeof(tmpfile), ONLINE_LOCAL_CACHE "%s", filename);
 
@@ -1668,15 +1639,14 @@ int apply_cheat_patch()
 		
 		read_buffer(tmpfile, &save_file.data, &save_file.size);
 
-		if (save_game_file(&save_file))
+		if (!save_game_file(&save_file))
 		{
-			free(save_file.data);
-		}
-		else
-		{
-			LOG("Error: failed to encrypt files.");
+			LOG("Error: failed to encrypt (%s)", tmpfile);
+			ret = 0;
 		}
 
+		free(filename);
+		free(save_file.data);
 		unlink_secure(tmpfile);
 		node = node->next;
 	}
@@ -1684,7 +1654,7 @@ int apply_cheat_patch()
 	list_free(decrypted_files);
 	stop_loading_screen();
 
-	return 1;
+	return ret;
 }
 
 void doPatchMenu()
@@ -1900,6 +1870,9 @@ s32 main(s32 argc, const char* argv[])
 
 	load_app_settings(&apollo_config);
 
+	if (file_exists(APOLLO_PATH "owner.txt") == SUCCESS)
+		_loadOwnerData(APOLLO_PATH "owner.txt");
+
 	pfd_util_setup_keys((u8*) &(apollo_config.psid[0]), apollo_config.user_id);
 
 	tiny3d_Init(1024*1024);
@@ -2003,7 +1976,6 @@ s32 main(s32 argc, const char* argv[])
 		}
 		
 		tiny3d_Flip();
-
 	}
 	
 	return 0;

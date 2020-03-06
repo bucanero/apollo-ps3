@@ -64,7 +64,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     			char* write = data + off + (line[1] == '8' ? pointer : 0);
     			memcpy(write, (char*) &val +3, 1);
 
-    			LOG("Wrote 1 byte (%s) to 0x%lX", tmp8, write - data);
+    			LOG("Wrote 1 byte (%s) to 0x%lX", tmp8+6, write - data);
     		}
     			break;
     		case '1':
@@ -87,7 +87,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     			char* write = data + off + (line[1] == '8' ? pointer : 0);
     			memcpy(write, (char*) &val +2, 2);
 
-    			LOG("Wrote 2 bytes (%s) to 0x%lX", tmp8, write - data);
+    			LOG("Wrote 2 bytes (%s) to 0x%lX", tmp8+4, write - data);
     		}
     			break;
     		case '2':
@@ -160,16 +160,19 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 						case '0':
 						case '8':
 			    			memcpy(write, (char*) &val +3, 1);
+			    			LOG("M-Wrote 1 byte (%X) to 0x%lX", val, write - data);
 							break;
 
 						case '1':
 						case '9':
 			    			memcpy(write, (char*) &val +2, 2);
+			    			LOG("M-Wrote 2 bytes (%X) to 0x%lX", val, write - data);
 							break;
 
 						case '2':
 						case 'A':
 			    			memcpy(write, (char*) &val, 4);
+			    			LOG("M-Wrote 4 bytes (%X) to 0x%lX", val, write - data);
 							break;
 					}
 
@@ -210,6 +213,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     			char* dst = data + off_dst + (line[1] == '8' ? pointer : 0);
 
     			memcpy(dst, src, val);
+				LOG("Copied %d bytes from 0x%lX to 0x%lX", val, src, dst);
     		}
     			break;
     		case '6':
@@ -260,16 +264,19 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 					case '8':
 						val += (uint8_t) write[0];
 		    			memcpy(write, (char*) &val +3, 1);
+		    			LOG("Add-Wrote 1 byte (%X) to 0x%lX", val, write - data);
 						break;
 					case '1':
 					case '9':
 						val += ((uint16_t*) write)[0];
 		    			memcpy(write, (char*) &val +2, 2);
+		    			LOG("Add-Wrote 2 bytes (%X) to 0x%lX", val, write - data);
 						break;
 					case '2':
 					case 'A':
 						val += ((uint32_t*) write)[0];
 		    			memcpy(write, (char*) &val, 4);
+		    			LOG("Add-Wrote 4 bytes (%X) to 0x%lX", val, write - data);
 						break;
 				}
 
@@ -330,7 +337,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 					free(find);
 					free(data);
 
-					return -1;
+					return 0;
 				}
 
 				LOG("Search pointer = %ld (0x%lX)", pointer, pointer);
@@ -390,7 +397,6 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     			sprintf(tmp4, "%.4s", line+13);
     			sscanf(tmp4, "%x", &size);
 
-			
 				for (i = 0; i < size; i += 8)
 				{
 				    line = strtok(NULL, "\n");
@@ -401,6 +407,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 	    			write = data + off + i; //+ ((t == '8' || t == '9' || t == 'A') ? pointer : 0);
 //			val = ES32(val);
 	    			memcpy(write, (char*) &val, 4);
+					LOG("m-Wrote 4 bytes (%s) to 0x%lX", tmp8, write - data);
 
     				sprintf(tmp8, "%.8s", line+9);
     				sscanf(tmp8, "%x", &val);
@@ -408,7 +415,10 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 	    			write += 4;
 //			val = ES32(val);
 					if (i + 4 < size)
+					{
 		    			memcpy(write, (char*) &val, 4);
+		    			LOG("m-Wrote 4 bytes (%s) to 0x%lX", tmp8, write - data);
+					}
 
 				}
 

@@ -11,7 +11,7 @@
 
 #define FS_S_IFMT 0170000
 
-#define TMP_BUFF_SIZE 16384
+#define TMP_BUFF_SIZE 64*1024
 
 //----------------------------------------
 //String Utils
@@ -135,7 +135,6 @@ int mkdirs(const char* dir)
 
 int copy_file(const char* input, const char* output)
 {
-    char buffer[TMP_BUFF_SIZE];
     size_t read;
 
     mkdirs(output);
@@ -145,6 +144,8 @@ int copy_file(const char* input, const char* output)
     if (!in || !out)
         return FAILED;
 
+    char* buffer = malloc(TMP_BUFF_SIZE);
+
     do
     {
         read = fread(buffer, 1, TMP_BUFF_SIZE, in);
@@ -153,6 +154,7 @@ int copy_file(const char* input, const char* output)
     }
     while (read == TMP_BUFF_SIZE);
 
+    free(buffer);
     fclose(out);
     fclose(in);
 
@@ -207,7 +209,8 @@ uint32_t file_adler(const char* input)
 
 int copy_directory(const char* startdir, const char* inputdir, const char* outputdir)
 {
-	char fullname[256];	
+	char fullname[256];
+    char out_name[256];
 	struct dirent *dirp;
 	int len = strlen(startdir);
 	DIR *dp = opendir(inputdir);
@@ -224,13 +227,10 @@ int copy_directory(const char* startdir, const char* inputdir, const char* outpu
                 strcat(fullname, "/");
     			copy_directory(startdir, fullname, outputdir);
   			} else {
-  			    char *out_name;
-  			    asprintf(&out_name, "%s%s", outputdir, &fullname[len]);
+  			    snprintf(out_name, sizeof(out_name), "%s%s", outputdir, &fullname[len]);
     			if (copy_file(fullname, out_name) != SUCCESS) {
-         			free(out_name);
      				return FAILED;
     			}
-    			free(out_name);
   			}
 		}
 	}

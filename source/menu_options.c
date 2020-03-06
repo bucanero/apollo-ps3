@@ -21,7 +21,7 @@ void _draw_OptionsMenu(u8 alpha)
     while (menu_options[ind].name)
     {
         SetFontColor(APP_FONT_COLOR | alpha, 0);
-        float dx = DrawString(MENU_ICON_OFF + MENU_TITLE_OFF, y_off, menu_options[ind].name);
+        float dx = DrawString(MENU_ICON_OFF + MENU_TITLE_OFF + 50, y_off, menu_options[ind].name);
         
 		switch (menu_options[ind].type)
 		{
@@ -29,12 +29,12 @@ void _draw_OptionsMenu(u8 alpha)
 				c = (*menu_options[ind].value == 1) ? opt_on_png_index : opt_off_png_index;
 				w = (int)(menu_textures[c].texture.width / 1.8);
 				h = (int)(menu_textures[c].texture.height / 1.8);
-				DrawTexture(&menu_textures[c], MENU_ICON_OFF - 29, y_off, 0, w, h, 0xFFFFFF00 | alpha);
+				DrawTexture(&menu_textures[c], OPTION_ITEM_OFF - 29, y_off, 0, w, h, 0xFFFFFF00 | alpha);
 				break;
 			case APP_OPTION_CALL:
 				w = (int)(menu_textures[mark_arrow_png_index].texture.width / 1.8);
 				h = (int)(menu_textures[mark_arrow_png_index].texture.height / 1.8);
-				DrawTexture(&menu_textures[mark_arrow_png_index], MENU_ICON_OFF - 26, y_off-3, 0, w, h, 0xFFFFFF00 | alpha);
+				DrawTexture(&menu_textures[mark_arrow_png_index], OPTION_ITEM_OFF - 26, y_off-3, 0, w, h, 0xFFFFFF00 | alpha);
 				break;
 			case APP_OPTION_LIST:
 				SetFontAlign(2);
@@ -45,7 +45,7 @@ void _draw_OptionsMenu(u8 alpha)
 				SetFontAlign(0);
 				sprintf(APP_OPTION_INC_TEMP, "- %d +", *menu_options[ind].value);
 				int inc_width = WidthFromStr(APP_OPTION_INC_TEMP);
-				DrawString((MENU_ICON_OFF - 18) - (inc_width / 2), y_off, APP_OPTION_INC_TEMP);
+				DrawString((OPTION_ITEM_OFF - 18) - (inc_width / 2), y_off, APP_OPTION_INC_TEMP);
 				break;
 		}
         
