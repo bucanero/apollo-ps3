@@ -6,7 +6,7 @@
 
 The `apollo-ps3` homebrew app allows to download, unlock, patch and resign save-game files directly on your PS3.
 
-![image](./docs/screenshots/screenshot_2020_02_06_main.png)
+![image](./docs/screenshots/screenshot_main.png)
 
 **Comments, ideas, suggestions?** You can contact [me](https://github.com/bucanero/) on [Twitter](https://twitter.com/dparrino) and on [my website](http://www.bucanero.com.ar/).
 
@@ -71,7 +71,7 @@ Currently, the list of available games and files is limited, but the project aim
 # Credits
 
 * [Bucanero](http://www.bucanero.com.ar/): Project developer
-* [Dnawrkshp](https://github.com/Dnawrkshp/): [Artemis GUI](https://github.com/Dnawrkshp/ArtemisPS3) code
+* [Dnawrkshp](https://github.com/Dnawrkshp/): [Artemis](https://github.com/Dnawrkshp/ArtemisPS3) code
 * [Berion](https://www.psx-place.com/members/berion.1431/): GUI design
 * [flatz](https://twitter.com/flat_z): [SFO/PFD tools](https://github.com/bucanero/pfd_sfo_tools/)
 * [aldostools](https://aldostools.org/): [Bruteforce Save Data](https://bruteforcesavedata.forumms.net/)
