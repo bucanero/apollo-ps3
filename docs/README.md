@@ -26,7 +26,7 @@ Get the [latest version here][app_latest].
 
 ### Changelog
 
-See the [latest changes here](https://github.com/bucanero/apollo-ps3/CHANGELOG.md).
+See the [latest changes here](https://github.com/bucanero/apollo-ps3/blob/master/CHANGELOG.md).
 
 # Setup instructions
 
