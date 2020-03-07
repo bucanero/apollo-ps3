@@ -3,6 +3,7 @@
 #include <pngdec/pngdec.h>
 #include <sys/thread.h>
 #include <unistd.h>
+#include <stdio.h>
 
 #include "libfont.h"
 #include "menu.h"
@@ -115,9 +116,11 @@ void _drawListBackground(int off, int icon)
 	}
 }
 
-void DrawHeader_Ani(int icon, const char * headerTitle, const char * headerSubTitle, u32 rgba, u32 bgrgba, int ani, int div)
+void DrawHeader_Ani(int icon, const char * hdrTitle, const char * headerSubTitle, u32 rgba, u32 bgrgba, int ani, int div)
 {
 	u8 icon_a = (u8)(((ani * 2) > 0xFF) ? 0xFF : (ani * 2));
+	char headerTitle[44];
+	snprintf(headerTitle, sizeof(headerTitle), "%.40s%s", hdrTitle, (strlen(hdrTitle) > 40 ? "..." : ""));
 
 	//------------ Backgrounds
 	
@@ -139,11 +142,8 @@ void DrawHeader_Ani(int icon, const char * headerTitle, const char * headerSubTi
 	//header title string
 	SetFontColor(rgba | icon_a, 0);
 	SetCurrentFont(font_comfortaa_regular);
-	if (headerTitle)
-	{
-		SetFontSize(APP_FONT_SIZE_TITLE);
-		DrawString(MENU_ICON_OFF + 10, 31, headerTitle);
-	}
+	SetFontSize(APP_FONT_SIZE_TITLE);
+	DrawString(MENU_ICON_OFF + 10, 31, headerTitle);
 
 	//header sub title string
 	if (headerSubTitle)
@@ -163,8 +163,11 @@ void DrawHeader_Ani(int icon, const char * headerTitle, const char * headerSubTi
 	}
 }
 
-void DrawHeader(int icon, int xOff, const char * headerTitle, const char * headerSubTitle, u32 rgba, u32 bgrgba, int mode)
+void DrawHeader(int icon, int xOff, const char * hdrTitle, const char * headerSubTitle, u32 rgba, u32 bgrgba, int mode)
 {
+	char headerTitle[44];
+	snprintf(headerTitle, sizeof(headerTitle), "%.40s%s", hdrTitle, (strlen(hdrTitle) > 40 ? "..." : ""));
+
 	//Background
 	DrawBackgroundTexture(xOff, (u8)bgrgba);
 
@@ -177,25 +180,20 @@ void DrawHeader(int icon, int xOff, const char * headerTitle, const char * heade
 	DrawTexture(&menu_textures[header_dot_png_index], cnt - 4, 40, 0, menu_textures[header_dot_png_index].texture.width / 2, menu_textures[header_dot_png_index].texture.height / 2, 0xffffffff);
 
 	//header mini icon
-	if (mode)
-		DrawTextureCenteredX(&menu_textures[icon], xOff + MENU_ICON_OFF - 12, 40, 0, 32, 32, 0xffffffff);
-	else
-		DrawTextureCenteredX(&menu_textures[icon], xOff + MENU_ICON_OFF - 20, 32, 0, 48, 48, 0xffffffff);
-
 	//header title string
 	SetFontColor(rgba, 0);
 	SetCurrentFont(font_comfortaa_regular);
 	if (mode)
 	{
+		DrawTextureCenteredX(&menu_textures[icon], xOff + MENU_ICON_OFF - 12, 40, 0, 32, 32, 0xffffffff);
 		SetFontSize(APP_FONT_SIZE_SUBTITLE);
-		if (headerTitle)
-			DrawString(xOff + MENU_ICON_OFF + 10, 35, headerTitle);
+		DrawString(xOff + MENU_ICON_OFF + 10, 35, headerTitle);
 	}
 	else
 	{
+		DrawTextureCenteredX(&menu_textures[icon], xOff + MENU_ICON_OFF - 20, 32, 0, 48, 48, 0xffffffff);
 		SetFontSize(APP_FONT_SIZE_TITLE);
-		if (headerTitle)
-			DrawString(xOff + MENU_ICON_OFF + 10, 31, headerTitle);
+		DrawString(xOff + MENU_ICON_OFF + 10, 31, headerTitle);
 	}
 
 	//header sub title string

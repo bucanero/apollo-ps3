@@ -786,7 +786,7 @@ int ReadOnlineSaves(save_entry_t * game)
 { 
 	char path[256], url[256];
 	snprintf(path, sizeof(path), ONLINE_LOCAL_CACHE "%s.txt", game->title_id);
-	snprintf(url, sizeof(url), ONLINE_URL "%s/", game->title_id);
+	snprintf(url, sizeof(url), ONLINE_URL "PS3/%s/", game->title_id);
 
 	if (isExist(path))
 	{

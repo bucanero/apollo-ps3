@@ -215,6 +215,7 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 	}
     httpClientSetConnTimeout(httpClient, 10 * 1000 * 1000);
     httpClientSetUserAgent(httpClient, HTTP_USER_AGENT);
+	httpClientSetAutoRedirect(httpClient, 1);
 
 	// Escape URL file name characters
 	escaped_name = escape_filename(filename);

@@ -225,7 +225,7 @@ save_list_t online_saves = {
 	.title = "Online Database",
     .list = NULL,
     .count = 0,
-    .path = ONLINE_URL,
+    .path = ONLINE_URL "PS3/",
     .ReadList = &ReadOnlineList,
     .ReadCodes = &ReadOnlineSaves,
     .UpdatePath = NULL,
@@ -755,58 +755,69 @@ void update_callback(int sel)
 
 	LOG("checking latest Apollo version at %s", APOLLO_UPDATE_URL);
 
-	if (http_download(APOLLO_UPDATE_URL, "", ONLINE_LOCAL_CACHE "ver.check", 0))
-	{
-		char *buffer;
-		long size = 0;
-
-		buffer = readFile(ONLINE_LOCAL_CACHE "ver.check", &size);
-
-		if (!buffer)
-			return;
-
-		LOG("received %u bytes", size);
-		buffer[size-1] = 0;
-
-		static const char find[] = "\"name\":\"Apollo Save Tool v";
-		const char* start = strstr(buffer, find);
-		if (start != NULL)
-		{
-			LOG("found name");
-			start += sizeof(find) - 1;
-
-			char* end = strstr(start, "\"");
-			if (end != NULL)
-			{
-				*end = 0;
-				LOG("latest version is %s", start);
-
-				if (stricmp(APOLLO_VERSION, start) != 0)
-				{
-					if (show_dialog(1, "New version available! Download update?"))
-					{
-						if (http_download(ONLINE_URL, "apollo-ps3.pkg", "/dev_hdd0/packages/apollo-ps3.pkg", 1))
-							show_message("Update downloaded!");
-						else
-							show_message("Download error!");
-					}
-				}
-			}
-			else
-			{
-				LOG("no end of name found");
-			}
-		}
-		else
-		{
-			LOG("no name found");
-		}
-
-	}
-	else
+	if (!http_download(APOLLO_UPDATE_URL, "", ONLINE_LOCAL_CACHE "ver.check", 0))
 	{
 		LOG("http request to %s failed", APOLLO_UPDATE_URL);
 	}
+
+	char *buffer;
+	long size = 0;
+
+	buffer = readFile(ONLINE_LOCAL_CACHE "ver.check", &size);
+
+	if (!buffer)
+		return;
+
+	LOG("received %u bytes", size);
+	buffer[size-1] = 0;
+
+	static const char find[] = "\"name\":\"Apollo Save Tool v";
+	const char* start = strstr(buffer, find);
+	if (!start)
+	{
+		LOG("no name found");
+	}
+
+	LOG("found name");
+	start += sizeof(find) - 1;
+
+	char* end = strstr(start, "\"");
+	if (!end)
+	{
+		LOG("no end of name found");
+		return;
+	}
+	*end = 0;
+	LOG("latest version is %s", start);
+
+	if (stricmp(APOLLO_VERSION, start) == 0)
+	{
+		return;
+	}
+
+	start = strstr(end+1, "\"browser_download_url\":\"");
+	if (!start)
+		return;
+
+	start += 24;
+	end = strstr(start, "\"");
+	if (!end)
+	{
+		LOG("no download URL found");
+		return;
+	}
+
+	*end = 0;
+	LOG("download URL is %s", start);
+
+	if (show_dialog(1, "New version available! Download update?"))
+	{
+		if (http_download(start, "", "/dev_hdd0/packages/apollo-ps3.pkg", 1))
+			show_message("Update downloaded!");
+		else
+			show_message("Download error!");
+	}
+
 }
 
 void update_usb_path(char* path)
@@ -1244,7 +1255,7 @@ void doPatchViewMenu()
 
 void downloadSave(const char* file, const char* path)
 {
-	if (http_download(ONLINE_URL, file, ONLINE_LOCAL_CACHE "tmpsave.zip", 1))
+	if (http_download(ONLINE_URL "PS3/", file, ONLINE_LOCAL_CACHE "tmpsave.zip", 1))
 	{
 		if (extract_zip(ONLINE_LOCAL_CACHE "tmpsave.zip", path))
 			show_message("Save game successfully downloaded");
