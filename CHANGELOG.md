@@ -4,6 +4,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v0.9.0](https://github.com/bucanero/apollo-ps3/releases/tag/v0.9.0) - 2020-03-07
+
 ### Added
 
 * Game Genie cheat patch support
@@ -13,6 +15,7 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 * Added bulk save-game copy to USB
 * Added Trophies backup to USB
 * Added `owner.txt` support to override auto-detected settings
+* Improved auto-update check/download
 
 ### Fixed
 
