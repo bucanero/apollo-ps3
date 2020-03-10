@@ -4,6 +4,13 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v0.9.1](https://github.com/bucanero/apollo-ps3/releases/tag/v0.9.1) - 2020-03-10
+
+### Fixed
+
+* Fixed bug when resigning a save-game on USB
+* Fixed bug when selecting `View Details` on an empty save list
+
 ## [v0.9.0](https://github.com/bucanero/apollo-ps3/releases/tag/v0.9.0) - 2020-03-07
 
 ### Added
