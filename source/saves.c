@@ -509,7 +509,7 @@ void _setManualCode(code_entry_t* entry, uint8_t type, const char* name, const c
 	asprintf(&entry->codes, code);
 }
 
-option_entry_t* _createOptions(int count, const char* name, const char* value)
+option_entry_t* _initOptions(int count)
 {
 	option_entry_t* options = (option_entry_t*)malloc(sizeof(option_entry_t));
 
@@ -519,6 +519,13 @@ option_entry_t* _createOptions(int count, const char* name, const char* value)
 	options->line = NULL;
 	options->value = malloc (sizeof(char *) * count);
 	options->name = malloc (sizeof(char *) * count);
+
+	return options;
+}
+
+option_entry_t* _createOptions(int count, const char* name, const char* value)
+{
+	option_entry_t* options = _initOptions(count);
 
 	asprintf(&options->name[0], "%s %d", name, 0);
 	asprintf(&options->value[0], "%s%c", value, 0);
@@ -633,6 +640,64 @@ int ReadCodesUSB(save_entry_t * save)
 	return (save->code_count);
 }
 
+option_entry_t* _getFileOptions(const char* save_path, const char* mask)
+{
+	DIR *d;
+	struct dirent *dir;
+	int i = 0;
+	option_entry_t* opt;
+
+	d = opendir(save_path);
+	if (!d)
+		return NULL;
+
+	LOG("Loading filenames {%s} from '%s'...", mask, save_path);
+
+	while ((dir = readdir(d)) != NULL)
+	{
+		if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0 &&
+			strcmp(dir->d_name, "SND0.AT3") != 0 &&
+			strcmp(dir->d_name, "PIC1.PNG") != 0 &&
+			strcmp(dir->d_name, "ICON0.PNG") != 0 &&
+			strcmp(dir->d_name, "PARAM.PFD") != 0 &&
+			strcmp(dir->d_name, "PARAM.SFO") != 0 &&
+			wildcard_match_icase(dir->d_name, mask))
+		{
+			i++;
+		}
+	}
+	closedir(d);
+
+	if (i == 0)
+		return NULL;
+
+	opt = _initOptions(i);
+	i = 0;
+
+	d = opendir(save_path);
+	while ((dir = readdir(d)) != NULL)
+	{
+		if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0 &&
+			strcmp(dir->d_name, "SND0.AT3") != 0 &&
+			strcmp(dir->d_name, "PIC1.PNG") != 0 &&
+			strcmp(dir->d_name, "ICON0.PNG") != 0 &&
+			strcmp(dir->d_name, "PARAM.PFD") != 0 &&
+			strcmp(dir->d_name, "PARAM.SFO") != 0 &&
+			wildcard_match_icase(dir->d_name, mask))
+		{
+			LOG("Adding '%s' (%s)", dir->d_name, mask);
+
+			asprintf(&opt->name[i], "%s", dir->d_name);
+			asprintf(&opt->value[i], "%s", mask);
+			i++;
+		}
+	}
+
+	closedir(d);
+
+	return opt;
+}
+
 /*
  * Function:		ReadLocalCodes()
  * File:			saves.c
@@ -647,6 +712,7 @@ int ReadCodesHDD(save_entry_t * save)
 {
     int code_count = MENU_COPY_CMDS, cur_count = 0;
 	code_entry_t * ret;
+	option_entry_t * file_opt = NULL;
 	char filePath[256];
 
 	snprintf(filePath, sizeof(filePath), APOLLO_DATA_PATH "%s.ps3savepatch", save->title_id);
@@ -687,8 +753,22 @@ int ReadCodesHDD(save_entry_t * save)
 				}
 				else if (wildcard_match(line, ":*"))
 				{
+					char* tmp_mask;
+
 					strcpy(filePath, line+1);
 					LOG("FILE: %s\n", filePath);
+
+					if (strrchr(filePath, '\\'))
+						tmp_mask = strrchr(filePath, '\\')+1;
+					else
+						tmp_mask = filePath;
+
+					if (strchr(tmp_mask, '*'))
+						file_opt = _getFileOptions(save->path, tmp_mask);
+					else
+						file_opt = NULL;
+
+
 				}
 				else if (wildcard_match(line, "?=*") ||
 						 wildcard_match(line, "\?\?=*") ||
@@ -726,8 +806,8 @@ int ReadCodesHDD(save_entry_t * save)
 					ret[cur_count].type = PATCH_GAMEGENIE;
 					ret[cur_count].activated = 0; //wildcard_match_icase(line, "*(REQUIRED)*");
 					ret[cur_count].codes = NULL;
-					ret[cur_count].options = NULL;
-					ret[cur_count].options_count = 0;
+					ret[cur_count].options = file_opt;
+					ret[cur_count].options_count = (file_opt ? 1 : 0);
 					asprintf(&ret[cur_count].file, "%s", filePath);
 
 					if (strlen(group))

@@ -835,7 +835,7 @@ void update_hdd_path(char* path)
 	sprintf(path, SAVES_PATH_HDD, apollo_config.user_id);
 }
 
-void ReloadUserSaves(save_list_t* save_list)
+int ReloadUserSaves(save_list_t* save_list)
 {
     init_loading_screen("Loading save games...");
 
@@ -854,6 +854,14 @@ void ReloadUserSaves(save_list_t* save_list)
 		qsort(save_list->list, save_list->count, sizeof(save_entry_t), &qsortSaveList_Compare);
 
     stop_loading_screen();
+
+	if (!save_list->list)
+	{
+		show_message("No save-games found");
+		return 0;
+	}
+
+	return save_list->count;
 }
 
 code_entry_t* LoadSaveDetails()
@@ -927,8 +935,8 @@ void SetMenu(int id)
 			break;
 
 		case MENU_USB_SAVES: //USB saves Menu
-			if (!usb_saves.list)
-				ReloadUserSaves(&usb_saves);
+			if (!usb_saves.list && !ReloadUserSaves(&usb_saves))
+				return;
 			
 			if (apollo_config.doAni)
 				Draw_UserCheatsMenu_Ani(&usb_saves);
@@ -1718,7 +1726,7 @@ void doPatchMenu()
 					LOG("Resigning save '%s'...", selected_entry->name);
 					if (pfd_util_init(selected_entry->title_id, selected_entry->path))
 					{
-						if (pfd_util_process(PFD_CMD_UPDATE, 1) == SUCCESS)
+						if (pfd_util_process(PFD_CMD_UPDATE, 0) == SUCCESS)
 		                    show_message("Save file successfully resigned!");
     	                else
 	                        show_message("Error! Save file couldn't be resigned");
