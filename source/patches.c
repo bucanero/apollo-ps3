@@ -1,5 +1,35 @@
+#include <polarssl/md.h>
+#include <polarssl/md5.h>
+#include <polarssl/sha1.h>
+#include <polarssl/sha2.h>
+#include <zlib.h>
+
 #include "saves.h"
 #include "util.h"
+#include "crc_util.h"
+#include "list.h"
+
+#define skip_spaces(str)        while (*str == ' ') str++;
+
+typedef enum
+{
+    BSD_VAR_NULL = 0,
+    BSD_VAR_INT8 = 1,
+    BSD_VAR_INT16 = 2,
+    BSD_VAR_INT32 = 4,
+    BSD_VAR_INT64 = 8,
+    BSD_VAR_MD5 = 16,
+    BSD_VAR_SHA1 = 20,
+    BSD_VAR_SHA256 = 32,
+} bsd_var_types;
+
+typedef struct
+{
+    char* name;
+    uint8_t len;
+    uint8_t* data;
+} bsd_variable_t;
+
 
 void remove_char(char * str, int len, char seek)
 {
@@ -21,9 +51,1052 @@ long search_data(const char* data, size_t size, const char* search, int len, int
     return -1;
 }
 
-int apply_bsd_patch_code(const char* fpath, const char* fname, code_entry_t* code)
+bsd_variable_t* _get_bsd_variable(list_t* list, const char* vname)
 {
-	return 0;
+	list_node_t *node = list_head(list);
+	bsd_variable_t *var;
+
+	while (node) {
+		var = list_get(node);
+		if (strcmp(var->name, vname) == 0)
+			return var;
+
+		node = node->next;
+	}
+
+	return NULL;
+}
+
+char* _decode_variable_data(const char* line, int *data_len, list_t* vlist)
+{
+    int i, len = 0;
+    char* output = NULL;
+
+    skip_spaces(line);
+	if (wildcard_match(line, "\"*\"*"))
+	{
+	    char* c = strchr(line, '"')+1;
+	    len = strrchr(line, '"') - c;
+		output = malloc(len);
+	    
+	    for (i = 0; i < len; i++)
+	        output[i] = c[i];
+	}
+	else if (wildcard_match(line, "[*]*"))
+	{
+	    line++;
+	    
+	    char* tmp = strchr(line, ']');
+	    *tmp = 0;
+	    
+	    bsd_variable_t* var = _get_bsd_variable(vlist, line);
+	    
+	    line = tmp+1;
+	    *tmp = ']';
+	    
+	    if (var)
+	    {
+	        len = var->len;
+    		output = malloc(len);
+	        memcpy(output, var->data, len);
+	    }	        
+	}
+	else
+	{
+	    if (line[0] == '0' && line[1] == 'x')
+	        line += 2;
+
+	    len = strlen(line) / 2;
+	    output = (char*) x_to_u8_buffer(line);
+	}
+
+	*data_len = len;
+	return output;
+}
+
+int _parse_int_value(const char* line, const int ptrval, const int size, list_t* vlist)
+{
+    int ret = 0;
+
+    skip_spaces(line);
+    if (strlen(line) == 0)
+    {
+        return 0;
+    }
+	else if (wildcard_match_icase(line, "pointer*"))
+	{
+	    line += strlen("pointer");
+	    skip_spaces(line);
+
+	    ret = ptrval + _parse_int_value(line, ptrval, size, vlist);
+	}
+	else if (wildcard_match_icase(line, "eof*"))
+	{
+		line += strlen("eof");
+	    skip_spaces(line);
+
+//        sscanf(line, "%x", &ret);
+        ret += size - 1 + _parse_int_value(line, ptrval, size, vlist);
+	}
+	else if (wildcard_match(line, "[*]*"))
+	{
+	    line++;
+	    
+	    char* tmp = strchr(line, ']');
+	    *tmp = 0;
+	    
+	    bsd_variable_t* var = _get_bsd_variable(vlist, line);
+	    
+	    line = tmp+1;
+	    *tmp = ']';
+	    
+	    if (var)
+	    {
+	        switch (var->len)
+	        {
+	            case BSD_VAR_INT8:
+        	        ret = *((uint8_t*)var->data) + _parse_int_value(line, ptrval, size, vlist);
+        	        break;
+	            case BSD_VAR_INT16:
+        	        ret = *((uint16_t*)var->data) + _parse_int_value(line, ptrval, size, vlist);
+        	        break;
+	            case BSD_VAR_INT32:
+        	        ret = *((uint32_t*)var->data) + _parse_int_value(line, ptrval, size, vlist);
+        	        break;
+	        }
+	    }
+	}
+	else
+	{
+	    sscanf(line, "%x", &ret);
+	}
+	
+	return ret;
+}
+
+void _cleanup_var_list(list_t* list)
+{
+	list_node_t *node;
+	node = list_head(list);
+	while (node) {
+		if (node->value)
+		{
+			bsd_variable_t* bv = (bsd_variable_t*) node->value;
+			if (bv->data)
+				free(bv->data);
+
+			free(node->value);
+		}
+		node = node->next;
+	}
+    list_free(list);
+}
+
+int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
+{
+    char *data;
+	size_t dsize;
+	long pointer = 0;
+	long range_start = 0, range_end = 0;
+	uint8_t carry = 0;
+	uint32_t old_val;
+	custom_crc_t custom_crc = {0,0,0,0,0,0};
+	int codelen = strlen(code->codes);
+    char *line = strtok(code->codes, "\n");
+    list_t* var_list = list_alloc();
+	
+	LOG("Applying [%s] to '%s'...", code->name, filepath);
+	read_buffer(filepath, (uint8_t**) &data, &dsize);
+
+//	write_buffer(APOLLO_PATH "PAYLOAD.src", (uint8_t*) data, dsize);
+
+    while (line)
+    {
+        // carry(*)
+		if (wildcard_match_icase(line, "carry(*)"))
+		{
+			// carry setting for add() / sub()
+			line += strlen("carry");
+		    sscanf(line, "(%hhd)", &carry);
+		    
+		    LOG("Set carry bytes = %d\n", carry);
+		}
+
+        // set *:*
+		else if (wildcard_match_icase(line, "set *:*"))
+		{
+			// set pointer: 43
+			// ;Sets the file pointer to a specific address.
+			//
+			// write next 0: 446966666963756C7479
+			// ;Overwrites 0 bytes after the file pointer address.
+			//
+			// set [hash]:md5
+			// ;[hash] is the variable. it can be any name. you can have many variables.
+			// ;md5 is a function. the md5 hash is calculated for the current file, and stored in the variable [hash]
+			//
+			// set [myvariable2]:"hello"
+			// ;sets the text "hello" into the variable [myvariable2]
+			//
+			// set [anyname1]:read(0x100, (10)) 
+			// ;read(offset, length) is a function that reads n bytes from current file
+			// ;0x100 is the offset in hex
+			// ;(10) is the length in decimal
+			// ;the example 4 reads 10 bytes starting from offset 0x100 and store them in the variable [anyname1]
+
+			// set *:param = "lastbyte*"
+			// set *:param = "eof*"
+			// set *:param = "xor:*", "not *", "md5*", "crc*", "eachecksum", "adler16", "adler32", "sha1*", "sha256", 
+			// set *:param = "sha384", "sha512", "hmac*", "md4*", "md2*", "read(*,*)*", "xor(*,*,*)*", "add(*,*)", 
+			// set *:param = "wadd(*,*)", "[dq]wadd(*,*)", "sub(*,*)", "wsub(*,*)", "[dq]wsub(*,*)", "repeat(*,*)*", 
+			// set *:param = "mid(*,*)", "left(*,*)", "right(*,*)"
+			// UNUSED: "userid*", "titleid*", "psid*", "account*", "profile*",
+			// UNUSED: crc16, adler16, md4, sha384, sha512, left, not
+			//
+			// "set range:*,*", "set crc_*:*", "set md5:*", "set md2:*", "set sha1:*", "set crc32:*", "set crc32big:*", 
+			// "set crc32little:*", "set crc16:*", "set adler16:*", "set adler32:*",  
+			// "set ""*"":*", "set pointer:*"
+			// UNUSED: "set psid:*", "set userid:*", "set titleid:*", "set *account*:*", "set *profile*:*",
+			// UNUSED: crc16, adler16, md4, sha384, sha512,
+
+			int ptr_off, len;
+			char* tmp = NULL;
+
+			line += strlen("set");
+		    skip_spaces(line);
+
+		    // set pointer:*
+			if (wildcard_match_icase(line, "pointer:*"))
+			{
+    			line += strlen("pointer:");
+
+    			// set pointer:eof*
+    			if (wildcard_match_icase(line, "eof*"))
+    			{
+        			line += strlen("eof");
+        		    skip_spaces(line);
+
+                    sscanf(line, "%x", &ptr_off);
+                    pointer = dsize + ptr_off - 1;
+    			}
+    			// set pointer:lastbyte*
+    			else if (wildcard_match_icase(line, "lastbyte*"))
+    			{
+        			line += strlen("lastbyte");
+        		    skip_spaces(line);
+
+                    sscanf(line, "%x", &ptr_off);
+                    pointer = dsize + ptr_off - 1;
+    			}
+    			// set pointer:pointer*
+    			else if (wildcard_match_icase(line, "pointer*"))
+    			{
+        			line += strlen("pointer");
+        		    skip_spaces(line);
+
+                    sscanf(line, "%x", &ptr_off);
+                    pointer += ptr_off;
+    			}
+    			// set pointer:read(*,*)*
+    			else if (wildcard_match_icase(line, "read(*,*)*"))
+    			{
+        			line += strlen("read");
+        			
+        			int raddr, rlen;
+        			sscanf(line, "(%x,%x)", &raddr, &rlen);
+
+                    int *rval = (int*) &data[raddr];
+            	    LOG("address = %d len %d ", raddr, rlen);
+            	    
+            	    pointer = *rval;
+    			}
+    			// set pointer:[*]*
+    			else if (wildcard_match_icase(line, "[*]*"))
+    			{
+    			    LOG("Getting value for %s\n", line);
+    			    pointer = _parse_int_value(line, pointer, dsize, var_list);
+    			}
+    			// set pointer:* (e.g. 0x00000000)
+    			else
+    			{
+                    sscanf(line, "%x", &ptr_off);
+                    pointer = ptr_off;
+    			}
+
+                LOG("POINTER = %ld (0x%lX)\n", pointer, pointer);
+			}
+
+			// set range:*,*
+			else if (wildcard_match_icase(line, "range:*,*"))
+			{
+    			line += strlen("range:");
+
+			    tmp = strchr(line, ',');
+			    *tmp = 0;
+			    
+			    range_start = _parse_int_value(line, pointer, dsize, var_list);
+
+			    line = tmp+1;
+			    *tmp = ',';
+
+			    range_end = _parse_int_value(line, pointer, dsize, var_list);
+
+                LOG("RANGE = %ld (0x%lX) - %ld (0x%lX)\n", range_start, range_start, range_end, range_end);
+			}
+
+			// set crc_*:*
+			else if (wildcard_match_icase(line, "crc_*:*"))
+			{
+			    line += strlen("crc_");
+			    if (wildcard_match_icase(line, "bandwidth:*"))
+			    {
+    			    line += strlen("bandwidth:");
+    			    sscanf(line, "%hhd", &custom_crc.bandwidth);
+			    }
+			    else if (wildcard_match_icase(line, "polynomial:*"))
+			    {
+    			    line += strlen("polynomial:");
+    			    sscanf(line, "%x", &custom_crc.polynomial);
+			    }
+			    else if (wildcard_match_icase(line, "initial_value:*"))
+			    {
+    			    line += strlen("initial_value:");
+    			    sscanf(line, "%x", &custom_crc.initial_value);
+			    }
+			    else if (wildcard_match_icase(line, "output_xor:*"))
+			    {
+    			    line += strlen("output_xor:");
+    			    sscanf(line, "%x", &custom_crc.output_xor);
+			    }
+			    else if (wildcard_match_icase(line, "reflection_input:*"))
+			    {
+    			    line += strlen("reflection_input:");
+    			    sscanf(line, "%hhd", &custom_crc.reflection_input);
+			    }
+			    else if (wildcard_match_icase(line, "reflection_output:*"))
+			    {
+    			    line += strlen("reflection_output:");
+    			    sscanf(line, "%hhd", &custom_crc.reflection_output);
+			    }
+			}
+
+			// set [*]:*
+			else if (wildcard_match(line, "[*]:*"))
+			{
+			    line++;
+			    
+			    tmp = strchr(line, ']');
+			    *tmp = 0;
+			    
+        	    bsd_variable_t* var = _get_bsd_variable(var_list, line);
+
+			    if (!var)
+			    {
+			        var = malloc(sizeof(bsd_variable_t));
+    			    var->name = strdup(line);
+    			    var->data = NULL;
+    			    var->len = BSD_VAR_NULL;
+    			    list_append(var_list, var);
+    			}
+    			else
+    			{
+    			    // for now we don't update variable values, we only overwrite
+			        switch (var->len)
+			        {
+			            case BSD_VAR_INT8:
+		        	        old_val = *((uint8_t*)var->data);
+		        	        break;
+			            case BSD_VAR_INT16:
+		        	        old_val = *((uint16_t*)var->data);
+		        	        break;
+			            case BSD_VAR_INT32:
+		        	        old_val = *((uint32_t*)var->data);
+		        	        break;
+		        	    default:
+		        	    	old_val = 0;
+		        	    	break;
+			        }
+
+    			    if (var->data)
+    			    {
+    			        free(var->data);
+    			        var->data = NULL;
+    			    }
+
+    			    LOG("Old value 0x%X\n", old_val);
+    			}
+
+        	    LOG("Var name = %s\n", var->name);
+
+			    line = tmp+2;
+			    *tmp = ']';
+
+    		    // set [*]:xor:*
+    			if (wildcard_match_icase(line, "xor:*"))
+    			{
+    			    line += strlen("xor:");
+        		    skip_spaces(line);
+    
+    			    int wlen;
+    			    char* xor_val = _decode_variable_data(line, &wlen, var_list);
+
+    			    if (var->len != wlen)
+    			    {
+    			        // variable has different length
+    			        LOG("[%s]:XOR: error! var length doesn't match", var->name);
+    			        return 0;
+    			    }
+    			    
+    			    for (int i=0; i < wlen; i++)
+    			        ((u8*)&old_val)[i] ^= xor_val[i];
+
+                    var->data = malloc(var->len);
+                    memcpy(var->data, (u8*) &old_val, var->len);
+
+    			    LOG("Var [%s]:XOR:%s = %X\n", var->name, line, old_val);
+    			}
+
+			    // set [*]:crc32*
+			    else if (wildcard_match_icase(line, "crc32*"))
+			    {
+			        uint32_t hash;
+			        uint32_t init = CRC_32_INIT_VALUE;
+
+    			    tmp = strchr(line, ':');
+    			    if (tmp)
+    			    {
+    			        sscanf(tmp+1, "%x", &init);
+    			    }
+    			    
+    			    u8* start = (u8*)data + range_start;
+    			    len = range_end - range_start;
+
+    			    if (wildcard_match_icase(line, "crc32big*"))
+    			    {
+    			        // CRC-32/BZIP
+        			    hash = crc32_hash(start, len, init, CRC_32_POLYNOMIAL, 0, 0) ^ CRC_32_XOR_VALUE;
+        			    LOG("len %d CRC32Big HASH = %X\n", len, hash);
+    			    }
+    			    else
+    			    {
+    			        // CRC-32
+        			    hash = crc32_hash(start, len, init, CRC_32_POLYNOMIAL, 1, 1) ^ CRC_32_XOR_VALUE;
+        			    LOG("len %d CRC32 HASH = %X\n", len, hash);    			    
+    			    }
+
+                    var->len = BSD_VAR_INT32;
+                    var->data = malloc(var->len);
+                    memcpy(var->data, (u8*) &hash, var->len);
+			    }
+
+			    // set [*]:crc16*
+			    // CRC-16/XMODEM
+			    else if (wildcard_match_icase(line, "crc16*"))
+			    {
+			        uint16_t hash;
+    			    u8* start = (u8*)data + range_start;
+    			    len = range_end - range_start;
+
+    			    hash = crc16_hash(start, len, CRC_16_INIT_VALUE, CRC_16_POLYNOMIAL, 0, 0) ^ CRC_16_XOR_VALUE;
+
+                    var->len = BSD_VAR_INT16;
+                    var->data = malloc(var->len);
+                    memcpy(var->data, (u8*) &hash, var->len);
+
+    			    LOG("len %d CRC16 HASH = %X\n", len, hash);
+			    }
+
+			    // set [*]:crc*
+			    // Custom CRC
+			    else if (wildcard_match_icase(line, "crc*"))
+			    {
+    			    u8* start = (u8*)data + range_start;
+    			    len = range_end - range_start;
+
+                    LOG("ref.in %d ref.out %d\n", custom_crc.reflection_input, custom_crc.reflection_output);
+
+			        if (custom_crc.bandwidth == 16)
+			        {
+    			        // Custom CRC-16
+    			        uint16_t hash;
+
+        			    hash = crc16_hash(start, len, custom_crc.initial_value, custom_crc.polynomial,
+								custom_crc.reflection_input, custom_crc.reflection_output) ^ custom_crc.output_xor;
+
+                        var->len = BSD_VAR_INT16;
+                        var->data = malloc(var->len);
+                        memcpy(var->data, (u8*) &hash, var->len);
+
+        			    LOG("len %d Custom CRC16 HASH = %X\n", len, hash);
+			        }
+			        else
+			        {
+    			        // Custom CRC-32
+    			        uint32_t hash;
+
+        			    hash = crc32_hash(start, len, custom_crc.initial_value, custom_crc.polynomial,
+								custom_crc.reflection_input, custom_crc.reflection_output) ^ custom_crc.output_xor;
+
+                        var->len = BSD_VAR_INT32;
+                        var->data = malloc(var->len);
+                        memcpy(var->data, (u8*) &hash, var->len);
+
+        			    LOG("len %d Custom CRC32 HASH = %X\n", len, hash);
+			        }
+			    }
+
+			    // set [*]:md5_xor*
+			    else if (wildcard_match_icase(line, "md5_xor*"))
+			    {
+			        uint8_t hash[BSD_VAR_MD5];
+			        int j;
+    			    u8* start = (u8*)data + range_start;
+    			    len = range_end - range_start;
+
+			        md5(start, len, hash);
+			        
+			        for (j = 4; j < BSD_VAR_MD5; j += 4)
+			        {
+			        	hash[0] ^= hash[j];
+			        	hash[1] ^= hash[j+1];
+			        	hash[2] ^= hash[j+2];
+			        	hash[3] ^= hash[j+3];
+					}
+
+                    var->len = BSD_VAR_INT32;
+                    var->data = malloc(var->len);
+                    memcpy(var->data, (u8*) hash, var->len);
+
+    			    LOG("len %d MD5_XOR HASH = %X\n", len, *(uint32_t*)hash);
+			    }
+
+			    // set [*]:md5*
+			    else if (wildcard_match_icase(line, "md5*"))
+			    {
+    			    u8* start = (u8*)data + range_start;
+    			    len = range_end - range_start;
+
+                    var->len = BSD_VAR_MD5;
+                    var->data = malloc(var->len);
+			        md5(start, len, var->data);
+
+    			    LOG("len %d MD5 HASH = %llx%llx\n", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1]);
+			    }
+
+			    // set [*]:sha1*
+			    else if (wildcard_match_icase(line, "sha1*"))
+			    {
+    			    u8* start = (u8*)data + range_start;
+    			    len = range_end - range_start;
+
+                    var->len = BSD_VAR_SHA1;
+                    var->data = malloc(var->len);
+			        sha1(start, len, var->data);
+
+    			    LOG("len %d SHA1 HASH = %llx%llx%x\n", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint32_t*)var->data)[4]);
+			    }
+
+			    // set [*]:adler32*
+			    else if (wildcard_match_icase(line, "adler32*"))
+			    {
+    			    uint32_t hash = adler32(0L, Z_NULL, 0);
+    			    u8* start = (u8*)data + range_start;
+    			    len = range_end - range_start;
+
+    			    hash = adler32(hash, start, len);
+
+                    var->len = BSD_VAR_INT32;
+                    var->data = malloc(var->len);
+                    memcpy(var->data, (u8*) &hash, var->len);
+
+    			    LOG("len %d Adler32 HASH = %X\n", len, hash);
+			    }
+
+			    // set [*]:hmac_sha1*
+			    else if (wildcard_match_icase(line, "hmac_sha1*"))
+			    {
+			        //low priority
+			    }
+
+			    // set [*]:sha256*
+			    else if (wildcard_match_icase(line, "sha256*"))
+			    {
+    			    u8* start = (u8*)data + range_start;
+    			    len = range_end - range_start;
+
+                    var->len = BSD_VAR_SHA256;
+                    var->data = malloc(var->len);
+					sha2(start, len, var->data, 0);
+
+    			    LOG("len %d SHA256 HASH = %llx%llx%llx%llx\n", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint64_t*)var->data)[2], ((uint64_t*)var->data)[3]);
+			    }
+
+			    // set [*]:crc64*
+			    else if (wildcard_match_icase(line, "crc64*"))
+			    {
+			        //low priority
+			    }
+
+			    // set [*]:md2*
+			    else if (wildcard_match_icase(line, "md2*"))
+			    {
+    			    u8* start = (u8*)data + range_start;
+    			    len = range_end - range_start;
+
+                    var->len = BSD_VAR_MD5;
+                    var->data = malloc(var->len);
+                    md(md_info_from_type(POLARSSL_MD_MD2), start, len, var->data);
+
+    			    LOG("len %d MD2 HASH = %llx%llx\n", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1]);
+			    }
+
+			    // set [*]:eacheck*
+			    else if (wildcard_match_icase(line, "eacheck*"))
+			    {
+			        //low priority
+			    }
+
+			    // set [*]:qwadd(*,*)*
+			    else if (wildcard_match_icase(line, "qwadd(*,*)*"))
+			    {
+			        //low priority
+			        // qwadd(<start>,<endrange>)
+			        // 64-bit
+			    }
+
+			    // set [*]:dwadd(*,*)*
+			    else if (wildcard_match_icase(line, "dwadd(*,*)*"))
+			    {
+			        // dwadd(<start>,<endrange>)
+			        // 32-bit	0xFFFFFFFF
+			        int add_s, add_e;
+			        uint32_t add = 0;
+
+			        line += strlen("dwadd(");
+    			    tmp = strchr(line, ',');
+    			    *tmp = 0;
+    			    
+    			    add_s = _parse_int_value(line, pointer, dsize, var_list);
+
+			        line = tmp+1;
+    			    *tmp = ',';
+    			    tmp = strchr(line, ')');
+    			    *tmp = 0;
+
+    			    add_e = _parse_int_value(line, pointer, dsize, var_list);
+
+    			    *tmp = ')';
+    			    
+    			    char* read = data + add_s;
+    			    
+    			    while (read < data + add_e)
+    			    {
+    			    	add += (*(uint32_t*)read);
+    			    	read += BSD_VAR_INT32;
+    			    }
+
+                    var->len = BSD_VAR_INT32;
+                    var->data = malloc(var->len);
+                    memcpy(var->data, (u8*) &add, var->len);
+    			    
+    			    LOG("[%s]:dwadd(0x%X , 0x%X) = %X\n", var->name, add_s, add_e, add);
+			    }
+
+			    // set [*]:wadd(*,*)*
+			    else if (wildcard_match_icase(line, "wadd(*,*)*"))
+			    {
+			        // wadd(<start>,<endrange>)
+			        // 16-bit	0xFFFF
+			        int add_s, add_e;
+			        uint32_t add = 0;
+
+			        line += strlen("wadd(");
+    			    tmp = strchr(line, ',');
+    			    *tmp = 0;
+    			    
+    			    add_s = _parse_int_value(line, pointer, dsize, var_list);
+
+			        line = tmp+1;
+    			    *tmp = ',';
+    			    tmp = strchr(line, ')');
+    			    *tmp = 0;
+
+    			    add_e = _parse_int_value(line, pointer, dsize, var_list);
+
+    			    *tmp = ')';
+    			    
+    			    char* read = data + add_s;
+    			    
+    			    while (read < data + add_e)
+    			    {
+    			    	add += (*(uint16_t*)read);
+    			    	read += BSD_VAR_INT16;
+    			    }
+    			    
+    			    if ((carry > 0) && (add > 0xFFFF))
+    			    {
+    			    	add = (add & 0x0000FFFF) + ((add & 0xFFFF0000) >> 8*carry);
+    			    }
+
+                    var->len = BSD_VAR_INT32;
+                    var->data = malloc(var->len);
+                    memcpy(var->data, (u8*) &add, var->len);
+    			    
+    			    LOG("[%s]:wadd(0x%X , 0x%X) = %X\n", var->name, add_s, add_e, add);
+			    }
+
+			    // set [*]:add(*,*)*
+			    else if (wildcard_match_icase(line, "add(*,*)*"))
+			    {
+			        // add(<start>,<endrange>)
+			        // 8-bit	0xFF
+			        int add_s, add_e;
+			        uint32_t add = 0;
+
+			        line += strlen("add(");
+    			    tmp = strchr(line, ',');
+    			    *tmp = 0;
+    			    
+    			    add_s = _parse_int_value(line, pointer, dsize, var_list);
+
+			        line = tmp+1;
+    			    *tmp = ',';
+    			    tmp = strchr(line, ')');
+    			    *tmp = 0;
+
+    			    add_e = _parse_int_value(line, pointer, dsize, var_list);
+
+    			    *tmp = ')';
+    			    
+    			    char* read = data + add_s;
+    			    
+    			    while (read <= data + add_e)
+    			    {
+    			    	add += (*(uint8_t*)read);
+    			    	read += BSD_VAR_INT8;
+    			    }
+
+    			    if ((carry > 0) && (add > 0xFFFF))
+    			    {
+    			    	add = (add & 0x0000FFFF) + ((add & 0xFFFF0000) >> 8*carry);
+    			    }
+
+                    var->len = BSD_VAR_INT32;
+                    var->data = malloc(var->len);
+                    memcpy(var->data, (u8*) &add, var->len);
+    			    
+    			    LOG("[%s]:add(0x%X , 0x%X) = %X\n", var->name, add_s, add_e, add);
+			    }
+
+			    // set [*]:wsub(*)*
+			    else if (wildcard_match_icase(line, "wsub(*)*"))
+			    {
+			        //low priority
+			    }
+
+			    // set [*]:xor(*,*,*)*
+			    else if (wildcard_match_icase(line, "xor(*,*,*)*"))
+			    {
+			        // xor(<start>,<endrange>,<incr>)
+			        int xor_s, xor_e, xor_i;
+			        uint8_t j, xor[4] = {0,0,0,0};
+
+			        line += strlen("xor(");
+    			    tmp = strchr(line, ',');
+    			    *tmp = 0;
+    			    
+    			    xor_s = _parse_int_value(line, pointer, dsize, var_list);
+
+			        line = tmp+1;
+    			    *tmp = ',';
+    			    tmp = strchr(line, ',');
+    			    *tmp = 0;
+
+    			    xor_e = _parse_int_value(line, pointer, dsize, var_list);
+
+			        line = tmp+1;
+    			    *tmp = ',';
+    			    tmp = strchr(line, ')');
+    			    *tmp = 0;
+
+    			    xor_i = _parse_int_value(line, pointer, dsize, var_list);
+
+    			    *tmp = ')';
+    			    char* read = data + xor_s;
+    			    
+    			    while (read < data + xor_e)
+    			    {
+    			        for (j = 0; j < xor_i; j++)
+    			            xor[j] ^= read[j];
+
+    			        read += xor_i;
+    			    }
+
+                    var->len = BSD_VAR_INT32;
+                    var->data = malloc(var->len);
+                    memcpy(var->data, (u8*) xor, var->len);
+
+    			    LOG("[%s]:XOR(0x%X , 0x%X, %d) = %X\n", var->name, xor_s, xor_e, xor_i, ((uint32_t*)var->data)[0]);
+			    }
+
+			    // set [*]:right(*)*
+			    else if (wildcard_match_icase(line, "right(*)*"))
+			    {
+			        //low priority
+			    }
+
+			    // set [*]:repeat(*)*
+			    else if (wildcard_match_icase(line, "repeat(*)*"))
+			    {
+			        //low priority
+			    }
+
+			    // set [*]:mid(*)*
+			    else if (wildcard_match_icase(line, "mid(*)*"))
+			    {
+			        //low priority
+			    }
+
+			    // set [*]:* (e.g. 0x00000000)
+			    else
+			    {
+			        uint32_t tval;
+                    sscanf(line, "%x", &tval);
+
+                    var->len = BSD_VAR_INT32;
+                    var->data = malloc(var->len);
+                    memcpy(var->data, (u8*) &tval, var->len);
+
+    			    LOG("[%s]:%s = %X\n", var->name, line, tval);
+			    }
+			        
+			}
+
+		}
+
+// --- hash funcs (low priority) ---
+// hmac_sha1	18		(8)
+// crc64        16      (6)
+// eacheck		6		(2)
+// adler16 		0
+// md4			0
+// sha384		0
+// sha512		0
+
+// --- other funcs (low priority) ---
+// qwadd()		4		(2)		quad word	64-bit	0xFFFFFFFFFFFFFFFF 	
+// wsub()		60		(6)		word		16-bit	0xFFFF
+// right()		63		(8)
+// repeat()		18		(8)
+// mid()		18		(2)
+// sub()		0				byte		8-bit	0xFF
+// dwsub()		0				dbl word	32-bit	0xFFFFFFFF
+// qwsub()		0				quad word	64-bit	0xFFFFFFFFFFFFFFFF
+// left()		0
+
+        // write *:*
+		else if (wildcard_match_icase(line, "write *:*"))
+		{
+			// write next / write at
+			//
+			// write at (67): 446966666963756C7479
+			//
+			// ; (67) = 0x43
+			// ;Addresses enclosed in parenthesis are treated as decimal.
+			//
+			// The following 3 lines are equivalent:
+			// write at (67): 446966666963756C7479
+			// write at 43: "Difficulty"
+			// write at 0x43: "Difficulty"
+			//
+			// write next 0: 446966666963756C7479
+			// ;Overwrites 0 bytes after the file pointer address.
+			//
+			// write next 0: "Difficulty"
+			// ;Overwrites with the text at 0 bytes after the found offset in this case "next 0" is at the found offset.
+			// ;"next (10)" or "next A" would write 10 bytes after the found offset.
+			//
+			// write at 0x100:[anyname1]
+			// ;Overwrites the content of the variable [anyname1] starting at offset 0x100.
+   			int off, wlen;
+			u8 from_pointer = 0;
+			char* tmp = NULL;
+			char* write_val = NULL;
+			
+			line += strlen("write");
+		    skip_spaces(line);
+
+			if (wildcard_match_icase(line, "at*"))
+			{
+			    from_pointer = 0;
+			    line += strlen("at");
+			}
+			else if (wildcard_match_icase(line, "next*"))
+			{
+			    from_pointer = 1;
+			    line += strlen("next");
+			}
+			else
+			{
+			    // invalid command
+			    LOG("ERROR: Invalid write command");
+			    return 0;
+			}
+
+		    skip_spaces(line);
+
+		    tmp = strchr(line, ':');
+		    *tmp = 0;
+
+//		    sscanf(line, wildcard_match(line, "(*)") ? "(%d)" : "%x", &off);
+			if (wildcard_match(line, "(*)"))
+			    sscanf(line, "(%d)", &off);
+			else
+			    sscanf(line, "%x", &off);
+
+			line = tmp+1;
+			*tmp = ':';
+
+		    skip_spaces(line);
+
+		    // write at/next *:xor:*
+			if (wildcard_match_icase(line, "xor:*"))
+			{
+			    line += strlen("xor:");
+    		    skip_spaces(line);
+
+			    write_val = _decode_variable_data(line, &wlen, var_list);
+			    
+			    for (int i=0; i < wlen; i++)
+			        write_val[i] ^= data[off + (from_pointer ? pointer : 0) + i];
+			}
+
+		    // write at/next *:[*]
+			else if (wildcard_match(line, "[*]"))
+			{
+			    LOG("Getting value for %s\n", line);
+			    write_val = _decode_variable_data(line, &wlen, var_list);
+			}
+
+		    // write at/next *:* (e.g. 0x00000000)
+			else
+			{
+			    write_val = _decode_variable_data(line, &wlen, var_list);
+			}
+
+			if (!write_val)
+			{
+			    // no data to write
+			    LOG("ERROR: No data to write");
+			    return 0;
+			}
+
+//			for (int i=0; i < wlen; i++)
+//				LOG("%x", write_val[i]);
+
+			char* write = data + off + (from_pointer ? pointer : 0);
+			memcpy(write, write_val, wlen);
+			free(write_val);
+
+            LOG("Wrote %d bytes (%s) to 0x%lX\n", wlen, line, write - data);
+		}
+
+		// insert *:*		2		(2)
+		else if (wildcard_match_icase(line, "insert *:*"))
+		{
+			// insert data
+			// insert next / insert at
+		}
+
+		// delete *:* 	16		(8)
+		else if (wildcard_match_icase(line, "delete *:*"))
+		{
+			// delete data
+			// delete next / delete at
+		}
+
+        // search *
+		else if (wildcard_match_icase(line, "search *"))
+		{
+			// search "difficulty"
+			// ;Searches for the word "difficulty" as text.
+			//
+			// search 646966666963756C7479:1
+			// ;":1" means repeat search 1 time (default). ":3" at the end would set the pointer to the 3rd occurrence of the searched text
+
+			int cnt, len;
+			char* find;
+			char* tmp = NULL;
+
+			line += strlen("search");
+			if (wildcard_match(line, "*:*"))
+			{
+			    tmp = strrchr(line, ':');
+			    sscanf(tmp+1, "%d", &cnt);
+			    *tmp = 0;
+			}
+			else
+			{
+			    cnt = 1;
+			}
+
+		    skip_spaces(line);
+
+			find = _decode_variable_data(line, &len, var_list);
+
+		    if (!find)
+		    {
+		        // error decoding
+				LOG("Error parsing search pattern!");
+		        return 0;
+		    }
+			
+			if (tmp)
+			    *tmp = ':';
+
+			LOG("Searching {%s} ...\n", line);
+			pointer = search_data(data, dsize, find, len, cnt);
+			
+			if (pointer < 0)
+			{
+				LOG("ERROR: SEARCH PATTERN NOT FOUND");
+				return 0;
+			}
+			
+			LOG("POINTER = %ld (0x%lX)\n", pointer, pointer);
+
+			free(find);
+		}
+
+		else if (wildcard_match_icase(line, "copy *"))
+		{
+			// copy data
+			// UNUSED
+		}
+
+		else if (wildcard_match_icase(line, "compress *"))
+		{
+			// compress data
+		}
+
+		else if (wildcard_match_icase(line, "decompress *"))
+		{
+			// decompress data
+		}
+	    line = strtok(NULL, "\n");
+    }
+
+//	write_buffer(APOLLO_PATH "PAYLOAD.bin", (uint8_t*) data, dsize);
+
+	write_buffer(filepath, (uint8_t*) data, dsize);
+	free(data);
+
+	// remove 0x00 from previous strtok(...)
+    remove_char(code->codes, codelen, '\0');
+
+    _cleanup_var_list(var_list);
+
+	return 1;
 }
 
 int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
