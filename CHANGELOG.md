@@ -4,6 +4,10 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+### Added
+
+* [Bruteforce Save Data](https://bruteforcesavedata.forumms.net/) cheat patch support
+
 ## [v0.9.1](https://github.com/bucanero/apollo-ps3/releases/tag/v0.9.1) - 2020-03-10
 
 ### Fixed
