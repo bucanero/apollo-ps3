@@ -184,29 +184,6 @@ uint32_t file_crc32(const char* input)
     return crc;
 }
 
-uint32_t file_adler(const char* input)
-{
-    char buffer[TMP_BUFF_SIZE];
-    uLong adler = adler32_z(0L, Z_NULL, 0);
-    size_t read;
-
-    FILE* in = fopen(input, "rb");
-    
-    if (!in)
-        return FAILED;
-
-    do
-    {
-        read = fread(buffer, 1, TMP_BUFF_SIZE, in);
-        adler = adler32_z(adler, (u8*)buffer, read);
-    }
-    while (read == TMP_BUFF_SIZE);
-
-    fclose(in);
-
-    return adler;
-}
-
 int copy_directory(const char* startdir, const char* inputdir, const char* outputdir)
 {
 	char fullname[256];
