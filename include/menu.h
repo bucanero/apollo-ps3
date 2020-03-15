@@ -53,7 +53,7 @@ enum texture_index
 	tag_transfer_png_index,
 	tag_zip_png_index,
 	tag_apply_png_index,
-
+	buk_scr_png_index,
 	footer_ico_circle_png_index,
 	footer_ico_cross_png_index,
 	footer_ico_square_png_index,
@@ -199,6 +199,7 @@ extern void DrawTextureRotated(png_texture* tex, int x, int y, int z, int w, int
 
 void drawJars(uint8_t alpha);
 void drawColumns(uint8_t alpha);
+void drawSplashLogo(int m);
 
 int load_app_settings(app_config_t* config);
 int save_app_settings(app_config_t* config);

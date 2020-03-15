@@ -23,7 +23,7 @@ static int pfd_encrypt_with_portability(pfd_context_t *ctx, u8 key[16], u8 *data
 	return 0;
 }
 
-static int pfd_decrypt_with_portability(pfd_context_t *ctx, u8 key[16], u8 *data, u32 data_size) {
+static int pfd_decrypt_with_portability(pfd_context_t *ctx, pfd_hash_key_t key, u8 *data, u32 data_size) {
 	u8 iv[16];
 	aes_context aes;
 

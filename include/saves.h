@@ -87,15 +87,6 @@ enum code_type_enum
     PATCH_BSD,
 };
 
-typedef struct
-{
-    char folder[32];        //SYS_SAVE_MAX_DIRECTORY_NAME
-    char filename[13];      //SYS_SAVE_MAX_FILE_NAME
-    unsigned char* protected_file_id;
-    unsigned char* data;
-    long unsigned int size;
-} savedata_file_t;
-
 typedef struct option_entry
 {
     char * line;
@@ -122,7 +113,6 @@ typedef struct save_entry
     char * name;
 	char * title_id;
 	char * path;
-    char * folder;
 	unsigned int flags;
     int code_count;
     code_entry_t * codes;
@@ -173,7 +163,4 @@ void end_progress_bar(void);
 int init_loading_screen(const char* msg);
 void stop_loading_screen();
 
-int apply_ggenie_patch_code(const char* fpath, code_entry_t* code);
-
-int load_game_file(savedata_file_t* sfile);
-int save_game_file(savedata_file_t* sfile);
+int apply_cheat_patch_code(const char* fpath, code_entry_t* code);

@@ -54,14 +54,21 @@ typedef struct
  *
  * RETURN VALUE: 16 bit result of CRC calculation
  */
-uint16_t crc16_hash(const uint8_t* message, int nBytes, uint16_t Init, uint16_t Poly, uint8_t RefIn, uint8_t RefOut);
+uint16_t crc16_hash(const uint8_t* message, int nBytes, custom_crc_t* cfg);
 
 /**
  * This function makes a CRC32 calculation on Length data bytes
  *
  * RETURN VALUE: 32 bit result of CRC calculation
  */
-uint32_t crc32_hash(const uint8_t* message, int nBytes, uint32_t Init, uint32_t Poly, uint8_t RefIn, uint8_t RefOut);
+uint32_t crc32_hash(const uint8_t* message, int nBytes, custom_crc_t* cfg);
+
+/**
+ * This function makes a "MC02" Electronic Arts hash calculation on Length data bytes
+ *
+ * RETURN VALUE: 32 bit result of CRC calculation
+ */
+uint32_t MC02_hash(const uint8_t *pb, uint32_t cb);
 
 
 #ifdef __cplusplus

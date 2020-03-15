@@ -376,7 +376,7 @@ void DrawGameList(int selIndex, save_entry_t * games, int glen, u8 alpha)
 			u8 a = ((alpha * CalculateAlphaList(x, selIndex, maxPerPage)) / 0xFF);
 			if (isGameActivated(games[x]))
 			{
-				DrawTextureCentered(&menu_textures[mark_arrow_png_index], MENU_ICON_OFF + (MENU_TITLE_OFF / 2), game_y + (y_inc / 2), 0, MENU_TITLE_OFF / 3, y_inc / 2, 0xFFFFFF00 | a);
+				//DrawTextureCentered(&menu_textures[mark_arrow_png_index], MENU_ICON_OFF + (MENU_TITLE_OFF / 2), game_y + (y_inc / 2), 0, MENU_TITLE_OFF / 3, y_inc / 2, 0xFFFFFF00 | a);
 			}
             SetFontColor(APP_FONT_COLOR | a, 0);
 			if (games[x].name)
@@ -412,7 +412,6 @@ void DrawGameList(int selIndex, save_entry_t * games, int glen, u8 alpha)
     }
     
     DrawScrollBar(selIndex, glen, y_inc, 800, alpha);
-    
 }
 
 void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)

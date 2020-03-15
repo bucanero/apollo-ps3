@@ -1,9 +1,14 @@
+#include <polarssl/aes.h>
+
 #include "saves.h"
 #include "backend.h"
 #include "config.h"
 #include "list.h"
 #include "pfd.h"
 #include "util.h"
+#include "pfd_internal.h"
+
+#define PFD_AES_BLOCK_LEN	16
 
 typedef struct {
 	char *game_ids;
@@ -276,4 +281,217 @@ int pfd_util_process(pfd_cmd_t cmd, int partial_process) {
 	}
 
 	return ret;
+}
+
+long search_pfd_data(const char* data, size_t size, const char* search, int len)
+{
+	long i;
+
+	for (i = 0; i < (size-len); i++)
+		if (memcmp(data + i, search, len) == 0)
+			return i;
+
+    return -1;
+}
+
+int _get_aes_details_pfd(const char* path, const char* filename, const u8* secure_key, u64* file_size, u64* aligned_file_size, u8* entry_key)
+{
+	char *pfd_data, *ptr;
+	char file_path[256];
+	size_t dsize;
+	u8 iv_hash_key[PFD_KEY_SIZE];
+	aes_context aes;
+	int i, j;
+
+	snprintf(file_path, sizeof(file_path), "%s" "PARAM.PFD", path);
+	read_buffer(file_path, (uint8_t**) &pfd_data, &dsize);
+
+	int pos = search_pfd_data(pfd_data, dsize, filename, strlen(filename));
+	
+	if (pos < 0)
+		return 0;
+
+	ptr = pfd_data + pos + 72;
+	memcpy(entry_key, ptr, PFD_ENTRY_KEY_SIZE);
+
+	ptr += PFD_ENTRY_KEY_SIZE + 120;
+	memcpy(file_size, ptr, 8);
+	*aligned_file_size = align_to_pow2(*file_size, PFD_FILE_SIZE_ALIGNMENT);
+	
+//	prn_buff(entry_key, 64, "entry key");
+	
+	LOG("(%s) fsize = %ld / aligned fs = %ld", filename, *file_size, *aligned_file_size);
+
+	free(pfd_data);
+
+	// decode keys
+	memset(iv_hash_key, 0, PFD_KEY_SIZE);
+
+	for (i = 0, j = 0; i < PFD_KEY_SIZE; ++i)
+	{
+		switch (i) {
+			case 1: iv_hash_key[i] = 11; break;
+			case 2: iv_hash_key[i] = 15; break;
+			case 5: iv_hash_key[i] = 14; break;
+			case 8: iv_hash_key[i] = 10; break;
+			default:
+				iv_hash_key[i] = secure_key[j++];
+				break;
+		}
+	}
+
+//	prn_buff(secure_key, 16, "game key");
+//	prn_buff(iv_hash_key, 16, "iv hash key");
+
+	memset(&aes, 0, sizeof(aes_context));
+
+	aes_setkey_dec(&aes, config.syscon_manager_key, 128);
+	aes_crypt_cbc(&aes, AES_DECRYPT, PFD_ENTRY_KEY_SIZE, iv_hash_key, entry_key, entry_key);
+
+//	prn_buff(entry_key, 64, "decrypted entry key");
+
+	return 1;
+}
+
+int decrypt_save_file(const char* path, const char* fname, u8* secure_file_key)
+{
+	u8 entry_key[PFD_ENTRY_KEY_SIZE];
+	u64 file_size, aligned_file_size;
+	u64 i, j;
+
+	u8 counter_key[PFD_KEY_SIZE];
+	aes_context aes1, aes2;
+	u64 num_blocks;
+	u8 *block_data;
+
+	char file_path[256];
+	u8 *file_data;
+
+	// We take the risky assumption that if there's no key, then the file is not encrypted
+	if (!secure_file_key)
+	{
+		LOG("Skipping decryption: no Secure file key");
+		return 1;
+	}
+
+	if (!_get_aes_details_pfd(path, fname, secure_file_key, &file_size, &aligned_file_size, entry_key))
+	{
+		LOG("Error getting AES keys");
+		return 0;
+	}
+
+	// read & decrypt file
+	snprintf(file_path, sizeof(file_path), "%s%s", path, fname);
+
+	file_data = (u8 *)malloc(aligned_file_size);
+	if (!file_data)
+		return 0;
+
+	memset(file_data, 0, aligned_file_size);
+
+	if (read_file(file_path, file_data, aligned_file_size) < 0) {
+		free(file_data);
+		return 0;
+	}
+
+	num_blocks = aligned_file_size / PFD_AES_BLOCK_LEN;
+
+	aes_setkey_enc(&aes1, entry_key, 128);
+	aes_setkey_dec(&aes2, entry_key, 128);
+
+	for (i = 0; i < num_blocks; ++i)
+	{
+		block_data = file_data + i * PFD_AES_BLOCK_LEN;
+
+		*(u64 *)(counter_key + 0) = i;
+		*(u64 *)(counter_key + 8) = 0;
+
+		aes_crypt_ecb(&aes1, AES_ENCRYPT, counter_key, counter_key);
+		aes_crypt_ecb(&aes2, AES_DECRYPT, block_data, block_data);
+
+		for (j = 0; j < PFD_KEY_SIZE; ++j)
+			block_data[j] ^= counter_key[j];
+	}
+
+	// save decrypted data
+	if (write_file(file_path, file_data, file_size) < 0) {
+		free(file_data);
+		return 0;
+	}
+
+	free(file_data);
+
+	return 1;
+}
+
+int encrypt_save_file(const char* path, const char* fname, u8* secure_file_key)
+{
+	u8 entry_key[PFD_ENTRY_KEY_SIZE];
+	u64 file_size, aligned_file_size;
+	u64 i, j;
+
+	u8 counter_key[PFD_KEY_SIZE];
+	aes_context aes1, aes2;
+	u64 num_blocks;
+	u8 *block_data;
+
+	char file_path[256];
+	u8 *file_data;
+
+	// We take the risky assumption that if there's no key, then the file is not encrypted
+	if (!secure_file_key)
+	{
+		LOG("Skipping encryption: no Secure file key");
+		return 1;
+	}
+
+	if (!_get_aes_details_pfd(path, fname, secure_file_key, &file_size, &aligned_file_size, entry_key))
+	{
+		LOG("Error getting AES keys");
+		return 0;
+	}
+
+	// read & encrypt file
+	snprintf(file_path, sizeof(file_path), "%s%s", path, fname);
+
+	file_data = (u8 *)malloc(aligned_file_size);
+	if (!file_data)
+		return 0;
+
+	memset(file_data, 0, aligned_file_size);
+
+	if (read_file(file_path, file_data, file_size) < 0) {
+		free(file_data);
+		return 0;
+	}
+
+	num_blocks = aligned_file_size / PFD_AES_BLOCK_LEN;
+
+	aes_setkey_enc(&aes1, entry_key, 128);
+	aes_setkey_enc(&aes2, entry_key, 128);
+
+	for (i = 0; i < num_blocks; ++i)
+	{
+		block_data = file_data + i * PFD_AES_BLOCK_LEN;
+
+		*(u64 *)(counter_key + 0) = i;
+		*(u64 *)(counter_key + 8) = 0;
+
+		aes_crypt_ecb(&aes1, AES_ENCRYPT, counter_key, counter_key);
+
+		for (j = 0; j < PFD_KEY_SIZE; ++j)
+			block_data[j] ^= counter_key[j];
+
+		aes_crypt_ecb(&aes2, AES_ENCRYPT, block_data, block_data);
+	}
+
+	// save encrypted data
+	if (write_file(file_path, file_data, aligned_file_size) < 0) {
+		free(file_data);
+		return 0;
+	}
+
+	free(file_data);
+
+	return 1;
 }

@@ -391,3 +391,45 @@ void drawJars(uint8_t alpha)
 
 	SetFontAlign(0);
 }
+
+void drawSplashLogo(int mode)
+{
+	int ani, max;
+
+	if (mode > 0)
+	{
+		ani = 0;
+		max = MENU_ANI_MAX;
+	}
+	else
+	{
+		ani = MENU_ANI_MAX;
+		max = 0;
+	}
+
+	for (; ani != max; ani += mode)
+	{
+		tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
+		
+		tiny3d_AlphaTest(1, 0x10, TINY3D_ALPHA_FUNC_GEQUAL);
+		
+		tiny3d_BlendFunc(1, TINY3D_BLEND_FUNC_SRC_RGB_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_ALPHA_SRC_ALPHA,
+			TINY3D_BLEND_FUNC_SRC_ALPHA_ONE_MINUS_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_RGB_ONE_MINUS_SRC_ALPHA,
+			TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
+		
+		tiny3d_Project2D();
+		
+		DrawBackground2D(0x00000000);
+		
+		//------------ Backgrounds
+		int logo_a_t = ((ani < 0x30) ? 0 : ((ani - 0x20)*3));
+		if (logo_a_t > 0xFF)
+			logo_a_t = 0xFF;
+		u8 logo_a = (u8)logo_a_t;
+		
+		//App description
+		DrawTextureCentered(&menu_textures[buk_scr_png_index], 424, 256, 0, 250, 250, 0xFFFFFF00 | logo_a);
+
+		tiny3d_Flip();
+	}
+}

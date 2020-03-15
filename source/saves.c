@@ -559,7 +559,7 @@ int _count_codes(char* buffer)
 }
 
 // Expects buffer without CR's (\r)
-char* get_patch_code(char* buffer, int code_id, uint8_t* type)
+void get_patch_code(char* buffer, int code_id, code_entry_t* entry)
 {
 	int i=0;
     char *tmp = NULL;
@@ -591,8 +591,8 @@ char* get_patch_code(char* buffer, int code_id, uint8_t* type)
 					res = tmp;
 
 //			    	LOG("%s", line);
-					if (!wildcard_match(line, "\?\?\?\?\?\?\?\? \?\?\?\?\?\?\?\?"))
-						*type = PATCH_BSD;
+					if (!wildcard_match(line, "\?\?\?\?\?\?\?\? \?\?\?\?\?\?\?\?*"))
+						entry->type = PATCH_BSD;
 			    }
 		    	line = strtok(NULL, "\n");
 		    }
@@ -601,7 +601,7 @@ char* get_patch_code(char* buffer, int code_id, uint8_t* type)
     }
 
 //	LOG("Result (%s)", res);
-	return (res);
+	entry->codes = res;
 }
 
 #define MENU_COPY_CMDS	2
@@ -717,134 +717,141 @@ int ReadCodesHDD(save_entry_t * save)
 
 	snprintf(filePath, sizeof(filePath), APOLLO_DATA_PATH "%s.ps3savepatch", save->title_id);
 
-	if (file_exists(filePath) == SUCCESS)
-	{
-		char group[128] = "";
-		long bufferLen;
-
-		char * buffer = readFile(filePath, &bufferLen);
-		buffer[bufferLen]=0;
-
-		//LOG("buffer=%s\n", buffer);
-		LOG("Loading BSD codes '%s'...", filePath);
-
-	    _remove_char(buffer, bufferLen, '\r');
-		code_count += _count_codes(buffer);
-		code_count += (code_count > MENU_COPY_CMDS);
-
-		ret = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (code_count));
-
-	    if (code_count > MENU_COPY_CMDS)
-		{
-			// remove 0x00 from previous strtok(...)
-			_remove_char(buffer, bufferLen, '\0');
-			char *line = strtok(buffer, "\n");
-				
-			while (line)
-			{
-				if (wildcard_match(line, ";*"))
-				{
-					if (wildcard_match(line, "; --- * ---"))
-					{
-						strcpy(group, line+6);
-						group[strlen(group)-4] = 0;
-						LOG("GROUP: %s\n", group);
-					}
-				}
-				else if (wildcard_match(line, ":*"))
-				{
-					char* tmp_mask;
-
-					strcpy(filePath, line+1);
-					LOG("FILE: %s\n", filePath);
-
-					if (strrchr(filePath, '\\'))
-						tmp_mask = strrchr(filePath, '\\')+1;
-					else
-						tmp_mask = filePath;
-
-					if (strchr(tmp_mask, '*'))
-						file_opt = _getFileOptions(save->path, tmp_mask);
-					else
-						file_opt = NULL;
-
-
-				}
-				else if (wildcard_match(line, "?=*") ||
-						 wildcard_match(line, "\?\?=*") ||
-						 wildcard_match(line, "\?\?\?\?=*"))
-				{
-					// options
-				}
-				else if (wildcard_match_icase(line, "PATH:*"))
-				{
-					//
-				}
-				else if (wildcard_match_icase(line, "GROUP:*"))
-				{
-					strcpy(group, line+6);
-					LOG("GROUP: %s\n", group);
-				}
-				else if (wildcard_match(line, "[*]"))
-				{
-//					LOG("Line: '%s'\n", line);
-					if (wildcard_match_icase(line, "[DEFAULT:*"))
-					{
-						line += 6;
-						line[0] = '[';
-						line[1] = CHAR_TAG_WARNING;
-						line[2] = ' ';
-					}
-					if (wildcard_match_icase(line, "[INFO:*"))
-					{
-						line += 3;
-						line[0] = '[';
-						line[1] = CHAR_TAG_WARNING;
-						line[2] = ' ';
-					}
-
-					ret[cur_count].type = PATCH_GAMEGENIE;
-					ret[cur_count].activated = 0; //wildcard_match_icase(line, "*(REQUIRED)*");
-					ret[cur_count].codes = NULL;
-					ret[cur_count].options = file_opt;
-					ret[cur_count].options_count = (file_opt ? 1 : 0);
-					asprintf(&ret[cur_count].file, "%s", filePath);
-
-					if (strlen(group))
-						asprintf(&ret[cur_count].name, "%s: %s", group, line+1);
-					else
-						asprintf(&ret[cur_count].name, "%s", line+1);
-
-					*strrchr(ret[cur_count].name, ']') = 0;
-
-					cur_count++;
-				}
-
-				line = strtok(NULL, "\n");
-			}
-
-			for (int x = 0; x < cur_count; x++)
-			{
-				// remove 0x00 from previous strtok(...)
-				_remove_char(buffer, bufferLen, '\0');
-				ret[x].codes = get_patch_code(buffer, x, &ret[x].type);
-
-				LOG("Name: %s\nFile: %s\nCode (%d): %s\n", ret[x].name, ret[x].file, ret[x].type, ret[x].codes);
-			}
-
-			_setManualCode(&ret[cur_count++], PATCH_COMMAND, "\x06 Apply cheats", CMD_APPLY_CHEATS);
-		}
-
-		free (buffer);
-	}
-	else
+	if (file_exists(filePath) != SUCCESS)
 	{
 		ret = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (code_count));
+		_add_commands(&ret[cur_count]);
+
+		save->code_count = code_count;
+		save->codes = ret;
+		return cur_count;
 	}
+
+	char group[128] = "";
+	long bufferLen;
+
+	char * buffer = readFile(filePath, &bufferLen);
+	buffer[bufferLen]=0;
+
+	//LOG("buffer=%s\n", buffer);
+	LOG("Loading BSD codes '%s'...", filePath);
+
+	_remove_char(buffer, bufferLen, '\r');
+	code_count += _count_codes(buffer);
+	code_count += (code_count > MENU_COPY_CMDS);
+
+	ret = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (code_count));
 
 	save->code_count = code_count;
 
+	if (code_count == MENU_COPY_CMDS)
+	{
+		_add_commands(&ret[cur_count]);
+
+		save->codes = ret;
+		return cur_count;
+	}
+
+	_setManualCode(&ret[cur_count++], PATCH_COMMAND, "\x06 Apply cheats", CMD_APPLY_CHEATS);
 	_add_commands(&ret[cur_count]);
+	cur_count += MENU_COPY_CMDS;
+
+	// remove 0x00 from previous strtok(...)
+	_remove_char(buffer, bufferLen, '\0');
+	char *line = strtok(buffer, "\n");
+		
+	while (line)
+	{
+		if (wildcard_match(line, ";*"))
+		{
+			if (wildcard_match(line, "; --- * ---"))
+			{
+				strcpy(group, line+6);
+				group[strlen(group)-4] = 0;
+				LOG("GROUP: %s\n", group);
+			}
+		}
+		else if (wildcard_match(line, ":*"))
+		{
+			char* tmp_mask;
+
+			strcpy(filePath, line+1);
+			LOG("FILE: %s\n", filePath);
+
+			if (strrchr(filePath, '\\'))
+				tmp_mask = strrchr(filePath, '\\')+1;
+			else
+				tmp_mask = filePath;
+
+			if (strchr(tmp_mask, '*'))
+				file_opt = _getFileOptions(save->path, tmp_mask);
+			else
+				file_opt = NULL;
+
+		}
+		else if (wildcard_match(line, "?=*") ||
+					wildcard_match(line, "\?\?=*") ||
+					wildcard_match(line, "\?\?\?\?=*"))
+		{
+			// options
+		}
+		else if (wildcard_match_icase(line, "PATH:*"))
+		{
+			//
+		}
+		else if (wildcard_match_icase(line, "GROUP:*"))
+		{
+			strcpy(group, line+6);
+			LOG("GROUP: %s\n", group);
+		}
+		else if (wildcard_match(line, "[*]"))
+		{
+			//LOG("Line: '%s'\n", line);
+			if (wildcard_match_icase(line, "[DEFAULT:*"))
+			{
+				line += 6;
+				line[0] = '[';
+				line[1] = CHAR_TAG_WARNING;
+				line[2] = ' ';
+			}
+			if (wildcard_match_icase(line, "[INFO:*"))
+			{
+				line += 3;
+				line[0] = '[';
+				line[1] = CHAR_TAG_WARNING;
+				line[2] = ' ';
+			}
+
+			ret[cur_count].type = PATCH_GAMEGENIE;
+			ret[cur_count].activated = wildcard_match_icase(line, "*(REQUIRED)*");
+			ret[cur_count].codes = NULL;
+			ret[cur_count].options = file_opt;
+			ret[cur_count].options_count = (file_opt ? 1 : 0);
+			asprintf(&ret[cur_count].file, "%s", filePath);
+
+			if (strlen(group))
+				asprintf(&ret[cur_count].name, "%s: %s", group, line+1);
+			else
+				asprintf(&ret[cur_count].name, "%s", line+1);
+
+			*strrchr(ret[cur_count].name, ']') = 0;
+
+			cur_count++;
+		}
+
+		line = strtok(NULL, "\n");
+	}
+
+	for (int x = MENU_COPY_CMDS+1; x < cur_count; x++)
+	{
+		// remove 0x00 from previous strtok(...)
+		_remove_char(buffer, bufferLen, '\0');
+		get_patch_code(buffer, x - MENU_COPY_CMDS-1, &ret[x]);
+
+		LOG("Name: %s\nFile: %s\nCode (%d): %s\n", ret[x].name, ret[x].file, ret[x].type, ret[x].codes);
+	}
+
+	free (buffer);
 
 	LOG("cur_count=%d,code_count=%d", cur_count, code_count);
 
@@ -1125,7 +1132,6 @@ save_entry_t * ReadUserList(const char* userPath, int * gmc)
 
 	char sfoPath[256];
 	int cur_count = 0;
-	int len = strlen(userPath);
 
 	while ((dir = readdir(d)) != NULL)
 	{
@@ -1150,7 +1156,6 @@ save_entry_t * ReadUserList(const char* userPath, int * gmc)
 
 			asprintf(&ret[cur_count].path, "%s%s/", userPath, dir->d_name);
 			asprintf(&ret[cur_count].title_id, "%.9s", dir->d_name);
-			ret[cur_count].folder = ret[cur_count].path + len;
 
 			char *sfo_data = (char*) sfo_get_param_value(sfo, "TITLE");
 			asprintf(&ret[cur_count].name, "%s", sfo_data);

@@ -29,13 +29,13 @@
 /* Allow 100 save games */
 #define SAVE_LIST_MAX_DIRECTORIES 10
 /* Max 3 files : icon, screenshot, save data */
-#define SAVE_LIST_MAX_FILES 32
+#define SAVE_LIST_MAX_FILES 3
 
 /* This should actually be the maximum between
  * (MAX_FILES * sizeof(sysSaveFileStatus)) and
  * (MAX_DIRECTORIES * sizeof(sysSaveDirectoryList))
  */
-#define BUFFER_SETTINGS_BUFSIZE (SAVE_LIST_MAX_FILES * sizeof(sysSaveFileStatus))
+#define BUFFER_SETTINGS_BUFSIZE (SAVE_LIST_MAX_DIRECTORIES * sizeof(sysSaveDirectoryList))
 #define MEMORY_CONTAINER_SIZE (5*1024*1024)
 
 #define SAVE_DATA_FOLDER   "NP0APOLLO-OPTIONS"
@@ -43,7 +43,6 @@
 
 #define SAVE_UTIL_LOADING   1
 #define SAVE_UTIL_SAVING    2
-#define SAVE_UTIL_APOLLO    4
 
 typedef struct {
 	uint64_t psid[2];
@@ -70,7 +69,8 @@ typedef struct SaveData {
 
 sys_ppu_thread_t save_tid = 0;
 save_metadata_t* save_data;
-savedata_file_t* save_file;
+u8* file_data;
+u64 file_size;
 
 void saveload_game_status_cb (sysSaveCallbackResult *result, sysSaveStatusIn *in, sysSaveStatusOut *out)
 {
@@ -123,12 +123,11 @@ void saveload_game_status_cb (sysSaveCallbackResult *result, sysSaveStatusIn *in
     out->recreateMode = SYS_SAVE_RECREATE_MODE_OVERWRITE_NOT_CORRUPTED;
     /* We'll only load the data */
     save_data->mode = PS3_SAVE_MODE_DATA;
-    save_file->size = 0;
+    file_size = 0;
     for (i = 0; i < in->numFiles; i++) {
       switch (in->fileList[i].fileType) {
-        case SYS_SAVE_FILETYPE_PROTECTED_FILE:
         case SYS_SAVE_FILETYPE_STANDARD_FILE:
-          save_file->size = in->fileList[i].fileSize;
+          file_size = in->fileList[i].fileSize;
           break;
         case SYS_SAVE_FILETYPE_CONTENT_ICON0:
           save_data->icon_size = in->fileList[i].fileSize;
@@ -140,19 +139,18 @@ void saveload_game_status_cb (sysSaveCallbackResult *result, sysSaveStatusIn *in
           break;
       }
     }
-    if (save_file->size == 0) {
+    if (file_size == 0) {
       LOG("Couldn't find the save data.. !");
       result->result = SYS_SAVE_CALLBACK_RESULT_CORRUPTED;
       return;
     } else {
-      LOG("Found save game data of size : %lu", save_file->size);
-      save_file->data = malloc (save_file->size);
+      LOG("Found save game data of size : %lu", file_size);
+      file_data = malloc (file_size);
     }
   } else {
     /* Delete */
-    out->recreateMode = SYS_SAVE_RECREATE_MODE_OVERWRITE_NOT_CORRUPTED;
-    save_data->mode = PS3_SAVE_MODE_DATA;
-//    out->recreateMode = SYS_SAVE_RECREATE_MODE_DELETE;
+    out->recreateMode = SYS_SAVE_RECREATE_MODE_DELETE;
+    save_data->mode = PS3_SAVE_MODE_ICON;
 
     /* Check for free space... don't forget the system file's size, and to check
      * for existing files that would get deleted if you overwrite a save game.
@@ -164,14 +162,9 @@ void saveload_game_status_cb (sysSaveCallbackResult *result, sysSaveStatusIn *in
           (in->freeSpaceKB + in->sizeKB);
     }
 
-    if (save_data->flags & SAVE_UTIL_APOLLO)
-    {
-      save_data->mode = PS3_SAVE_MODE_ICON;
-      strncpy(in->getParam.title, "Apollo Save Tool", SYS_SAVE_MAX_TITLE);
-      strncpy(in->getParam.subtitle, "Settings", SYS_SAVE_MAX_SUBTITLE);
-      strncpy(in->getParam.detail, "www.bucanero.com.ar", SYS_SAVE_MAX_DETAIL);
-    }
-
+    strncpy (in->getParam.title, "Apollo Save Tool", SYS_SAVE_MAX_TITLE);
+    strncpy (in->getParam.subtitle, "Settings", SYS_SAVE_MAX_SUBTITLE);
+    strncpy (in->getParam.detail, "www.bucanero.com.ar", SYS_SAVE_MAX_DETAIL);
   }
 
 }
@@ -227,18 +220,11 @@ void saveload_game_file_cb (sysSaveCallbackResult *result, sysSaveFileIn *in, sy
           out->fileOperation = SYS_SAVE_FILE_OPERATION_READ;
         }
 
-        if (save_file->protected_file_id)
-        {
-          out->fileType = SYS_SAVE_FILETYPE_PROTECTED_FILE;
-          memcpy(out->protectedFileID, save_file->protected_file_id, SYS_SAVE_MAX_PROTECTED_FILE_ID);
-        } else {
-          out->fileType = SYS_SAVE_FILETYPE_STANDARD_FILE;
-        }
-
-        out->filename = save_file->filename;
-        out->size = save_file->size;
-        out->bufferSize = save_file->size;
-        out->buffer = save_file->data;
+        out->filename = SAVE_DATA_FILENAME;
+        out->fileType = SYS_SAVE_FILETYPE_STANDARD_FILE;
+        out->size = file_size;
+        out->bufferSize = file_size;
+        out->buffer = file_data;
 
         result->result = SYS_SAVE_CALLBACK_RESULT_CONTINUE;
         result->incrementProgress = 100;
@@ -249,17 +235,10 @@ void saveload_game_file_cb (sysSaveCallbackResult *result, sysSaveFileIn *in, sy
     default:
       result->result = SYS_SAVE_CALLBACK_RESULT_DONE;
       if (save_data->flags & SAVE_UTIL_LOADING) {
-        if (in->previousOperationResultSize != save_file->size) {
+        if (in->previousOperationResultSize != file_size) {
           result->result = SYS_SAVE_CALLBACK_RESULT_CORRUPTED;
           LOG("ERROR Reading data!");
-
-          if (save_file->data)
-            free(save_file->data);
         }
-      }
-      else if (save_data->flags & SAVE_UTIL_APOLLO) {
-        free(save_file->data);
-        free(save_file);
       }
       break;
   }
@@ -289,19 +268,17 @@ void saveload_game_thread(void *user_data)
   }
 
   if (save_data->flags & SAVE_UTIL_SAVING) {
+    LOG("Loading icon");
 
-    if (save_data->flags & SAVE_UTIL_APOLLO)
-    {
-      LOG("Loading icon");
-      read_buffer("/dev_hdd0/game/NP0APOLLO/ICON0.PNG", &save_data->icon_data, &save_data->icon_size);
+    read_buffer("/dev_hdd0/game/NP0APOLLO/ICON0.PNG", &save_data->icon_data, &save_data->icon_size);
+
 //    LOG("Loading screenshot");
 //    load_file ("data/screenshot.png", &save_data->screenshot_data, &save_data->screenshot_size);
-    }
 
-    ret = sysSaveAutoSave2 (SYS_SAVE_CURRENT_VERSION, save_file->folder, SYS_SAVE_ERROR_DIALOG_NONE,
+    ret = sysSaveAutoSave2 (SYS_SAVE_CURRENT_VERSION, SAVE_DATA_FOLDER, SYS_SAVE_ERROR_DIALOG_NONE,
             &bufferSettings, saveload_game_status_cb, saveload_game_file_cb, container, NULL);
   } else {
-    ret = sysSaveAutoLoad2 (SYS_SAVE_CURRENT_VERSION, save_file->folder, SYS_SAVE_ERROR_DIALOG_NONE,
+    ret = sysSaveAutoLoad2 (SYS_SAVE_CURRENT_VERSION, SAVE_DATA_FOLDER, SYS_SAVE_ERROR_DIALOG_NONE,
             &bufferSettings, saveload_game_status_cb, saveload_game_file_cb, container, NULL);
   }
 
@@ -346,14 +323,14 @@ int _create_thread (int flags, char *thread_name)
   return TRUE;
 }
 
-inline int save_game_thread (int flag)
+inline int save_game_thread ()
 {
-  return _create_thread (flag | SAVE_UTIL_SAVING, "save_thread");
+  return _create_thread (SAVE_UTIL_SAVING, "save_thread");
 }
 
-inline int load_game_thread (int flag)
+inline int load_game_thread ()
 {
-  return _create_thread (flag | SAVE_UTIL_LOADING, "load_thread");
+  return _create_thread (SAVE_UTIL_LOADING, "load_thread");
 }
 
 void wait_save_thread() {
@@ -362,31 +339,11 @@ void wait_save_thread() {
     }
 }
 
-int save_game_file(savedata_file_t* sfile)
-{
-  save_file = sfile;
-  save_game_thread(0);
-  wait_save_thread();
-
-  return (save_file->data != NULL);
-}
-
-int load_game_file(savedata_file_t* sfile)
-{
-  save_file = sfile;
-  save_file->data = NULL;
-  save_file->size = 0;
-  load_game_thread(0);
-  wait_save_thread();
-
-  return (save_file->data != NULL);
-}
-
 uint32_t get_userid_dir(uint32_t tid)
 {
 	char path[128];
 	int found = 0;
-    struct stat sb;
+	struct stat sb;
 
 	tid++;
 	while (!found) {
@@ -404,39 +361,24 @@ uint32_t get_userid_dir(uint32_t tid)
 	return tid;
 }
 
-void _init_settings_file()
-{
-    save_file = malloc(sizeof(savedata_file_t));
-
-    strcpy(save_file->filename, SAVE_DATA_FILENAME);
-    strcpy(save_file->folder, SAVE_DATA_FOLDER);
-    save_file->protected_file_id = NULL;
-    save_file->data = NULL;
-    save_file->size = 0;
-}
-
 int save_app_settings(app_config_t* config)
 {
-    _init_settings_file();
-    save_file->size = sizeof(app_config_t);
-    save_file->data = malloc(save_file->size);
-    memcpy(save_file->data, (u8*) config, save_file->size);
+    file_data = (u8*) config;
+    file_size = sizeof(app_config_t);
     
-    return save_game_thread(SAVE_UTIL_APOLLO);
+    return save_game_thread();
 }
 
 int load_app_settings(app_config_t* config)
 {
-    _init_settings_file();
+    file_size = 0;
 
     // Check if we finished loading, then load data
-    load_game_thread(SAVE_UTIL_APOLLO);
+    load_game_thread();
     wait_save_thread();
 
-    if (save_file->size == sizeof(app_config_t)) {
-        memcpy(config, save_file->data, save_file->size);
-        free(save_file->data);
-        free(save_file);
+    if (file_size == sizeof(app_config_t)) {
+        memcpy(config, file_data, file_size);
 
         LOG("SETTINGS: uid %d (%016lX) PSID %016lX %016lX", config->user_id, config->account_id, config->psid[0], config->psid[1]);
         return TRUE;
@@ -444,17 +386,18 @@ int load_app_settings(app_config_t* config)
 
     uint32_t uid = 0;
     char tmp_path[256];
+    u8 canary[10] = "123456789";
     u8 verify[10] = "000000000";
 
-    save_file->size = 10;
-    save_file->data = calloc(1, save_file->size);
+    file_data = canary;
+    file_size = 10;
     
-    save_game_thread(SAVE_UTIL_APOLLO);
+    save_game_thread();
     wait_save_thread();
 
     LOG("Hunting file...");
 
-    while (memcmp("\0\0\0\0\0\0\0\0\0", verify, 9) != 0) {
+    while (memcmp(canary, verify, 9) != 0) {
         uid = get_userid_dir(uid);
         LOG("GET UID = %d", uid);
         if (uid == 0)

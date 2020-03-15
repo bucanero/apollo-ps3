@@ -2,6 +2,7 @@
 #include <polarssl/md5.h>
 #include <polarssl/sha1.h>
 #include <polarssl/sha2.h>
+#include <polarssl/sha4.h>
 #include <zlib.h>
 
 #include "saves.h"
@@ -10,6 +11,7 @@
 #include "list.h"
 
 #define skip_spaces(str)        while (*str == ' ') str++;
+#define TLOU_HMAC_KEY			"xM;6X%/p^L/:}-5QoA+K8:F*M!~sb(WK<E%6sW_un0a[7Gm6,()kHoXY+yI/s;Ba"
 
 typedef enum
 {
@@ -21,6 +23,7 @@ typedef enum
     BSD_VAR_MD5 = 16,
     BSD_VAR_SHA1 = 20,
     BSD_VAR_SHA256 = 32,
+    BSD_VAR_SHA512 = 64,
 } bsd_var_types;
 
 typedef struct
@@ -335,13 +338,17 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    *tmp = 0;
 			    
 			    range_start = _parse_int_value(line, pointer, dsize, var_list);
+				if (range_start < 0)
+					range_start = 0;
 
 			    line = tmp+1;
 			    *tmp = ',';
 
-			    range_end = _parse_int_value(line, pointer, dsize, var_list);
+			    range_end = _parse_int_value(line, pointer, dsize, var_list) + 1;
+				if (range_end > dsize)
+					range_end = dsize;
 
-                LOG("RANGE = %ld (0x%lX) - %ld (0x%lX)\n", range_start, range_start, range_end, range_end);
+                LOG("RANGE = %ld (0x%lX) - %ld (0x%lX)\n", range_start, range_start, range_end-1, range_end-1);
 			}
 
 			// set crc_*:*
@@ -460,12 +467,14 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    else if (wildcard_match_icase(line, "crc32*"))
 			    {
 			        uint32_t hash;
-			        uint32_t init = CRC_32_INIT_VALUE;
+			        custom_crc.initial_value = CRC_32_INIT_VALUE;
+					custom_crc.polynomial = CRC_32_POLYNOMIAL;
+					custom_crc.output_xor = CRC_32_XOR_VALUE;
 
     			    tmp = strchr(line, ':');
     			    if (tmp)
     			    {
-    			        sscanf(tmp+1, "%x", &init);
+    			        sscanf(tmp+1, "%x", &custom_crc.initial_value);
     			    }
     			    
     			    u8* start = (u8*)data + range_start;
@@ -474,13 +483,19 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    if (wildcard_match_icase(line, "crc32big*"))
     			    {
     			        // CRC-32/BZIP
-        			    hash = crc32_hash(start, len, init, CRC_32_POLYNOMIAL, 0, 0) ^ CRC_32_XOR_VALUE;
+						custom_crc.reflection_input = 0;
+						custom_crc.reflection_output = 0;
+
+        			    hash = crc32_hash(start, len, &custom_crc);
         			    LOG("len %d CRC32Big HASH = %X\n", len, hash);
     			    }
     			    else
     			    {
     			        // CRC-32
-        			    hash = crc32_hash(start, len, init, CRC_32_POLYNOMIAL, 1, 1) ^ CRC_32_XOR_VALUE;
+						custom_crc.reflection_input = 1;
+						custom_crc.reflection_output = 1;
+
+        			    hash = crc32_hash(start, len, &custom_crc);
         			    LOG("len %d CRC32 HASH = %X\n", len, hash);    			    
     			    }
 
@@ -494,10 +509,16 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    else if (wildcard_match_icase(line, "crc16*"))
 			    {
 			        uint16_t hash;
+			        custom_crc.initial_value = CRC_16_INIT_VALUE;
+					custom_crc.polynomial = CRC_16_POLYNOMIAL;
+					custom_crc.output_xor = CRC_16_XOR_VALUE;
+					custom_crc.reflection_input = 0;
+					custom_crc.reflection_output = 0;
+
     			    u8* start = (u8*)data + range_start;
     			    len = range_end - range_start;
 
-    			    hash = crc16_hash(start, len, CRC_16_INIT_VALUE, CRC_16_POLYNOMIAL, 0, 0) ^ CRC_16_XOR_VALUE;
+    			    hash = crc16_hash(start, len, &custom_crc);
 
                     var->len = BSD_VAR_INT16;
                     var->data = malloc(var->len);
@@ -520,8 +541,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			        // Custom CRC-16
     			        uint16_t hash;
 
-        			    hash = crc16_hash(start, len, custom_crc.initial_value, custom_crc.polynomial,
-								custom_crc.reflection_input, custom_crc.reflection_output) ^ custom_crc.output_xor;
+        			    hash = crc16_hash(start, len, &custom_crc);
 
                         var->len = BSD_VAR_INT16;
                         var->data = malloc(var->len);
@@ -534,8 +554,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			        // Custom CRC-32
     			        uint32_t hash;
 
-        			    hash = crc32_hash(start, len, custom_crc.initial_value, custom_crc.polynomial,
-								custom_crc.reflection_input, custom_crc.reflection_output) ^ custom_crc.output_xor;
+        			    hash = crc32_hash(start, len, &custom_crc);
 
                         var->len = BSD_VAR_INT32;
                         var->data = malloc(var->len);
@@ -543,6 +562,15 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
         			    LOG("len %d Custom CRC32 HASH = %X\n", len, hash);
 			        }
+			    }
+
+			    // set [*]:crc64*
+			    else if (wildcard_match_icase(line, "crc64*"))
+			    {
+					//low priority
+					//crc64_ecma / crc64_iso
+					LOG("Error: command not implemented");
+					return 0;
 			    }
 
 			    // set [*]:md5_xor*
@@ -583,6 +611,32 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    LOG("len %d MD5 HASH = %llx%llx\n", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1]);
 			    }
 
+			    // set [*]:md2*
+			    else if (wildcard_match_icase(line, "md2*"))
+			    {
+    			    u8* start = (u8*)data + range_start;
+    			    len = range_end - range_start;
+
+                    var->len = BSD_VAR_MD5;
+                    var->data = malloc(var->len);
+                    md(md_info_from_type(POLARSSL_MD_MD2), start, len, var->data);
+
+    			    LOG("len %d MD2 HASH = %llx%llx\n", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1]);
+			    }
+
+			    // set [*]:md4*
+			    else if (wildcard_match_icase(line, "md4*"))
+			    {
+    			    u8* start = (u8*)data + range_start;
+    			    len = range_end - range_start;
+
+                    var->len = BSD_VAR_MD5;
+                    var->data = malloc(var->len);
+                    md(md_info_from_type(POLARSSL_MD_MD4), start, len, var->data);
+
+    			    LOG("len %d MD4 HASH = %llx%llx\n", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1]);
+				}
+
 			    // set [*]:sha1*
 			    else if (wildcard_match_icase(line, "sha1*"))
 			    {
@@ -594,6 +648,49 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			        sha1(start, len, var->data);
 
     			    LOG("len %d SHA1 HASH = %llx%llx%x\n", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint32_t*)var->data)[4]);
+			    }
+
+			    // set [*]:sha256*
+			    else if (wildcard_match_icase(line, "sha256*"))
+			    {
+    			    u8* start = (u8*)data + range_start;
+    			    len = range_end - range_start;
+
+                    var->len = BSD_VAR_SHA256;
+                    var->data = malloc(var->len);
+					sha2(start, len, var->data, 0);
+
+    			    LOG("len %d SHA256 HASH = %llx%llx%llx%llx\n", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint64_t*)var->data)[2], ((uint64_t*)var->data)[3]);
+			    }
+
+			    // set [*]:sha384*
+			    else if (wildcard_match_icase(line, "sha384*"))
+			    {
+    			    u8* start = (u8*)data + range_start;
+    			    len = range_end - range_start;
+
+                    var->len = BSD_VAR_SHA512;
+                    var->data = malloc(var->len);
+					sha4(start, len, var->data, 1);
+
+    			    LOG("len %d SHA384 HASH = %llx%llx%llx%llx %llx%llx%llx%llx\n", len,
+						((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint64_t*)var->data)[2], ((uint64_t*)var->data)[3],
+						((uint64_t*)var->data)[4], ((uint64_t*)var->data)[5], ((uint64_t*)var->data)[6], ((uint64_t*)var->data)[7]);
+			    }
+
+			    // set [*]:sha512*
+			    else if (wildcard_match_icase(line, "sha512*"))
+			    {
+    			    u8* start = (u8*)data + range_start;
+    			    len = range_end - range_start;
+
+                    var->len = BSD_VAR_SHA512;
+                    var->data = malloc(var->len);
+					sha4(start, len, var->data, 0);
+
+    			    LOG("len %d SHA512 HASH = %llx%llx%llx%llx %llx%llx%llx%llx\n", len,
+						((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint64_t*)var->data)[2], ((uint64_t*)var->data)[3],
+						((uint64_t*)var->data)[4], ((uint64_t*)var->data)[5], ((uint64_t*)var->data)[6], ((uint64_t*)var->data)[7]);
 			    }
 
 			    // set [*]:adler32*
@@ -612,48 +709,41 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    LOG("len %d Adler32 HASH = %X\n", len, hash);
 			    }
 
+			    // set [*]:adler16*
+			    else if (wildcard_match_icase(line, "adler16*"))
+			    {
+			        //low priority - UNUSED
+					LOG("Error: command not implemented");
+					return 0;
+			    }
+
 			    // set [*]:hmac_sha1*
 			    else if (wildcard_match_icase(line, "hmac_sha1*"))
 			    {
-			        //low priority
-			    }
-
-			    // set [*]:sha256*
-			    else if (wildcard_match_icase(line, "sha256*"))
-			    {
     			    u8* start = (u8*)data + range_start;
     			    len = range_end - range_start;
 
-                    var->len = BSD_VAR_SHA256;
+                    var->len = BSD_VAR_SHA1;
                     var->data = malloc(var->len);
-					sha2(start, len, var->data, 0);
+					sha1_hmac((u8*) TLOU_HMAC_KEY, strlen(TLOU_HMAC_KEY), start, len, var->data);
 
-    			    LOG("len %d SHA256 HASH = %llx%llx%llx%llx\n", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint64_t*)var->data)[2], ((uint64_t*)var->data)[3]);
+    			    LOG("len %d SHA1/HMAC HASH = %llx%llx%x\n", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint32_t*)var->data)[4]);
 			    }
 
-			    // set [*]:crc64*
-			    else if (wildcard_match_icase(line, "crc64*"))
+			    // set [*]:eachecksum*
+			    else if (wildcard_match_icase(line, "eachecksum*"))
 			    {
-			        //low priority
-			    }
-
-			    // set [*]:md2*
-			    else if (wildcard_match_icase(line, "md2*"))
-			    {
+			        uint32_t hash;
     			    u8* start = (u8*)data + range_start;
     			    len = range_end - range_start;
 
-                    var->len = BSD_VAR_MD5;
+    			    hash = MC02_hash(start, len);
+
+                    var->len = BSD_VAR_INT32;
                     var->data = malloc(var->len);
-                    md(md_info_from_type(POLARSSL_MD_MD2), start, len, var->data);
+                    memcpy(var->data, (u8*) &hash, var->len);
 
-    			    LOG("len %d MD2 HASH = %llx%llx\n", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1]);
-			    }
-
-			    // set [*]:eacheck*
-			    else if (wildcard_match_icase(line, "eacheck*"))
-			    {
-			        //low priority
+    			    LOG("len %d EA/MC02 HASH = %X\n", len, hash);
 			    }
 
 			    // set [*]:qwadd(*,*)*
@@ -661,7 +751,9 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    {
 			        //low priority
 			        // qwadd(<start>,<endrange>)
-			        // 64-bit
+			        // 64-bit	0xFFFFFFFFFFFFFFFF
+					LOG("Error: command not implemented");
+					return 0;
 			    }
 
 			    // set [*]:dwadd(*,*)*
@@ -788,10 +880,45 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    LOG("[%s]:add(0x%X , 0x%X) = %X\n", var->name, add_s, add_e, add);
 			    }
 
-			    // set [*]:wsub(*)*
-			    else if (wildcard_match_icase(line, "wsub(*)*"))
+			    // set [*]:wsub(*,*)*
+			    else if (wildcard_match_icase(line, "wsub(*,*)*"))
 			    {
-			        //low priority
+			        // wsub(<start>,<endrange>)
+			        // 16-bit	0xFFFF
+					// sub()			byte		8-bit	0xFF
+					// dwsub()			dbl word	32-bit	0xFFFFFFFF
+					// qwsub()			quad word	64-bit	0xFFFFFFFFFFFFFFFF
+			        int sub_s, sub_e;
+			        uint32_t sub = 0;
+
+			        line += strlen("wsub(");
+    			    tmp = strchr(line, ',');
+    			    *tmp = 0;
+    			    
+    			    sub_s = _parse_int_value(line, pointer, dsize, var_list);
+
+			        line = tmp+1;
+    			    *tmp = ',';
+    			    tmp = strchr(line, ')');
+    			    *tmp = 0;
+
+    			    sub_e = _parse_int_value(line, pointer, dsize, var_list);
+
+    			    *tmp = ')';
+    			    
+    			    char* read = data + sub_s;
+    			    
+    			    while (read < data + sub_e)
+    			    {
+    			    	sub += (*(uint16_t*)read);
+    			    	read += BSD_VAR_INT16;
+    			    }
+
+                    var->len = BSD_VAR_INT32;
+                    var->data = malloc(var->len);
+                    memcpy(var->data, (u8*) &sub, var->len);
+    			    
+    			    LOG("[%s]:wsub(0x%X , 0x%X) = %X\n", var->name, sub_s, sub_e, sub);
 			    }
 
 			    // set [*]:xor(*,*,*)*
@@ -839,22 +966,28 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    LOG("[%s]:XOR(0x%X , 0x%X, %d) = %X\n", var->name, xor_s, xor_e, xor_i, ((uint32_t*)var->data)[0]);
 			    }
 
-			    // set [*]:right(*)*
-			    else if (wildcard_match_icase(line, "right(*)*"))
+			    // set [*]:right(*,*)*
+			    else if (wildcard_match_icase(line, "right(*,*)*"))
 			    {
 			        //low priority
+					LOG("Error: command not implemented");
+					return 0;
 			    }
 
-			    // set [*]:repeat(*)*
-			    else if (wildcard_match_icase(line, "repeat(*)*"))
+			    // set [*]:left(*)*
+			    else if (wildcard_match_icase(line, "left(*)*"))
 			    {
-			        //low priority
+			        //low priority - UNUSED
+					LOG("Error: command not implemented");
+					return 0;
 			    }
 
 			    // set [*]:mid(*)*
 			    else if (wildcard_match_icase(line, "mid(*)*"))
 			    {
 			        //low priority
+					LOG("Error: command not implemented");
+					return 0;
 			    }
 
 			    // set [*]:* (e.g. 0x00000000)
@@ -873,26 +1006,6 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			}
 
 		}
-
-// --- hash funcs (low priority) ---
-// hmac_sha1	18		(8)
-// crc64        16      (6)
-// eacheck		6		(2)
-// adler16 		0
-// md4			0
-// sha384		0
-// sha512		0
-
-// --- other funcs (low priority) ---
-// qwadd()		4		(2)		quad word	64-bit	0xFFFFFFFFFFFFFFFF 	
-// wsub()		60		(6)		word		16-bit	0xFFFF
-// right()		63		(8)
-// repeat()		18		(8)
-// mid()		18		(2)
-// sub()		0				byte		8-bit	0xFF
-// dwsub()		0				dbl word	32-bit	0xFFFFFFFF
-// qwsub()		0				quad word	64-bit	0xFFFFFFFFFFFFFFFF
-// left()		0
 
         // write *:*
 		else if (wildcard_match_icase(line, "write *:*"))
@@ -969,6 +1082,41 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    
 			    for (int i=0; i < wlen; i++)
 			        write_val[i] ^= data[off + (from_pointer ? pointer : 0) + i];
+
+				LOG(":xor:%s\n", line);
+			}
+
+			// write at/next *:repeat(*,*)*
+			else if (wildcard_match_icase(line, "repeat(*,*)*"))
+			{
+				// repeat(<count>,<value>)
+				int r_cnt, j;
+				char* r_val;
+
+				line += strlen("repeat(");
+				tmp = strchr(line, ',');
+				*tmp = 0;
+				
+				r_cnt = _parse_int_value(line, pointer, dsize, var_list);
+
+				line = tmp+1;
+				*tmp = ',';
+				tmp = strchr(line, ')');
+				*tmp = 0;
+
+				r_val = _decode_variable_data(line, &wlen, var_list);
+
+				*tmp = ')';
+				
+				write_val = malloc(r_cnt * wlen);
+				
+				for(j = 0; j < r_cnt; j++)
+					memcpy(write_val + (j * wlen), r_val, wlen);
+
+				free(r_val);
+				wlen = r_cnt * wlen;
+
+				LOG(":repeat(0x%X , %s)\n", r_cnt, line);
 			}
 
 		    // write at/next *:[*]
@@ -1132,7 +1280,6 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 
     			sprintf(tmp8, "%.8s", line+9);
     			sscanf(tmp8, "%x", &val);
-//			val = ES32(val);
 
     			char* write = data + off + (line[1] == '8' ? pointer : 0);
     			memcpy(write, (char*) &val +3, 1);
@@ -1140,6 +1287,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     			LOG("Wrote 1 byte (%s) to 0x%lX", tmp8+6, write - data);
     		}
     			break;
+
     		case '1':
     			//	16-bit write
     			//	1TXXXXXX 0000YYYY
@@ -1155,7 +1303,6 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 
     			sprintf(tmp8, "%.8s", line+9);
     			sscanf(tmp8, "%x", &val);
-//			val = ES32(val);
 
     			char* write = data + off + (line[1] == '8' ? pointer : 0);
     			memcpy(write, (char*) &val +2, 2);
@@ -1163,6 +1310,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     			LOG("Wrote 2 bytes (%s) to 0x%lX", tmp8+4, write - data);
     		}
     			break;
+
     		case '2':
     			//	32-bit write
     			//	2TXXXXXX YYYYYYYY
@@ -1178,7 +1326,6 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 
     			sprintf(tmp8, "%.8s", line+9);
     			sscanf(tmp8, "%x", &val);
-//			val = ES32(val);
 
     			char* write = data + off + (line[1] == '8' ? pointer : 0);
     			memcpy(write, (char*) &val, 4);
@@ -1186,6 +1333,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     			LOG("Wrote 4 bytes (%s) to 0x%lX", tmp8, write - data);
     		}
     			break;
+
     		case '4':
     			//	multi write
     			//	4TXXXXXX YYYYYYYY
@@ -1223,10 +1371,11 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     			sprintf(tmp8, "%.8s", line+9);
     			sscanf(tmp8, "%x", &incval);
 			
+				LOG("Multi-write at (0x%X) %d times, inc-addr (%d) inc-val (%X)", off, n, incoff, incval);
+
 				for (i = 0; i < n; i++)
 				{
 	    			write = data + off + (incoff * i) + ((t == '8' || t == '9' || t == 'A') ? pointer : 0);
-//			val = ES32(val);
 
 					switch (t)
 					{
@@ -1249,13 +1398,13 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 							break;
 					}
 
-//			val = ES32(val);
 	    			val += incval;
 				}
 
 //    			LOG("%s\n", line);
     		}
     			break;
+
     		case '5':
     			//	copy bytes
     			//	5TXXXXXX ZZZZZZZZ
@@ -1289,6 +1438,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 				LOG("Copied %d bytes from 0x%lX to 0x%lX", val, src, dst);
     		}
     			break;
+
     		case '6':
     			//	special mega code
     			//	6TWX0Y0Z VVVVVVVV <- Code Type 6
@@ -1305,6 +1455,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     		{
     		}
     			break;
+
     		case '7':
     			//	Add Write
     			//	7TXXXXXX YYYYYYYY 
@@ -1326,7 +1477,6 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 
     			sprintf(tmp8, "%.8s", line+9);
     			sscanf(tmp8, "%x", &val);
-//			val = ES32(val);
 
     			char* write = data + off + ((t == '8' || t == '9' || t == 'A') ? pointer : 0);
 //				val += ((uint32_t*) write)[0];
@@ -1355,6 +1505,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 
     		}
     			break;
+
     		case '8':
     			//	Search Type
     			//	8ZZZXXXX YYYYYYYY
@@ -1375,7 +1526,6 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 
     			sprintf(tmp8, "%.8s", line+9);
     			sscanf(tmp8, "%x", &val);
-//			val = ES32(val);
 
     			find = malloc(len);
 
@@ -1387,13 +1537,11 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 
 					sprintf(tmp8, "%.8s", line);
 	    			sscanf(tmp8, "%x", &val);
-//			val = ES32(val);
 
 					memcpy(find + i, (char*) &val, 4);
 
 					sprintf(tmp8, "%.8s", line+9);
 	    			sscanf(tmp8, "%x", &val);
-//			val = ES32(val);
 
 					if (i+4 < len)
 						memcpy(find + i+4, (char*) &val, 4);
@@ -1418,6 +1566,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     			free(find);
     		}
     			break;
+
     		case '9':
     			//	Move pointer to offset in address XXXXXXXXX (CONFIRMED CODE)
     			//	90000000 XXXXXXXX
@@ -1440,7 +1589,6 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 				{
 					case '0':
 						val = *(uint32_t*)(data + off);
-//			val = ES32(val);
 						pointer = val;
 						break;
 					case '2':
@@ -1455,6 +1603,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 				}
     		}
     			break;
+
     		case 'A':
     			//	Multi-write
     			//	Axxxxxxx 0000yyyy  (xxxxxxxx = address, yyyy = size)
@@ -1478,7 +1627,6 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     				sscanf(tmp8, "%x", &val);
 
 	    			write = data + off + i; //+ ((t == '8' || t == '9' || t == 'A') ? pointer : 0);
-//			val = ES32(val);
 	    			memcpy(write, (char*) &val, 4);
 					LOG("m-Wrote 4 bytes (%s) to 0x%lX", tmp8, write - data);
 
@@ -1486,7 +1634,6 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     				sscanf(tmp8, "%x", &val);
 
 	    			write += 4;
-//			val = ES32(val);
 					if (i + 4 < size)
 					{
 		    			memcpy(write, (char*) &val, 4);
@@ -1512,4 +1659,21 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     remove_char(code->codes, codelen, '\0');
 
 	return 1;
+}
+
+int apply_cheat_patch_code(const char* fpath, code_entry_t* code)
+{
+	if (code->type == PATCH_GAMEGENIE)
+	{
+		LOG("Game Genie Code");
+		return apply_ggenie_patch_code(fpath, code);
+	}
+
+	if (code->type == PATCH_BSD)
+	{
+		LOG("Bruteforce Save Data Code");
+		return apply_bsd_patch_code(fpath, code);
+	}
+
+	return 0;
 }

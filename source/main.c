@@ -572,7 +572,7 @@ void LoadTextures_Menu()
 	load_menu_texture(scroll_bg, png);
 	load_menu_texture(scroll_lock, png);
 	load_menu_texture(help, png);
-
+	load_menu_texture(buk_scr, png);
 	load_menu_texture(cat_about, png);
 	load_menu_texture(cat_cheats, png);
 	load_menu_texture(cat_opt, png);
@@ -1111,9 +1111,7 @@ void doSaveMenu(save_list_t * save_list)
     	{
     		if (!save_list->list[menu_sel].codes)
     			save_list->ReadCodes(&save_list->list[menu_sel]);
-    
-    		if (apollo_config.doSort)
-    			qsort(save_list->list[menu_sel].codes, save_list->list[menu_sel].code_count, sizeof(code_entry_t), &qsortCodeList_Compare);
+
     		selected_entry = &save_list->list[menu_sel];
     		SetMenu(MENU_PATCHES);
     		return;
@@ -1545,6 +1543,11 @@ void build_sfo_patch(sfo_patch_t* patch)
 {
     int j;
 
+	patch->flags = 0;
+	patch->user_id = apollo_config.user_id;
+	patch->psid = (u8*) &(apollo_config.psid[0]);
+	asprintf(&patch->account_id, "%016lx", apollo_config.account_id);
+
 	for (j = 0; j < selected_entry->code_count; j++)
 	{
 		if (!selected_entry->codes[j].activated || selected_entry->codes[j].type != PATCH_SFO)
@@ -1581,13 +1584,13 @@ int _is_decrypted(list_t* list, const char* fname) {
 	return 0;
 }
 
-int apply_cheat_patch()
+int apply_cheat_patches()
 {
     int j, ret = 1;
 	char tmpfile[256];
 	char* filename;
 	code_entry_t* code;
-	savedata_file_t save_file;
+	uint8_t* protected_file_id;
 	list_t* decrypted_files = list_alloc();
 
     init_loading_screen("Applying cheats...");
@@ -1596,7 +1599,7 @@ int apply_cheat_patch()
 	{
 		code = &selected_entry->codes[j];
 
-		if (!code->activated || code->type != PATCH_GAMEGENIE)
+		if (!code->activated || (code->type != PATCH_GAMEGENIE && code->type != PATCH_BSD))
 		    continue;
 
     	LOG("Active code: [%s]", code->name);
@@ -1606,23 +1609,17 @@ int apply_cheat_patch()
 		else
 			filename = code->file;
 
-		snprintf(tmpfile, sizeof(tmpfile), ONLINE_LOCAL_CACHE "%s", filename);
+		snprintf(tmpfile, sizeof(tmpfile), "%s%s", selected_entry->path, filename);
 
 		if (!_is_decrypted(decrypted_files, filename))
 		{
 			LOG("Decrypting '%s'...", filename);
 
-			strcpy(save_file.filename, filename);
-			strcpy(save_file.folder, selected_entry->folder);
-			*strrchr(save_file.folder, '/') = 0;
-			save_file.protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
+			protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
 
-			if (load_game_file(&save_file))
+			if (decrypt_save_file(selected_entry->path, filename, protected_file_id))
 			{
-				write_buffer(tmpfile, save_file.data, save_file.size);
 				list_append(decrypted_files, strdup(filename));
-
-				free(save_file.data);
 			}
 			else
 			{
@@ -1633,7 +1630,7 @@ int apply_cheat_patch()
 
 		}
 
-		if (!apply_ggenie_patch_code(tmpfile, code))
+		if (!apply_cheat_patch_code(tmpfile, code))
 		{
 			LOG("Error: failed to apply (%s)", code->name);
 			ret = 0;
@@ -1647,26 +1644,19 @@ int apply_cheat_patch()
 	while (node)
 	{
 		filename = list_get(node);
-		snprintf(tmpfile, sizeof(tmpfile), ONLINE_LOCAL_CACHE "%s", filename);
+		snprintf(tmpfile, sizeof(tmpfile), "%s%s", selected_entry->path, filename);
 
 		LOG("Encrypting '%s'...", tmpfile);
 
-		strcpy(save_file.filename, filename);
-		strcpy(save_file.folder, selected_entry->folder);
-		*strrchr(save_file.folder, '/') = 0;
-		save_file.protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
+		protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
 		
-		read_buffer(tmpfile, &save_file.data, &save_file.size);
-
-		if (!save_game_file(&save_file))
+		if (!encrypt_save_file(selected_entry->path, filename, protected_file_id))
 		{
 			LOG("Error: failed to encrypt (%s)", tmpfile);
 			ret = 0;
 		}
 
 		free(filename);
-		free(save_file.data);
-		unlink_secure(tmpfile);
 		node = node->next;
 	}
 
@@ -1695,9 +1685,6 @@ void doPatchMenu()
 
 		else if (paddata[0].BTN_CIRCLE)
 		{
-			for (int j = 0; j < selected_entry->code_count; j++)
-				selected_entry->codes[j].activated = 0;
-
 			SetMenu(last_menu_id[MENU_PATCHES]);
 			return;
 		}
@@ -1708,14 +1695,8 @@ void doPatchMenu()
 			if (strcmp(selected_entry->codes[menu_sel].codes, CMD_RESIGN_SAVE) == 0)
 			{
 				char in_file_path[256];
-				sfo_patch_t patch = {
-			        .flags = 0,
-			        .user_id = apollo_config.user_id,
-			        .account_id = NULL,
-			        .psid = (u8*) &(apollo_config.psid[0]),
-				};
+				sfo_patch_t patch;
 
-				asprintf(&patch.account_id, "%016lx", apollo_config.account_id);
 				build_sfo_patch(&patch);
 
 				snprintf(in_file_path, sizeof(in_file_path), "%s" "PARAM.SFO", selected_entry->path);
@@ -1730,8 +1711,6 @@ void doPatchMenu()
 		                    show_message("Save file successfully resigned!");
     	                else
 	                        show_message("Error! Save file couldn't be resigned");
-
-//						pfd_util_process(PFD_CMD_CHECK, 0);
 					}
                     else
                     {
@@ -1751,10 +1730,18 @@ void doPatchMenu()
 			{
 				LOG("Applying cheats to '%s'...", selected_entry->name);
 
-				if (apply_cheat_patch())
-					show_message("Cheat codes successfully applied!");
-				else
+				if (!apply_cheat_patches())
 					show_message("Error! Cheat codes couldn't be applied");
+
+				if (pfd_util_init(selected_entry->title_id, selected_entry->path))
+				{
+					if (pfd_util_process(PFD_CMD_UPDATE, 0) == SUCCESS)
+						show_message("Cheat codes successfully applied!");
+					else
+						show_message("Error! Save file couldn't be resigned");
+				}
+
+				pfd_util_end();
 
 				selected_entry->codes[menu_sel].activated = 0;
 			}
@@ -1887,13 +1874,6 @@ s32 main(s32 argc, const char* argv[])
 
 	http_init();
 
-	load_app_settings(&apollo_config);
-
-	if (file_exists(APOLLO_PATH "owner.txt") == SUCCESS)
-		_loadOwnerData(APOLLO_PATH "owner.txt");
-
-	pfd_util_setup_keys((u8*) &(apollo_config.psid[0]), apollo_config.user_id);
-
 	tiny3d_Init(1024*1024);
 
 	ioPadInit(7);
@@ -1909,6 +1889,18 @@ s32 main(s32 argc, const char* argv[])
 	LoadTextures_Menu();
 	LoadSounds();
 	
+	// Splash screen logo (fade-in)
+	drawSplashLogo(1);
+
+	// Load application settings
+	load_app_settings(&apollo_config);
+
+	if (file_exists(APOLLO_PATH "owner.txt") == SUCCESS)
+		_loadOwnerData(APOLLO_PATH "owner.txt");
+
+	// Set PFD keys from loaded settings
+	pfd_util_setup_keys((u8*) &(apollo_config.psid[0]), apollo_config.user_id);
+
 	// Setup font
 	SetExtraSpace(5);
 	SetCurrentFont(0);
@@ -1932,14 +1924,9 @@ s32 main(s32 argc, const char* argv[])
 		}
 	}
 
-	videoState state;
-	assert(videoGetState(0, 0, &state) == 0); // Get the state of the display
-	assert(state.state == 0); // Make sure display is enabled
-	
-	videoResolution res;
-	assert(videoGetResolution(state.displayMode.resolution, &res) == 0);
-	LOG("Resolution: %dx%d", res.width, res.height);
-	
+	// Splash screen logo (fade-out)
+	drawSplashLogo(-1);
+
 	SND_SetInfiniteVoice(2, (effect_is_stereo) ? VOICE_STEREO_16BIT : VOICE_MONO_16BIT, effect_freq, 0, background_music, background_music_size, 255, 255);
 	
 	//Set options
