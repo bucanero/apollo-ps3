@@ -9,7 +9,7 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 ### Added
 
 * [Bruteforce Save Data](https://bruteforcesavedata.forumms.net/) cheat patch support
-* Changed save-game encryption/decrytion method
+* Changed save-game encryption/decryption method
 * Splash screen logo
 
 ## [v0.9.1](https://github.com/bucanero/apollo-ps3/releases/tag/v0.9.1) - 2020-03-10
