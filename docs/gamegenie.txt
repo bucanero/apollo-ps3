@@ -1,0 +1,139 @@
+
+Here is the decryption process for game genie codes so once you decrypt a game save you know what to change. All the known game codes are at game genie's web site.
+
+Standard Code types 
+0TXXXXXX 000000YY
+1TXXXXXX 0000YYYY
+2TXXXXXX YYYYYYYY
+  XXXXXX = Offset to write to
+               YY = 8-Bit value to write
+             YYYY = 16-Bit value to write
+         YYYYYYYY = 32-Bit value to write
+ T = Offset Type
+     0 = From start of the data
+     8 = From found from a search
+___________________________________________________
+Multi Write/Value
+4TXXXXXX YYYYYYYY
+4NNNWWWW VVVVVVVV
+  XXXXXX = Offset to start with
+         YYYYYYYY = 8/16/32-Bit value to start with
+ NNN = Number of times to repeat
+    WWWW = Increase address by (in bytes)
+         VVVVVVVV = Increase value by
+ T = Bit Size
+     0 = 8-Bit from start of the data
+     1 = 16-Bit from start of the data
+     2 = 32-Bit from start of the data
+     8 = 8-Bit from found from a search
+     9 = 16-Bit from found from a search
+     A = 32-Bit from found from a search
+
+
+Copy Bytes
+5TXXXXXX ZZZZZZZZ
+5TYYYYYY 00000000
+  XXXXXX = Offset to copy from
+  YYYYYY = Offset to copy to
+         ZZZZZZZZ = Number of bytes to copy
+ T = Bit Size
+     0 = From start of the data
+     8 = From found from a search
+
+Search Type
+8ZZZXXXX YYYYYYYY
+ ZZZ = Number of times to find data
+    XXXX = Size of data to be found
+         YYYYYYYY = Raw data to search for
+
+Last edited by SkillerCMP; 02-18-2013 at 01:14 AM.
+
+---------------------------------------------------------------------------------------------------
+
+example code
+28BF4FD5 646951FB
+^
+negates 32bit
+28BF4FD5 646951FB
+..^
+offset from pointer
+
+28BF4FD5646951FB
+....^^^^^
+address
+28BF4FD5 646951FB
+.................^^^^^^
+value to change too
+
+Code Types
+
+0TXXXXXX 000000YY = 8Bit Write
+1TXXXXXX 0000YYYY = 16Bit Write
+2TXXXXXX YYYYYYYY = 32Bit Write
+
+X= Address/Offset
+Y= Value to write
+T=Address/Offset type (0 = Normal / 8 = Offset From Pointer
+
+Multi Write
+4TXXXXXX YYYYYYYY
+4NNNWWWW VVVVVVVV
+
+X= Address/Offset
+Y= Value to write (Starting)
+N=Times to Write
+W=Increase Address By
+V=Increase Value By
+T=Address/Offset type
+Normal/Pointer
+0 / 8 = 8bit
+1 / 9 = 16bit
+2 / A = 32bit
+
+Search Type
+8ZZZXXXX YYYYYYYY
+
+Z= Amount of times to find before Write
+X= Amount of data to Match
+Y= Seach For (note can be xtended for more just continue it like YYYYYYYY YYYYYYYY under it)
+Once u have your Seach type done then place one of the standerd code types under it with setting T to the Pointer type
+
+Special Code Types
+Mega Code
+
+6T?????0 YYYY
+AAAAAAAA CCCC
+FFFFFFFF 0011
+22334455 6677
+8899
+
+?=Don't care
+AA= Break address
+YY= Count in bytes to insert at location 40
+CC= Coprocessor break type (upper half)
+FF= Breakpoint mask (usually FFFFFFFF)
+00= bytes of code in address order
+11
+
+
+Some basic skills are required in order to reverse engineer. You must be familiar with the types of data used by games, and how this data is stored inside files.
+The integer (a whole number, such as 1000) is extremely common. Since data is usually examined in a hex editor, the values are written in hex. Thus the value 1000 is 3E8 in hex (in order to distinguish between hex and decimal, the rest of this guide will prefix hex numbers with "0x", like the C programming language does - therefore 1000 is the same as 0x3E8.)
+There are different variants of integers, but the most common are 16-bit and 32-bit. 16-bit integers occupy two bytes of space, and 32-bit integers occupy four bytes of space. In hex, every two digits are a byte. So 0x12 is one byte (8-bit), 0x1234 takes up two bytes (16-bit) and 0x12345678 takes up four bytes (32-bit). If you were to store 0x12 in a 32-bit integer, it would be 0x00000012 (the leading zeroes are ignored, like in decimal - 1000 is the same as 001000.)
+When these integers are written to a file however, the order of each byte is different. The value 0x1234 is written as two bytes, 0x12 and 0x34. However because DOS is little-endian, the order is reversed. Thus when looking at a file with a hex editor, the two bytes will appear as 0x34 followed by 0x12. A 32-bit number might look like this in a hex editor:
+
+78 56 34 12
+Reversing the order of those bytes reveals the number 0x12345678. Likewise, this might be another number seen in a hex editor:
+
+23 67 01 00
+This is where reverse engineering skills come into play. Is this a single 32-bit integer (0x00016723) or two 16-bit integers (0x6723 and 0x0001)? Being able to determine which is which is a skill a reverse engineer must learn. (In this case it is most likely to be a 32-bit integer, because the first 16-bit integer is so large and the second is so small. Usually sequential numbers are similar in value.)
+Hex editor view
+
+In order to examine game data, a hex editor must be used. It is important to know how to read data in a hex editor, as well as how to edit data. When opening a file, the data will appear something like this:
+
+00000000 61 62 63 64 65 66 67 68 abcdefgh
+Here, the first number is the offset. The very first byte in the file is at offset 0. The second byte is at offset 1, and so on. The first number tells you where in the file the data is positioned.
+The next set of numbers (61 to 68 above) are hex values of the data. In this case, the first byte in the file is value 0x61. The third byte in the file is value 0x63.
+After the numbers come ASCII (text) representations of the *same* numbers. In the example above, the first character is a lowercase "a" because 0x61 is the ASCII code for a lowercase letter A.
+It is important to note that the numbers (61 to 68 above) and the letters (a-h above) are different representations of the same data. This is because sometimes it is easier to look at the data in numeric form, and sometimes it is easier to look at it in text. Having both views of the same data on the screen at the same time makes it easy to switch between the two.
+By way of example, if you were trying to decode a 32-bit integer (as described in the previous section) you'd be looking at the hex numbers, but if you were trying to read some filenames it would be much easier to look at the text. After all, reading "6D 61 70 73 2E 64 61 74" is a lot harder than reading "maps.dat" but they are both the same data!
+This is why, when editing data using a hex editor, if you change the numbers the text will also change, and likewise if you type over the text the numbers will change accordingly.
