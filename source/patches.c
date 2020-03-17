@@ -1339,51 +1339,9 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     		case '0':
     			//	8-bit write
     			//	0TXXXXXX 000000YY
-    			//	X= Address/Offset
-    			//	Y= Value to write
-    			//	T=Address/Offset type (0 = Normal / 8 = Offset From Pointer)
-    		{
-    			int off;
-    			uint32_t val;
-
-    			sprintf(tmp6, "%.6s", line+2);
-    			sscanf(tmp6, "%x", &off);
-    			off += (line[1] == '8' ? pointer : 0);
-
-    			sprintf(tmp8, "%.8s", line+9);
-    			sscanf(tmp8, "%x", &val);
-
-    			char* write = data + off;
-    			memcpy(write, (char*) &val +3, 1);
-
-    			LOG("Wrote 1 byte (%s) to 0x%X", tmp8+6, off);
-    		}
-    			break;
-
     		case '1':
     			//	16-bit write
     			//	1TXXXXXX 0000YYYY
-    			//	X= Address/Offset
-    			//	Y= Value to write
-    			//	T=Address/Offset type (0 = Normal / 8 = Offset From Pointer)
-    		{
-    			int off;
-    			uint32_t val;
-
-    			sprintf(tmp6, "%.6s", line+2);
-    			sscanf(tmp6, "%x", &off);
-    			off += (line[1] == '8' ? pointer : 0);
-
-    			sprintf(tmp8, "%.8s", line+9);
-    			sscanf(tmp8, "%x", &val);
-
-    			char* write = data + off;
-    			memcpy(write, (char*) &val +2, 2);
-
-    			LOG("Wrote 2 bytes (%s) to 0x%X", tmp8+4, off);
-    		}
-    			break;
-
     		case '2':
     			//	32-bit write
     			//	2TXXXXXX YYYYYYYY
@@ -1393,6 +1351,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     		{
     			int off;
     			uint32_t val;
+				uint8_t bytes = 1 << (line[0] - 0x30);
 
     			sprintf(tmp6, "%.6s", line+2);
     			sscanf(tmp6, "%x", &off);
@@ -1402,9 +1361,9 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     			sscanf(tmp8, "%x", &val);
 
     			char* write = data + off;
-    			memcpy(write, (char*) &val, 4);
+    			memcpy(write, (char*) &val + (4 - bytes), bytes);
 
-    			LOG("Wrote 4 bytes (%s) to 0x%X", tmp8, off);
+    			LOG("Wrote %d bytes (%s) to 0x%X", bytes, tmp8 + (8 - bytes*2), off);
     		}
     			break;
 
