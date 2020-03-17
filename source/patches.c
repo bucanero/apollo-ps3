@@ -1067,6 +1067,8 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			else
 			    sscanf(line, "%x", &off);
 
+			off += (from_pointer ? pointer : 0);
+
 			line = tmp+1;
 			*tmp = ':';
 
@@ -1081,7 +1083,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    write_val = _decode_variable_data(line, &wlen, var_list);
 			    
 			    for (int i=0; i < wlen; i++)
-			        write_val[i] ^= data[off + (from_pointer ? pointer : 0) + i];
+			        write_val[i] ^= data[off + i];
 
 				LOG(":xor:%s\n", line);
 			}
@@ -1142,11 +1144,11 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 //			for (int i=0; i < wlen; i++)
 //				LOG("%x", write_val[i]);
 
-			char* write = data + off + (from_pointer ? pointer : 0);
+			char* write = data + off;
 			memcpy(write, write_val, wlen);
 			free(write_val);
 
-            LOG("Wrote %d bytes (%s) to 0x%lX\n", wlen, line, write - data);
+            LOG("Wrote %d bytes (%s) to 0x%X\n", wlen, line, off);
 		}
 
 		// insert *:*		2		(2)
@@ -1156,11 +1158,80 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			// insert next / insert at
 		}
 
-		// delete *:* 	16		(8)
+		// delete *:*
 		else if (wildcard_match_icase(line, "delete *:*"))
 		{
 			// delete data
 			// delete next / delete at
+   			int off, dlen;
+			u8 from_pointer = 0;
+			char* tmp = NULL;
+			
+			line += strlen("delete");
+		    skip_spaces(line);
+
+			if (wildcard_match_icase(line, "at*"))
+			{
+			    from_pointer = 0;
+			    line += strlen("at");
+			}
+			else if (wildcard_match_icase(line, "next*"))
+			{
+			    from_pointer = 1;
+			    line += strlen("next");
+			}
+			else
+			{
+			    // invalid command
+			    LOG("ERROR: Invalid delete command");
+			    return 0;
+			}
+
+		    skip_spaces(line);
+
+		    tmp = strchr(line, ':');
+		    *tmp = 0;
+
+			if (wildcard_match(line, "(*)"))
+			    sscanf(line, "(%d)", &off);
+			else
+			    sscanf(line, "%x", &off);
+
+			off += (from_pointer ? pointer : 0);
+
+			line = tmp+1;
+			*tmp = ':';
+
+		    skip_spaces(line);
+
+			// delete at/next *:until*
+			if (wildcard_match_icase(line, "until*"))
+			{
+			    line += strlen("until");
+    		    skip_spaces(line);
+
+				int flen;
+			    char* find = _decode_variable_data(line, &flen, var_list);
+			    
+			    if (!find)
+			    {
+			    	LOG("Error: no data to search");
+			    	return 0;
+			    }
+			    
+			    dlen = search_data(data + off, dsize - off, find, flen, 1);
+			    free(find);
+			}
+			else
+			{
+			    dlen = _parse_int_value(line, pointer, dsize, var_list);
+			}
+
+			char* write = data + off;
+			dsize -= dlen;
+			bcopy(write + dlen, write, dsize - off);
+
+            LOG("Deleted %d bytes (%s) from 0x%X to 0x%X\n", dlen, line, off, off + dlen);
 		}
 
         // search *
@@ -1277,14 +1348,15 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 
     			sprintf(tmp6, "%.6s", line+2);
     			sscanf(tmp6, "%x", &off);
+    			off += (line[1] == '8' ? pointer : 0);
 
     			sprintf(tmp8, "%.8s", line+9);
     			sscanf(tmp8, "%x", &val);
 
-    			char* write = data + off + (line[1] == '8' ? pointer : 0);
+    			char* write = data + off;
     			memcpy(write, (char*) &val +3, 1);
 
-    			LOG("Wrote 1 byte (%s) to 0x%lX", tmp8+6, write - data);
+    			LOG("Wrote 1 byte (%s) to 0x%X", tmp8+6, off);
     		}
     			break;
 
@@ -1300,14 +1372,15 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 
     			sprintf(tmp6, "%.6s", line+2);
     			sscanf(tmp6, "%x", &off);
+    			off += (line[1] == '8' ? pointer : 0);
 
     			sprintf(tmp8, "%.8s", line+9);
     			sscanf(tmp8, "%x", &val);
 
-    			char* write = data + off + (line[1] == '8' ? pointer : 0);
+    			char* write = data + off;
     			memcpy(write, (char*) &val +2, 2);
 
-    			LOG("Wrote 2 bytes (%s) to 0x%lX", tmp8+4, write - data);
+    			LOG("Wrote 2 bytes (%s) to 0x%X", tmp8+4, off);
     		}
     			break;
 
@@ -1323,14 +1396,15 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 
     			sprintf(tmp6, "%.6s", line+2);
     			sscanf(tmp6, "%x", &off);
+    			off += (line[1] == '8' ? pointer : 0);
 
     			sprintf(tmp8, "%.8s", line+9);
     			sscanf(tmp8, "%x", &val);
 
-    			char* write = data + off + (line[1] == '8' ? pointer : 0);
+    			char* write = data + off;
     			memcpy(write, (char*) &val, 4);
 
-    			LOG("Wrote 4 bytes (%s) to 0x%lX", tmp8, write - data);
+    			LOG("Wrote 4 bytes (%s) to 0x%X", tmp8, off);
     		}
     			break;
 
@@ -1356,6 +1430,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 
     			sprintf(tmp6, "%.6s", line+2);
     			sscanf(tmp6, "%x", &off);
+    			off += ((t == '8' || t == '9' || t == 'A') ? pointer : 0);
 
     			sprintf(tmp8, "%.8s", line+9);
     			sscanf(tmp8, "%x", &val);
@@ -1375,7 +1450,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 
 				for (i = 0; i < n; i++)
 				{
-	    			write = data + off + (incoff * i) + ((t == '8' || t == '9' || t == 'A') ? pointer : 0);
+	    			write = data + off + (incoff * i);
 
 					switch (t)
 					{
@@ -1474,11 +1549,12 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 
     			sprintf(tmp6, "%.6s", line+2);
     			sscanf(tmp6, "%x", &off);
+				off += ((t == '8' || t == '9' || t == 'A') ? pointer : 0);
 
     			sprintf(tmp8, "%.8s", line+9);
     			sscanf(tmp8, "%x", &val);
 
-    			char* write = data + off + ((t == '8' || t == '9' || t == 'A') ? pointer : 0);
+    			char* write = data + off;
 //				val += ((uint32_t*) write)[0];
 
 				switch (t)
@@ -1487,19 +1563,19 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 					case '8':
 						val += (uint8_t) write[0];
 		    			memcpy(write, (char*) &val +3, 1);
-		    			LOG("Add-Wrote 1 byte (%X) to 0x%lX", val, write - data);
+		    			LOG("Add-Wrote 1 byte (%X) to 0x%X", val, off);
 						break;
 					case '1':
 					case '9':
 						val += ((uint16_t*) write)[0];
 		    			memcpy(write, (char*) &val +2, 2);
-		    			LOG("Add-Wrote 2 bytes (%X) to 0x%lX", val, write - data);
+		    			LOG("Add-Wrote 2 bytes (%X) to 0x%X", val, off);
 						break;
 					case '2':
 					case 'A':
 						val += ((uint32_t*) write)[0];
 		    			memcpy(write, (char*) &val, 4);
-		    			LOG("Add-Wrote 4 bytes (%X) to 0x%lX", val, write - data);
+		    			LOG("Add-Wrote 4 bytes (%X) to 0x%X", val, off);
 						break;
 				}
 
