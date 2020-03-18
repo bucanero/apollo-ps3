@@ -1,11 +1,14 @@
 
 Here is the decryption process for game genie codes so once you decrypt a game save you know what to change. All the known game codes are at game genie's web site.
 
-Standard Code types 
+___________________________________________________
+
+Standard Code types 0/1/2: Write Code
+
 0TXXXXXX 000000YY
 1TXXXXXX 0000YYYY
 2TXXXXXX YYYYYYYY
-  XXXXXX = Offset to write to
+  XXXXXX = Address / Offset to write to
                YY = 8-Bit value to write
              YYYY = 16-Bit value to write
          YYYYYYYY = 32-Bit value to write
@@ -13,40 +16,148 @@ Standard Code types
      0 = From start of the data
      8 = From found from a search
 ___________________________________________________
-Multi Write/Value
+
+Code Type 3: Increase / Decrease Code
+
+3TXXXXXX YYYYYYYY
+ XXXXXX  = Address
+         YYYYYYYY = Bytes to Add/Sub
+ T = Byte Value & Offset Type
+     0 = Add 1 Byte  000000YY
+     1 = Add 2 Bytes 0000YYYY
+     2 = Add 4 Bytes YYYYYYYY
+     4 = Sub 1 Byte  000000YY
+     5 = Sub 2 Bytes 0000YYYY
+     6 = Sub 4 Bytes YYYYYYYY
+     8 = Offset from Pointer; Add 1 Byte  000000YY
+     9 = Offset from Pointer; Add 2 Bytes 0000YYYY
+     A = Offset from Pointer; Add 4 Bytes YYYYYYYY
+     C = Offset from Pointer; Sub 1 Byte  000000YY
+     D = Offset from Pointer; Sub 2 Bytes 0000YYYY
+     E = Offset from Pointer; Sub 4 Bytes YYYYYYYY
+___________________________________________________
+
+Code Type 4: Multi Write/Value
+
 4TXXXXXX YYYYYYYY
 4NNNWWWW VVVVVVVV
-  XXXXXX = Offset to start with
-         YYYYYYYY = 8/16/32-Bit value to start with
- NNN = Number of times to repeat
-    WWWW = Increase address by (in bytes)
-         VVVVVVVV = Increase value by
- T = Bit Size
-     0 = 8-Bit from start of the data
-     1 = 16-Bit from start of the data
-     2 = 32-Bit from start of the data
-     8 = 8-Bit from found from a search
-     9 = 16-Bit from found from a search
-     A = 32-Bit from found from a search
+  XXXXXX = Address / Offset from Pointer
+         YYYYYYYY = Bytes to Write / 8/16/32-Bit value
+ NNN = Number of times to repeat Write
+    WWWW = Increases address by (in bytes)
+         VVVVVVVV = Increases value by
+ T = Bit Size of YYYYYYYY
+     0 =  8-Bit Address / Start of the data
+     1 = 16-Bit Address / Start of the data
+     2 = 32-Bit Address / Start of the data
+     8 =  8-Bit Pointer / Offset from a search; 1 Byte  (Writes 000000YY)
+     9 = 16-Bit Pointer / Offset from a search; 2 Bytes (Writes 0000YYYY)
+     A = 32-Bit Pointer / Offset from a search; 4 Bytes (Writes YYYYYYYY)
+___________________________________________________
 
+Code Type 5: Copy/Paste Bytes
 
-Copy Bytes
 5TXXXXXX ZZZZZZZZ
 5TYYYYYY 00000000
   XXXXXX = Offset to copy from
-  YYYYYY = Offset to copy to
+  YYYYYY = Offset to copy to / Paste bytes
          ZZZZZZZZ = Number of bytes to copy
+ T = Offset Type
+     0 = Address / Start of the data
+     8 = Pointer / Offset from a search
+___________________________________________________
+
+Code Type 6: Pointer codes
+
+6TWX0Y0Z VVVVVVVV
+ T = Data size of VVVVVVVV
+     0 =  8-Bit Address / Start of the data
+     1 = 16-Bit Address / Start of the data
+     2 = 32-Bit Address / Start of the data
+     8 =  8-Bit Pointer / Offset from a search; 1 Byte  (Writes 000000YY)
+     9 = 16-Bit Pointer / Offset from a search; 2 Bytes (Writes 0000YYYY)
+     A = 32-Bit Pointer / Offset from a search; 4 Bytes (Writes YYYYYYYY)
+  W = operator:
+      0  = Read "address" from file
+      1X = Move pointer from obtained address ?? (X = 0:add, 1:substract, 2:multiply)
+      2X = Move pointer ?? (X = 0:add, 1:substract, 2:multiply)
+      4X = Write value: X=0 at read address, X=1 at pointer address
+     Y = flag relative to read add (very tricky to understand)
+       Z = flag relative to current pointer (very tricky to understand)
+         VVVVVVVV = Data
+___________________________________________________
+
+Code Type 7: Add Write
+
+7TXXXXXX YYYYYYYY = Add Write (T: 0=1byte/1=2byte/2=4byte)
  T = Bit Size
-     0 = From start of the data
-     8 = From found from a search
+     0 = 8 bit (1 byte)
+     1 = 16 bit (2 bytes)
+     2 = 32 bit (4 bytes)
+  XXXXXX = Address
+         YYYYYYYY = Value to add
+___________________________________________________
 
-Search Type
-8ZZZXXXX YYYYYYYY
- ZZZ = Number of times to find data
-    XXXX = Size of data to be found
-         YYYYYYYY = Raw data to search for
+Code Type 8: Search / Pointer Command (Use Bytes to Search with)
 
-Last edited by SkillerCMP; 02-18-2013 at 01:14 AM.
+8TFFGGGG HHHHHHHH
+ T = Offset Type
+     0 = Normal
+     8 = Offset from Pointer (Can essentially stack pointers)
+  FF = Amount of Times to Find until Write
+    GGGG = Size of data to be found
+         HHHHHHHH = Raw data to search for, use Multiple Lines if Needed
+This command is followed by another pointer command (08*, 18*, 28*, 58*, 48*, 49*, 4A*, 9*, A8*, etc)
+Example 1:
+80030002 FFFF0000 - Searches for 2 bytes FFFF Three Times Until Writes
+18000000 00007FFF - After the Searched Value is Found, Replaces FFFF with 7FFF
+Example 2:
+80040006 FFFF0000 - Searches for 6 bytes FFFF0000FFFF Four Times Until Writes
+FFFF0000 00000000 - Search Code Extended
+4A000000 7F7F7F7F - After the Searched Value is Found, Writes 4 bytes 7F7F7F7F two times
+40020008 00000000 - Multi Code 2nd line - repeat 2 times, increase address by 8, increase value by 0
+___________________________________________________
+
+Code Type 9: Pointer Manipulator
+
+9Y000000 XXXXXXXX
+ Y = Operator
+     0 = Move pointer to offset in address XXXXXXXXX
+     2 = Step forward
+     3 = Step backward
+     4 = Step back from end of file
+         XXXXXXXX = Amount to Offset
+Put this after the Pointer Commands (8*, C*) and it will offset from the Pointer.
+___________________________________________________
+
+Code Type A: Mass Byte Write
+
+ATXXXXXX YYYYYYYY
+ZZZZZZZZ ZZZZZZZZ
+ T = Offset Type
+     0 = Address
+     8 = Offset from Pointer
+  XXXXXX = Writes to this Address
+         YYYYYYYY = Amount of Bytes to Write
+  Z = Bytes to Write (GOES FROM LEFT TO RIGHT, Does Not Flip the Values)
+Example:
+A0004510 0000000F - Write 15 bytes to address 4510
+11223344 55667788 - First 8 bytes to Write
+99AABBCC DDEEFF00 - Remaining 7 bytes to Write
+___________________________________________________
+
+Code Type C: Search / Pointer Command 2: (Use Bytes from Offset to Search with)
+
+CTFFGGGG HHHHHHHH
+ T = Offset Type
+     0 = Search Forwards from Address Given
+     4 = Search Backwards from Address Given
+     8 = Offset from Pointer; Search Forwards from Address Given
+     C = Offset from Pointer; Search Backwards from Address Given
+  FF = Amount of Times to Find until Write
+    GGGG = Amount of Bytes to Search
+         HHHHHHHH = Bytes to Search, use Multiple Lines if Needed
+This command is followed by another pointer command (08*, 18*, 28*, 58*, 48*, 49*, 4A*, 9*, A8*, etc)
 
 ---------------------------------------------------------------------------------------------------
 
