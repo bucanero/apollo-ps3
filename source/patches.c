@@ -1416,19 +1416,19 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 						case '0':
 						case '8':
 			    			memcpy(write, (char*) &val +3, 1);
-			    			LOG("M-Wrote 1 byte (%X) to 0x%lX", val, write - data);
+			    			LOG("M-Wrote 1 byte (%02X) to 0x%lX", val, write - data);
 							break;
 
 						case '1':
 						case '9':
 			    			memcpy(write, (char*) &val +2, 2);
-			    			LOG("M-Wrote 2 bytes (%X) to 0x%lX", val, write - data);
+			    			LOG("M-Wrote 2 bytes (%04X) to 0x%lX", val, write - data);
 							break;
 
 						case '2':
 						case 'A':
 			    			memcpy(write, (char*) &val, 4);
-			    			LOG("M-Wrote 4 bytes (%X) to 0x%lX", val, write - data);
+			    			LOG("M-Wrote 4 bytes (%08X) to 0x%lX", val, write - data);
 							break;
 					}
 
@@ -1514,7 +1514,6 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     			sscanf(tmp8, "%x", &val);
 
     			char* write = data + off;
-//				val += ((uint32_t*) write)[0];
 
 				switch (t)
 				{
@@ -1522,19 +1521,19 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 					case '8':
 						val += (uint8_t) write[0];
 		    			memcpy(write, (char*) &val +3, 1);
-		    			LOG("Add-Wrote 1 byte (%X) to 0x%X", val, off);
+		    			LOG("Add-Wrote 1 byte (%02X) to 0x%X", val, off);
 						break;
 					case '1':
 					case '9':
 						val += ((uint16_t*) write)[0];
 		    			memcpy(write, (char*) &val +2, 2);
-		    			LOG("Add-Wrote 2 bytes (%X) to 0x%X", val, off);
+		    			LOG("Add-Wrote 2 bytes (%04X) to 0x%X", val, off);
 						break;
 					case '2':
 					case 'A':
 						val += ((uint32_t*) write)[0];
 		    			memcpy(write, (char*) &val, 4);
-		    			LOG("Add-Wrote 4 bytes (%X) to 0x%X", val, off);
+		    			LOG("Add-Wrote 4 bytes (%08X) to 0x%X", val, off);
 						break;
 				}
 

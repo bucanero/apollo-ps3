@@ -27,7 +27,7 @@
 #define ONLINE_CACHE_TIMEOUT    24*3600     // 1-day local cache
 
 // Save commands
-#define CMD_APPLY_CHEATS        "APPLY_CHEAT"
+#define CMD_DECRYPT_FILE        "DECRYPT_FLE"
 #define CMD_RESIGN_SAVE         "RESIGN_SAVE"
 #define CMD_DOWNLOAD_USB        "DNLOAD_USB"
 #define CMD_DOWNLOAD_HDD        "DNLOAD_HDD0"
@@ -143,8 +143,7 @@ int qsortCodeList_Compare(const void* A, const void* B);
 int isCodeLineValid(char * line);
 long getFileSize(const char * path);
 option_entry_t * ReadOptions(code_entry_t code, int * count);
-int ReadCodesHDD(save_entry_t * save);
-int ReadCodesUSB(save_entry_t * save);
+int ReadCodes(save_entry_t * save);
 int ReadOnlineSaves(save_entry_t * game);
 int LoadBackupCodes(save_entry_t * bup);
 

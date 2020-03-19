@@ -13,7 +13,7 @@
 #include <assert.h>
 #include <sysutil/video.h>
 #include <time.h>
-#include <dirent.h> 
+#include <dirent.h>
 
 #include <sys/stat.h>
 
@@ -604,40 +604,25 @@ void get_patch_code(char* buffer, int code_id, code_entry_t* entry)
 	entry->codes = res;
 }
 
-#define MENU_COPY_CMDS	2
+#define MENU_COPY_CMDS	3
 void _add_commands(code_entry_t * code)
 {
 	int count = 0;
+
+	_setManualCode(&code[count], PATCH_COMMAND, "\x0b Copy save game to USB", "");
+	code[count].options_count = 1;
+	code[count].options = _createOptions(2, "Copy to USB", CMD_COPY_SAVE_USB);
+	count++;
 
 	_setManualCode(&code[count], PATCH_COMMAND, "\x0c Export save game to Zip", "");
 	code[count].options_count = 1;
 	code[count].options = _createOptions(2, "Export Zip to USB", CMD_EXPORT_ZIP_USB);
 	count++;
 
-	_setManualCode(&code[count], PATCH_COMMAND, "\x0b Copy save game to USB", "");
+	_setManualCode(&code[count], PATCH_COMMAND, "\x0b Decrypt save game files", CMD_DECRYPT_FILE);
 	code[count].options_count = 1;
-	code[count].options = _createOptions(2, "Copy to USB", CMD_COPY_SAVE_USB);
+	code[count].options = NULL;
 	count++;
-}
-
-int ReadCodesUSB(save_entry_t * save)
-{
-	int count = 0;
-	save->code_count = 3 + (save->flags & SAVE_FLAG_LOCKED) + MENU_COPY_CMDS;
-	code_entry_t * ret = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (save->code_count));
-
-	_setManualCode(&ret[count++], PATCH_COMMAND, "\x06 Apply changes & Resign", CMD_RESIGN_SAVE);
-	_setManualCode(&ret[count++], PATCH_SFO, "\x07 Remove Account ID", SFO_REMOVE_ACCOUNT_ID);
-	_setManualCode(&ret[count++], PATCH_SFO, "\x07 Remove Console ID", SFO_REMOVE_PSID);
-	if (save->flags & SAVE_FLAG_LOCKED)
-		_setManualCode(&ret[count++], PATCH_SFO, "\x08 Remove copy protection", SFO_UNLOCK_COPY);
-
-	_add_commands(&ret[count]);
-
-	LOG("USB code_count=%d", save->code_count);
-
-	save->codes = ret;
-	return (save->code_count);
 }
 
 option_entry_t* _getFileOptions(const char* save_path, const char* mask)
@@ -659,6 +644,7 @@ option_entry_t* _getFileOptions(const char* save_path, const char* mask)
 			strcmp(dir->d_name, "SND0.AT3") != 0 &&
 			strcmp(dir->d_name, "PIC1.PNG") != 0 &&
 			strcmp(dir->d_name, "ICON0.PNG") != 0 &&
+			strcmp(dir->d_name, "ICON1.PAM") != 0 &&
 			strcmp(dir->d_name, "PARAM.PFD") != 0 &&
 			strcmp(dir->d_name, "PARAM.SFO") != 0 &&
 			wildcard_match_icase(dir->d_name, mask))
@@ -681,6 +667,7 @@ option_entry_t* _getFileOptions(const char* save_path, const char* mask)
 			strcmp(dir->d_name, "SND0.AT3") != 0 &&
 			strcmp(dir->d_name, "PIC1.PNG") != 0 &&
 			strcmp(dir->d_name, "ICON0.PNG") != 0 &&
+			strcmp(dir->d_name, "ICON1.PAM") != 0 &&
 			strcmp(dir->d_name, "PARAM.PFD") != 0 &&
 			strcmp(dir->d_name, "PARAM.SFO") != 0 &&
 			wildcard_match_icase(dir->d_name, mask))
@@ -708,53 +695,51 @@ option_entry_t* _getFileOptions(const char* save_path, const char* mask)
  *	_count_count:	Pointer to int (set to the number of codes within the ncl)
  * Return:			Returns an array of code_entry, null if failed to load
  */
-int ReadCodesHDD(save_entry_t * save)
+int ReadCodes(save_entry_t * save)
 {
-    int code_count = MENU_COPY_CMDS, cur_count = 0;
+    int code_count = 0, cheat_count = 0, cur_count = 0;
 	code_entry_t * ret;
 	option_entry_t * file_opt = NULL;
 	char filePath[256];
+	char group[128] = "";
+	long bufferLen;
+	char * buffer = NULL;
 
 	snprintf(filePath, sizeof(filePath), APOLLO_DATA_PATH "%s.ps3savepatch", save->title_id);
 
-	if (file_exists(filePath) != SUCCESS)
+	if (file_exists(filePath) == SUCCESS)
 	{
-		ret = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (code_count));
-		_add_commands(&ret[cur_count]);
+		LOG("Loading BSD codes '%s'...", filePath);
+		buffer = readFile(filePath, &bufferLen);
+		buffer[bufferLen]=0;
 
-		save->code_count = code_count;
-		save->codes = ret;
-		return cur_count;
+		_remove_char(buffer, bufferLen, '\r');
+		cheat_count = _count_codes(buffer);
 	}
 
-	char group[128] = "";
-	long bufferLen;
-
-	char * buffer = readFile(filePath, &bufferLen);
-	buffer[bufferLen]=0;
-
-	//LOG("buffer=%s\n", buffer);
-	LOG("Loading BSD codes '%s'...", filePath);
-
-	_remove_char(buffer, bufferLen, '\r');
-	code_count += _count_codes(buffer);
-	code_count += (code_count > MENU_COPY_CMDS);
-
+	code_count = 3 + cheat_count + (save->flags & SAVE_FLAG_LOCKED) + MENU_COPY_CMDS;
 	ret = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (code_count));
 
 	save->code_count = code_count;
+	save->codes = ret;
 
-	if (code_count == MENU_COPY_CMDS)
+	_setManualCode(&ret[cur_count++], PATCH_COMMAND, "\x06 Apply changes & Resign", CMD_RESIGN_SAVE);
+	_setManualCode(&ret[cur_count++], PATCH_SFO, "\x07 Remove Account ID", SFO_REMOVE_ACCOUNT_ID);
+	_setManualCode(&ret[cur_count++], PATCH_SFO, "\x07 Remove Console ID", SFO_REMOVE_PSID);
+	if (save->flags & SAVE_FLAG_LOCKED)
+		_setManualCode(&ret[cur_count++], PATCH_SFO, "\x08 Remove copy protection", SFO_UNLOCK_COPY);
+
+	_add_commands(&ret[cur_count]);
+	cur_count += 2;
+	ret[cur_count++].options = _getFileOptions(save->path, "*");
+
+	if (cheat_count == 0)
 	{
-		_add_commands(&ret[cur_count]);
+		if (buffer)
+			free(buffer);
 
-		save->codes = ret;
 		return cur_count;
 	}
-
-	_setManualCode(&ret[cur_count++], PATCH_COMMAND, "\x06 Apply cheats", CMD_APPLY_CHEATS);
-	_add_commands(&ret[cur_count]);
-	cur_count += MENU_COPY_CMDS;
 
 	// remove 0x00 from previous strtok(...)
 	_remove_char(buffer, bufferLen, '\0');
@@ -842,11 +827,11 @@ int ReadCodesHDD(save_entry_t * save)
 		line = strtok(NULL, "\n");
 	}
 
-	for (int x = MENU_COPY_CMDS+1; x < cur_count; x++)
+	for (int x = code_count - cheat_count; x < cur_count; x++)
 	{
 		// remove 0x00 from previous strtok(...)
 		_remove_char(buffer, bufferLen, '\0');
-		get_patch_code(buffer, x - MENU_COPY_CMDS-1, &ret[x]);
+		get_patch_code(buffer, x - code_count + cheat_count, &ret[x]);
 
 		LOG("Name: %s\nFile: %s\nCode (%d): %s\n", ret[x].name, ret[x].file, ret[x].type, ret[x].codes);
 	}
@@ -855,7 +840,6 @@ int ReadCodesHDD(save_entry_t * save)
 
 	LOG("cur_count=%d,code_count=%d", cur_count, code_count);
 
-	save->codes = ret;
 	return cur_count;
 }
 
@@ -1536,197 +1520,3 @@ char * ParseOptionsCode(code_entry_t code, char * buffer)
 	//printf ("---buffer = %s\n", buffer);
 	return buffer;
 }
-
-/*
- * Function:		StripMultilineComments()
- * File:			saves.c
- * Project:			Apollo PS3
- * Description:		Removes multiline comments and its contents from a string
- * Arguments:
- *	buffer:			String
- * Return:			void
- */
-void StripMultilineComments(char * buffer)
-{
-	if (!buffer)
-		return;
-	
-	//find /* in buffer
-	int len = strlen(buffer);
-	char * p = strstr(buffer, "/*");
-	
-	while (p)
-	{
-		int start = p - buffer;
-		int end = len;
-		
-		p = strstr(buffer, "*/");
-		if (p)
-		{
-			end = (p - buffer) + 2;
-		}
-			
-		if (end < len)
-			memcpy(&buffer[start], &buffer[end], len - end);
-		
-		buffer[start + (len - end)] = 0;
-		len = start + (len - end);
-		
-		p = strstr(buffer, "/*");
-	}
-	
-	
-}
-
-/*
- * Function:		ShrinkCode()
- * File:			saves.c
- * Project:			Apollo PS3
- * Description:		Removes comments, invalid code lines, and extra lines ("\n\n")
- * Arguments:
- *	buffer:			String
- * Return:			void
- */
-void ShrinkCode(char * buffer)
-{
-	//Strip multiline comments
-	StripMultilineComments(buffer);
-	
-	char * line = malloc(1000);
-	
-	//printf("----buffer = %s\n", buffer);
-	
-	int x = 0, lineStart = 0, max = strlen(buffer);
-	while (x < max)
-	{
-		if (buffer[x] == '\n')
-		{
-			if ((x - lineStart) > 2)
-			{
-				memcpy(line, &buffer[lineStart], x - lineStart);
-				line[x - lineStart] = 0;
-				int isValid = isCodeLineValid(line);
-				
-				if (isValid == 0) //Remove line entirely
-				{
-					//strncpy(buffer, buffer, p-buffer); // Copy characters from 'str' start to 'orig' st$
-					//buffer[p-buffer] = '\0';
-					
-					//sprintf(buffer+(p-buffer), "%s%s", rep, p+strlen(orig));
-					
-					memcpy(&buffer[lineStart], &buffer[x+1], max - x - 1);
-					max -= (x - lineStart) + 1;
-					x = lineStart - 1;
-				}
-				else if (isValid == 2) //Remove end part of code (c aaaaaaaa vvvvvvvv anything past here is extra crap we don't need)
-				{
-					int start = lineStart, spaceCnt = 0;
-					while (start < max && spaceCnt < 3 && start < x)
-					{
-						if (buffer[start] == ' ')
-							spaceCnt++;
-						start++;
-					}
-					
-					if (spaceCnt > 2)
-					{
-						memcpy(&buffer[start], &buffer[x], max - x);
-						max -= (x - start);
-					}
-				}
-			}
-			
-			lineStart = x + 1;
-		}
-		
-		x++;
-	}
-	buffer[max] = 0;
-	
-	free(line);
-}
-
-/*
- * Function:		AppendCode()
- * File:			saves.c
- * Project:			Apollo PS3
- * Description:		Appends a condensed version of the code as a NCL formatted code
- * Arguments:
- *	buffer:			String
- *	code:			Code to convert to NCL code format
- * Return:			void
- */
-void AppendCode(char * buffer, code_entry_t code)
-{
-	int len = strlen(buffer);
-	
-	//Name
-	memcpy(&buffer[len], code.name, strlen(code.name));
-	len += strlen(code.name);
-	
-	memcpy(&buffer[len], "\n", 1);
-	len += 1;
-	
-	//Constant write
-//	memcpy(&buffer[len], code.cwrite ? "1\n" : "0\n", 2);
-	len += 2;
-	
-	//Codes
-	char * tCodeBuf = (char *)malloc(strlen(code.codes) + 1);
-	memcpy(tCodeBuf, code.codes, strlen(code.codes));
-	tCodeBuf[strlen(code.codes)] = 0;
-	tCodeBuf = ParseOptionsCode(code, tCodeBuf);
-	ShrinkCode(tCodeBuf);
-	memcpy(&buffer[len], tCodeBuf, strlen(tCodeBuf));
-	len += strlen(tCodeBuf);
-	//free (tCodeBuf);
-	
-	//End of code
-	if (buffer[len-1] == '\n')
-	{
-		memcpy(&buffer[len], "#\n", 2);
-		len += 2;
-	}
-	else
-	{
-		memcpy(&buffer[len], "\n#\n", 3);
-		len += 3;
-	}
-	buffer[len] = 0;
-}
-
-/*
- * Function:		ParseActivatedGameList()
- * File:			saves.c
- * Project:			Apollo PS3
- * Description:		Parses the selected codes into a ncl file for Artemis PRX to read
- * Arguments:
- *	list:			Array of game_entry to process
- *	count:			Number of games in list
- * Return:			Returns a buffer containing the processed codes in NCL format
- */
-char * ParseActivatedGameList(save_entry_t * list, int count)
-{
-	char * ret = (char *)calloc(1, 5000); //Max
-	
-	if (list)
-	{
-		int x = 0, y = 0;
-		for (x = 0; x < count; x++)
-		{
-			if (list[x].codes)
-			{
-				for (y = 0; y < list[x].code_count; y++)
-				{
-					if (list[x].codes[y].activated)
-					{
-						AppendCode(ret, list[x].codes[y]);
-					}
-				}
-			}
-		}
-	}
-	
-	return ret;
-}
-

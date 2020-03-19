@@ -199,7 +199,7 @@ save_list_t hdd_saves = {
     .count = 0,
     .path = "",
     .ReadList = &ReadUserList,
-    .ReadCodes = &ReadCodesHDD,
+    .ReadCodes = &ReadCodes,
     .UpdatePath = &update_hdd_path,
 };
 
@@ -213,7 +213,7 @@ save_list_t usb_saves = {
     .count = 0,
     .path = "",
     .ReadList = &ReadUserList,
-    .ReadCodes = &ReadCodesUSB,
+    .ReadCodes = &ReadCodes,
     .UpdatePath = &update_usb_path,
 };
 
@@ -1459,6 +1459,21 @@ void doCodeOptionsMenu()
 			code->options[option_index].sel = menu_sel;
 			const char* codecmd = code->options[option_index].value[menu_sel];
 
+			if (strcmp(code->codes, CMD_DECRYPT_FILE) == 0)
+			{
+				const char* filename = code->options[option_index].name[menu_sel];
+				u8* protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
+
+				LOG("Decrypt '%s' from '%s'...", filename, selected_entry->name);
+
+				if (decrypt_save_file(selected_entry->path, filename, "/dev_hdd0/tmp/", protected_file_id))
+					show_message("File decrypted successfully to /dev_hdd0/tmp/");
+				else
+					show_message("Error! File couldn't be decrypted");
+
+        		code->activated = 0;
+			}
+
 			if (strncmp(codecmd, CMD_DOWNLOAD_USB, 10) == 0)
 			{
 				downloadSave(code->codes, codecmd[10] ? SAVES_PATH_USB1 : SAVES_PATH_USB0);
@@ -1593,7 +1608,7 @@ int apply_cheat_patches()
 	uint8_t* protected_file_id;
 	list_t* decrypted_files = list_alloc();
 
-    init_loading_screen("Applying cheats...");
+	init_loading_screen("Applying changes...");
 
 	for (j = 0; j < selected_entry->code_count; j++)
 	{
@@ -1617,7 +1632,7 @@ int apply_cheat_patches()
 
 			protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
 
-			if (decrypt_save_file(selected_entry->path, filename, protected_file_id))
+			if (decrypt_save_file(selected_entry->path, filename, NULL, protected_file_id))
 			{
 				list_append(decrypted_files, strdup(filename));
 			}
@@ -1650,7 +1665,7 @@ int apply_cheat_patches()
 
 		protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
 		
-		if (!encrypt_save_file(selected_entry->path, filename, protected_file_id))
+		if (!encrypt_save_file(selected_entry->path, filename, NULL, protected_file_id))
 		{
 			LOG("Error: failed to encrypt (%s)", tmpfile);
 			ret = 0;
@@ -1702,46 +1717,24 @@ void doPatchMenu()
 				snprintf(in_file_path, sizeof(in_file_path), "%s" "PARAM.SFO", selected_entry->path);
 				LOG("Applying SFO patches '%s'...", in_file_path);
 
-                if (patch_sfo(in_file_path, &patch) == SUCCESS)
-	            {
-					LOG("Resigning save '%s'...", selected_entry->name);
-					if (pfd_util_init(selected_entry->title_id, selected_entry->path))
-					{
-						if (pfd_util_process(PFD_CMD_UPDATE, 0) == SUCCESS)
-		                    show_message("Save file successfully resigned!");
-    	                else
-	                        show_message("Error! Save file couldn't be resigned");
-					}
-                    else
-                    {
-	                    show_message("Error! Save file couldn't be resigned");
-                    }
+				if (patch_sfo(in_file_path, &patch) != SUCCESS)
+					show_message("Error! Account changes couldn't be applied");
 
-					pfd_util_end();
-				}
-
-				if(patch.account_id)
-				    free(patch.account_id);
-
-				selected_entry->codes[menu_sel].activated = 0;
-			}
-
-			if (strcmp(selected_entry->codes[menu_sel].codes, CMD_APPLY_CHEATS) == 0)
-			{
 				LOG("Applying cheats to '%s'...", selected_entry->name);
-
 				if (!apply_cheat_patches())
 					show_message("Error! Cheat codes couldn't be applied");
 
-				if (pfd_util_init(selected_entry->title_id, selected_entry->path))
-				{
-					if (pfd_util_process(PFD_CMD_UPDATE, 0) == SUCCESS)
-						show_message("Cheat codes successfully applied!");
-					else
-						show_message("Error! Save file couldn't be resigned");
-				}
+				LOG("Resigning save '%s'...", selected_entry->name);
+				if (!pfd_util_init(selected_entry->title_id, selected_entry->path) ||
+					(pfd_util_process(PFD_CMD_UPDATE, 0) != SUCCESS))
+					show_message("Error! Save file couldn't be resigned");
+				else
+					show_message("Save file successfully modified!");
 
 				pfd_util_end();
+
+				if(patch.account_id)
+				    free(patch.account_id);
 
 				selected_entry->codes[menu_sel].activated = 0;
 			}

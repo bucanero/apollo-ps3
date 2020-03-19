@@ -186,8 +186,8 @@ void pfd_util_end(void);
 int pfd_util_setup_keys(const u8* psid, u32 user_id);
 u8* get_secure_file_id(const char* game_id, const char* filename);
 
-int decrypt_save_file(const char* path, const char* fname, u8* secure_file_key);
-int encrypt_save_file(const char* path, const char* fname, u8* secure_file_key);
+int decrypt_save_file(const char* path, const char* fname, const char* outpath, u8* secure_file_key);
+int encrypt_save_file(const char* path, const char* fname, const char* outpath, u8* secure_file_key);
 
 #ifdef __cplusplus
 }

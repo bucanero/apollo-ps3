@@ -86,7 +86,7 @@ void setup_key(u8* key, int len) {
 }
 
 void pfd_util_end(void) {
-	LOG("clean up...");
+	LOG("pfdtool clean up...");
 
 	if (file_names)
 		list_free(file_names);
@@ -353,7 +353,7 @@ int _get_aes_details_pfd(const char* path, const char* filename, const u8* secur
 	return 1;
 }
 
-int decrypt_save_file(const char* path, const char* fname, u8* secure_file_key)
+int decrypt_save_file(const char* path, const char* fname, const char* outpath, u8* secure_file_key)
 {
 	u8 entry_key[PFD_ENTRY_KEY_SIZE];
 	u64 file_size, aligned_file_size;
@@ -413,6 +413,9 @@ int decrypt_save_file(const char* path, const char* fname, u8* secure_file_key)
 			block_data[j] ^= counter_key[j];
 	}
 
+	if (outpath)
+		snprintf(file_path, sizeof(file_path), "%s%s", outpath, fname);
+
 	// save decrypted data
 	if (write_file(file_path, file_data, file_size) < 0) {
 		free(file_data);
@@ -424,7 +427,7 @@ int decrypt_save_file(const char* path, const char* fname, u8* secure_file_key)
 	return 1;
 }
 
-int encrypt_save_file(const char* path, const char* fname, u8* secure_file_key)
+int encrypt_save_file(const char* path, const char* fname, const char* outpath, u8* secure_file_key)
 {
 	u8 entry_key[PFD_ENTRY_KEY_SIZE];
 	u64 file_size, aligned_file_size;
@@ -484,6 +487,9 @@ int encrypt_save_file(const char* path, const char* fname, u8* secure_file_key)
 
 		aes_crypt_ecb(&aes2, AES_ENCRYPT, block_data, block_data);
 	}
+
+	if (outpath)
+		snprintf(file_path, sizeof(file_path), "%s%s", outpath, fname);
 
 	// save encrypted data
 	if (write_file(file_path, file_data, aligned_file_size) < 0) {
