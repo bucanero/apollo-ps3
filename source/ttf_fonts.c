@@ -342,7 +342,7 @@ int display_ttf_string(int posx, int posy, const char *string, u32 color, u32 bk
 
 
         if(Win_flag & WIN_SKIP_LF) {
-            if(ttf_char == '\r' || ttf_char == '\n') ttf_char='/';
+            if(ttf_char == '\r' || ttf_char == '\n') ttf_char=' ';
         } else {
             if(Win_flag & WIN_DOUBLE_LF) {
                 if(ttf_char == '\r') {if(posx > lenx) lenx = posx; posx = 0;continue;}

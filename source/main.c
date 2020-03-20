@@ -542,7 +542,7 @@ void LoadTextures_Menu()
 
 	free_mem = (u32*) init_ttf_table((u16*) texture_mem);
 	
-	set_ttf_window(0, 0, 848 + apollo_config.marginH, 512 + apollo_config.marginV, 0);
+	set_ttf_window(0, 0, 848 + apollo_config.marginH, 512 + apollo_config.marginV, WIN_SKIP_LF);
 //	TTFUnloadFont();
 	
 	if (!menu_textures)
@@ -1181,7 +1181,7 @@ void doOptionsMenu()
 		else if (paddata[0].BTN_CIRCLE)
 		{
 			save_app_settings(&apollo_config);
-			set_ttf_window(0, 0, 848 + apollo_config.marginH, 512 + apollo_config.marginV, 0);
+			set_ttf_window(0, 0, 848 + apollo_config.marginH, 512 + apollo_config.marginV, WIN_SKIP_LF);
 			SetMenu(MENU_MAIN_SCREEN);
 			return;
 		}
@@ -1642,7 +1642,6 @@ int apply_cheat_patches()
 				ret = 0;
 				continue;
 			}
-
 		}
 
 		if (!apply_cheat_patch_code(tmpfile, code))
