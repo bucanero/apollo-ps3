@@ -218,9 +218,11 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
         // carry(*)
 		if (wildcard_match_icase(line, "carry(*)"))
 		{
+			int tmpi;
 			// carry setting for add() / sub()
 			line += strlen("carry");
-		    sscanf(line, "(%hhd)", &carry);
+		    sscanf(line, "(%d)", &tmpi);
+			carry = tmpi;
 		    
 		    LOG("Set carry bytes = %d\n", carry);
 		}
@@ -354,36 +356,46 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			// set crc_*:*
 			else if (wildcard_match_icase(line, "crc_*:*"))
 			{
+				int tmpi;
 			    line += strlen("crc_");
+
 			    if (wildcard_match_icase(line, "bandwidth:*"))
 			    {
     			    line += strlen("bandwidth:");
-    			    sscanf(line, "%hhd", &custom_crc.bandwidth);
+    			    sscanf(line, "%d", &tmpi);
+					custom_crc.bandwidth = tmpi;
 			    }
+
 			    else if (wildcard_match_icase(line, "polynomial:*"))
 			    {
     			    line += strlen("polynomial:");
     			    sscanf(line, "%x", &custom_crc.polynomial);
 			    }
+
 			    else if (wildcard_match_icase(line, "initial_value:*"))
 			    {
     			    line += strlen("initial_value:");
     			    sscanf(line, "%x", &custom_crc.initial_value);
 			    }
+
 			    else if (wildcard_match_icase(line, "output_xor:*"))
 			    {
     			    line += strlen("output_xor:");
     			    sscanf(line, "%x", &custom_crc.output_xor);
 			    }
+
 			    else if (wildcard_match_icase(line, "reflection_input:*"))
 			    {
     			    line += strlen("reflection_input:");
-    			    sscanf(line, "%hhd", &custom_crc.reflection_input);
+    			    sscanf(line, "%d", &tmpi);
+					custom_crc.reflection_input = tmpi;
 			    }
+
 			    else if (wildcard_match_icase(line, "reflection_output:*"))
 			    {
     			    line += strlen("reflection_output:");
-    			    sscanf(line, "%hhd", &custom_crc.reflection_output);
+    			    sscanf(line, "%d", &tmpi);
+					custom_crc.reflection_output = tmpi;
 			    }
 			}
 
