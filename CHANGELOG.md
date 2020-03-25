@@ -4,6 +4,16 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+### Added
+
+* re-added resign/cheat options to HDD/USB
+* Added decrypt file option
+
+### Fixed
+
+* Fixed game listing issue (when name has a `\n`)
+* Fixed custom CRC calculation bug (BSD patches)
+
 ## [v1.0.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.0.0) - 2020-03-15
 
 ### Added
