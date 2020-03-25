@@ -4,10 +4,13 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.0.2](https://github.com/bucanero/apollo-ps3/releases/tag/v1.0.2) - 2020-03-25
+
 ### Added
 
-* re-added resign/cheat options to HDD/USB
+* Re-added resign/cheat options to HDD/USB
 * Added decrypt file option
+* Updated UI with custom font
 
 ### Fixed
 
