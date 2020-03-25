@@ -80,20 +80,19 @@ enum texture_index
 };
 
 //Fonts
-#define  font_comfortaa_regular								0
-#define  font_comfortaa_bold								1
-#define  font_comfortaa_light								2
+#define  font_adonais_regular								0
 
 #define APP_FONT_COLOR						0xFFFFFF00
 #define APP_FONT_TAG_COLOR					0xFFFFFF00
+#define APP_FONT_MENU_COLOR					0x00000000
 #define APP_FONT_TITLE_COLOR				0xFFFFFF00
 #define APP_FONT_SIZE_TITLE					24, 24
 #define APP_FONT_SIZE_SUBTITLE				20, 20
 #define APP_FONT_SIZE_SUBTEXT				12, 12
-#define APP_FONT_SIZE_ABOUT					14, 14
+#define APP_FONT_SIZE_ABOUT					19, 17
 #define APP_FONT_SIZE_SELECTION				14, 16
 #define APP_FONT_SIZE_DESCRIPTION			18, 16
-#define APP_FONT_SIZE_MENU					13, 16
+#define APP_FONT_SIZE_MENU					19, 18
 
 //Screen adjustment (Tiny3D/Assets)
 #define SCREEN_W_ADJ 						848/1920

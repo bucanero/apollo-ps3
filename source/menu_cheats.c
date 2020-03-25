@@ -221,7 +221,7 @@ int DrawCodes(code_entry_t* code, u8 alpha, int y_inc, int xOff, int selIndex)
                 }
                 
                 SetFontSize(y_inc-6, y_inc-4);
-                SetCurrentFont(font_comfortaa_regular);
+//                SetCurrentFont(font_comfortaa_regular);
                 //SetExtraSpace(0);
                 for (c = startDrawX; c < max; c++)
                 {
@@ -354,7 +354,6 @@ void Draw_CheatsMenu_View(const char* title)
 void DrawGameList(int selIndex, save_entry_t * games, int glen, u8 alpha)
 {
     SetFontSize(APP_FONT_SIZE_SELECTION);
-	SetCurrentFont(font_comfortaa_regular);
     
     char tmp[4] = "   ";
     int game_y = 80, y_inc = 20;
@@ -437,7 +436,6 @@ void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)
 			u8 a = (u8)((alpha * CalculateAlphaList(x, selIndex, maxPerPage)) / 0xFF);
             SetFontColor(APP_FONT_COLOR | a, 0);
             //printf ("Drawing code name %d\n", x);
-			SetCurrentFont(font_comfortaa_regular);
             float dx = DrawString(MENU_ICON_OFF + (MENU_TITLE_OFF * 3) - xo, game_y, game->codes[x].name);
             //DrawString(MENU_ICON_OFF + (MENU_TITLE_OFF * 3), game_y, game.codes[x].name);
             
@@ -447,7 +445,6 @@ void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)
 
 				SetFontSize((int)(y_inc * 0.6), (int)(y_inc * 0.6));
                 SetFontAlign(3);
-				//SetCurrentFont(font_comfortaa_light);
 				SetFontColor(APP_FONT_TAG_COLOR | a, 0);
 				DrawString(MENU_ICON_OFF + ((MENU_TITLE_OFF * 3) - 15) / 2, game_y + 2, "select");
                 SetFontAlign(0);
@@ -460,8 +457,6 @@ void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)
                     {
                         if (game->codes[x].options[od].sel >= 0 && game->codes[x].options[od].name && game->codes[x].options[od].name[game->codes[x].options[od].sel])
                         {
-							SetCurrentFont(font_comfortaa_bold);
-
                             //Allocate option
                             char * option = calloc(1, strlen(game->codes[x].options[od].name[game->codes[x].options[od].sel]) + 4);
 

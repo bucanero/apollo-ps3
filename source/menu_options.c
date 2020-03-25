@@ -17,7 +17,6 @@ void _draw_OptionsMenu(u8 alpha)
 
     SetFontSize(APP_FONT_SIZE_SELECTION);
     int ind = 0, y_off = 120;
-	SetCurrentFont(font_comfortaa_regular);
     while (menu_options[ind].name)
     {
         SetFontColor(APP_FONT_COLOR | alpha, 0);

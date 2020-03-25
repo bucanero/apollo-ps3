@@ -141,7 +141,6 @@ void DrawHeader_Ani(int icon, const char * hdrTitle, const char * headerSubTitle
 
 	//header title string
 	SetFontColor(rgba | icon_a, 0);
-	SetCurrentFont(font_comfortaa_regular);
 	SetFontSize(APP_FONT_SIZE_TITLE);
 	DrawString(MENU_ICON_OFF + 10, 31, headerTitle);
 
@@ -182,7 +181,6 @@ void DrawHeader(int icon, int xOff, const char * hdrTitle, const char * headerSu
 	//header mini icon
 	//header title string
 	SetFontColor(rgba, 0);
-	SetCurrentFont(font_comfortaa_regular);
 	if (mode)
 	{
 		DrawTextureCenteredX(&menu_textures[icon], xOff + MENU_ICON_OFF - 12, 40, 0, 32, 32, 0xffffffff);
@@ -296,7 +294,7 @@ void loading_screen_thread(void* user_data)
         DrawTextureCentered(&menu_textures[circle_loading_bg_png_index], 424, 256, 0, 89, 89, 0xFFFFFFFF);
         DrawTextureRotated(&menu_textures[circle_loading_seek_png_index], 424, 256, 0, 89, 89, 0xFFFFFFFF, angle);
 
-		DrawString(0, 356, (char*) user_data);		
+		DrawStringMono(0, 336, (char*) user_data);		
 
     	tiny3d_Flip();
 	}
@@ -311,8 +309,8 @@ int init_loading_screen(const char* message)
     please_wait = 1;
 
 	SetFontAlign(1);
-	SetFontSize(APP_FONT_SIZE_SELECTION);
-	SetFontColor(APP_FONT_COLOR | 0xFF, 0);
+	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
+	SetFontColor(APP_FONT_MENU_COLOR | 0xFF, 0);
 
     int ret = sysThreadCreate (&tid, loading_screen_thread, (void*) message, 1000, 16*1024, THREAD_JOINABLE, "please_wait");
 
@@ -339,8 +337,8 @@ void drawJar(uint8_t idx, int pos_x, int pos_y, const char* text, uint8_t alpha)
 	if (active)
 		DrawTexture(&menu_textures[idx+6], pos_x, apollo_config.marginV + pos_y, 0, menu_textures[idx+6].texture.width * SCREEN_W_ADJ, menu_textures[idx+6].texture.height * SCREEN_H_ADJ, 0xffffff00 | alpha);
 
-	SetFontColor(APP_FONT_COLOR | (alpha == 0xFF ? (active ? 0xFF : 32) : alpha), 0);
-	DrawString(pos_x + (menu_textures[idx].texture.width * SCREEN_W_ADJ / 2), apollo_config.marginV + pos_y - 25, text);
+	SetFontColor(APP_FONT_MENU_COLOR | (alpha == 0xFF ? (active ? 0xFF : 32) : alpha), 0);
+	DrawStringMono(pos_x + (menu_textures[idx].texture.width * SCREEN_W_ADJ / 2), apollo_config.marginV + pos_y - 25, text);
 }
 
 void _drawColumn(uint8_t idx, int pos_x, int pos_y, uint8_t alpha)
@@ -366,7 +364,7 @@ void drawJars(uint8_t alpha)
 {
 	SetFontAlign(3);
 	SetFontSize(APP_FONT_SIZE_MENU);
-	SetCurrentFont(font_comfortaa_regular);
+	SetCurrentFont(font_adonais_regular);
 
 	//Empty
 	drawJar(jar_empty_png_index, jar_empty_png_x, jar_empty_png_y, "", alpha);

@@ -106,7 +106,7 @@ void DrawChar(float x, float y, float z, u8 chr);
 
 // function to draw one string monospaced. It return X incremented
 
-float DrawStringMono(float x, float y, char *str);
+float DrawStringMono(float x, float y, const char *str);
 
 // function to draw one string. It return X incremented
 

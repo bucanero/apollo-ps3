@@ -546,13 +546,11 @@ static int i_must_break_line(const char *str, float x)
     return 0;
 }
 
-float DrawStringMono(float x, float y, char *str)
+float DrawStringMono(float x, float y, const char *str)
 {
-	if (!font_datas.mono)
-		return DrawString(x, y, str);
-	
 	float initX = x;
 	int dx = font_datas.sx;
+    font_datas.mono = font_datas.sx;
 	
     if(font_datas.align == 1) {
     

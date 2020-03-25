@@ -61,6 +61,7 @@ enum menu_screen_ids
 
 //Font
 #include "ttf_render.h"
+#include "font_adonais.h"
 
 //Sound
 #include "spu_soundmodule_bin.h"
@@ -533,6 +534,7 @@ void LoadTextures_Menu()
 	if(!texture_mem) return; // fail!
 	
 	ResetFont();
+	free_mem = (u32 *) AddFontFromBitmapArray((u8 *) data_font_Adonais, (u8 *) texture_mem, 0x20, 0x7e, 32, 31, 1, BIT7_FIRST_PIXEL);
 	
 	TTFUnloadFont();
 	TTFLoadFont(0, "/dev_flash/data/font/SCE-PS3-SR-R-LATIN2.TTF", NULL, 0);
@@ -540,7 +542,7 @@ void LoadTextures_Menu()
 	TTFLoadFont(2, "/dev_flash/data/font/SCE-PS3-SR-R-JPN.TTF", NULL, 0);
 	TTFLoadFont(3, "/dev_flash/data/font/SCE-PS3-YG-R-KOR.TTF", NULL, 0);
 
-	free_mem = (u32*) init_ttf_table((u16*) texture_mem);
+	free_mem = (u32*) init_ttf_table((u16*) free_mem);
 	
 	set_ttf_window(0, 0, 848 + apollo_config.marginH, 512 + apollo_config.marginV, WIN_SKIP_LF);
 //	TTFUnloadFont();
@@ -1623,6 +1625,9 @@ int apply_cheat_patches()
 			filename = strrchr(code->file, '\\')+1;
 		else
 			filename = code->file;
+
+		if (strchr(filename, '*'))
+			filename = code->options[0].name[code->options[0].sel];
 
 		snprintf(tmpfile, sizeof(tmpfile), "%s%s", selected_entry->path, filename);
 

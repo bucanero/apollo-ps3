@@ -17,45 +17,44 @@ void _draw_AboutMenu(u8 alpha)
 	DrawTextureCenteredX(&menu_textures[logo_text_png_index], 424, 70, 0, 245, 40, 0xFFFFFF00 | alpha);
 
     SetFontAlign(1);
-	SetCurrentFont(font_comfortaa_bold);
+	SetCurrentFont(font_adonais_regular);
+	SetFontColor(APP_FONT_MENU_COLOR | 0xFF, 0);
 	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
-	DrawString(0, 120, "PlayStation 3® version:");
+	DrawStringMono(0, 120, "PlayStation 3 version:");
+	SetFontSize(APP_FONT_SIZE_ABOUT);
     
     for (cnt = 0; menu_about_strings[cnt] != NULL; cnt += 2)
     {
-		SetFontSize(APP_FONT_SIZE_ABOUT);
-
-		SetCurrentFont(font_comfortaa_regular);
         SetFontAlign(2);
-		DrawString((848 / 2) - 10, 150 + (cnt * 12), menu_about_strings[cnt]);
+		DrawStringMono((848 / 2) - 10, 150 + (cnt * 12), menu_about_strings[cnt]);
         
-		SetCurrentFont(font_comfortaa_light);
 		SetFontAlign(0);
-		DrawString((848 / 2) + 10, 150 + (cnt * 12), menu_about_strings[cnt + 1]);
+		DrawStringMono((848 / 2) + 10, 150 + (cnt * 12), menu_about_strings[cnt + 1]);
     }
 
+	DrawTexture(&menu_textures[help_png_index], help_png_x, 300, 0, help_png_w, 110, 0xFFFFFF00 | 0xFF);
+
 	SetFontAlign(1);
-	SetCurrentFont(font_comfortaa_bold);
+	SetFontColor(APP_FONT_COLOR | 0xFF, 0);
 	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
 	DrawString(0, 150 + ((cnt + 3) * 12), "Console details:");
+	SetFontSize(APP_FONT_SIZE_SELECTION);
 
 	int off = cnt + 5;
 	for (cnt = 0; menu_about_strings_project[cnt] != NULL; cnt += 2)
 	{
-		SetFontSize(APP_FONT_SIZE_ABOUT);
-
-		SetCurrentFont(font_comfortaa_regular);
 		SetFontAlign(2);
 		DrawString((848 / 2) - 10, 155 + ((cnt + off) * 12), menu_about_strings_project[cnt]);
 
-		SetCurrentFont(font_comfortaa_light);
 		SetFontAlign(0);
 		DrawString((848 / 2) + 10, 155 + ((off + cnt) * 12), menu_about_strings_project[cnt + 1]);
 	}
 
 	SetFontAlign(1);
-	SetCurrentFont(font_comfortaa_regular);
-	DrawString(0, 430, "www.bucanero.com.ar");
+	SetCurrentFont(font_adonais_regular);
+	SetFontColor(APP_FONT_MENU_COLOR | 0xFF, 0);
+	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
+	DrawStringMono(0, 430, "www.bucanero.com.ar");
 	SetFontAlign(0);
 }
 
