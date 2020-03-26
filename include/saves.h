@@ -68,15 +68,17 @@ enum char_flag_enum
     CHAR_TAG_APPLY,
     CHAR_TAG_OWNER,
     CHAR_TAG_LOCKED,
-    CHAR_TAG_PCE,
+    CHAR_RES_TAB,
     CHAR_RES_LF,
     CHAR_TAG_TRANSFER,
     CHAR_TAG_ZIP,
+    CHAR_RES_CR,
+    CHAR_TAG_PCE,
     CHAR_TAG_WARNING,
-    CHAR_BTN_X = 0x10,
-    CHAR_BTN_S = 0x11,
-    CHAR_BTN_T = 0x12,
-    CHAR_BTN_O = 0x13,
+    CHAR_BTN_X,
+    CHAR_BTN_S,
+    CHAR_BTN_T,
+    CHAR_BTN_O,
 };
 
 enum code_type_enum

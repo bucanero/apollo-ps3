@@ -795,14 +795,12 @@ int ReadCodes(save_entry_t * save)
 			if (wildcard_match_icase(line, "[DEFAULT:*"))
 			{
 				line += 6;
-				line[0] = '[';
 				line[1] = CHAR_TAG_WARNING;
 				line[2] = ' ';
 			}
 			if (wildcard_match_icase(line, "[INFO:*"))
 			{
 				line += 3;
-				line[0] = '[';
 				line[1] = CHAR_TAG_WARNING;
 				line[2] = ' ';
 			}
