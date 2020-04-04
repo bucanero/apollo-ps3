@@ -233,9 +233,6 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			// set pointer: 43
 			// ;Sets the file pointer to a specific address.
 			//
-			// write next 0: 446966666963756C7479
-			// ;Overwrites 0 bytes after the file pointer address.
-			//
 			// set [hash]:md5
 			// ;[hash] is the variable. it can be any name. you can have many variables.
 			// ;md5 is a function. the md5 hash is calculated for the current file, and stored in the variable [hash]
@@ -551,9 +548,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			        if (custom_crc.bandwidth == 16)
 			        {
     			        // Custom CRC-16
-    			        uint16_t hash;
-
-        			    hash = crc16_hash(start, len, &custom_crc);
+    			        uint16_t hash = crc16_hash(start, len, &custom_crc);
 
                         var->len = BSD_VAR_INT16;
                         var->data = malloc(var->len);
@@ -564,9 +559,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			        else
 			        {
     			        // Custom CRC-32
-    			        uint32_t hash;
-
-        			    hash = crc32_hash(start, len, &custom_crc);
+    			        uint32_t hash = crc32_hash(start, len, &custom_crc);
 
                         var->len = BSD_VAR_INT32;
                         var->data = malloc(var->len);
@@ -1163,11 +1156,73 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
             LOG("Wrote %d bytes (%s) to 0x%X\n", wlen, line, off);
 		}
 
-		// insert *:*		2		(2)
+		// insert *:*
 		else if (wildcard_match_icase(line, "insert *:*"))
 		{
 			// insert data
 			// insert next / insert at
+   			int off, ilen;
+			u8 from_pointer = 0;
+			char* tmp = NULL;
+			
+			line += strlen("insert");
+		    skip_spaces(line);
+
+			if (wildcard_match_icase(line, "at*"))
+			{
+			    from_pointer = 0;
+			    line += strlen("at");
+			}
+			else if (wildcard_match_icase(line, "next*"))
+			{
+			    from_pointer = 1;
+			    line += strlen("next");
+			}
+			else
+			{
+			    // invalid command
+			    LOG("ERROR: Invalid insert command");
+			    return 0;
+			}
+
+			skip_spaces(line);
+
+			tmp = strchr(line, ':');
+			*tmp = 0;
+
+			if (wildcard_match(line, "(*)"))
+				sscanf(line, "(%d)", &off);
+			else
+				sscanf(line, "%x", &off);
+
+			off += (from_pointer ? pointer : 0);
+
+			line = tmp+1;
+			*tmp = ':';
+
+			skip_spaces(line);
+
+			char* idata = _decode_variable_data(line, &ilen, var_list);
+			
+			if (!idata)
+			{
+				LOG("Error: no data to insert");
+				return 0;
+			}
+
+			char* write = malloc(dsize + ilen);
+
+			memcpy(write, data, off);
+			memcpy(write + off, idata, ilen);
+			memcpy(write + off + ilen, data + off, dsize - off);
+
+			free(idata);
+			free(data);
+
+			data = write;
+			dsize += ilen;
+
+            LOG("Inserted %d bytes (%s) from 0x%X to 0x%X\n", ilen, line, off, off + ilen);
 		}
 
 		// delete *:*
