@@ -854,7 +854,7 @@ int ReadCodes(save_entry_t * save)
 int ReadOnlineSaves(save_entry_t * game)
 { 
 	char path[256], url[256];
-	snprintf(path, sizeof(path), ONLINE_LOCAL_CACHE "%s.txt", game->title_id);
+	snprintf(path, sizeof(path), APOLLO_LOCAL_CACHE "%s.txt", game->title_id);
 	snprintf(url, sizeof(url), ONLINE_URL "PS3/%s/", game->title_id);
 
 	if (isExist(path))
@@ -1176,7 +1176,7 @@ save_entry_t * ReadUserList(const char* userPath, int * gmc)
  */
 save_entry_t * ReadOnlineList(const char* urlPath, int * gmc)
 {
-	const char* path = ONLINE_LOCAL_CACHE "games.txt";
+	const char* path = APOLLO_LOCAL_CACHE "games.txt";
 
 	if (isExist(path))
 	{

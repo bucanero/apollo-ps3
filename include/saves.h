@@ -8,6 +8,7 @@
 
 #define APOLLO_PATH				"/dev_hdd0/game/NP0APOLLO/USRDIR/"
 #define APOLLO_DATA_PATH		APOLLO_PATH "DATA/"
+#define APOLLO_LOCAL_CACHE		APOLLO_PATH "CACHE/"
 #define APOLLO_UPDATE_URL		"https://api.github.com/repos/bucanero/apollo-ps3/releases/latest"
 
 #define USB0_PATH               "/dev_usb000/PS3/"
@@ -23,7 +24,6 @@
 #define EXPORT_PATH_USB1        USB1_PATH "EXPORT/"
 
 #define ONLINE_URL				"http://apollo-db.psdev.tk/"
-#define ONLINE_LOCAL_CACHE		APOLLO_PATH "CACHE/"
 #define ONLINE_CACHE_TIMEOUT    24*3600     // 1-day local cache
 
 // Save commands

@@ -717,17 +717,17 @@ void clearcache_callback(int sel)
 	struct dirent *dir;
 	char dataPath[256];
 
-	d = opendir(ONLINE_LOCAL_CACHE);
+	d = opendir(APOLLO_LOCAL_CACHE);
 	if (!d)
 		return;
 
-	LOG("Cleaning folder '%s'...", ONLINE_LOCAL_CACHE);
+	LOG("Cleaning folder '%s'...", APOLLO_LOCAL_CACHE);
 
 	while ((dir = readdir(d)) != NULL)
 	{
 		if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
 		{
-			snprintf(dataPath, sizeof(dataPath), "%s" "%s", ONLINE_LOCAL_CACHE, dir->d_name);
+			snprintf(dataPath, sizeof(dataPath), "%s" "%s", APOLLO_LOCAL_CACHE, dir->d_name);
 			LOG("Removing %s", dataPath);
 			unlink_secure(dataPath);
 		}
@@ -739,12 +739,12 @@ void clearcache_callback(int sel)
 
 void upd_appdata_callback(int sel)
 {
-	if (http_download(ONLINE_URL, "appdata.zip", ONLINE_LOCAL_CACHE "tmpdata.zip", 1))
+	if (http_download(ONLINE_URL, "appdata.zip", APOLLO_LOCAL_CACHE "tmpdata.zip", 1))
 	{
-		if (extract_zip(ONLINE_LOCAL_CACHE "tmpdata.zip", APOLLO_DATA_PATH))
+		if (extract_zip(APOLLO_LOCAL_CACHE "tmpdata.zip", APOLLO_DATA_PATH))
 			show_message("Successfully updated local application data");
 
-		unlink_secure(ONLINE_LOCAL_CACHE "tmpdata.zip");
+		unlink_secure(APOLLO_LOCAL_CACHE "tmpdata.zip");
 	}
 }
 
@@ -757,15 +757,16 @@ void update_callback(int sel)
 
 	LOG("checking latest Apollo version at %s", APOLLO_UPDATE_URL);
 
-	if (!http_download(APOLLO_UPDATE_URL, "", ONLINE_LOCAL_CACHE "ver.check", 0))
+	if (!http_download(APOLLO_UPDATE_URL, "", APOLLO_LOCAL_CACHE "ver.check", 0))
 	{
 		LOG("http request to %s failed", APOLLO_UPDATE_URL);
+		return;
 	}
 
 	char *buffer;
 	long size = 0;
 
-	buffer = readFile(ONLINE_LOCAL_CACHE "ver.check", &size);
+	buffer = readFile(APOLLO_LOCAL_CACHE "ver.check", &size);
 
 	if (!buffer)
 		return;
@@ -778,6 +779,7 @@ void update_callback(int sel)
 	if (!start)
 	{
 		LOG("no name found");
+		return;
 	}
 
 	LOG("found name");
@@ -1263,14 +1265,14 @@ void doPatchViewMenu()
 
 void downloadSave(const char* file, const char* path)
 {
-	if (http_download(ONLINE_URL "PS3/", file, ONLINE_LOCAL_CACHE "tmpsave.zip", 1))
+	if (http_download(ONLINE_URL "PS3/", file, APOLLO_LOCAL_CACHE "tmpsave.zip", 1))
 	{
-		if (extract_zip(ONLINE_LOCAL_CACHE "tmpsave.zip", path))
+		if (extract_zip(APOLLO_LOCAL_CACHE "tmpsave.zip", path))
 			show_message("Save game successfully downloaded");
 		else
 			show_message("Error extracting save game!");
 
-		unlink_secure(ONLINE_LOCAL_CACHE "tmpsave.zip");
+		unlink_secure(APOLLO_LOCAL_CACHE "tmpsave.zip");
 	}
 	else
 		show_message("Error downloading save game!");
