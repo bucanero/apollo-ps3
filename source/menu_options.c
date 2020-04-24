@@ -31,9 +31,9 @@ void _draw_OptionsMenu(u8 alpha)
 				DrawTexture(&menu_textures[c], OPTION_ITEM_OFF - 29, y_off, 0, w, h, 0xFFFFFF00 | alpha);
 				break;
 			case APP_OPTION_CALL:
-				w = (int)(menu_textures[mark_arrow_png_index].texture.width / 1.8);
-				h = (int)(menu_textures[mark_arrow_png_index].texture.height / 1.8);
-				DrawTexture(&menu_textures[mark_arrow_png_index], OPTION_ITEM_OFF - 26, y_off-3, 0, w, h, 0xFFFFFF00 | alpha);
+				w = (int)(menu_textures[footer_ico_cross_png_index].texture.width / 1.8);
+				h = (int)(menu_textures[footer_ico_cross_png_index].texture.height / 1.8);
+				DrawTexture(&menu_textures[footer_ico_cross_png_index], OPTION_ITEM_OFF - 29, y_off+2, 0, w, h, 0xFFFFFF00 | alpha);
 				break;
 			case APP_OPTION_LIST:
 				SetFontAlign(2);

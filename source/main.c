@@ -674,13 +674,7 @@ void LoadSounds()
 void music_callback(int sel)
 {
 	apollo_config.music = !sel;
-
-	if (apollo_config.music)
-		//on
-		SND_PauseVoice(2, 0);
-	else
-		//off
-		SND_PauseVoice(2, 1);
+	SND_PauseVoice(2, sel);
 }
 
 void sort_callback(int sel)
@@ -1031,7 +1025,7 @@ void SetMenu(int id)
 void move_letter_back(save_entry_t * games, int game_count)
 {
 	int i;
-	char ch = games[menu_sel].name[0];
+	char ch = toupper(games[menu_sel].name[0]);
 
 	if ((ch > '\x29') && (ch < '\x40'))
 	{
@@ -1039,7 +1033,7 @@ void move_letter_back(save_entry_t * games, int game_count)
 		return;
 	}
 
-	for (i = menu_sel; (i > 0) && (ch == games[i].name[0]); i--) {}
+	for (i = menu_sel; (i > 0) && (ch == toupper(games[i].name[0])); i--) {}
 
 	menu_sel = i;
 }
@@ -1047,7 +1041,7 @@ void move_letter_back(save_entry_t * games, int game_count)
 void move_letter_fwd(save_entry_t * games, int game_count)
 {
 	int i;
-	char ch = games[menu_sel].name[0];
+	char ch = toupper(games[menu_sel].name[0]);
 
 	if (ch == 'Z')
 	{
@@ -1055,7 +1049,7 @@ void move_letter_fwd(save_entry_t * games, int game_count)
 		return;
 	}
 	
-	for (i = menu_sel; (i < game_count - 2) && (ch == games[i].name[0]); i++) {}
+	for (i = menu_sel; (i < game_count - 2) && (ch == toupper(games[i].name[0])); i++) {}
 
 	menu_sel = i;
 }
