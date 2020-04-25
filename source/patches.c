@@ -4,11 +4,14 @@
 #include <polarssl/sha2.h>
 #include <polarssl/sha4.h>
 #include <zlib.h>
+#include <dirent.h>
 
 #include "saves.h"
 #include "util.h"
 #include "crc_util.h"
 #include "list.h"
+#include "packzip.h"
+#include "common.h"
 
 #define skip_spaces(str)        while (*str == ' ') str++;
 #define TLOU_HMAC_KEY			"xM;6X%/p^L/:}-5QoA+K8:F*M!~sb(WK<E%6sW_un0a[7Gm6,()kHoXY+yI/s;Ba"
@@ -102,7 +105,7 @@ char* _decode_variable_data(const char* line, int *data_len, list_t* vlist)
 	        len = var->len;
     		output = malloc(len);
 	        memcpy(output, var->data, len);
-	    }	        
+	    }
 	}
 	else
 	{
@@ -1292,6 +1295,8 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			else
 			{
 			    dlen = _parse_int_value(line, pointer, dsize, var_list);
+				if (dlen + off > dsize)
+					dlen = dsize - off;
 			}
 
 			char* write = data + off;
@@ -1360,15 +1365,6 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			// UNUSED
 		}
 
-		else if (wildcard_match_icase(line, "compress *"))
-		{
-			// compress data
-		}
-
-		else if (wildcard_match_icase(line, "decompress *"))
-		{
-			// decompress data
-		}
 	    line = strtok(NULL, "\n");
     }
 
@@ -1762,7 +1758,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 	return 1;
 }
 
-int apply_cheat_patch_code(const char* fpath, code_entry_t* code)
+int apply_cheat_patch_code(const char* fpath, const char* title_id, code_entry_t* code)
 {
 	if (code->type == PATCH_GAMEGENIE)
 	{
@@ -1773,6 +1769,58 @@ int apply_cheat_patch_code(const char* fpath, code_entry_t* code)
 	if (code->type == PATCH_BSD)
 	{
 		LOG("Bruteforce Save Data Code");
+
+		if (wildcard_match_icase(code->codes, "decompress *"))
+		{
+			// decompress FILENAME
+			LOG("Decompressing '%s' (w=%d)...", fpath, OFFZIP_WBITS_ZLIB);
+			return offzip_util(fpath, APOLLO_LOCAL_CACHE, title_id, 0, OFFZIP_WBITS_ZLIB);
+		}
+		else if (wildcard_match_icase(code->codes, "compress *,-w*"))
+		{
+			// compress FILENAME,-w bits
+			DIR *d;
+			struct dirent *dir;
+			int wbits;
+			uint32_t offset;
+			char infile[256];
+
+			char* tmp = strchr(code->codes, ',') + 3;
+			sscanf(tmp, "%d", &wbits);
+
+			if ((wbits < OFFZIP_WBITS_DEFLATE) || (wbits > OFFZIP_WBITS_ZLIB))
+				wbits = OFFZIP_WBITS_ZLIB;
+
+			LOG("Compressing '%s' (w=%d)...", fpath, wbits);
+
+			d = opendir(APOLLO_LOCAL_CACHE);
+			if (!d)
+				return 0;
+
+			while ((dir = readdir(d)) != NULL)
+			{
+				//[BLUS12345]00000000.dat
+				if (wildcard_match(dir->d_name, "[*]*.dat") && strncmp(dir->d_name + 1, title_id, 9) == 0)
+				{
+					tmp = strchr(dir->d_name, ']') + 1;
+					sscanf(tmp, "%x.dat", &offset);
+					snprintf(infile, sizeof(infile), APOLLO_LOCAL_CACHE "%s", dir->d_name);
+
+					LOG("Adding '%s' to '%s' at %d (0x%X)...", dir->d_name, code->file, offset, offset);
+					if (!packzip_util(infile, fpath, offset, wbits))
+					{
+						LOG("Error: unable to compress file (%s)", dir->d_name);
+						return 0;
+					}
+
+					unlink_secure(infile);
+				}
+			}
+			closedir(d);
+
+			return 1;
+		}
+
 		return apply_bsd_patch_code(fpath, code);
 	}
 

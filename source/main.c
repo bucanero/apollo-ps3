@@ -1625,27 +1625,32 @@ int apply_cheat_patches()
 		if (strchr(filename, '*'))
 			filename = code->options[0].name[code->options[0].sel];
 
-		snprintf(tmpfile, sizeof(tmpfile), "%s%s", selected_entry->path, filename);
-
-		if (!_is_decrypted(decrypted_files, filename))
+		if (strstr(code->file, "~extracted\\"))
+			snprintf(tmpfile, sizeof(tmpfile), "%s[%s]%s", APOLLO_LOCAL_CACHE, selected_entry->title_id, filename);
+		else
 		{
-			LOG("Decrypting '%s'...", filename);
+			snprintf(tmpfile, sizeof(tmpfile), "%s%s", selected_entry->path, filename);
 
-			protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
+			if (!_is_decrypted(decrypted_files, filename))
+			{
+				LOG("Decrypting '%s'...", filename);
 
-			if (decrypt_save_file(selected_entry->path, filename, NULL, protected_file_id))
-			{
-				list_append(decrypted_files, strdup(filename));
-			}
-			else
-			{
-				LOG("Error: failed to decrypt (%s)", filename);
-				ret = 0;
-				continue;
+				protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
+
+				if (decrypt_save_file(selected_entry->path, filename, NULL, protected_file_id))
+				{
+					list_append(decrypted_files, strdup(filename));
+				}
+				else
+				{
+					LOG("Error: failed to decrypt (%s)", filename);
+					ret = 0;
+					continue;
+				}
 			}
 		}
 
-		if (!apply_cheat_patch_code(tmpfile, code))
+		if (!apply_cheat_patch_code(tmpfile, selected_entry->title_id, code))
 		{
 			LOG("Error: failed to apply (%s)", code->name);
 			ret = 0;
@@ -1744,9 +1749,9 @@ void doPatchMenu()
 				//Check if option code
 				if (!selected_entry->codes[menu_sel].options)
 				{
-					int size;
-					selected_entry->codes[menu_sel].options = ReadOptions(selected_entry->codes[menu_sel], &size);
-					selected_entry->codes[menu_sel].options_count = size;
+//					int size;
+//					selected_entry->codes[menu_sel].options = ReadOptions(selected_entry->codes[menu_sel], &size);
+//					selected_entry->codes[menu_sel].options_count = size;
 				}
 				
 				if (selected_entry->codes[menu_sel].options)

@@ -309,7 +309,11 @@ int _get_aes_details_pfd(const char* path, const char* filename, const u8* secur
 	int pos = search_pfd_data(pfd_data, dsize, filename, strlen(filename));
 	
 	if (pos < 0)
+	{
+		LOG("Error: can't find '%s' in PARAM.PFD", filename);
+		free(pfd_data);
 		return 0;
+	}
 
 	ptr = pfd_data + pos + 72;
 	memcpy(entry_key, ptr, PFD_ENTRY_KEY_SIZE);
@@ -349,6 +353,46 @@ int _get_aes_details_pfd(const char* path, const char* filename, const u8* secur
 	aes_crypt_cbc(&aes, AES_DECRYPT, PFD_ENTRY_KEY_SIZE, iv_hash_key, entry_key, entry_key);
 
 //	prn_buff(entry_key, 64, "decrypted entry key");
+
+	return 1;
+}
+
+int _update_details_pfd(const char* path, const char* filename)
+{
+	char *pfd_data;
+	char file_path[256];
+	size_t dsize;
+	u64 file_size, *ptr;
+
+	snprintf(file_path, sizeof(file_path), "%s" "PARAM.PFD", path);
+	read_buffer(file_path, (uint8_t**) &pfd_data, &dsize);
+
+	int pos = search_pfd_data(pfd_data, dsize, filename, strlen(filename));
+	
+	if (pos < 0)
+	{
+		LOG("Error: can't find '%s' in PARAM.PFD", filename);
+		free(pfd_data);
+		return 0;
+	}
+
+	ptr = (u64*)(pfd_data + pos + 72 + PFD_ENTRY_KEY_SIZE + 120);
+
+	snprintf(file_path, sizeof(file_path), "%s%s", path, filename);
+	file_size = getFileSize(file_path);
+
+	LOG("Check (%s) fsize = %ld / PFD fsize = %ld", filename, file_size, *ptr);
+
+	if (file_size != *ptr)
+	{
+		LOG("Updating PARAM.PFD...");
+
+		*ptr = file_size;
+		snprintf(file_path, sizeof(file_path), "%s" "PARAM.PFD", path);
+		write_buffer(file_path, (uint8_t*) pfd_data, dsize);
+	}
+
+	free(pfd_data);
 
 	return 1;
 }
@@ -446,6 +490,12 @@ int encrypt_save_file(const char* path, const char* fname, const char* outpath, 
 	{
 		LOG("Skipping encryption: no Secure file key");
 		return 1;
+	}
+
+	if (!_update_details_pfd(path, fname))
+	{
+		LOG("Error updating PARAM.PFD details");
+		return 0;
 	}
 
 	if (!_get_aes_details_pfd(path, fname, secure_file_key, &file_size, &aligned_file_size, entry_key))
