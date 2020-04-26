@@ -16,7 +16,7 @@ The `apollo-ps3` homebrew app allows to download, unlock, patch and resign save-
 * **Standalone:** no computer required, everything happens on the PS3.
 * **Save files listing:** quick access to all the save files on USB and the internal PS3 HDD (+ file details)
 * **Save SFO unlocking:** allows the user to remove the copy-lock flag, enabling transfer of `Copying Prohibited` save files.
-* **Save files patching:** supports [Bruteforce Save Data](https://bruteforcesavedata.forumms.net/) and Game Genie cheat patches to enhance your savegame.
+* **Save files patching:** supports [Bruteforce Save Data](https://bruteforcesavedata.forumms.net/) and Game Genie cheat patches to enhance your savegames.
 * **Save PFD resigning:** allows the user to resign save files made by other users and consoles.
 * **Save downloading:** easy access to an Online Database of save-game files to download straight to your PlayStation.
 * **Automatic settings:** auto-detection of PSID and Account-ID settings.
@@ -81,10 +81,11 @@ Currently, the list of available games and files is limited, but the project aim
 # Credits
 
 * [Bucanero](http://www.bucanero.com.ar/): Project developer
-* [Dnawrkshp](https://github.com/Dnawrkshp/): [Artemis](https://github.com/Dnawrkshp/ArtemisPS3) code
+* [Dnawrkshp](https://github.com/Dnawrkshp/): [Artemis PS3](https://github.com/Dnawrkshp/ArtemisPS3)
 * [Berion](https://www.psx-place.com/members/berion.1431/): GUI design
 * [flatz](https://twitter.com/flat_z): [SFO/PFD tools](https://github.com/bucanero/pfd_sfo_tools/)
 * [aldostools](https://aldostools.org/): [Bruteforce Save Data](https://bruteforcesavedata.forumms.net/)
+* [aluigi](http://aluigi.org): [offzip](http://aluigi.altervista.org/mytoolz.htm) and [packzip](http://aluigi.altervista.org/mytoolz.htm)
 
 # Building
 
