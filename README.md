@@ -76,7 +76,7 @@ Currently, the list of available games and files is limited, but the project aim
 * [Berion](https://www.psx-place.com/members/berion.1431/): GUI design
 * [flatz](https://twitter.com/flat_z): [SFO/PFD tools](https://github.com/bucanero/pfd_sfo_tools/)
 * [aldostools](https://aldostools.org/): [Bruteforce Save Data](https://bruteforcesavedata.forumms.net/)
-* [aluigi](http://aluigi.org): [offzip](http://aluigi.altervista.org/mytoolz.htm) and [packzip](http://aluigi.altervista.org/mytoolz.htm)
+* [aluigi](http://aluigi.org): [offzip](http://aluigi.altervista.org/mytoolz.htm)/[packzip](http://aluigi.altervista.org/mytoolz.htm)
 
 # Building
 
