@@ -59,6 +59,30 @@ long getFileSize(const char * path)
 }
 
 /*
+ * Function:		endsWith()
+ * File:			saves.c
+ * Project:			Apollo PS3
+ * Description:		Checks to see if a ends with b
+ * Arguments:
+ *	a:				String
+ *	b:				Potential end
+ * Return:			pointer if true, NULL if false
+ */
+char* endsWith(const char * a, const char * b)
+{
+	int al = strlen(a), bl = strlen(b);
+    
+	if (al < bl)
+		return NULL;
+
+	a += (al - bl);
+	while (*a)
+		if (*a++ != *b++) return NULL;
+
+	return (char*) (a - bl);
+}
+
+/*
  * Function:		getDirListSize()
  * File:			saves.c
  * Project:			Apollo PS3
@@ -508,8 +532,10 @@ int ReadCodes(save_entry_t * save)
 			}
 
 			char* end = strrchr(ret[cur_count].name, ']');
-			if (end)
-				*end = 0;
+			if (end) *end = 0;
+
+			end = endsWith(ret[cur_count].name, " ---");
+			if (end) *end = 0;
 
 			cur_count++;
 		}

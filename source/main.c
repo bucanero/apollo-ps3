@@ -731,15 +731,18 @@ void clearcache_callback(int sel)
 	show_message("Local cache folder cleaned");
 }
 
+void _unzip_app_data()
+{
+	if (extract_zip(APOLLO_LOCAL_CACHE "appdata.zip", APOLLO_DATA_PATH))
+		show_message("Successfully installed local application data");
+
+	unlink_secure(APOLLO_LOCAL_CACHE "appdata.zip");
+}
+
 void upd_appdata_callback(int sel)
 {
-	if (http_download(ONLINE_URL, "appdata.zip", APOLLO_LOCAL_CACHE "tmpdata.zip", 1))
-	{
-		if (extract_zip(APOLLO_LOCAL_CACHE "tmpdata.zip", APOLLO_DATA_PATH))
-			show_message("Successfully updated local application data");
-
-		unlink_secure(APOLLO_LOCAL_CACHE "tmpdata.zip");
-	}
+	if (http_download(ONLINE_URL, "appdata.zip", APOLLO_LOCAL_CACHE "appdata.zip", 1))
+		_unzip_app_data();
 }
 
 void update_callback(int sel)
@@ -1886,7 +1889,11 @@ s32 main(s32 argc, const char* argv[])
 	// Load texture
 	LoadTextures_Menu();
 	LoadSounds();
-	
+
+	// Unpack application data on first run
+	if (file_exists(APOLLO_LOCAL_CACHE "appdata.zip") == SUCCESS)
+		_unzip_app_data();
+
 	// Splash screen logo (fade-in)
 	drawSplashLogo(1);
 

@@ -1,5 +1,5 @@
 #include "util.h"
-#include "platform.h"
+#include "types.h"
 
 #include <polarssl/sha1.h>
 

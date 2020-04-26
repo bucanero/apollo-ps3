@@ -72,10 +72,11 @@ Currently, the list of available games and files is limited, but the project aim
 # Credits
 
 * [Bucanero](http://www.bucanero.com.ar/): Project developer
-* [Dnawrkshp](https://github.com/Dnawrkshp/): [Artemis](https://github.com/Dnawrkshp/ArtemisPS3) code
+* [Dnawrkshp](https://github.com/Dnawrkshp/): [Artemis PS3](https://github.com/Dnawrkshp/ArtemisPS3)
 * [Berion](https://www.psx-place.com/members/berion.1431/): GUI design
 * [flatz](https://twitter.com/flat_z): [SFO/PFD tools](https://github.com/bucanero/pfd_sfo_tools/)
 * [aldostools](https://aldostools.org/): [Bruteforce Save Data](https://bruteforcesavedata.forumms.net/)
+* [aluigi](http://aluigi.org): [offzip](http://aluigi.altervista.org/mytoolz.htm) and [packzip](http://aluigi.altervista.org/mytoolz.htm)
 
 # Building
 

@@ -17,10 +17,6 @@ endif
 #  TITLE, APPID, CONTENTID, ICON0, SFOXML before ppu_rules.
 #---------------------------------------------------------------------------------
 ICON0		:=	$(CURDIR)/pkgfiles/ICON0.PNG
-
-#ICON1		:=	$(CURDIR)/ICON1.PAM
-
-#PIC1		:=	$(CURDIR)/PIC1.PNG
 SFOXML		:=	$(CURDIR)/sfo.xml
 
 SCETOOL_FLAGS	?=	--self-app-version=0001000000000000  --sce-type=SELF --compress-data=TRUE --self-add-shdrs=TRUE --skip-sections=FALSE --key-revision=1 \
