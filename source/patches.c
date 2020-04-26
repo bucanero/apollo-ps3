@@ -214,8 +214,6 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 	LOG("Applying [%s] to '%s'...", code->name, filepath);
 	read_buffer(filepath, (uint8_t**) &data, &dsize);
 
-//	write_buffer(APOLLO_PATH "PAYLOAD.src", (uint8_t*) data, dsize);
-
     while (line)
     {
         // carry(*)
@@ -1368,8 +1366,6 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 	    line = strtok(NULL, "\n");
     }
 
-//	write_buffer(APOLLO_PATH "PAYLOAD.bin", (uint8_t*) data, dsize);
-
 	write_buffer(filepath, (uint8_t*) data, dsize);
 	free(data);
 
@@ -1392,8 +1388,6 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 	
 	LOG("Applying [%s] to '%s'...", code->name, filepath);
 	read_buffer(filepath, (uint8_t**) &data, &dsize);
-
-//	write_buffer(APOLLO_PATH "PAYLOAD.src", (uint8_t*) data, dsize);
 
     while (line)
     {
@@ -1747,8 +1741,6 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 	    line = strtok(NULL, "\n");
     }
 
-//	write_buffer(APOLLO_PATH "PAYLOAD.bin", (uint8_t*) data, dsize);
-
 	write_buffer(filepath, (uint8_t*) data, dsize);
 	free(data);
 
@@ -1760,6 +1752,9 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 
 int apply_cheat_patch_code(const char* fpath, const char* title_id, code_entry_t* code)
 {
+	if (file_exists(fpath) != SUCCESS)
+		return 0;
+
 	if (code->type == PATCH_GAMEGENIE)
 	{
 		LOG("Game Genie Code");

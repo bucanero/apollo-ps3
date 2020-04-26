@@ -35,25 +35,20 @@
 #endif
 
 
-typedef uint8_t     u8;
-typedef uint32_t    u32;
-
-
 #define VER         "0.3.1"
 
 //#define MAXZIPLEN(n) ((n)+(((n)/1000)+1)+12)
 #define MAXZIPLEN(n) ((n)+(((n)/10)+1)+12)  // for lzma
 
 
-u32 zipit(FILE *fdi, FILE *fdo, int wbits, int flags, int store);
-u32 zlib_compress(u8 *in, int insz, u8 *out, int outsz, int wbits, int flags, int store);
+uint32_t zipit(FILE *fdi, FILE *fdo, int wbits, int flags, int store);
+uint32_t zlib_compress(uint8_t *in, int insz, uint8_t *out, int outsz, int wbits, int flags, int store);
 
 
-int packzip_util(const char *input, const char *output, u32 offset, int wbits) {
+int packzip_util(const char *input, const char *output, uint32_t offset, int wbits) {
     FILE    *fdi,
             *fdo;
-    u32     len;
-    int     store       = 0;
+    uint32_t len;
 
     LOG("PackZip " VER "\n"
         "by Luigi Auriemma\n"
@@ -128,7 +123,7 @@ int packzip_util(const char *input, const char *output, u32 offset, int wbits) {
         }
     }
 
-    len = zipit(fdi, fdo, wbits, Z_DEFAULT_STRATEGY, store);
+    len = zipit(fdi, fdo, wbits, Z_DEFAULT_STRATEGY, 0);
 
     if(fdi != stdin)  fclose(fdi);
     if(fdo != stdout) fclose(fdo);
@@ -143,22 +138,22 @@ int packzip_util(const char *input, const char *output, u32 offset, int wbits) {
 }
 
 
-u32 zipit(FILE *fdi, FILE *fdo, int wbits, int flags, int store) {
+uint32_t zipit(FILE *fdi, FILE *fdo, int wbits, int flags, int store) {
     struct stat xstat;
     int     ret = 0;
-    u32     in_size,
+    uint32_t in_size,
             out_size;
-    u8      *in_data,
+    uint8_t *in_data,
             *out_data;
 
     fstat(fileno(fdi), &xstat);
     in_size = xstat.st_size;
-    in_data = (u8 *)malloc(in_size);
+    in_data = (uint8_t *)malloc(in_size);
 
     in_size = fread(in_data, 1, in_size, fdi);
 
     out_size = MAXZIPLEN(in_size);
-    out_data = (u8 *)malloc(out_size);
+    out_data = (uint8_t *)malloc(out_size);
 
     if(!in_data || !out_data) return(0);
 
@@ -195,9 +190,9 @@ u32 zipit(FILE *fdi, FILE *fdo, int wbits, int flags, int store) {
 }
 
 
-u32 zlib_compress(u8 *in, int insz, u8 *out, int outsz, int wbits, int flags, int store) {
+uint32_t zlib_compress(uint8_t *in, int insz, uint8_t *out, int outsz, int wbits, int flags, int store) {
     z_stream    z;
-    u32     ret;
+    uint32_t    ret;
     int     zerr;
 
     z.zalloc = Z_NULL;

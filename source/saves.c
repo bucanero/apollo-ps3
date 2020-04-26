@@ -15,8 +15,8 @@
 #include <time.h>
 #include <dirent.h>
 
-#include <sys/stat.h>
-
+#define UTF8_CHAR_GROUP		"\xe2\x97\x86"
+#define UTF8_CHAR_ITEM		"\xe2\x94\x97"
 
 /*
  * Function:		isExist()
@@ -129,24 +129,21 @@ char * readFile(const char * path, long* size)
 }
 
 /*
- * Function:		findNextLine()
+ * Function:		rtrim()
  * File:			saves.c
  * Project:			Apollo PS3
- * Description:		Finds the next instance of '\n' and returns the index
+ * Description:		Trims ending white spaces (' ') from a string
  * Arguments:
  *	buffer:			String
- *	start:			Index to begin searching at
- * Return:			Index of found '\n' or, if none found, the strlen of buffer
+ * Return:			Amount of characters removed
  */
-int findNextLine(char * buffer, int start)
+int rtrim(char * buffer)
 {
-	int len = 0, max = strlen(buffer);
-	for (len = start; len < max; len++)
-	{
-        if (buffer[len] == '\n' || buffer[len] == '\r')
-			break;
-	}
-	return len;
+	int i, max = strlen(buffer) - 1;
+	for (i = max; (buffer[i] == ' ') && (i >= 0); i--)
+		buffer[i] = 0;
+
+	return (max - i);
 }
 
 void _setManualCode(code_entry_t* entry, uint8_t type, const char* name, const char* code)
@@ -200,7 +197,10 @@ int _count_codes(char* buffer)
         
     while (line)
     {
-    	if (wildcard_match(line, "[*]"))
+		rtrim(line);
+    	if (wildcard_match(line, "[*]") ||
+			wildcard_match(line, "; --- * ---") ||
+			wildcard_match_icase(line, "GROUP:*"))
     		i++;
 
     	line = strtok(NULL, "\n");
@@ -218,7 +218,9 @@ void get_patch_code(char* buffer, int code_id, code_entry_t* entry)
 
     while (line)
     {
-    	if (wildcard_match(line, "[*]") && (i++ == code_id))
+    	if ((wildcard_match(line, "[*]") ||
+			wildcard_match(line, "; --- * ---") ||
+			wildcard_match_icase(line, "GROUP:*")) && (i++ == code_id))
     	{
 			LOG("Reading patch code for '%s'...", line);
 	    	line = strtok(NULL, "\n");
@@ -241,8 +243,36 @@ void get_patch_code(char* buffer, int code_id, code_entry_t* entry)
 					res = tmp;
 
 //			    	LOG("%s", line);
-					if (!wildcard_match(line, "\?\?\?\?\?\?\?\? \?\?\?\?\?\?\?\?*"))
+					if (!wildcard_match(line, "\?\?\?\?\?\?\?\? \?\?\?\?\?\?\?\?") || (
+						(line[0] != '0') && (line[0] != '1') && (line[0] != '2') && (line[0] != '4') &&
+						(line[0] != '5') && (line[0] != '6') && (line[0] != '7') && (line[0] != '8') &&
+						(line[0] != '9') && (line[0] != 'A')))
 						entry->type = PATCH_BSD;
+
+					// set the correct file for the decompress command
+					if (wildcard_match_icase(line, "DECOMPRESS *"))
+					{
+						line += strlen("DECOMPRESS ");
+						if (entry->file)
+							free(entry->file);
+
+						entry->file = strdup(line);
+					}
+
+					// set the correct file for the compress command
+					if (wildcard_match_icase(line, "COMPRESS *,*"))
+					{
+						line += strlen("COMPRESS ");
+						if (entry->file)
+							free(entry->file);
+
+						char* tmp = strchr(line, ',');
+						*tmp = 0;
+
+						entry->file = strdup(line);
+						*tmp = ',';
+					}
+
 			    }
 		    	line = strtok(NULL, "\n");
 		    }
@@ -351,7 +381,7 @@ int ReadCodes(save_entry_t * save)
 	code_entry_t * ret;
 	option_entry_t * file_opt = NULL;
 	char filePath[256] = "";
-	char group[128] = "";
+	char group = 0;
 	long bufferLen;
 	char * buffer = NULL;
 
@@ -397,16 +427,7 @@ int ReadCodes(save_entry_t * save)
 		
 	while (line)
 	{
-		if (wildcard_match(line, ";*"))
-		{
-			if (wildcard_match(line, "; --- * ---"))
-			{
-				strcpy(group, line+6);
-				group[strlen(group)-4] = 0;
-				LOG("GROUP: %s\n", group);
-			}
-		}
-		else if (wildcard_match(line, ":*"))
+		if (wildcard_match(line, ":*"))
 		{
 			char* tmp_mask;
 
@@ -434,26 +455,35 @@ int ReadCodes(save_entry_t * save)
 		{
 			//
 		}
-		else if (wildcard_match_icase(line, "GROUP:*"))
+		else if (wildcard_match(line, "[*]") ||
+				wildcard_match(line, "; --- * ---") ||
+				wildcard_match_icase(line, "GROUP:*"))
 		{
-			strcpy(group, line+6);
-			LOG("GROUP: %s\n", group);
-		}
-		else if (wildcard_match(line, "[*]"))
-		{
-			//LOG("Line: '%s'\n", line);
 			if (wildcard_match_icase(line, "[DEFAULT:*"))
 			{
 				line += 6;
 				line[1] = CHAR_TAG_WARNING;
 				line[2] = ' ';
 			}
-			if (wildcard_match_icase(line, "[INFO:*"))
+			else if (wildcard_match_icase(line, "[INFO:*"))
 			{
 				line += 3;
 				line[1] = CHAR_TAG_WARNING;
 				line[2] = ' ';
 			}
+			else if (wildcard_match_icase(line, "[GROUP:*"))
+			{
+				line += 6;
+				group = 1;
+				LOG("GROUP: %s\n", line);
+			}
+			else if (wildcard_match(line, "; --- * ---") || wildcard_match_icase(line, "GROUP:*"))
+			{
+				line += 5;
+				group = 1;
+				LOG("GROUP: %s\n", line);
+			}
+			line++;
 
 			ret[cur_count].type = PATCH_GAMEGENIE;
 			ret[cur_count].activated = wildcard_match_icase(line, "*(REQUIRED)*");
@@ -462,12 +492,24 @@ int ReadCodes(save_entry_t * save)
 			ret[cur_count].options_count = (file_opt ? 1 : 0);
 			asprintf(&ret[cur_count].file, "%s", filePath);
 
-			if (strlen(group))
-				asprintf(&ret[cur_count].name, "%s: %s", group, line+1);
-			else
-				asprintf(&ret[cur_count].name, "%s", line+1);
+			switch (group)
+			{
+				case 1:
+					asprintf(&ret[cur_count].name, UTF8_CHAR_GROUP " %s", line);
+					group = 2;
+					break;
+				case 2:
+					asprintf(&ret[cur_count].name, " " UTF8_CHAR_ITEM " %s", line);
+					break;
+				
+				default:
+					asprintf(&ret[cur_count].name, "%s", line);
+					break;
+			}
 
-			*strrchr(ret[cur_count].name, ']') = 0;
+			char* end = strrchr(ret[cur_count].name, ']');
+			if (end)
+				*end = 0;
 
 			cur_count++;
 		}
