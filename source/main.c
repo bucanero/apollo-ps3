@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
-#include <assert.h>
 #include <unistd.h>
 #include <math.h>
 #include <assert.h>
@@ -27,15 +26,11 @@
 //#include <pngdec/pngdec.h>
 
 #include <tiny3d.h>
-#include "libfont.h"
 #include "saves.h"
 #include "sfo.h"
 #include "pfd.h"
 #include "util.h"
-
-//From NzV's MAMBA PRX Loader (https://github.com/NzV/MAMBA_PRX_Loader)
 #include "common.h"
-#include "lv2_utils.h"
 
 //Menus
 #include "menu.h"
@@ -60,6 +55,7 @@ enum menu_screen_ids
 };
 
 //Font
+#include "libfont.h"
 #include "ttf_render.h"
 #include "font_adonais.h"
 
@@ -137,12 +133,10 @@ int menu_options_maxopt = 0;
 int * menu_options_maxsel;
 
 int close_app = 0;
+int idle_time = 0;                          // Set by readPad
 
 png_texture * menu_textures;                // png_texture array for main menu, initialized in LoadTexture
 
-int idle_time = 0;                          // Set by readPad
-
-#define MENU_MAIN_DESCRIPTION   "Apollo Save Tool"
 
 const char * menu_about_strings[] = { "Bucanero", "Developer",
 									"Berion", "GUI design",
