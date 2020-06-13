@@ -28,4 +28,12 @@ int mkdirs(const char* dir);
 int copy_file(const char* input, const char* output);
 int copy_directory(const char* startdir, const char* inputdir, const char* outputdir);
 
+//----------------------------------------
+//CONSOLE ID UTILS
+//----------------------------------------
+
+int ss_aim_get_device_id(uint8_t *idps);
+int ss_aim_get_open_psid(uint8_t *psid);
+int sys_ss_get_open_psid(uint64_t psid[2]);
+
 #endif

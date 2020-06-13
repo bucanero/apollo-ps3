@@ -220,7 +220,6 @@ int copy_directory(const char* startdir, const char* inputdir, const char* outpu
 //POWER UTILS
 //----------------------------------------
 
-
 int sys_shutdown()
 {   
     unlink_secure("/dev_hdd0/tmp/turnoff");
@@ -235,4 +234,35 @@ int sys_reboot()
 
     lv2syscall4(379,0x1200,0,0,0);
     return_to_user_prog(int);
+}
+
+//----------------------------------------
+//CONSOLE ID UTILS
+//----------------------------------------
+
+#define SYS_SS_APPLIANCE_INFO_MANAGER                  867
+#define SYS_SS_GET_OPEN_PSID                           872
+#define AIM_GET_DEVICE_ID                              0x19003
+#define AIM_GET_OPEN_PSID                              0x19005
+
+int sys_ss_get_open_psid(uint64_t psid[2])
+{
+	lv2syscall1(SYS_SS_GET_OPEN_PSID, (uint64_t) psid);
+	return_to_user_prog(int);
+}
+
+int sys_ss_appliance_info_manager(u32 packet_id, u64 arg)
+{
+	lv2syscall2(SYS_SS_APPLIANCE_INFO_MANAGER, (uint64_t)packet_id, (uint64_t)arg);
+	return_to_user_prog(int);
+}
+
+int ss_aim_get_device_id(uint8_t *idps)
+{
+	return sys_ss_appliance_info_manager(AIM_GET_DEVICE_ID, (uint64_t)idps);
+}
+
+int ss_aim_get_open_psid(uint8_t *psid)
+{
+	return sys_ss_appliance_info_manager(AIM_GET_OPEN_PSID, (uint64_t)psid);
 }

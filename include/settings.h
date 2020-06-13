@@ -1,5 +1,5 @@
 
-#define APOLLO_VERSION			"1.0.9"		//Apollo PS3 version (about menu)
+#define APOLLO_VERSION			"1.1.0"		//Apollo PS3 version (about menu)
 
 #define MENU_TITLE_OFF			30			//Offset of menu title text from menu mini icon
 #define MENU_ICON_OFF 			70          //X Offset to start printing menu mini icon
@@ -34,6 +34,7 @@ typedef struct
     uint8_t marginV;
     uint8_t update;
     uint32_t user_id;
+    uint64_t idps[2];
     uint64_t psid[2];
     uint64_t account_id;
 } app_config_t;

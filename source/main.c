@@ -113,6 +113,7 @@ app_config_t apollo_config = {
     .marginH = 0,
     .marginV = 0,
     .user_id = 0,
+    .idps = {0, 0},
     .psid = {0, 0},
     .account_id = 0,
 };
@@ -1332,6 +1333,40 @@ void exportFolder(const char* src_path, const char* exp_path, const char* msg)
     stop_loading_screen();
 }
 
+void exportLicensesRap(const char* exp_path)
+{
+	DIR *d;
+	struct dirent *dir;
+	char lic_path[256];
+
+	if (mkdirs(exp_path) != SUCCESS)
+	{
+		show_message("Error! Export folder is not available");
+		return;
+	}
+
+	snprintf(lic_path, sizeof(lic_path), EXDATA_PATH_HDD, apollo_config.user_id);
+	d = opendir(lic_path);
+	if (!d)
+		return;
+
+    init_loading_screen("Exporting user licenses...");
+
+	LOG("Exporting RAPs from folder '%s'...", lic_path);
+	while ((dir = readdir(d)) != NULL)
+	{
+		if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0 &&
+			strcmp(strrchr(dir->d_name, '.'), ".rif") == 0)
+		{
+			LOG("Exporting %s", dir->d_name);
+			rif2rap((u8*) apollo_config.idps, lic_path, dir->d_name, exp_path);
+		}
+	}
+	closedir(d);
+
+    stop_loading_screen();
+}
+
 void doCodeOptionsMenu()
 {
     code_entry_t* code = &selected_entry->codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]];
@@ -1392,6 +1427,12 @@ void doCodeOptionsMenu()
 			{
 				exportLicenses(codecmd[10] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0);
         		code->activated = 0;
+			}
+
+			if (strncmp(codecmd, CMD_EXP_RAPS_USB, 10) == 0)
+			{
+				exportLicensesRap(codecmd[10] ? EXPORT_RAP_PATH_USB1 : EXPORT_RAP_PATH_USB0);
+				code->activated = 0;
 			}
 
 			if (strncmp(codecmd, CMD_EXP_TROPHY_USB, 10) == 0)

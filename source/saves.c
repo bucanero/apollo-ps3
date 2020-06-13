@@ -660,7 +660,7 @@ int ReadOnlineSaves(save_entry_t * game)
 
 int LoadBackupCodes(save_entry_t * bup)
 {
-	int bup_count = 3;
+	int bup_count = 4;
 
 	code_entry_t * ret = (code_entry_t *)malloc(sizeof(code_entry_t) * bup_count);
 	bup->code_count = bup_count;
@@ -668,12 +668,17 @@ int LoadBackupCodes(save_entry_t * bup)
 	bup_count = 0;
 	LOG("Loading backup commands...");
 
-	_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0c Export Licenses to .Zip", "");
+	_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0c Backup Licenses to .Zip", "");
 	ret[bup_count].options_count = 1;
 	ret[bup_count].options = _createOptions(2, "Save .Zip to USB", CMD_EXP_EXDATA_USB);
 	bup_count++;
 
-	_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0b Export Trophies to USB", "");
+	_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0b Export Licenses to .RAP", "");
+	ret[bup_count].options_count = 1;
+	ret[bup_count].options = _createOptions(2, "Save .RAPs to USB", CMD_EXP_RAPS_USB);
+	bup_count++;
+
+	_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0b Backup Trophies to USB", "");
 	ret[bup_count].options_count = 1;
 	ret[bup_count].options = _createOptions(2, "Save trophies to USB", CMD_EXP_TROPHY_USB);
 	bup_count++;

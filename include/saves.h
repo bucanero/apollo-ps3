@@ -23,6 +23,9 @@
 #define EXPORT_PATH_USB0        USB0_PATH "EXPORT/"
 #define EXPORT_PATH_USB1        USB1_PATH "EXPORT/"
 
+#define EXPORT_RAP_PATH_USB0    EXPORT_PATH_USB0 "exdata/"
+#define EXPORT_RAP_PATH_USB1    EXPORT_PATH_USB1 "exdata/"
+
 #define ONLINE_URL				"http://apollo-db.psdev.tk/"
 #define ONLINE_CACHE_TIMEOUT    24*3600     // 1-day local cache
 
@@ -38,6 +41,7 @@
 #define CMD_EXP_EXDATA_USB      "EXP_EXDATA"
 #define CMD_EXP_TROPHY_USB      "EXP_TROPHY"
 #define CMD_EXP_SAVES_USB       "EXP_ASAVES"
+#define CMD_EXP_RAPS_USB        "EXP_RAPUSB"
 
 // Import commands
 #define CMD_IMP_EXDATA_USB      "IMP_EXDATA"
@@ -101,10 +105,10 @@ typedef struct option_entry
 
 typedef struct code_entry
 {
-    unsigned char type;
+    uint8_t type;
     char * name;
     char * file;
-    unsigned char activated;
+    uint8_t activated;
     int options_count;
     char * codes;
     option_entry_t * options;
@@ -115,7 +119,7 @@ typedef struct save_entry
     char * name;
 	char * title_id;
 	char * path;
-	unsigned int flags;
+	uint32_t flags;
     int code_count;
     code_entry_t * codes;
 } save_entry_t;
@@ -126,7 +130,7 @@ typedef struct
     int count;
     char path[128];
     char* title;
-    unsigned char icon_id;
+    uint8_t icon_id;
     void (*UpdatePath)(char *);
     int (*ReadCodes)(save_entry_t *);
     save_entry_t* (*ReadList)(const char*, int *);
@@ -154,10 +158,12 @@ int zip_directory(const char* basedir, const char* inputdir, const char* output_
 
 int show_dialog(int dialog_type, const char * str);
 void init_progress_bar(const char* progress_bar_title, const char* msg);
-void update_progress_bar(long unsigned int* progress, const long unsigned int total_size, const char* msg);
+void update_progress_bar(uint64_t* progress, const uint64_t total_size, const char* msg);
 void end_progress_bar(void);
 
 int init_loading_screen(const char* msg);
 void stop_loading_screen();
 
 int apply_cheat_patch_code(const char* fpath, const char* title_id, code_entry_t* code);
+
+int rif2rap(const uint8_t* idps_key, const char* lic_path, const char* rifFile, const char* rap_path);

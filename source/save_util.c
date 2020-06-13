@@ -22,6 +22,7 @@
 #include "util.h"
 #include "sfo.h"
 #include "settings.h"
+#include "common.h"
 
 #define THREAD_STACK_SIZE 16*1024
 #define THREAD_PRIORITY 1000
@@ -347,16 +348,16 @@ uint32_t get_userid_dir(uint32_t tid)
 
 	tid++;
 	while (!found) {
-	    snprintf(path, sizeof(path), SAVES_PATH_HDD SAVE_DATA_FOLDER, tid);
-        if ((stat(path, &sb) == 0) && S_ISDIR(sb.st_mode)) {
-		    found = 1;
+		snprintf(path, sizeof(path), SAVES_PATH_HDD SAVE_DATA_FOLDER, tid);
+		if ((stat(path, &sb) == 0) && S_ISDIR(sb.st_mode)) {
+			found = 1;
 		} else {
-		    tid++;
+			tid++;
 		}
-        // just to avoid an endless search
+		// just to avoid an endless search
 		if (tid > 1000)
-            return 0;
-    }
+			return 0;
+	}
 
 	return tid;
 }
@@ -380,7 +381,9 @@ int load_app_settings(app_config_t* config)
     if (file_size == sizeof(app_config_t)) {
         memcpy(config, file_data, file_size);
 
-        LOG("SETTINGS: uid %d (%016lX) PSID %016lX %016lX", config->user_id, config->account_id, config->psid[0], config->psid[1]);
+        LOG("Settings loaded: UserID (%08d) AccountID (%016lX)", config->user_id, config->account_id);
+        LOG("PSID %016lX %016lX", config->psid[0], config->psid[1]);
+        LOG("IDPS %016lX %016lX", config->idps[0], config->idps[1]);
         return TRUE;
     }
 
@@ -391,6 +394,9 @@ int load_app_settings(app_config_t* config)
 
     file_data = canary;
     file_size = 10;
+
+    ss_aim_get_device_id((u8*) config->idps);
+    ss_aim_get_open_psid((u8*) config->psid);
     
     save_game_thread();
     wait_save_thread();
