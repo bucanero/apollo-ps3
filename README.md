@@ -76,17 +76,17 @@ Currently, the list of available games and files is limited, but the project aim
 * [Berion](https://www.psx-place.com/members/berion.1431/): GUI design
 * [flatz](https://twitter.com/flat_z): [SFO/PFD tools](https://github.com/bucanero/pfd_sfo_tools/)
 * [aldostools](https://aldostools.org/): [Bruteforce Save Data](https://bruteforcesavedata.forumms.net/)
-* [aluigi](http://aluigi.org): [offzip](http://aluigi.altervista.org/mytoolz.htm)/[packzip](http://aluigi.altervista.org/mytoolz.htm)
+* [aluigi](http://aluigi.org): [offzip/packzip](http://aluigi.altervista.org/mytoolz.htm)
 
 # Building
 
 You need to have installed:
 
 - [PS3 toolchain](https://github.com/bucanero/ps3toolchain)
-- [PSL1GHT](https://github.com/bucanero/PSL1GHT) library
+- [PSL1GHT](https://github.com/bucanero/PSL1GHT) SDK
 - [Tiny3D](https://github.com/Estwald/PSDK3v2/tree/master/libraries-src/Tiny3D) library (from Estwald)
 - [polarSSL](https://github.com/ps3dev/ps3libraries/blob/master/scripts/015-polarssl.sh) library
-- [dbglogger lib](https://github.com/bucanero/psl1ght-libs/tree/master/dbglogger) (my own debug logging library)
+- [dbglogger](https://github.com/bucanero/psl1ght-libs/tree/master/dbglogger) library (only required for debug logging)
 
 Run `make` to create a release build. After that, run `make pkg` to create a `.pkg` install file. 
 
@@ -102,7 +102,6 @@ UDP multicast address `239.255.0.100:30000`. To receive them you can use [socat]
 
 `apollo-ps3` is released under the [MIT License](LICENSE).
 
-[PSDLE]: https://repod.github.io/psdle/
 [socat]: http://www.dest-unreach.org/socat/
 [app_downloads]: https://github.com/bucanero/apollo-ps3/releases
 [app_latest]: https://github.com/bucanero/apollo-ps3/releases/latest

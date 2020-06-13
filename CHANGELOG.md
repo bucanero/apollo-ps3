@@ -4,6 +4,12 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.1.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.1.0) - 2020-06-14
+
+### Added
+
+* Exporting user's content licenses to .RAP files (User Backup menu)
+
 ## [v1.0.9](https://github.com/bucanero/apollo-ps3/releases/tag/v1.0.9) - 2020-04-26
 
 ### Added
