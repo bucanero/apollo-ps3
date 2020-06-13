@@ -2,7 +2,6 @@
 	Apollo PS3 main.c
 */
 
-#include <ppu-lv2.h>
 #include <sys/spu.h>
 #include <lv2/spu.h>
 
@@ -10,22 +9,9 @@
 #include <malloc.h>
 #include <string.h>
 #include <unistd.h>
-#include <math.h>
-#include <assert.h>
-#include <sysutil/video.h>
-#include <lv2/process.h>
-#include <time.h>
 #include <dirent.h>
-
-#include <errno.h>
-
-#include <zlib.h>
 #include <io/pad.h>
 
-#include <sysmodule/sysmodule.h>
-//#include <pngdec/pngdec.h>
-
-#include <tiny3d.h>
 #include "saves.h"
 #include "sfo.h"
 #include "pfd.h"
@@ -147,13 +133,13 @@ const char * menu_about_strings[] = { "Bucanero", "Developer",
 									NULL, NULL };
 
 char user_id_str[9] = "00000000";
-char psid_str1[SFO_PSID_SIZE+1] = "0000000000000000";
-char psid_str2[SFO_PSID_SIZE+1] = "0000000000000000";
+char idps_str[SFO_PSID_SIZE*2+2] = "0000000000000000 0000000000000000";
+char psid_str[SFO_PSID_SIZE*2+2] = "0000000000000000 0000000000000000";
 char account_id_str[SFO_ACCOUNT_ID_SIZE+1] = "0000000000000000";
 
 const char * menu_about_strings_project[] = { "User ID", user_id_str,
 											"Account ID", account_id_str,
-											psid_str1, psid_str2,
+											idps_str, psid_str,
 											NULL, NULL };
 
 /*
@@ -857,8 +843,8 @@ void SetMenu(int id)
 
 		case MENU_CREDITS: //About Menu
 			// set to display the PSID on the About menu
-			sprintf(psid_str1, "%016lX", apollo_config.psid[0]);
-			sprintf(psid_str2, "%016lX", apollo_config.psid[1]);
+			sprintf(idps_str, "%016lX %016lX", apollo_config.idps[0], apollo_config.idps[1]);
+			sprintf(psid_str, "%016lX %016lX", apollo_config.psid[0], apollo_config.psid[1]);
 			sprintf(user_id_str, "%08d", apollo_config.user_id);
 			sprintf(account_id_str, "%016lx", apollo_config.account_id);
 
@@ -1515,8 +1501,8 @@ void build_sfo_patch(sfo_patch_t* patch)
 
 		if (strcmp(selected_entry->codes[j].codes, SFO_REMOVE_PSID) == 0)
 		{
-		    bzero(psid_str1, SFO_PSID_SIZE);
-			patch->psid = (u8*) psid_str1;
+		    bzero(psid_str, SFO_PSID_SIZE);
+			patch->psid = (u8*) psid_str;
 		}
 
 		selected_entry->codes[j].activated = 0;

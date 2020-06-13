@@ -1,4 +1,7 @@
 // (c) flatz
+// http://web.archive.org/web/20141118220924/http://pastie.org/private/9hjpnaewxg5twytosnx4w
+// http://web.archive.org/web/20141118183317/http://pastie.org/private/pmnmsnqg6zbfnk9xactbw
+// http://web.archive.org/web/20141117072342/http://pastie.org/private/yltlfwubsz8w5pyhmojyfg
 //
 // Dasanko (C#)
 // https://playstationhax.xyz/forums/topic/1687-c-rap2rif-rap2rifkey-rif2rap-rifkey2rap/
