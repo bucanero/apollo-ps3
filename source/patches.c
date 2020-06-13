@@ -1769,7 +1769,7 @@ int apply_cheat_patch_code(const char* fpath, const char* title_id, code_entry_t
 		{
 			// decompress FILENAME
 			LOG("Decompressing '%s' (w=%d)...", fpath, OFFZIP_WBITS_ZLIB);
-			return offzip_util(fpath, APOLLO_LOCAL_CACHE, title_id, 0, OFFZIP_WBITS_ZLIB);
+			return offzip_util(fpath, APOLLO_LOCAL_CACHE, title_id, OFFZIP_WBITS_ZLIB);
 		}
 		else if (wildcard_match_icase(code->codes, "compress *,-w*"))
 		{

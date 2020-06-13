@@ -200,6 +200,7 @@ int pfd_util_setup_keys(const u8* console_id, u32 user_id) {
 u8* get_secure_file_id(const char* game_id, const char* filename)
 {
 	list_node_t *node;
+	secure_file_id_t *secure_fid;
 	game_keys_t *game_key = find_game_keys(game_id);
 
 	if (!game_key)
@@ -207,11 +208,10 @@ u8* get_secure_file_id(const char* game_id, const char* filename)
 
 	node = list_head(game_key->secure_file_ids);
 	while (node) {
-		if (node->value) {
-			if (wildcard_match(filename, ((secure_file_id_t *)node->value)->file_name) != 0)
-				return ((secure_file_id_t *)node->value)->secure_file_id;
+		secure_fid = list_get(node);
+		if (secure_fid && (wildcard_match(filename, secure_fid->file_name) != 0))
+			return (secure_fid->secure_file_id);
 
-		}
 		node = node->next;
 	}
 

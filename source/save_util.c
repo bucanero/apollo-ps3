@@ -270,7 +270,7 @@ void saveload_game_thread(void *user_data)
   if (save_data->flags & SAVE_UTIL_SAVING) {
     LOG("Loading icon");
 
-    read_buffer("/dev_hdd0/game/NP0APOLLO/ICON0.PNG", &save_data->icon_data, &save_data->icon_size);
+    read_buffer(APOLLO_PATH "../ICON0.PNG", &save_data->icon_data, &save_data->icon_size);
 
 //    LOG("Loading screenshot");
 //    load_file ("data/screenshot.png", &save_data->screenshot_data, &save_data->screenshot_size);

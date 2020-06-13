@@ -1,9 +1,3 @@
-#include "saves.h"
-#include "common.h"
-#include "sfo.h"
-#include "settings.h"
-#include "util.h"
-
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
@@ -14,6 +8,12 @@
 #include <sysutil/video.h>
 #include <time.h>
 #include <dirent.h>
+
+#include "saves.h"
+#include "common.h"
+#include "sfo.h"
+#include "settings.h"
+#include "util.h"
 
 #define UTF8_CHAR_GROUP		"\xe2\x97\x86"
 #define UTF8_CHAR_ITEM		"\xe2\x94\x97"

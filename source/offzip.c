@@ -29,6 +29,7 @@
 #include <zlib.h>
 #include <dirent.h>
 
+#include "packzip.h"
 
 #ifdef APOLLO_ENABLE_LOGGING
 #include <dbglogger.h>
@@ -49,9 +50,6 @@ typedef uint64_t    u64;
                             free(X); \
                             X = NULL; \
                         }
-#define PATH_DELIMITERS     "\\/"
-#define PATHSLASH   '/'
-
 
 #define VER             "0.4.1"
 #define INSZ            0x800   // the amount of bytes we want to decompress each time
@@ -82,11 +80,7 @@ enum {
 
 
 
-int offzip(char *file_input, char *file_output, u64 file_offset, int zipdo, FILE **fdo);
-char *mystrrchrs(char *str, char *chrs);
-char *get_filename(char *fname);
-int make_dir(char *folder);
-int check_is_dir(char *fname);
+int offzip(const char *file_input, const char *file_output, u64 file_offset, int zipdo, FILE **fdo);
 int buffread(FILE *fd, u8 *buff, int size);
 void buffseek(FILE *fd, u64 off, int mode);
 void buffinc(int increase);
@@ -106,14 +100,14 @@ u64     g_total_zsize   = 0,
         g_filebuffoff   = 0,
         g_filebuffsz    = 0,
         g_last_offset   = 0;
-int     g_zipwbits      = 15;
+int     g_zipwbits      = OFFZIP_WBITS_ZLIB;
 char    *g_basename     = NULL;
 u8      *g_in           = NULL,
         *g_out          = NULL,
         *g_filebuff     = NULL;
 
 
-int offzip_util(const char *f_input, const char *output_dir, const char *basename, u64 file_offset, int wbits) {
+int offzip_util(const char *f_input, const char *output_dir, const char *basename, int wbits) {
     FILE    *fdo            = NULL;
 
     LOG("Offzip "VER"\n"
@@ -177,27 +171,20 @@ int offzip_util(const char *f_input, const char *output_dir, const char *basenam
         return 0;
     }
 
-    char* file_input  = strdup(f_input);
-    char* file_output = strdup(output_dir);
-
-    int ret = offzip(file_input, file_output, file_offset, ZIPDODUMP, &fdo);
+    int ret = offzip(f_input, output_dir, 0, ZIPDODUMP, &fdo);
 
     FCLOSE(&fdo);
     FREE(g_in);
     FREE(g_out);
     FREE(g_filebuff);
-    FREE(file_input);
-    FREE(file_output);
     return (ret > 0);
 }
 
 
-int offzip(char *file_input, char *file_output, u64 file_offset, int zipdo, FILE **fdo) {
+int offzip(const char *file_input, const char *file_output, u64 file_offset, int zipdo, FILE **fdo) {
     FILE    *fdo_dummy = NULL; // totally useless, just for testing
     if(!fdo) fdo = &fdo_dummy;
     FILE    *fd     = NULL;
-    u64     inlen,
-            outlen;
     int     files, ret = 0;
 
     g_total_zsize   = 0;
@@ -221,9 +208,6 @@ int offzip(char *file_input, char *file_output, u64 file_offset, int zipdo, FILE
     if((zipdo == ZIPDODUMP) || (zipdo == ZIPDODUMP2)) {
         if(file_output && file_output[0]) {
             LOG("- dump to directory:  %s", file_output);
-//            if(chdir(file_output) < 0) {
-//                return std_err("Error: can't open folder");
-//            }
         }
     }
 
@@ -238,42 +222,7 @@ int offzip(char *file_input, char *file_output, u64 file_offset, int zipdo, FILE
     if(inflateInit2(&z, g_zipwbits) != Z_OK) 
         return zlib_err(Z_INIT_ERROR);
 
-    if(zipdo == ZIPDOFILE) {
-        char *add_folder = NULL;
-        if(file_output && check_is_dir(file_output)) {
-            if(file_output[0]) {
-                chdir(file_output); // ... ignore the check
-            }
-            file_output = NULL;
-            add_folder = NULL;
-        }
-        if(!file_output || !file_output[0]) {
-            char *p, *ext;
-            file_output = malloc(strlen(file_input) + (add_folder ? (strlen(add_folder)+1) : 0) + 64 + 1);
-            p = strrchr(file_input, '\\');
-            if(!p) p = strrchr(file_input, '/');
-            if(!p) p = file_input;
-            else   p++;
-            ext = strrchr(p, '.');
-            if(!ext) ext = p + strlen(p);
-            file_output[0] = 0;
-            if(add_folder) {
-                sprintf(file_output + strlen(file_output), "%s", add_folder);
-                make_dir(file_output);
-                sprintf(file_output + strlen(file_output), "%c", PATHSLASH);
-            }
-            sprintf(file_output + strlen(file_output), "%.*s_%s", (int)(ext - p), p, "unpack");
-            if(ext[0]) strcat(file_output, ext);
-        }
-        LOG("- open output file:   %s", file_output);
-        if(!*fdo) *fdo = save_file(file_output);
-        unzip(fd, fdo, &inlen, &outlen, zipdo, NULL);
-
-        LOG("- %"PRIu" bytes read (zipped)", inlen);
-        LOG("- %"PRIu" bytes unzipped", outlen);
-
-        ret = (outlen > 0);
-    } else {
+    if(zipdo == ZIPDODUMP) {
         LOG("+------------+-----+----------------------------+----------------------+");
         LOG("| hex_offset | ... | zip -> unzip size / offset | spaces before | info |");
         LOG("+------------+-----+----------------------------+----------------------+");
@@ -297,46 +246,6 @@ int offzip(char *file_input, char *file_output, u64 file_offset, int zipdo, FILE
     inflateEnd(&z);
     if(*fdo && (fdo == &fdo_dummy)) FCLOSE(fdo);
     return ret;
-}
-
-
-char *mystrrchrs(char *str, char *chrs) {
-    char    *p,
-            *ret = NULL;
-
-    if(str && chrs) {
-        for(p = str + strlen(str) - 1; p >= str; p--) {
-            if(strchr(chrs, *p)) return(p);
-        }
-    }
-    return ret;
-}
-
-
-char *get_filename(char *fname) {
-    char    *p;
-
-    if(fname) {
-        p = mystrrchrs(fname, PATH_DELIMITERS);
-        if(p) return(p + 1);
-    }
-    return(fname);
-}
-
-
-int make_dir(char *folder) {
-    return mkdir(folder, 0755);
-}
-
-
-int check_is_dir(char *fname) {
-    struct stat xstat;
-    if(!fname || !fname[0]) return 1;
-    if(!strcmp(fname, ".")) return 1;
-    if(!strcmp(fname, "..")) return 1;
-    if(stat(fname, &xstat) < 0) return 0;
-    if(!S_ISDIR(xstat.st_mode)) return 0;
-    return 1;
 }
 
 
@@ -438,32 +347,15 @@ int unzip_all(FILE *fd, FILE **fdo, const char* fpath, int zipdo) {
         LOG("  0x%"PRIx" ", g_offset);
         start_offset = g_offset;
 
-        switch(zipdo) {
-            case ZIPDOSCAN2: {
-                return 1;
-                break;
-            }
-            case ZIPDOSCAN: {
-                zipres = unzip(fd, fdo, &inlen, &outlen, zipdo, NULL);
-                break;
-            }
-            case ZIPDODUMP:
-            case ZIPDODUMP2: {
-                filename[0] = 0;    // it means that the file will be not created
+        snprintf(filename, sizeof(filename), "%s[%s]%"PRIx ".dat", fpath, g_basename, g_offset);    // create the file
+        //sprintf(filename, "%"PRIx".dat", g_offset);
+        //*fdo = save_file(filename, 1);
 
-                sprintf(filename, "%s[%s]%"PRIx, fpath, g_basename, g_offset);    // create the file
-                //sprintf(filename, "%"PRIx".dat", g_offset);
-                //*fdo = save_file(filename, 1);
+        zipres = unzip(fd, fdo, &inlen, &outlen, zipdo, filename);
 
-                zipres = unzip(fd, fdo, &inlen, &outlen, zipdo, filename);
+        FCLOSE(fdo);
 
-                FCLOSE(fdo);
-
-                if((zipres < 0) && filename[0]) unlink(filename);
-                break;
-            }
-            default: break;
-        }
+        if((zipres < 0) && filename[0]) unlink(filename);
 
         if(!zipres) {
             LOG(" %"PRIu" -> %"PRIu" / 0x%"PRIx" _ %"PRIu, inlen, outlen, g_offset, (start_offset - g_last_offset));
@@ -523,37 +415,13 @@ int unzip(FILE *fd, FILE **fdo, u64 *inlen, u64 *outlen, int zipdo, char *dumpna
             z.avail_out = OUTSZ;
             zerr = inflate(&z, Z_SYNC_FLUSH);
 
-            switch(zipdo) {
-                case ZIPDODUMP:
-                case ZIPDOFILE:
-                case ZIPDODUMP2: {
-                    if(!dumpname) break;
+            if(!dumpname) break;
 
-                    sprintf(dumpname + strlen(dumpname), ".dat");
-                    //, sign_ext(g_out, z.total_out - oldsz));
+            if(!*fdo) *fdo = save_file(dumpname);
+            dumpname = NULL;
 
-                    if(!*fdo) *fdo = save_file(dumpname);
-                    dumpname = NULL;
-                }
-                default: break;
-            }
-
-            switch(zipdo) {
-                case ZIPDODUMP:
-                case ZIPDOFILE: {
-                    myfwrite(g_out, z.total_out - oldsz, *fdo);
-                    oldsz = z.total_out;
-
-                    break;
-                }
-                case ZIPDODUMP2: {
-                    myfwrite(g_in, z.total_in - oldsz, *fdo);
-                    oldsz = z.total_in;
-
-                    break;
-                }
-                default: break;
-            }
+            myfwrite(g_out, z.total_out - oldsz, *fdo);
+            oldsz = z.total_out;
 
             if(zerr != Z_OK) {      // inflate() return value MUST be handled now
                 if(zerr == Z_STREAM_END) {
