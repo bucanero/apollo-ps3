@@ -105,14 +105,54 @@ app_config_t apollo_config = {
 };
 
 const menu_option_t menu_options[] = {
-	{ .name = "Background Music", .options = NULL, .type = APP_OPTION_BOOL, .value = &apollo_config.music, .callback = music_callback },
-	{ .name = "Sort Saves", .options = NULL, .type = APP_OPTION_BOOL, .value = &apollo_config.doSort, .callback = sort_callback },
-	{ .name = "Menu Animations", .options = NULL, .type = APP_OPTION_BOOL, .value = &apollo_config.doAni, .callback = ani_callback },
-	{ .name = "Screen Horizontal Margin", .options = NULL, .type = APP_OPTION_INC, .value = &apollo_config.marginH, .callback = horm_callback },
-	{ .name = "Screen Vertical Margin", .options = NULL, .type = APP_OPTION_INC, .value = &apollo_config.marginV, .callback = verm_callback },
-	{ .name = "Version Update Check", .options = NULL, .type = APP_OPTION_BOOL, .value = &apollo_config.update, .callback = update_callback },
-	{ .name = "Clear Local Cache", .options = NULL, .type = APP_OPTION_CALL, .value = NULL, .callback = clearcache_callback },
-	{ .name = "Update Application Data", .options = NULL, .type = APP_OPTION_CALL, .value = NULL, .callback = upd_appdata_callback },
+	{ .name = "Background Music", 
+		.options = NULL, 
+		.type = APP_OPTION_BOOL, 
+		.value = &apollo_config.music, 
+		.callback = music_callback 
+	},
+	{ .name = "Sort Saves", 
+		.options = NULL, 
+		.type = APP_OPTION_BOOL, 
+		.value = &apollo_config.doSort, 
+		.callback = sort_callback 
+	},
+	{ .name = "Menu Animations", 
+		.options = NULL, 
+		.type = APP_OPTION_BOOL, 
+		.value = &apollo_config.doAni, 
+		.callback = ani_callback 
+	},
+	{ .name = "Screen Horizontal Margin", 
+		.options = NULL, 
+		.type = APP_OPTION_INC, 
+		.value = &apollo_config.marginH, 
+		.callback = horm_callback 
+	},
+	{ .name = "Screen Vertical Margin", 
+		.options = NULL, 
+		.type = APP_OPTION_INC, 
+		.value = &apollo_config.marginV, 
+		.callback = verm_callback 
+	},
+	{ .name = "Version Update Check", 
+		.options = NULL, 
+		.type = APP_OPTION_BOOL, 
+		.value = &apollo_config.update, 
+		.callback = update_callback 
+	},
+	{ .name = "Clear Local Cache", 
+		.options = NULL, 
+		.type = APP_OPTION_CALL, 
+		.value = NULL, 
+		.callback = clearcache_callback 
+	},
+	{ .name = "Update Application Data", 
+		.options = NULL, 
+		.type = APP_OPTION_CALL, 
+		.value = NULL, 
+		.callback = upd_appdata_callback 
+	},
 	{ .name = NULL }
 };
 
