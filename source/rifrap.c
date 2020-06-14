@@ -218,10 +218,11 @@ fail:
 	return 0;
 }
 
-int rap2rif(const u8* idps_key, const char* rap_file, const char *rif_file)
+int rap2rif(const u8* idps_key, const char* rap_file, const char *exdata_path)
 {
 	struct actdat *actdat = NULL;
 	FILE *fp = NULL;
+	char path[256];
 
 	u8 rap_key[16];
 	u8 klicensee[16];
@@ -236,7 +237,7 @@ int rap2rif(const u8* idps_key, const char* rap_file, const char *rif_file)
 	const char *p1;
 	const char *p2;
 
-    actdat = actdat_get("/dev_hdd0/tmp/");
+    actdat = actdat_get(exdata_path);
 	if (actdat == NULL) {
 		LOG("Error: unable to load act.dat");
 		goto fail;
@@ -283,7 +284,11 @@ int rap2rif(const u8* idps_key, const char* rap_file, const char *rif_file)
 
 	memset(signature, rif_junk, sizeof(signature));
 
-	fp = fopen(rif_file, "wb");
+    snprintf(path, sizeof(path), "%s%s", exdata_path, p1);
+    strcpy(strrchr(path, '.'), ".rif");
+
+	LOG("Saving rif to '%s'...", path);
+	fp = fopen(path, "wb");
 	if (fp == NULL) {
 		LOG("Error: unable to create rif file");
 		goto fail;
