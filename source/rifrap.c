@@ -5,13 +5,18 @@
 //
 // Dasanko (C#)
 // https://playstationhax.xyz/forums/topic/1687-c-rap2rif-rap2rifkey-rif2rap-rifkey2rap/
+//
+// PS3Xploit-Resign (PS3XploitTeam)
+// https://github.com/PS3Xploit/PS3xploit-resigner
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <polarssl/aes.h>
+#include <polarssl/sha1.h>
 
 #include "util.h"
+#include "ecdsa.h"
 
 const u8 rap_initial_key[16] = {
     0x86, 0x9F, 0x77, 0x45, 0xC1, 0x3F, 0xD8, 0x90, 
@@ -30,18 +35,6 @@ const u8 e2[16] = {
     0x4E, 0x7C, 0x53, 0x7B, 0xF5, 0x53, 0x8C, 0x74
 };
 
-const u8 rif_header[16] = {
-	0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x02, 
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02
-};
-
-const u8 rif_footer[16] = {
-	0x00, 0x00, 0x01, 0x2F, 0x41, 0x5C, 0x00, 0x00, 
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-};
-
-const u8 rif_junk = 0x11;
-
 // npdrm_const /klicenseeConst
 const u8 npdrm_const_key[16] = {
     0x5E, 0x06, 0xE0, 0x4F, 0xD9, 0x4A, 0x71, 0xBF, 
@@ -54,21 +47,39 @@ const u8 npdrm_rif_key[16] = {
     0xB1, 0xC1, 0xA1, 0x4A, 0x74, 0x84, 0x44, 0x3B 
 };
 
+u8 ec_k_nm[21] = {
+	0x00, 0xbf, 0x21, 0x22, 0x4b, 0x04, 0x1f, 0x29, 0x54, 0x9d, 
+	0xb2, 0x5e, 0x9a, 0xad, 0xe1, 0x9e, 0x72, 0x0a, 0x1f, 0xe0, 0xf1
+};
+
+u8 ec_Q_nm[40] = {
+	0x94, 0x8D, 0xA1, 0x3E, 0x8C, 0xAF, 0xD5, 0xBA, 0x0E, 0x90,
+	0xCE, 0x43, 0x44, 0x61, 0xBB, 0x32, 0x7F, 0xE7, 0xE0, 0x80,
+	0x47, 0x5E, 0xAA, 0x0A, 0xD3, 0xAD, 0x4F, 0x5B, 0x62, 0x47,
+	0xA7, 0xFD, 0xA8, 0x6D, 0xF6, 0x97, 0x90, 0x19, 0x67, 0x73
+};
+
+
 struct rif
 {
-    u8 unk1[0x10]; //version, license type and user number
-    u8 titleid[0x30]; //Content ID
+    u32 version;
+    u32 licenseType;
+    u64 accountid;
+    char titleid[0x30]; //Content ID
     u8 padding[0xC]; //Padding for randomness
     u32 actDatIndex; //Key index on act.dat between 0x00 and 0x7F
     u8 key[0x10]; //encrypted klicensee
-    u64 unk2; //timestamp??
-    u64 unk3; //Always 0
-    u8 rs[0x28];
+    u64 timestamp; //timestamp??
+    u64 expiration; //Always 0
+    u8 r[0x14];
+    u8 s[0x14];
 } __attribute__ ((packed));
 
 struct actdat
 {
-    u8 unk1[0x10]; //Version, User number
+    u32 version;
+    u32 licenseType;
+    u64 accountId;
     u8 keyTable[0x800]; //Key Table
     u8 unk2[0x800];
     u8 signature[0x28];
@@ -184,55 +195,18 @@ fail:
 	return NULL; 
 }
 
-int rifkey2rap(const char *rifkey_file, const char *rap_file)
-{
-	FILE *fp = NULL;
-
-	u8 rap_key[16];
-	u8 klicensee[16];
-	memset(klicensee, 0, sizeof(klicensee));
-	memset(rap_key, 0, sizeof(rap_key));
-
-	if (read_file(rifkey_file, klicensee, sizeof(klicensee)) < 0) {
-		LOG("Error: unable to load rif key file.\n");
-		goto fail;
-	}
-
-	klicensee_to_rap(klicensee, rap_key);
-
-	fp = fopen(rap_file, "wb");
-	if (fp == NULL) {
-		LOG("Error: unable to create rap file.\n");
-		goto fail;
-	}
-	fwrite(rap_key, sizeof(rap_key), 1, fp);
-	fclose(fp);
-
-	return 1;
-
-fail:
-	if (fp != NULL) {
-		fclose(fp);
-	}
-
-	return 0;
-}
-
 int rap2rif(const u8* idps_key, const char* rap_file, const char *exdata_path)
 {
 	struct actdat *actdat = NULL;
-	FILE *fp = NULL;
-	char path[256];
+	struct rif rif;
 
-	u8 rap_key[16];
-	u8 klicensee[16];
-	u8 content_id[48];
-	u8 padding[16];
-	u8 rif_key[16];
-	u8 enc_const[16];
-	u8 dec_actdat[16];
-	u8 signature[40];
-	u32 actdat_key_index;
+	uint8_t rap_key[0x10];
+	uint8_t idps_const[0x10];
+	uint8_t act_dat_key[0x10];
+	uint8_t sha1_digest[20];
+	uint8_t R[0x15];
+	uint8_t S[0x15];
+	char path[256];
 
 	const char *p1;
 	const char *p2;
@@ -249,12 +223,14 @@ int rap2rif(const u8* idps_key, const char* rap_file, const char *exdata_path)
 		goto fail;
 	}
 
-	memset(content_id, 0, sizeof(content_id));
+	memset(&rif, 0, sizeof(struct rif));
+	rif.version = 1;
+	rif.licenseType = 0x00010002;
+	rif.timestamp = 0x0000012F415C0000;
+	rif.expiration = 0;
+	rif.accountid = ES64(actdat->accountId);
+
 	p1 = strrchr(rap_file, '/');
-	if (p1 == NULL)
-		p1 = strrchr(rap_file, '\\');
-	else
-		++p1;
 	if (p1 == NULL)
 		p1 = rap_file;
 	else
@@ -264,50 +240,39 @@ int rap2rif(const u8* idps_key, const char* rap_file, const char *exdata_path)
 		LOG("Error: unable to get content ID");
 		goto fail;
 	}
-//	strncpy(content_id, p1, p2 - p1);
-	memcpy(content_id, p1, p2 - p1);
+	strncpy(rif.titleid, p1, sizeof(rif.titleid));
 
-	memset(klicensee, 0, sizeof(klicensee));
-	rap_to_klicensee(rap_key, klicensee);
+	//convert rap to rifkey(klicensee)
+	rap_to_klicensee(rap_key, rif.key);
+	aesecb128_encrypt(idps_key, npdrm_const_key, idps_const);
+	aesecb128_decrypt(idps_const, actdat->keyTable, act_dat_key);
 
-	memset(padding, 0, sizeof(padding));
-	memset(rif_key, 0, sizeof(rif_key));
+	//encrypt rif with act.dat first key primary key table
+	aesecb128_encrypt(act_dat_key, rif.key, rif.key);
+	aesecb128_encrypt(npdrm_rif_key, rif.padding, rif.padding);
 
-	actdat_key_index = 0;
-//	memcpy(padding + sizeof(padding) - sizeof(actdat_key_index), &actdat_key_index, 4);
-//	wbe32(padding + sizeof(padding) - sizeof(actdat_key_index), actdat_key_index);
+	sha1((uint8_t*) &rif, 0x70, sha1_digest);
+	ecdsa_set_curve(0);
+	ecdsa_set_pub(ec_Q_nm);
+	ecdsa_set_priv(ec_k_nm);
+	ecdsa_sign(sha1_digest, R, S);
 
-	aesecb128_encrypt(idps_key, npdrm_const_key, enc_const);
-	aesecb128_decrypt(enc_const, &actdat->keyTable[actdat_key_index * 16], dec_actdat);
-	aesecb128_encrypt(npdrm_rif_key, padding, padding);
-	aesecb128_encrypt(dec_actdat, klicensee, rif_key);
-
-	memset(signature, rif_junk, sizeof(signature));
+	memcpy(rif.r, R+1, sizeof(rif.r));
+	memcpy(rif.s, S+1, sizeof(rif.s));
 
     snprintf(path, sizeof(path), "%s%s", exdata_path, p1);
     strcpy(strrchr(path, '.'), ".rif");
 
 	LOG("Saving rif to '%s'...", path);
-	fp = fopen(path, "wb");
-	if (fp == NULL) {
+	if (write_file(path, (uint8_t*) &rif, sizeof(struct rif)) < 0) {
 		LOG("Error: unable to create rif file");
 		goto fail;
 	}
-	fwrite(rif_header, sizeof(rif_header), 1, fp);
-	fwrite(content_id, sizeof(content_id), 1, fp);
-	fwrite(padding, sizeof(padding), 1, fp);
-	fwrite(rif_key, sizeof(rif_key), 1, fp);
-	fwrite(rif_footer, sizeof(rif_footer), 1, fp);
-	fwrite(signature, sizeof(signature), 1, fp);
-	fclose(fp);
 
+	free(actdat);
 	return 1;
 
 fail:
-	if (fp != NULL) {
-		fclose(fp);
-	}
-
 	if (actdat != NULL) {
 		free(actdat);
 	}
