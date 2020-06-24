@@ -11,20 +11,22 @@
 #define APOLLO_LOCAL_CACHE		APOLLO_PATH "CACHE/"
 #define APOLLO_UPDATE_URL		"https://api.github.com/repos/bucanero/apollo-ps3/releases/latest"
 
-#define USB0_PATH               "/dev_usb000/PS3/"
-#define USB1_PATH               "/dev_usb001/PS3/"
+#define USB0_PATH               "/dev_usb000/"
+#define USB1_PATH               "/dev_usb001/"
 #define USER_PATH_HDD			"/dev_hdd0/home/%08d/"
-#define SAVES_PATH_USB0			USB0_PATH "SAVEDATA/"
-#define SAVES_PATH_USB1			USB1_PATH "SAVEDATA/"
+#define SAVES_PATH_USB0			USB0_PATH "PS3/SAVEDATA/"
+#define SAVES_PATH_USB1			USB1_PATH "PS3/SAVEDATA/"
 #define SAVES_PATH_HDD			USER_PATH_HDD "savedata/"
 #define TROPHY_PATH_HDD			USER_PATH_HDD "trophy/"
 #define EXDATA_PATH_HDD			USER_PATH_HDD "exdata/"
 
-#define EXPORT_PATH_USB0        USB0_PATH "EXPORT/"
-#define EXPORT_PATH_USB1        USB1_PATH "EXPORT/"
-
+#define EXPORT_PATH_USB0        USB0_PATH "PS3/EXPORT/"
+#define EXPORT_PATH_USB1        USB1_PATH "PS3/EXPORT/"
 #define EXPORT_RAP_PATH_USB0    EXPORT_PATH_USB0 "exdata/"
 #define EXPORT_RAP_PATH_USB1    EXPORT_PATH_USB1 "exdata/"
+
+#define IMPORT_RAP_PATH_USB0    USB0_PATH "exdata/"
+#define IMPORT_RAP_PATH_USB1    USB1_PATH "exdata/"
 
 #define ONLINE_URL				"http://apollo-db.psdev.tk/"
 #define ONLINE_CACHE_TIMEOUT    24*3600     // 1-day local cache
@@ -167,3 +169,4 @@ void stop_loading_screen();
 int apply_cheat_patch_code(const char* fpath, const char* title_id, code_entry_t* code);
 
 int rif2rap(const uint8_t* idps_key, const char* lic_path, const char* rifFile, const char* rap_path);
+int rap2rif(const uint8_t* idps_key, const char* exdata_path, const char* rap_file, const char *rif_path);

@@ -1393,6 +1393,41 @@ void exportLicensesRap(const char* exp_path)
     stop_loading_screen();
 }
 
+void importLicenses(const char* exdata_path)
+{
+	DIR *d;
+	struct dirent *dir;
+	char lic_path[256];
+
+	if (dir_exists(exdata_path) != SUCCESS)
+	{
+		LOG("Folder not available: %s", exdata_path);
+		show_message("Error! Import folder is not available");
+		return;
+	}
+
+	snprintf(lic_path, sizeof(lic_path), EXDATA_PATH_HDD, apollo_config.user_id);
+	d = opendir(exdata_path);
+	if (!d)
+		return;
+
+    init_loading_screen("Importing user licenses...");
+
+	LOG("Importing RAPs from folder '%s'...", exdata_path);
+	while ((dir = readdir(d)) != NULL)
+	{
+		if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0 &&
+			strcmp(strrchr(dir->d_name, '.'), ".rap") == 0)
+		{
+			LOG("Importing %s", dir->d_name);
+			rap2rif((u8*) apollo_config.idps, exdata_path, dir->d_name, lic_path);
+		}
+	}
+	closedir(d);
+
+    stop_loading_screen();
+}
+
 void doCodeOptionsMenu()
 {
     code_entry_t* code = &selected_entry->codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]];
@@ -1458,6 +1493,12 @@ void doCodeOptionsMenu()
 			if (strncmp(codecmd, CMD_EXP_RAPS_USB, 10) == 0)
 			{
 				exportLicensesRap(codecmd[10] ? EXPORT_RAP_PATH_USB1 : EXPORT_RAP_PATH_USB0);
+				code->activated = 0;
+			}
+
+			if (strncmp(codecmd, CMD_IMP_EXDATA_USB, 10) == 0)
+			{
+				importLicenses(codecmd[10] ? IMPORT_RAP_PATH_USB1 : IMPORT_RAP_PATH_USB0);
 				code->activated = 0;
 			}
 

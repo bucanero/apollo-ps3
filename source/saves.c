@@ -660,7 +660,7 @@ int ReadOnlineSaves(save_entry_t * game)
 
 int LoadBackupCodes(save_entry_t * bup)
 {
-	int bup_count = 4;
+	int bup_count = 5;
 
 	code_entry_t * ret = (code_entry_t *)malloc(sizeof(code_entry_t) * bup_count);
 	bup->code_count = bup_count;
@@ -673,7 +673,7 @@ int LoadBackupCodes(save_entry_t * bup)
 	ret[bup_count].options = _createOptions(2, "Save .Zip to USB", CMD_EXP_EXDATA_USB);
 	bup_count++;
 
-	_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0b Export Licenses to .RAP", "");
+	_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0b Export Licenses as .RAPs", "");
 	ret[bup_count].options_count = 1;
 	ret[bup_count].options = _createOptions(2, "Save .RAPs to USB", CMD_EXP_RAPS_USB);
 	bup_count++;
@@ -688,12 +688,12 @@ int LoadBackupCodes(save_entry_t * bup)
 	ret[bup_count].options = _createOptions(2, "Copy saves to USB", CMD_EXP_SAVES_USB);
 	bup_count++;
 
-/*
-	_setManualCode(&ret[bup_count], "Import Licenses from USB", "");
+	_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0b Import .RAPs as .RIF Licenses", "");
 	ret[bup_count].options_count = 1;
-	ret[bup_count].options = _createOptions(2, "Import licenses.zip from USB", CMD_IMP_EXDATA_USB);
+	ret[bup_count].options = _createOptions(2, "Import .RAPs from USB", CMD_IMP_EXDATA_USB);
 	bup_count++;
 
+/*
 	_setManualCode(&ret[bup_count], "Import Trophies from USB", "");
 	ret[bup_count].options_count = 1;
 	ret[bup_count].options = _createOptions(2, "Import trophies from USB", CMD_IMP_TROPHY_USB);

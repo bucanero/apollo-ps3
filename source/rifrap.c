@@ -195,7 +195,7 @@ fail:
 	return NULL; 
 }
 
-int rap2rif(const u8* idps_key, const char* rap_file, const char *exdata_path)
+int rap2rif(const u8* idps_key, const char* exdata_path, const char* rap_file, const char *rif_path)
 {
 	struct actdat *actdat = NULL;
 	struct rif rif;
@@ -211,14 +211,16 @@ int rap2rif(const u8* idps_key, const char* rap_file, const char *exdata_path)
 	const char *p1;
 	const char *p2;
 
-    actdat = actdat_get(exdata_path);
+	actdat = actdat_get(rif_path);
 	if (actdat == NULL) {
 		LOG("Error: unable to load act.dat");
 		goto fail;
 	}
 
-	LOG("Loading RAP '%s'...", rap_file);
-	if (read_file(rap_file, rap_key, sizeof(rap_key)) < 0) {
+	snprintf(path, sizeof(path), "%s%s", exdata_path, rap_file);
+
+	LOG("Loading RAP '%s'...", path);
+	if (read_file(path, rap_key, sizeof(rap_key)) < 0) {
 		LOG("Error: unable to load rap file");
 		goto fail;
 	}
@@ -228,7 +230,7 @@ int rap2rif(const u8* idps_key, const char* rap_file, const char *exdata_path)
 	rif.licenseType = 0x00010002;
 	rif.timestamp = 0x0000012F415C0000;
 	rif.expiration = 0;
-	rif.accountid = ES64(actdat->accountId);
+	rif.accountid = actdat->accountId;
 
 	p1 = strrchr(rap_file, '/');
 	if (p1 == NULL)
@@ -240,7 +242,7 @@ int rap2rif(const u8* idps_key, const char* rap_file, const char *exdata_path)
 		LOG("Error: unable to get content ID");
 		goto fail;
 	}
-	strncpy(rif.titleid, p1, sizeof(rif.titleid));
+	strncpy(rif.titleid, p1, p2 - p1);
 
 	//convert rap to rifkey(klicensee)
 	rap_to_klicensee(rap_key, rif.key);
@@ -260,7 +262,7 @@ int rap2rif(const u8* idps_key, const char* rap_file, const char *exdata_path)
 	memcpy(rif.r, R+1, sizeof(rif.r));
 	memcpy(rif.s, S+1, sizeof(rif.s));
 
-    snprintf(path, sizeof(path), "%s%s", exdata_path, p1);
+    snprintf(path, sizeof(path), "%s%s", rif_path, p1);
     strcpy(strrchr(path, '.'), ".rif");
 
 	LOG("Saving rif to '%s'...", path);
