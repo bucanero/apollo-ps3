@@ -23,7 +23,7 @@ int is_mamba(void);
 
 int file_exists(const char *path);
 int dir_exists(const char *path);
-int unlink_secure(void *path);
+int unlink_secure(const char *path);
 int mkdirs(const char* dir);
 int copy_file(const char* input, const char* output);
 int copy_directory(const char* startdir, const char* inputdir, const char* outputdir);

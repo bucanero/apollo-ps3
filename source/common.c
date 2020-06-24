@@ -88,7 +88,7 @@ int dir_exists(const char *path)
     return FAILED;
 }
 
-int unlink_secure(void *path)
+int unlink_secure(const char *path)
 {   
     if(file_exists(path)==SUCCESS)
     {
