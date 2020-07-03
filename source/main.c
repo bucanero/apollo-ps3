@@ -141,7 +141,7 @@ const char * menu_pad_help[TOTAL_MENU_IDS] = { NULL,												//Main
 								"\x10 Select    \x13 Back    \x12 Details    \x11 Refresh",			//USB list
 								"\x10 Select    \x13 Back    \x12 Details    \x11 Refresh",			//HDD list
 								"\x10 Select    \x13 Back    \x11 Refresh",							//Online list
-								"\x10 Select    \x13 Back",											//User backup
+								"\x10 Select    \x13 Back    \x11 Refresh",							//User backup
 								"\x10 Select    \x13 Back",											//Options
 								"\x13 Back",														//About
 								"\x10 Select    \x12 View Code    \x13 Back",						//Select Cheats
@@ -193,11 +193,17 @@ save_list_t online_saves = {
 };
 
 /*
-* Online code list
+* User Backup code list
 */
-save_entry_t user_backup = {
-	.name = "User Data Backup",
-	.codes = NULL,
+save_list_t user_backup = {
+    .icon_id = cat_bup_png_index,
+    .title = "User Data Backup",
+    .list = NULL,
+    .count = 0,
+    .path = "",
+    .ReadList = &ReadBackupList,
+    .ReadCodes = &ReadBackupCodes,
+    .UpdatePath = NULL,
 };
 
 save_entry_t* selected_entry;
@@ -687,17 +693,11 @@ void SetMenu(int id)
 			break;
 
 		case MENU_USER_BACKUP: //User Backup Menu
-			if (!user_backup.codes)
-			{
-				LoadBackupCodes(&user_backup);
-    			qsort(user_backup.codes, user_backup.code_count, sizeof(code_entry_t), &qsortCodeList_Compare);
-			}
-			selected_entry = &user_backup;
-// ---------
-			last_menu_id[MENU_PATCHES] = 0;
+			if (!user_backup.list)
+				ReloadUserSaves(&user_backup);
 
 			if (apollo_config.doAni)
-				Draw_CheatsMenu_Selection_Ani();
+				Draw_UserCheatsMenu_Ani(&user_backup);
 			break;
 
 		case MENU_PATCHES: //Cheat Selection Menu
@@ -823,6 +823,10 @@ void doSaveMenu(save_list_t * save_list)
     	{
     		if (!save_list->list[menu_sel].codes)
     			save_list->ReadCodes(&save_list->list[menu_sel]);
+
+    		if (apollo_config.doSort && 
+				((save_list->icon_id == cat_bup_png_index) || (save_list->icon_id == cat_db_png_index)))
+    			qsort(save_list->list[menu_sel].codes, save_list->list[menu_sel].code_count, sizeof(code_entry_t), &qsortCodeList_Compare);
 
     		selected_entry = &save_list->list[menu_sel];
     		SetMenu(MENU_PATCHES);
@@ -1148,7 +1152,7 @@ void exportFolder(const char* src_path, const char* exp_path, const char* msg)
     stop_loading_screen();
 }
 
-void exportLicensesRap(const char* exp_path)
+void exportLicensesRap(const char* fname, const char* exp_path)
 {
 	DIR *d;
 	struct dirent *dir;
@@ -1171,6 +1175,7 @@ void exportLicensesRap(const char* exp_path)
 	while ((dir = readdir(d)) != NULL)
 	{
 		if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0 &&
+			(!fname || (strcmp(dir->d_name, fname) == 0)) &&
 			strcmp(strrchr(dir->d_name, '.'), ".rif") == 0)
 		{
 			LOG("Exporting %s", dir->d_name);
@@ -1182,7 +1187,7 @@ void exportLicensesRap(const char* exp_path)
     stop_loading_screen();
 }
 
-void importLicenses(const char* exdata_path)
+void importLicenses(const char* fname, const char* exdata_path)
 {
 	DIR *d;
 	struct dirent *dir;
@@ -1206,6 +1211,7 @@ void importLicenses(const char* exdata_path)
 	while ((dir = readdir(d)) != NULL)
 	{
 		if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0 &&
+			(!fname || (strcmp(dir->d_name, fname)) == 0) &&
 			strcmp(strrchr(dir->d_name, '.'), ".rap") == 0)
 		{
 			LOG("Importing %s", dir->d_name);
@@ -1281,13 +1287,7 @@ void doCodeOptionsMenu()
 
 			if (strncmp(codecmd, CMD_EXP_RAPS_USB, 10) == 0)
 			{
-				exportLicensesRap(codecmd[10] ? EXPORT_RAP_PATH_USB1 : EXPORT_RAP_PATH_USB0);
-				code->activated = 0;
-			}
-
-			if (strncmp(codecmd, CMD_IMP_EXDATA_USB, 10) == 0)
-			{
-				importLicenses(codecmd[10] ? IMPORT_RAP_PATH_USB1 : IMPORT_RAP_PATH_USB0);
+				exportLicensesRap(code->file, codecmd[10] ? EXPORT_RAP_PATH_USB1 : EXPORT_RAP_PATH_USB0);
 				code->activated = 0;
 			}
 
@@ -1539,6 +1539,12 @@ void doPatchMenu()
 				selected_entry->codes[menu_sel].activated = 0;
 			}
 
+			if (strcmp(selected_entry->codes[menu_sel].codes, CMD_IMP_EXDATA_USB) == 0)
+			{
+				importLicenses(selected_entry->codes[menu_sel].file, selected_entry->path);
+				selected_entry->codes[menu_sel].activated = 0;
+			}
+
 			if (selected_entry->codes[menu_sel].activated)
 			{
 				//Check if option code
@@ -1573,11 +1579,6 @@ void doPatchMenu()
 	Draw_CheatsMenu_Selection(menu_sel, 0xFFFFFFFF);
 }
 
-void doUserBackupMenu()
-{
-	doPatchMenu();
-}
-
 // Resets new frame
 void drawScene()
 {
@@ -1608,7 +1609,7 @@ void drawScene()
 			break;
 
 		case MENU_USER_BACKUP: //User Backup Menu
-			doUserBackupMenu();
+			doSaveMenu(&user_backup);
 			break;
 
 		case MENU_PATCHES: //Cheats Selection Menu

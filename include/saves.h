@@ -62,6 +62,8 @@
 #define SAVE_FLAG_PS2           16
 #define SAVE_FLAG_PSP           32
 #define SAVE_FLAG_PSV           64
+#define SAVE_FLAG_RIF           128
+#define SAVE_FLAG_RAP           256
 
 enum char_flag_enum
 {
@@ -140,6 +142,7 @@ typedef struct
 
 save_entry_t * ReadUserList(const char* userPath, int * gmc);
 save_entry_t * ReadOnlineList(const char* urlPath, int * gmc);
+save_entry_t * ReadBackupList(const char* userPath, int * gmc);
 void UnloadGameList(save_entry_t * list, int count);
 int isGameActivated(save_entry_t game);
 char * ParseActivatedGameList(save_entry_t * list, int count);
@@ -149,7 +152,7 @@ int qsortCodeList_Compare(const void* A, const void* B);
 long getFileSize(const char * path);
 int ReadCodes(save_entry_t * save);
 int ReadOnlineSaves(save_entry_t * game);
-int LoadBackupCodes(save_entry_t * bup);
+int ReadBackupCodes(save_entry_t * bup);
 
 int http_init(void);
 void http_end(void);

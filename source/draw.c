@@ -101,6 +101,7 @@ void _drawListBackground(int off, int icon)
 		case cat_hdd_png_index:
 		case cat_sav_png_index:
 		case cat_opt_png_index:
+		case cat_bup_png_index:
 			DrawTexture(&menu_textures[help_png_index], help_png_x, help_png_y, 0, help_png_w, help_png_h, 0xFFFFFF00 | 0xFF);
 			break;
 

@@ -32,7 +32,7 @@ int isExist(const char* path)
 	int isf = file_exists(path) == SUCCESS;
 	int isd = dir_exists(path) == SUCCESS;
 	
-	return isf | isd;
+	return (isf | isd);
 }
 
 /*
@@ -119,6 +119,29 @@ long getDirListSize(const char * path)
 	return count;
 }
 
+long getDirListSizeByExt(const char * path, const char* fext)
+{
+	DIR *d;
+	struct dirent *dir;
+	d = opendir(path);
+
+	int count = 0;
+
+	if (d)
+	{
+		while ((dir = readdir(d)) != NULL)
+		{
+			if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0  && endsWith(dir->d_name, fext))
+			{
+				count++;
+			}
+		}
+		closedir(d);
+	}
+
+	return count;
+}
+
 /*
  * Function:		readFile()
  * File:			saves.c
@@ -172,10 +195,8 @@ int rtrim(char * buffer)
 
 void _setManualCode(code_entry_t* entry, uint8_t type, const char* name, const char* code)
 {
+	memset(entry, 0, sizeof(code_entry_t));
 	entry->type = type;
-	entry->activated = 0;
-	entry->options_count = 0;
-	entry->options = NULL;
 	asprintf(&entry->name, name);
 	asprintf(&entry->codes, code);
 }
@@ -658,40 +679,135 @@ int ReadOnlineSaves(save_entry_t * game)
 	return cur_count;
 }
 
-int LoadBackupCodes(save_entry_t * bup)
+save_entry_t * ReadBackupList(const char* userPath, int * gmc)
 {
-	int bup_count = 5;
+	int i = 0;
+
+	*gmc = 5;
+	save_entry_t * ret = (save_entry_t *)malloc(sizeof(save_entry_t) * (*gmc));
+
+	memset(&ret[i], 0, sizeof(save_entry_t));
+	asprintf(&ret[i].name, "\x0b Export Licenses");
+	asprintf(&ret[i].path, EXDATA_PATH_HDD, apollo_config.user_id);
+	ret[i].flags = SAVE_FLAG_PS3 | SAVE_FLAG_RIF;
+	i++;
+
+	memset(&ret[i], 0, sizeof(save_entry_t));
+	asprintf(&ret[i].name, "\x0b Import Licenses (USB 0)");
+	asprintf(&ret[i].path, IMPORT_RAP_PATH_USB0);
+	ret[i].flags = SAVE_FLAG_PS3 | SAVE_FLAG_RAP;
+	i++;
+
+	memset(&ret[i], 0, sizeof(save_entry_t));
+	asprintf(&ret[i].name, "\x0b Import Licenses (USB 1)");
+	asprintf(&ret[i].path, IMPORT_RAP_PATH_USB1);
+	ret[i].flags = SAVE_FLAG_PS3 | SAVE_FLAG_RAP;
+	i++;
+
+	memset(&ret[i], 0, sizeof(save_entry_t));
+	asprintf(&ret[i].name, "\x0b Export Trophies");
+	asprintf(&ret[i].path, TROPHY_PATH_HDD, apollo_config.user_id);
+	ret[i].flags = SAVE_FLAG_PS3;
+	ret[i].code_count = 1;
+	ret[i].codes = (code_entry_t *)malloc(sizeof(code_entry_t) * ret[i].code_count);
+	_setManualCode(ret[i].codes, PATCH_COMMAND, "\x0b Backup Trophies to USB", "");
+	ret[i].codes->options_count = 1;
+	ret[i].codes->options = _createOptions(2, "Save Trophies to USB", CMD_EXP_TROPHY_USB);
+	i++;
+
+	memset(&ret[i], 0, sizeof(save_entry_t));
+	asprintf(&ret[i].name, "\x0b Export HDD Saves");
+	asprintf(&ret[i].path, SAVES_PATH_HDD, apollo_config.user_id);
+	ret[i].flags = SAVE_FLAG_PS3;
+	ret[i].code_count = 1;
+	ret[i].codes = (code_entry_t *)malloc(sizeof(code_entry_t) * ret[i].code_count);
+	_setManualCode(ret[i].codes, PATCH_COMMAND, "\x0b Copy all HDD Saves to USB", "");
+	ret[i].codes->options_count = 1;
+	ret[i].codes->options = _createOptions(2, "Copy Saves to USB", CMD_EXP_SAVES_USB);
+	i++;
+
+	return ret;
+}
+
+int ReadBackupCodes(save_entry_t * bup)
+{
+	int bup_count = 0;
+	char fext[5] = "";
+
+	if (bup->flags & SAVE_FLAG_RIF)
+	{
+		sprintf(fext, ".rif");
+		bup_count = getDirListSizeByExt(bup->path, fext) + 2;
+	}
+	else if (bup->flags & SAVE_FLAG_RAP)
+	{
+		sprintf(fext, ".rap");
+		bup_count = getDirListSizeByExt(bup->path, fext) + 1;
+	}
+	else
+		return 0;
 
 	code_entry_t * ret = (code_entry_t *)malloc(sizeof(code_entry_t) * bup_count);
 	bup->code_count = bup_count;
 
 	bup_count = 0;
-	LOG("Loading backup commands...");
+	LOG("Loading backup files from '%s'...", bup->path);
 
-	_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0c Backup Licenses to .Zip", "");
-	ret[bup_count].options_count = 1;
-	ret[bup_count].options = _createOptions(2, "Save .Zip to USB", CMD_EXP_EXDATA_USB);
-	bup_count++;
+	if (bup->flags & SAVE_FLAG_RIF)
+	{
+		_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0c Backup All Licenses to .Zip", "");
+		ret[bup_count].options_count = 1;
+		ret[bup_count].options = _createOptions(2, "Save .Zip to USB", CMD_EXP_EXDATA_USB);
+		bup_count++;
 
-	_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0b Export Licenses as .RAPs", "");
-	ret[bup_count].options_count = 1;
-	ret[bup_count].options = _createOptions(2, "Save .RAPs to USB", CMD_EXP_RAPS_USB);
-	bup_count++;
+		_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0b Export All Licenses as .RAPs", "");
+		ret[bup_count].options_count = 1;
+		ret[bup_count].options = _createOptions(2, "Save .RAPs to USB", CMD_EXP_RAPS_USB);
+		bup_count++;
+	}
 
-	_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0b Backup Trophies to USB", "");
-	ret[bup_count].options_count = 1;
-	ret[bup_count].options = _createOptions(2, "Save trophies to USB", CMD_EXP_TROPHY_USB);
-	bup_count++;
+	if (bup->flags & SAVE_FLAG_RAP)
+	{
+		_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0b Import All .RAPs as .RIF Licenses", CMD_IMP_EXDATA_USB);
+		bup_count++;
+	}
 
-	_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0b Copy all HDD saves to USB", "");
-	ret[bup_count].options_count = 1;
-	ret[bup_count].options = _createOptions(2, "Copy saves to USB", CMD_EXP_SAVES_USB);
-	bup_count++;
+	DIR *d;
+	struct dirent *dir;
+	d = opendir(bup->path);
 
-	_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0b Import .RAPs as .RIF Licenses", "");
-	ret[bup_count].options_count = 1;
-	ret[bup_count].options = _createOptions(2, "Import .RAPs from USB", CMD_IMP_EXDATA_USB);
-	bup_count++;
+	if (d)
+	{
+		while ((dir = readdir(d)) != NULL)
+		{
+			if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0  &&
+				endsWith(dir->d_name, fext) && (bup_count < bup->code_count))
+			{
+				memset(&ret[bup_count], 0, sizeof(code_entry_t));
+				ret[bup_count].type = PATCH_COMMAND;
+
+				if (bup->flags & SAVE_FLAG_RIF)
+				{
+					_setManualCode(&ret[bup_count], PATCH_COMMAND, dir->d_name, "");
+					*strrchr(ret[bup_count].name, '.') = 0;
+					ret[bup_count].options_count = 1;
+					ret[bup_count].options = _createOptions(2, "Save .RAP to USB", CMD_EXP_RAPS_USB);
+				}
+				else if (bup->flags & SAVE_FLAG_RAP)
+				{
+					asprintf(&ret[bup_count].name, dir->d_name);
+					*strrchr(ret[bup_count].name, '.') = 0;
+					asprintf(&ret[bup_count].codes, CMD_IMP_EXDATA_USB);
+				}
+
+				asprintf(&ret[bup_count].file, dir->d_name);
+
+				LOG("[%d] File '%s'", bup_count, ret[bup_count].file);
+				bup_count++;
+			}
+		}
+		closedir(d);
+	}
 
 /*
 	_setManualCode(&ret[bup_count], "Import Trophies from USB", "");
@@ -700,7 +816,7 @@ int LoadBackupCodes(save_entry_t * bup)
 	bup_count++;
 */
 
-	LOG("%d commands loaded", bup_count);
+	LOG("%d items loaded", bup_count);
 
 	bup->codes = ret;
 	return bup_count;
