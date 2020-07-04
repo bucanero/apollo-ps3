@@ -105,11 +105,10 @@ int copy_file(const char* input, const char* output)
     mkdirs(output);
     FILE* in = fopen(input, "rb");
     FILE* out = fopen(output, "wb");
-    
-    if (!in || !out)
-        return FAILED;
-
     char* buffer = malloc(TMP_BUFF_SIZE);
+    
+    if (!in || !out || !buffer)
+        return FAILED;
 
     do
     {
@@ -165,7 +164,7 @@ int copy_directory(const char* startdir, const char* inputdir, const char* outpu
 		if ((strcmp(dirp->d_name, ".")  != 0) && (strcmp(dirp->d_name, "..") != 0)) {
   			snprintf(fullname, sizeof(fullname), "%s%s", inputdir, dirp->d_name);
 
-  			if (dir_exists(fullname) == SUCCESS) {
+  			if (dirp->d_type == DT_DIR) {
                 strcat(fullname, "/");
     			copy_directory(startdir, fullname, outputdir);
   			} else {

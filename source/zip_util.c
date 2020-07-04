@@ -26,17 +26,21 @@ void walk_zip_directory(const char* startdir, const char* inputdir, struct zip *
 	}
 
 	if (strlen(inputdir) > len)
+	{
+		LOG("Adding folder '%s'", inputdir+len);
 		if (zip_add_dir(zipper, inputdir+len) < 0)
+		{
+			LOG("Failed to add directory to zip: %s", inputdir);
 			return;
+		}
+	}
 
 	while ((dirp = readdir(dp)) != NULL) {
 		if ((strcmp(dirp->d_name, ".")  != 0) && (strcmp(dirp->d_name, "..") != 0)) {
   			snprintf(fullname, sizeof(fullname), "%s%s", inputdir, dirp->d_name);
 
-  			if (dir_exists(fullname) == SUCCESS) {
-    			if (zip_add_dir(zipper, &fullname[len]) < 0) {
-	      			LOG("Failed to add directory to zip: %s", fullname);
-    			}
+  			if (dirp->d_type == DT_DIR) {
+    			strcat(fullname, "/");
     			walk_zip_directory(startdir, fullname, zipper);
   			} else {
     			struct zip_source *source = zip_source_file(zipper, fullname, 0, 0);
@@ -44,6 +48,7 @@ void walk_zip_directory(const char* startdir, const char* inputdir, struct zip *
       				LOG("Failed to source file to zip: %s", fullname);
       				continue;
     			}
+    			LOG("Adding file '%s'", fullname+len);
     			if (zip_add(zipper, &fullname[len], source) < 0) {
       				zip_source_free(source);
       				LOG("Failed to add file to zip: %s", fullname);
