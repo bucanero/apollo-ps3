@@ -977,6 +977,12 @@ void doPatchViewMenu()
 
 void downloadSave(const char* file, const char* path)
 {
+	if (mkdirs(path) != SUCCESS)
+	{
+		show_message("Error! Export folder is not available");
+		return;
+	}
+
 	if (http_download(ONLINE_URL "PS3/", file, APOLLO_LOCAL_CACHE "tmpsave.zip", 1))
 	{
 		if (extract_zip(APOLLO_LOCAL_CACHE "tmpsave.zip", path))
@@ -1112,7 +1118,7 @@ void exportLicensesZip(const char* exp_path)
 
     init_loading_screen("Exporting user licenses...");
 
-	asprintf(&export_file, "%s" "licenses.zip", exp_path);
+	asprintf(&export_file, "%s" "licenses_%08d.zip", exp_path, apollo_config.user_id);
 	asprintf(&lic_path, EXDATA_PATH_HDD, apollo_config.user_id);
 
 	asprintf(&tmp, lic_path);
@@ -1122,6 +1128,9 @@ void exportLicensesZip(const char* exp_path)
 
 	sprintf(export_file, "%s" "owner.txt", exp_path);
 	_saveOwnerData(export_file);
+
+	sprintf(export_file, "%s" "idps.hex", exp_path);
+	write_buffer(export_file, (u8*) apollo_config.idps, 16);
 
 	free(export_file);
 	free(lic_path);

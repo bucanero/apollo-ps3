@@ -4,11 +4,19 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.1.2](https://github.com/bucanero/apollo-ps3/releases/tag/v1.1.2) - 2020-07-04
+
+### Added
+
+* Export single `.rif` license to `.rap` file (User Backup menu)
+* Import single `.rap` file to user's `.rif` license (User Backup menu)
+* Bulk import `.rap` files to user's content `.rif` licenses (User Backup menu)
+
 ## [v1.1.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.1.0) - 2020-06-14
 
 ### Added
 
-* Exporting user's content licenses to .RAP files (User Backup menu)
+* Exporting user's content licenses to `.rap` files (User Backup menu)
 
 ## [v1.0.9](https://github.com/bucanero/apollo-ps3/releases/tag/v1.0.9) - 2020-04-26
 

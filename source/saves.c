@@ -654,7 +654,7 @@ int ReadOnlineSaves(save_entry_t * game)
 			asprintf(&ret[cur_count].codes, "%s/%.12s", game->title_id, content);
 
 			content += 13;
-			asprintf(&ret[cur_count].name, "%s", content);
+			asprintf(&ret[cur_count].name, "\x0c %s", content);
 
 			ret[cur_count].options_count = 1;
 			ret[cur_count].options = _createOptions(2, "Download to USB", CMD_DOWNLOAD_USB);
@@ -1071,11 +1071,8 @@ save_entry_t * ReadOnlineList(const char* urlPath, int * gmc)
 //        LOG("ReadUserList() :: Reading %s...", content);
 		if (content[9] == '=')
 		{
-			ret[cur_count].path = NULL;
-			ret[cur_count].codes = NULL;
+			memset(&ret[cur_count], 0, sizeof(save_entry_t));
 			ret[cur_count].flags = SAVE_FLAG_PS3;
-			ret[cur_count].code_count = 0;
-
 			asprintf(&ret[cur_count].title_id, "%.9s", content);
 
 			content += 10;
