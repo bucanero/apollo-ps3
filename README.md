@@ -14,12 +14,21 @@ The `apollo-ps3` homebrew app allows to download, unlock, patch and resign save-
 
 * **Easy to use:** no crypto-key configuration or advanced setup needed.
 * **Standalone:** no computer required, everything happens on the PS3.
+* **Automatic settings:** auto-detection of PSID, IDPS and Account-ID settings.
+* **Multi-user:** supports multiple user accounts.
+
+## Save Management
+
 * **Save files listing:** quick access to all the save files on USB and the internal PS3 HDD (+ file details)
 * **Save SFO unlocking:** allows the user to remove the copy-lock flag, enabling transfer of `Copying Prohibited` save files.
 * **Save files patching:** supports [Bruteforce Save Data](https://bruteforcesavedata.forumms.net/) and Game Genie cheat patches to enhance your savegames.
 * **Save PFD resigning:** allows the user to resign save files made by other users and consoles.
 * **Save downloading:** easy access to an Online Database of save-game files to download straight to your PlayStation.
-* **Automatic settings:** auto-detection of PSID and Account-ID settings.
+
+## Backup Management
+
+* **License exporting:** easy backup of user licenses to `.zip` and `.rap` formats.
+* **License importing:** allows to import `.rap` files to user `.rif` licenses.
 
 # Download
 
