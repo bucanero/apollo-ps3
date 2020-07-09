@@ -218,6 +218,16 @@ u8* get_secure_file_id(const char* game_id, const char* filename)
 	return NULL;
 }
 
+char* get_game_title_ids(const char* game_id)
+{
+	game_keys_t *game_key = find_game_keys(game_id);
+
+	if (!game_key)
+		return NULL;
+
+	return (game_key->game_ids);
+}
+
 int pfd_util_init(const char* game_id, const char* database_path) {
 	u8 *disc_hash_key = NULL;
 	list_t *secure_file_ids = NULL;

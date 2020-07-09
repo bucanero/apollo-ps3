@@ -7,8 +7,6 @@
 #include "common.h"
 #include "audioplayer.h"
 
-#define show_message(msg)	show_dialog(0, msg)
-
 
 const menu_option_t menu_options[] = {
 	{ .name = "Background Music", 

@@ -31,28 +31,36 @@
 #define ONLINE_URL				"http://apollo-db.psdev.tk/"
 #define ONLINE_CACHE_TIMEOUT    24*3600     // 1-day local cache
 
+enum cmd_code_enum
+{
+    CMD_CODE_NULL,
+
 // Save commands
-#define CMD_DECRYPT_FILE        "DECRYPT_FLE"
-#define CMD_RESIGN_SAVE         "RESIGN_SAVE"
-#define CMD_DOWNLOAD_USB        "DNLOAD_USB"
-#define CMD_DOWNLOAD_HDD        "DNLOAD_HDD0"
-#define CMD_COPY_SAVE_USB       "COPYSG_USB"
-#define CMD_EXPORT_ZIP_USB      "EXPORT_ZIP"
+    CMD_DECRYPT_FILE,
+    CMD_RESIGN_SAVE,
+    CMD_DOWNLOAD_USB,
+    CMD_DOWNLOAD_HDD,
+    CMD_COPY_SAVE_USB,
+    CMD_EXPORT_ZIP_USB,
 
 // Export commands
-#define CMD_EXP_EXDATA_USB      "EXP_EXDATA"
-#define CMD_EXP_TROPHY_USB      "EXP_TROPHY"
-#define CMD_EXP_SAVES_USB       "EXP_ASAVES"
-#define CMD_EXP_RAPS_USB        "EXP_RAPUSB"
+    CMD_EXP_EXDATA_USB,
+    CMD_EXP_TROPHY_USB,
+    CMD_EXP_SAVES_USB,
+    CMD_EXP_RAPS_USB,
+    CMD_EXP_FLASH2_USB,
 
 // Import commands
-#define CMD_IMP_EXDATA_USB      "IMP_EXDATA"
-#define CMD_IMP_TROPHY_USB      "IMP_TROPHY"
+    CMD_IMP_EXDATA_USB,
+    CMD_IMP_TROPHY_USB,
+    CMD_IMP_RESIGN_USB,
 
 // SFO patches
-#define SFO_UNLOCK_COPY         "SFO_UNLOCK"
-#define SFO_REMOVE_ACCOUNT_ID   "SFO_RM_ACT"
-#define SFO_REMOVE_PSID         "SFO_RM_PSD"
+    SFO_UNLOCK_COPY,
+    SFO_REMOVE_ACCOUNT_ID,
+    SFO_REMOVE_PSID,
+    SFO_CHANGE_TITLE_ID,
+};
 
 // Save flags
 #define SAVE_FLAG_LOCKED        1
@@ -165,11 +173,13 @@ int show_dialog(int dialog_type, const char * str);
 void init_progress_bar(const char* progress_bar_title, const char* msg);
 void update_progress_bar(uint64_t* progress, const uint64_t total_size, const char* msg);
 void end_progress_bar(void);
+#define show_message(msg)	show_dialog(0, msg)
 
 int init_loading_screen(const char* msg);
 void stop_loading_screen();
 
 int apply_cheat_patch_code(const char* fpath, const char* title_id, code_entry_t* code);
+void execCodeCommand(code_entry_t* code, const char* codecmd);
 
 int rif2rap(const uint8_t* idps_key, const char* lic_path, const char* rifFile, const char* rap_path);
 int rap2rif(const uint8_t* idps_key, const char* exdata_path, const char* rap_file, const char *rif_path);

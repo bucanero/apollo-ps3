@@ -369,6 +369,19 @@ void sfo_patch_psid(sfo_context_t *inout, u8* psid) {
 	}
 }
 
+void sfo_patch_directory(sfo_context_t *inout, const char* save_dir) {
+	sfo_context_param_t *p;
+
+	if (!save_dir)
+		return;
+
+	p = sfo_context_get_param(inout, "SAVEDATA_DIRECTORY");
+	if (p != NULL && p->actual_length == SFO_DIRECTORY_SIZE) {
+		memset(p->value, 0, SFO_DIRECTORY_SIZE);
+		memcpy(p->value, save_dir, strlen(save_dir));
+	}
+}
+
 u8* sfo_get_param_value(sfo_context_t *in, const char* param) {
 	sfo_context_param_t *p;
 
@@ -394,6 +407,7 @@ int patch_sfo(const char *in_file_path, sfo_patch_t* patches) {
 	sfo_patch_account(sfo, patches->account_id);
 	sfo_patch_user_id(sfo, patches->user_id);
 	sfo_patch_psid(sfo, patches->psid);
+	sfo_patch_directory(sfo, patches->directory);
 
 	if (sfo_write(sfo, out_file_path) < 0) {
 		LOG("Unable to write to '%s'", out_file_path);

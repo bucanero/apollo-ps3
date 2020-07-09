@@ -14,6 +14,7 @@
 #include "sfo.h"
 #include "settings.h"
 #include "util.h"
+#include "pfd.h"
 
 #define UTF8_CHAR_GROUP		"\xe2\x97\x86"
 #define UTF8_CHAR_ITEM		"\xe2\x94\x97"
@@ -193,12 +194,12 @@ int rtrim(char * buffer)
 	return (max - i);
 }
 
-void _setManualCode(code_entry_t* entry, uint8_t type, const char* name, const char* code)
+void _setManualCode(code_entry_t* entry, uint8_t type, const char* name, char code)
 {
 	memset(entry, 0, sizeof(code_entry_t));
 	entry->type = type;
 	asprintf(&entry->name, name);
-	asprintf(&entry->codes, code);
+	asprintf(&entry->codes, "%c", code);
 }
 
 option_entry_t* _initOptions(int count)
@@ -215,14 +216,14 @@ option_entry_t* _initOptions(int count)
 	return options;
 }
 
-option_entry_t* _createOptions(int count, const char* name, const char* value)
+option_entry_t* _createOptions(int count, const char* name, char value)
 {
 	option_entry_t* options = _initOptions(count);
 
 	asprintf(&options->name[0], "%s %d", name, 0);
-	asprintf(&options->value[0], "%s%c", value, 0);
+	asprintf(&options->value[0], "%c%c", value, 0);
 	asprintf(&options->name[1], "%s %d", name, 1);
-	asprintf(&options->value[1], "%s%c", value, 1);
+	asprintf(&options->value[1], "%c%c", value, 1);
 
 	return options;
 }
@@ -334,23 +335,23 @@ void _add_commands(code_entry_t * code)
 {
 	int count = 0;
 
-	_setManualCode(&code[count], PATCH_COMMAND, "\x0b Copy save game to USB", "");
+	_setManualCode(&code[count], PATCH_COMMAND, "\x0b Copy save game to USB", 0);
 	code[count].options_count = 1;
 	code[count].options = _createOptions(2, "Copy to USB", CMD_COPY_SAVE_USB);
 	count++;
 
-	_setManualCode(&code[count], PATCH_COMMAND, "\x0c Export save game to Zip", "");
+	_setManualCode(&code[count], PATCH_COMMAND, "\x0c Export save game to Zip", 0);
 	code[count].options_count = 1;
 	code[count].options = _createOptions(2, "Export Zip to USB", CMD_EXPORT_ZIP_USB);
 	count++;
 
-	_setManualCode(&code[count], PATCH_COMMAND, "\x0b Decrypt save game files", CMD_DECRYPT_FILE);
+	_setManualCode(&code[count], PATCH_COMMAND, "\x0b Decrypt save game files", 0);
 	code[count].options_count = 1;
 	code[count].options = NULL;
 	count++;
 }
 
-option_entry_t* _getFileOptions(const char* save_path, const char* mask)
+option_entry_t* _getFileOptions(const char* save_path, const char* mask, uint8_t is_cmd)
 {
 	DIR *d;
 	struct dirent *dir;
@@ -400,12 +401,53 @@ option_entry_t* _getFileOptions(const char* save_path, const char* mask)
 			LOG("Adding '%s' (%s)", dir->d_name, mask);
 
 			asprintf(&opt->name[i], "%s", dir->d_name);
-			asprintf(&opt->value[i], "%s", mask);
+			if (is_cmd)
+				asprintf(&opt->value[i], "%c", is_cmd);
+			else
+				asprintf(&opt->value[i], "%s", mask);
+
 			i++;
 		}
 	}
 
 	closedir(d);
+
+	return opt;
+}
+
+option_entry_t* _getSaveTitleIDs(const char* title_id)
+{
+	int count = 1;
+	option_entry_t* opt;
+	char tmp[16];
+	const char *ptr;
+	const char *tid = get_game_title_ids(title_id);
+
+	if (!tid)
+		tid = title_id;
+
+	ptr = tid;
+	while (*ptr)
+		if (*ptr++ == '/') count++;
+
+	LOG("Adding (%d) TitleIDs=%s", count, tid);
+
+	opt = _initOptions(count);
+	int i = 0;
+
+	ptr = tid;
+	while (*ptr++)
+	{
+		if ((*ptr == '/') || (*ptr == 0))
+		{
+			memset(tmp, 0, sizeof(tmp));
+			strncpy(tmp, tid, ptr - tid);
+			asprintf(&opt->name[i], "%s", tmp);
+			asprintf(&opt->value[i], "%c", SFO_CHANGE_TITLE_ID);
+			tid = ptr+1;
+			i++;
+		}
+	}
 
 	return opt;
 }
@@ -442,7 +484,7 @@ int ReadCodes(save_entry_t * save)
 		cheat_count = _count_codes(buffer);
 	}
 
-	code_count = 3 + cheat_count + (save->flags & SAVE_FLAG_LOCKED) + MENU_COPY_CMDS;
+	code_count = 4 + cheat_count + (save->flags & SAVE_FLAG_LOCKED) + MENU_COPY_CMDS;
 	ret = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (code_count));
 
 	save->code_count = code_count;
@@ -454,9 +496,14 @@ int ReadCodes(save_entry_t * save)
 	if (save->flags & SAVE_FLAG_LOCKED)
 		_setManualCode(&ret[cur_count++], PATCH_SFO, "\x08 Remove copy protection", SFO_UNLOCK_COPY);
 
+	_setManualCode(&ret[cur_count], PATCH_SFO, "\x07 Change region Title ID", SFO_CHANGE_TITLE_ID);
+	ret[cur_count].options_count = 1;
+	ret[cur_count].options = _getSaveTitleIDs(save->title_id);
+	cur_count++;
+
 	_add_commands(&ret[cur_count]);
 	cur_count += 2;
-	ret[cur_count++].options = _getFileOptions(save->path, "*");
+	ret[cur_count++].options = _getFileOptions(save->path, "*", CMD_DECRYPT_FILE);
 
 	if (cheat_count == 0)
 	{
@@ -485,7 +532,7 @@ int ReadCodes(save_entry_t * save)
 				tmp_mask = filePath;
 
 			if (strchr(tmp_mask, '*'))
-				file_opt = _getFileOptions(save->path, tmp_mask);
+				file_opt = _getFileOptions(save->path, tmp_mask, 0);
 			else
 				file_opt = NULL;
 
@@ -683,7 +730,7 @@ save_entry_t * ReadBackupList(const char* userPath, int * gmc)
 {
 	int i = 0;
 
-	*gmc = 5;
+	*gmc = 7;
 	save_entry_t * ret = (save_entry_t *)malloc(sizeof(save_entry_t) * (*gmc));
 
 	memset(&ret[i], 0, sizeof(save_entry_t));
@@ -710,7 +757,7 @@ save_entry_t * ReadBackupList(const char* userPath, int * gmc)
 	ret[i].flags = SAVE_FLAG_PS3;
 	ret[i].code_count = 1;
 	ret[i].codes = (code_entry_t *)malloc(sizeof(code_entry_t) * ret[i].code_count);
-	_setManualCode(ret[i].codes, PATCH_COMMAND, "\x0b Backup Trophies to USB", "");
+	_setManualCode(ret[i].codes, PATCH_COMMAND, "\x0b Backup Trophies to USB", 0);
 	ret[i].codes->options_count = 1;
 	ret[i].codes->options = _createOptions(2, "Save Trophies to USB", CMD_EXP_TROPHY_USB);
 	i++;
@@ -721,9 +768,30 @@ save_entry_t * ReadBackupList(const char* userPath, int * gmc)
 	ret[i].flags = SAVE_FLAG_PS3;
 	ret[i].code_count = 1;
 	ret[i].codes = (code_entry_t *)malloc(sizeof(code_entry_t) * ret[i].code_count);
-	_setManualCode(ret[i].codes, PATCH_COMMAND, "\x0b Copy all HDD Saves to USB", "");
+	_setManualCode(ret[i].codes, PATCH_COMMAND, "\x0b Copy all HDD Saves to USB", 0);
 	ret[i].codes->options_count = 1;
 	ret[i].codes->options = _createOptions(2, "Copy Saves to USB", CMD_EXP_SAVES_USB);
+	i++;
+
+	memset(&ret[i], 0, sizeof(save_entry_t));
+	asprintf(&ret[i].name, "\x06 Resign & Unlock USB Saves");
+	ret[i].flags = SAVE_FLAG_PS3;
+	ret[i].code_count = 1;
+	ret[i].codes = (code_entry_t *)malloc(sizeof(code_entry_t) * ret[i].code_count);
+	_setManualCode(ret[i].codes, PATCH_COMMAND, "\x06 Resign all USB Saves", 0);
+	ret[i].codes->options_count = 1;
+	ret[i].codes->options = _createOptions(2, "Resign Saves from USB", CMD_IMP_RESIGN_USB);
+	i++;
+
+	memset(&ret[i], 0, sizeof(save_entry_t));
+	asprintf(&ret[i].name, "\x0b Export /dev_flash2");
+	asprintf(&ret[i].path, "/dev_flash2/");
+	ret[i].flags = SAVE_FLAG_PS3;
+	ret[i].code_count = 1;
+	ret[i].codes = (code_entry_t *)malloc(sizeof(code_entry_t) * ret[i].code_count);
+	_setManualCode(ret[i].codes, PATCH_COMMAND, "\x0c Zip /dev_flash2 to USB", 0);
+	ret[i].codes->options_count = 1;
+	ret[i].codes->options = _createOptions(2, "Save dev_flash2.zip to USB", CMD_EXP_FLASH2_USB);
 	i++;
 
 	return ret;
@@ -755,12 +823,12 @@ int ReadBackupCodes(save_entry_t * bup)
 
 	if (bup->flags & SAVE_FLAG_RIF)
 	{
-		_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0c Backup All Licenses to .Zip", "");
+		_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0c Backup All Licenses to .Zip", 0);
 		ret[bup_count].options_count = 1;
 		ret[bup_count].options = _createOptions(2, "Save .Zip to USB", CMD_EXP_EXDATA_USB);
 		bup_count++;
 
-		_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0b Export All Licenses as .RAPs", "");
+		_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0b Export All Licenses as .RAPs", 0);
 		ret[bup_count].options_count = 1;
 		ret[bup_count].options = _createOptions(2, "Save .RAPs to USB", CMD_EXP_RAPS_USB);
 		bup_count++;
@@ -788,7 +856,7 @@ int ReadBackupCodes(save_entry_t * bup)
 
 				if (bup->flags & SAVE_FLAG_RIF)
 				{
-					_setManualCode(&ret[bup_count], PATCH_COMMAND, dir->d_name, "");
+					_setManualCode(&ret[bup_count], PATCH_COMMAND, dir->d_name, 0);
 					*strrchr(ret[bup_count].name, '.') = 0;
 					ret[bup_count].options_count = 1;
 					ret[bup_count].options = _createOptions(2, "Save .RAP to USB", CMD_EXP_RAPS_USB);
@@ -797,7 +865,7 @@ int ReadBackupCodes(save_entry_t * bup)
 				{
 					asprintf(&ret[bup_count].name, dir->d_name);
 					*strrchr(ret[bup_count].name, '.') = 0;
-					asprintf(&ret[bup_count].codes, CMD_IMP_EXDATA_USB);
+					asprintf(&ret[bup_count].codes, "%c", CMD_IMP_EXDATA_USB);
 				}
 
 				asprintf(&ret[bup_count].file, dir->d_name);

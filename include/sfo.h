@@ -10,6 +10,7 @@ extern "C" {
 #define SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION (1 << 0)
 #define SFO_ACCOUNT_ID_SIZE 16
 #define SFO_PSID_SIZE 16
+#define SFO_DIRECTORY_SIZE 64
 
 typedef struct sfo_context_s sfo_context_t;
 
@@ -23,6 +24,7 @@ typedef struct {
 	u32 user_id;
 	char* account_id;
 	u8* psid;
+	char* directory;
 } sfo_patch_t;
 
 typedef struct {
