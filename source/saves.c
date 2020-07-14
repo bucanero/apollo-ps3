@@ -643,7 +643,7 @@ int ReadOnlineSaves(save_entry_t * game)
 	snprintf(path, sizeof(path), APOLLO_LOCAL_CACHE "%s.txt", game->title_id);
 	snprintf(url, sizeof(url), ONLINE_URL "PS3/%s/", game->title_id);
 
-	if (isExist(path))
+	if (file_exists(path) == SUCCESS)
 	{
 		struct stat stats;
 		stat(path, &stats);
@@ -1060,9 +1060,6 @@ save_entry_t * ReadUserList(const char* userPath, int * gmc)
 			sfo_free(sfo);
 				
 			LOG("[%s] F(%d) name '%s'", ret[cur_count].title_id, ret[cur_count].flags, ret[cur_count].name);
-				
-			//printf("Successfully read %d codes\n", ret[cur_count].code_count);
-
 			cur_count++;
 		}
 	}
@@ -1085,7 +1082,7 @@ save_entry_t * ReadOnlineList(const char* urlPath, int * gmc)
 {
 	const char* path = APOLLO_LOCAL_CACHE "games.txt";
 
-	if (isExist(path))
+	if (file_exists(path) == SUCCESS)
 	{
 		struct stat stats;
 		stat(path, &stats);

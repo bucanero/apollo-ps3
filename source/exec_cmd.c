@@ -300,10 +300,16 @@ int apply_sfo_patches(sfo_patch_t* patch)
         switch (code->codes[0])
         {
         case SFO_UNLOCK_COPY:
+            if (selected_entry->flags & SAVE_FLAG_LOCKED)
+                selected_entry->flags ^= SAVE_FLAG_LOCKED;
+
             patch->flags = SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION;
             break;
 
         case SFO_REMOVE_ACCOUNT_ID:
+            if (selected_entry->flags & SAVE_FLAG_OWNER)
+                selected_entry->flags ^= SAVE_FLAG_OWNER;
+
             bzero(patch->account_id, SFO_ACCOUNT_ID_SIZE);
             break;
 
@@ -461,6 +467,67 @@ void resignSave(sfo_patch_t* patch)
     pfd_util_end();
 }
 
+void resignAllSaves(const char* path)
+{
+	DIR *d;
+	struct dirent *dir;
+	char sfoPath[256];
+	char titleid[10];
+	char acct_id[17];
+	char message[128] = "Resigning all saves...";
+
+	if (dir_exists(path) != SUCCESS)
+	{
+		LOG("Folder not available: %s", path);
+		show_message("Error! Folder is not available");
+		return;
+	}
+
+	d = opendir(path);
+	if (!d)
+		return;
+
+    init_loading_screen(message);
+
+	snprintf(acct_id, sizeof(acct_id), "%016lx", apollo_config.account_id);
+	sfo_patch_t patch = {
+		.flags = SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION,
+		.user_id = apollo_config.user_id,
+		.psid = (u8*) apollo_config.psid,
+		.account_id = acct_id,
+		.directory = NULL,
+	};
+
+	LOG("Resigning saves from '%s'...", path);
+	while ((dir = readdir(d)) != NULL)
+	{
+		if (dir->d_type == DT_DIR && strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
+		{
+			snprintf(sfoPath, sizeof(sfoPath), "%s%s/PARAM.SFO", path, dir->d_name);
+			if (file_exists(sfoPath) == SUCCESS)
+			{
+				LOG("Patching SFO '%s'...", sfoPath);
+				if (patch_sfo(sfoPath, &patch) != SUCCESS)
+					continue;
+
+				snprintf(titleid, sizeof(titleid), "%.9s", dir->d_name);
+				snprintf(sfoPath, sizeof(sfoPath), "%s%s/", path, dir->d_name);
+				snprintf(message, sizeof(message), "Resigning %s...", dir->d_name);
+
+				LOG("Resigning save '%s'...", sfoPath);
+				if (!pfd_util_init(titleid, sfoPath) ||
+					(pfd_util_process(PFD_CMD_UPDATE, 0) != SUCCESS))
+					LOG("Error! Save file couldn't be resigned");
+
+				pfd_util_end();
+			}
+		}
+	}
+	closedir(d);
+
+	stop_loading_screen();
+}
+
 void execCodeCommand(code_entry_t* code, const char* codecmd)
 {
 	switch (codecmd[0])
@@ -516,7 +583,7 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_EXP_FLASH2_USB:
-			exportFlashZip(codecmd[1] ? SAVES_PATH_USB1 : SAVES_PATH_USB0);
+			exportFlashZip(codecmd[1] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0);
 			code->activated = 0;
 			break;
 
@@ -532,12 +599,17 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 					.user_id = apollo_config.user_id,
 					.psid = (u8*) apollo_config.psid,
 					.directory = NULL,
-                };
+				};
 				asprintf(&patch.account_id, "%016lx", apollo_config.account_id);
 
 				resignSave(&patch);
-                free(patch.account_id);
+				free(patch.account_id);
 			}
+			code->activated = 0;
+			break;
+
+		case CMD_IMP_RESIGN_USB:
+			resignAllSaves(codecmd[1] ? SAVES_PATH_USB1 : SAVES_PATH_USB0);
 			code->activated = 0;
 			break;
 
