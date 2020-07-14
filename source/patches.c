@@ -212,7 +212,8 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     list_t* var_list = list_alloc();
 	
 	LOG("Applying [%s] to '%s'...", code->name, filepath);
-	read_buffer(filepath, (uint8_t**) &data, &dsize);
+	if (read_buffer(filepath, (uint8_t**) &data, &dsize) != SUCCESS)
+		return 0;
 
     while (line)
     {
@@ -1387,7 +1388,8 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     char *line = strtok(code->codes, "\n");
 	
 	LOG("Applying [%s] to '%s'...", code->name, filepath);
-	read_buffer(filepath, (uint8_t**) &data, &dsize);
+	if (read_buffer(filepath, (uint8_t**) &data, &dsize) != SUCCESS)
+		return 0;
 
     while (line)
     {

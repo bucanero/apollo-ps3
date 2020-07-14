@@ -314,7 +314,8 @@ int _get_aes_details_pfd(const char* path, const char* filename, const u8* secur
 	int i, j;
 
 	snprintf(file_path, sizeof(file_path), "%s" "PARAM.PFD", path);
-	read_buffer(file_path, (uint8_t**) &pfd_data, &dsize);
+	if (read_buffer(file_path, (uint8_t**) &pfd_data, &dsize) != 0)
+		return 0;
 
 	int pos = search_pfd_data(pfd_data, dsize, filename, strlen(filename));
 	
@@ -375,7 +376,8 @@ int _update_details_pfd(const char* path, const char* filename)
 	u64 file_size, *ptr;
 
 	snprintf(file_path, sizeof(file_path), "%s" "PARAM.PFD", path);
-	read_buffer(file_path, (uint8_t**) &pfd_data, &dsize);
+	if (read_buffer(file_path, (uint8_t**) &pfd_data, &dsize) != 0)
+		return 0;
 
 	int pos = search_pfd_data(pfd_data, dsize, filename, strlen(filename));
 	
