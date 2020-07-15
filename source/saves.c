@@ -330,27 +330,6 @@ void get_patch_code(char* buffer, int code_id, code_entry_t* entry)
 	entry->codes = res;
 }
 
-#define MENU_COPY_CMDS	3
-void _add_commands(code_entry_t * code)
-{
-	int count = 0;
-
-	_setManualCode(&code[count], PATCH_COMMAND, "\x0b Copy save game to USB", 0);
-	code[count].options_count = 1;
-	code[count].options = _createOptions(2, "Copy to USB", CMD_COPY_SAVE_USB);
-	count++;
-
-	_setManualCode(&code[count], PATCH_COMMAND, "\x0c Export save game to Zip", 0);
-	code[count].options_count = 1;
-	code[count].options = _createOptions(2, "Export Zip to USB", CMD_EXPORT_ZIP_USB);
-	count++;
-
-	_setManualCode(&code[count], PATCH_COMMAND, "\x0b Decrypt save game files", 0);
-	code[count].options_count = 1;
-	code[count].options = NULL;
-	count++;
-}
-
 option_entry_t* _getFileOptions(const char* save_path, const char* mask, uint8_t is_cmd)
 {
 	DIR *d;
@@ -413,6 +392,27 @@ option_entry_t* _getFileOptions(const char* save_path, const char* mask, uint8_t
 	closedir(d);
 
 	return opt;
+}
+
+#define MENU_COPY_CMDS	4
+void _addBackupCommands(code_entry_t * code, const char* path)
+{
+	_setManualCode(code, PATCH_NULL, "----- \xE2\x98\x85 File Backup \xE2\x98\x85 -----", 0);
+	code++;
+
+	_setManualCode(code, PATCH_COMMAND, "\x0b Copy save game to USB", 0);
+	code->options_count = 1;
+	code->options = _createOptions(2, "Copy to USB", CMD_COPY_SAVE_USB);
+	code++;
+
+	_setManualCode(code, PATCH_COMMAND, "\x0c Export save game to Zip", 0);
+	code->options_count = 1;
+	code->options = _createOptions(2, "Export Zip to USB", CMD_EXPORT_ZIP_USB);
+	code++;
+
+	_setManualCode(code, PATCH_COMMAND, "\x0b Decrypt save game files", 0);
+	code->options_count = 1;
+	code->options = _getFileOptions(path, "*", CMD_DECRYPT_FILE);
 }
 
 option_entry_t* _getSaveTitleIDs(const char* title_id)
@@ -484,7 +484,7 @@ int ReadCodes(save_entry_t * save)
 		cheat_count = _count_codes(buffer);
 	}
 
-	code_count = 7 + (cheat_count ? cheat_count+1 : 0) + (save->flags & SAVE_FLAG_LOCKED) + MENU_COPY_CMDS;
+	code_count = 6 + (cheat_count ? cheat_count+1 : 0) + (save->flags & SAVE_FLAG_LOCKED) + MENU_COPY_CMDS;
 	ret = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (code_count));
 
 	save->code_count = code_count;
@@ -503,11 +503,8 @@ int ReadCodes(save_entry_t * save)
 	ret[cur_count].options = _getSaveTitleIDs(save->title_id);
 	cur_count++;
 
-	_setManualCode(&ret[cur_count++], PATCH_NULL, "----- \xE2\x98\x85 File Backup \xE2\x98\x85 -----", 0);
-
-	_add_commands(&ret[cur_count]);
-	cur_count += 2;
-	ret[cur_count++].options = _getFileOptions(save->path, "*", CMD_DECRYPT_FILE);
+	_addBackupCommands(&ret[cur_count], save->path);
+	cur_count += MENU_COPY_CMDS;
 
 	if (cheat_count == 0)
 	{
@@ -836,7 +833,9 @@ int ReadBackupCodes(save_entry_t * bup)
 
 		_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0b Export All Licenses as .RAPs", 0);
 		ret[bup_count].options_count = 1;
-		ret[bup_count].options = _createOptions(2, "Save .RAPs to USB", CMD_EXP_RAPS_USB);
+		ret[bup_count].options = _createOptions(3, "Save .RAPs to USB", CMD_EXP_RAPS_USB);
+		asprintf(&ret[bup_count].options->name[2], "Save .RAPs to HDD");
+		asprintf(&ret[bup_count].options->value[2], "%c", CMD_EXP_RAPS_HDD);
 		bup_count++;
 	}
 
@@ -865,7 +864,9 @@ int ReadBackupCodes(save_entry_t * bup)
 					_setManualCode(&ret[bup_count], PATCH_COMMAND, dir->d_name, 0);
 					*strrchr(ret[bup_count].name, '.') = 0;
 					ret[bup_count].options_count = 1;
-					ret[bup_count].options = _createOptions(2, "Save .RAP to USB", CMD_EXP_RAPS_USB);
+					ret[bup_count].options = _createOptions(3, "Save .RAP to USB", CMD_EXP_RAPS_USB);
+					asprintf(&ret[bup_count].options->name[2], "Save .RAP to HDD");
+					asprintf(&ret[bup_count].options->value[2], "%c", CMD_EXP_RAPS_HDD);
 				}
 				else if (bup->flags & SAVE_FLAG_RAP)
 				{

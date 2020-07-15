@@ -572,6 +572,11 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			code->activated = 0;
 			break;
 
+		case CMD_EXP_RAPS_HDD:
+			exportLicensesRap(code->file, EXPORT_RAP_PATH_HDD);
+			code->activated = 0;
+			break;
+
 		case CMD_EXP_TROPHY_USB:
 			exportFolder(TROPHY_PATH_HDD, codecmd[1] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0, "Copying trophies...");
 			code->activated = 0;

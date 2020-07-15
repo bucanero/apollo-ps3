@@ -24,6 +24,7 @@
 #define EXPORT_PATH_USB1        USB1_PATH "PS3/EXPORT/"
 #define EXPORT_RAP_PATH_USB0    EXPORT_PATH_USB0 "exdata/"
 #define EXPORT_RAP_PATH_USB1    EXPORT_PATH_USB1 "exdata/"
+#define EXPORT_RAP_PATH_HDD     "/dev_hdd0/exdata/"
 
 #define IMPORT_RAP_PATH_USB0    USB0_PATH "exdata/"
 #define IMPORT_RAP_PATH_USB1    USB1_PATH "exdata/"
@@ -49,6 +50,7 @@ enum cmd_code_enum
     CMD_EXP_TROPHY_USB,
     CMD_EXP_SAVES_USB,
     CMD_EXP_RAPS_USB,
+    CMD_EXP_RAPS_HDD,
     CMD_EXP_FLASH2_USB,
 
 // Import commands
