@@ -1079,26 +1079,37 @@ void doPatchMenu()
 		}
 		else if (paddata[0].BTN_CROSS)
 		{
-			selected_entry->codes[menu_sel].activated = !selected_entry->codes[menu_sel].activated;
+			selected_centry = &selected_entry->codes[menu_sel];
 
-			if (selected_entry->codes[menu_sel].type == PATCH_COMMAND)
-				execCodeCommand(&selected_entry->codes[menu_sel], selected_entry->codes[menu_sel].codes);
+			if (selected_centry->type != PATCH_NULL)
+				selected_centry->activated = !selected_centry->activated;
 
-			if (selected_entry->codes[menu_sel].activated)
+			if (selected_centry->type == PATCH_COMMAND)
+				execCodeCommand(selected_centry, selected_centry->codes);
+
+			if (selected_centry->activated)
 			{
-				//Check if option code
-				if (!selected_entry->codes[menu_sel].options)
+				/*
+				if (!selected_centry->options)
 				{
-//					int size;
-//					selected_entry->codes[menu_sel].options = ReadOptions(selected_entry->codes[menu_sel], &size);
-//					selected_entry->codes[menu_sel].options_count = size;
+					int size;
+					selected_entry->codes[menu_sel].options = ReadOptions(selected_entry->codes[menu_sel], &size);
+					selected_entry->codes[menu_sel].options_count = size;
 				}
+				*/
 				
-				if (selected_entry->codes[menu_sel].options)
+				if (selected_centry->options)
 				{
-					selected_centry = &selected_entry->codes[menu_sel];
 					option_index = 0;
 					SetMenu(MENU_CODE_OPTIONS);
+					return;
+				}
+
+				if (selected_centry->codes[0] == CMD_VIEW_DETAILS)
+				{
+					selected_centry->activated = 0;
+					selected_centry = LoadSaveDetails();
+					SetMenu(MENU_SAVE_DETAILS);
 					return;
 				}
 			}

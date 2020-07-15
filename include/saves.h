@@ -42,6 +42,7 @@ enum cmd_code_enum
     CMD_DOWNLOAD_HDD,
     CMD_COPY_SAVE_USB,
     CMD_EXPORT_ZIP_USB,
+    CMD_VIEW_DETAILS,
 
 // Export commands
     CMD_EXP_EXDATA_USB,
@@ -99,6 +100,7 @@ enum char_flag_enum
 
 enum code_type_enum
 {
+    PATCH_NULL,
     PATCH_COMMAND,
     PATCH_SFO,
     PATCH_GAMEGENIE,

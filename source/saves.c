@@ -105,7 +105,7 @@ long getDirListSize(const char * path)
 	{
 		while ((dir = readdir(d)) != NULL)
 		{
-			if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
+			if (dir->d_type == DT_DIR && strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
 			{
 				snprintf(sfoPath, sizeof(sfoPath), "%s%s/PARAM.SFO", path, dir->d_name);
 				if (file_exists(sfoPath) == SUCCESS)
@@ -484,13 +484,15 @@ int ReadCodes(save_entry_t * save)
 		cheat_count = _count_codes(buffer);
 	}
 
-	code_count = 4 + cheat_count + (save->flags & SAVE_FLAG_LOCKED) + MENU_COPY_CMDS;
+	code_count = 7 + (cheat_count ? cheat_count+1 : 0) + (save->flags & SAVE_FLAG_LOCKED) + MENU_COPY_CMDS;
 	ret = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (code_count));
 
 	save->code_count = code_count;
 	save->codes = ret;
 
-	_setManualCode(&ret[cur_count++], PATCH_COMMAND, "\x06 Apply changes & Resign", CMD_RESIGN_SAVE);
+	_setManualCode(&ret[cur_count++], PATCH_COMMAND, "\x06 Apply Changes & Resign", CMD_RESIGN_SAVE);
+	_setManualCode(&ret[cur_count++], PATCH_COMMAND, "\x07 View Save Details", CMD_VIEW_DETAILS);
+	_setManualCode(&ret[cur_count++], PATCH_NULL, "----- \xE2\x98\x85 SFO Patches \xE2\x98\x85 -----", 0);
 	_setManualCode(&ret[cur_count++], PATCH_SFO, "\x07 Remove Account ID", SFO_REMOVE_ACCOUNT_ID);
 	_setManualCode(&ret[cur_count++], PATCH_SFO, "\x07 Remove Console ID", SFO_REMOVE_PSID);
 	if (save->flags & SAVE_FLAG_LOCKED)
@@ -500,6 +502,8 @@ int ReadCodes(save_entry_t * save)
 	ret[cur_count].options_count = 1;
 	ret[cur_count].options = _getSaveTitleIDs(save->title_id);
 	cur_count++;
+
+	_setManualCode(&ret[cur_count++], PATCH_NULL, "----- \xE2\x98\x85 File Backup \xE2\x98\x85 -----", 0);
 
 	_add_commands(&ret[cur_count]);
 	cur_count += 2;
@@ -512,6 +516,8 @@ int ReadCodes(save_entry_t * save)
 
 		return cur_count;
 	}
+
+	_setManualCode(&ret[cur_count++], PATCH_NULL, "----- \xE2\x98\x85 Cheats \xE2\x98\x85 -----", 0);	
 
 	// remove 0x00 from previous strtok(...)
 	_remove_char(buffer, bufferLen, '\0');
