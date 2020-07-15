@@ -205,7 +205,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 	long pointer = 0;
 	long range_start = 0, range_end = 0;
 	uint8_t carry = 0;
-	uint32_t old_val;
+	uint32_t old_val = 0;
 	custom_crc_t custom_crc = {0,0,0,0,0,0};
 	int codelen = strlen(code->codes);
     char *line = strtok(code->codes, "\n");
@@ -473,6 +473,20 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
     			    LOG("Var [%s]:XOR:%s = %X\n", var->name, line, old_val);
     			}
+
+				// set [*]:[*]*
+				else if (wildcard_match_icase(line, "[*]*"))
+				{
+					var->len = BSD_VAR_INT32;
+					var->data = (uint8_t*) &old_val;
+
+					uint32_t val = _parse_int_value(line, pointer, dsize, var_list);
+
+					var->data = malloc(var->len);
+					memcpy(var->data, (u8*) &val, var->len);
+
+					LOG("Var [%s]:%s = %08X\n", var->name, line, val);
+				}
 
 			    // set [*]:crc32*
 			    else if (wildcard_match_icase(line, "crc32*"))
@@ -973,6 +987,51 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    LOG("[%s]:XOR(0x%X , 0x%X, %d) = %X\n", var->name, xor_s, xor_e, xor_i, ((uint32_t*)var->data)[0]);
 			    }
 
+			    // set [*]:read(*,*)*
+			    else if (wildcard_match_icase(line, "read(*,*)*"))
+			    {
+					// ;read(offset, length) is a function that reads n bytes from current file
+					// set [anyname1]:read(0x100, (10)) 
+					// ;0x100 is the offset in hex
+					// ;(10) is the length in decimal
+					// ;the example 4 reads 10 bytes starting from offset 0x100 and store them in the variable [anyname1]
+					int read_s, read_l;
+
+					line += strlen("read(");
+					tmp = strchr(line, ',');
+					*tmp = 0;
+					
+					read_s = _parse_int_value(line, pointer, dsize, var_list);
+
+					line = tmp+1;
+					*tmp = ',';
+					tmp = strchr(line, ')');
+					*tmp = 0;
+
+					read_l = _parse_int_value(line, pointer, dsize, var_list);
+
+					*tmp = ')';
+					char* read = data + read_s;
+
+					switch (read_l)
+					{
+					case BSD_VAR_INT8:
+					case BSD_VAR_INT16:
+					case BSD_VAR_INT32:
+						var->len = read_l;
+						break;
+
+					default:
+						LOG("Error: unsupported read() length = %d", read_l);
+						return 0;
+					}
+
+					var->data = malloc(var->len);
+					memcpy(var->data, (u8*) read, var->len);
+
+					LOG("[%s]:read(0x%X , 0x%X) = %X\n", var->name, read_s, read_l, ((uint32_t*)var->data)[0]);
+			    }
+
 			    // set [*]:right(*,*)*
 			    else if (wildcard_match_icase(line, "right(*,*)*"))
 			    {
@@ -1362,6 +1421,32 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 		{
 			// copy data
 			// UNUSED
+		}
+
+		else if (wildcard_match_icase(line, "decrypt *"))
+		{
+			line += strlen("decrypt");
+			skip_spaces(line);
+
+			if (wildcard_match_icase(line, "naughtydog"))
+			{
+				LOG("Decrypt NaughtyDog data");
+				nd_decrypt_data((uint32_t*) data, dsize);
+			}
+
+		}
+
+		else if (wildcard_match_icase(line, "encrypt *"))
+		{
+			line += strlen("encrypt");
+			skip_spaces(line);
+
+			if (wildcard_match_icase(line, "naughtydog"))
+			{
+				LOG("Encrypt NaughtyDog data");
+				nd_encrypt_data((uint32_t*) data, dsize);
+			}
+
 		}
 
 	    line = strtok(NULL, "\n");
