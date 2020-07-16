@@ -4,6 +4,20 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+### Added
+
+* Add save-game region change support
+* Add custom decryption for Naughty Dog savegames
+* Add bulk save-game resign support
+* Add View Save details option
+* Add Export licenses to HDD
+
+### Fixed
+
+* Removed unsupported cheat code files
+* Fix BSD cheat code applying process
+* No cheat codes selected by default
+
 ## [v1.1.2](https://github.com/bucanero/apollo-ps3/releases/tag/v1.1.2) - 2020-07-04
 
 ### Added
