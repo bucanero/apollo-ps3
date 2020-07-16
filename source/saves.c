@@ -581,7 +581,7 @@ int ReadCodes(save_entry_t * save)
 			line++;
 
 			ret[cur_count].type = PATCH_GAMEGENIE;
-			ret[cur_count].activated = wildcard_match_icase(line, "*(REQUIRED)*");
+			ret[cur_count].activated = 0;
 			ret[cur_count].codes = NULL;
 			ret[cur_count].options = file_opt;
 			ret[cur_count].options_count = (file_opt ? 1 : 0);

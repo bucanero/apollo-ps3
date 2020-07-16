@@ -1089,6 +1089,15 @@ void doPatchMenu()
 
 			if (selected_centry->activated)
 			{
+				// Only activate Required codes if a cheat is selected
+				if (selected_centry->type == PATCH_GAMEGENIE || selected_centry->type == PATCH_BSD)
+				{
+					for (int i=0; i < selected_entry->code_count; i++)
+					{
+						if (wildcard_match_icase(selected_entry->codes[i].name, "*(REQUIRED)*"))
+							selected_entry->codes[i].activated = 1;
+					}
+				}
 				/*
 				if (!selected_centry->options)
 				{
