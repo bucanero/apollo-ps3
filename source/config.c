@@ -1,7 +1,7 @@
 #include "config.h"
 
 #define CONFIG_MAX_LINE_SIZE 1024
-#define CONFIG_MAX_SECTION_SIZE 128
+#define CONFIG_MAX_SECTION_SIZE 256
 #define CONFIG_MAX_NAME_SIZE 128
 
 static char * safe_strncpy(char *dst, const char* src, size_t size) {
