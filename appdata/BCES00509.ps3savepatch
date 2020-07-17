@@ -2,6 +2,11 @@
 ; BCES00509
 ;From Game Genie For PS3
 
+:USR-DATA
+
+[Decrypt USR-DATA (Required)]
+DECRYPT naughtydog
+
 :BCES00509_NDI_UNCHARTED2_BT_P\USR-DATA
 
 [Unlock Crushing Difficulty]
@@ -33,8 +38,11 @@ set [hash]:crc32
 write at 0x588:[hash]
 
 [Update HMAC SHA1 checksum for USR-DATA (Required)]
-set pointer:EOF-0x23
+set pointer:EOF-0x1F
 set range:0x000008,pointer
 set [hash]:hmac_sha1(*)
-set pointer:EOF-0x23
+set pointer:EOF-0x1F
 write next (0):[hash]
+
+[Encrypt USR-DATA (Required)]
+ENCRYPT naughtydog

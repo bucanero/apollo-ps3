@@ -3,7 +3,10 @@
 ; From Bokosuka Game & Game Genie
 
 :USR-DATA
- 
+
+[Decrypt USR-DATA (Required)]
+DECRYPT naughtydog
+
 [9mm Pistol Ammo 65535]
 80010004 6CC50261
 18000072 0000FFFF
@@ -172,9 +175,11 @@ set [hash]:crc32
 write at 0x588:[hash]
 
 [Update HMAC SHA1 checksum for USR-DATA (Required)]
-set pointer:EOF-0x23
+set pointer:EOF-0x1F
 set range:0x000008,pointer
 set [hash]:hmac_sha1(*)
-set pointer:EOF-0x23
+set pointer:EOF-0x1F
 write next (0):[hash]
 
+[Encrypt USR-DATA (Required)]
+ENCRYPT naughtydog
