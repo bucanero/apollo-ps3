@@ -204,7 +204,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 	size_t dsize;
 	long pointer = 0;
 	long range_start = 0, range_end = 0;
-	uint8_t carry = 0;
+	uint8_t carry = 0, eof = 0;
 	uint32_t old_val = 0;
 	custom_crc_t custom_crc = {0,0,0,0,0,0};
 	int codelen = strlen(code->codes);
@@ -280,6 +280,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
         			line += strlen("eof");
         		    skip_spaces(line);
 
+                    eof = 1;
                     sscanf(line, "%x", &ptr_off);
                     pointer = dsize + ptr_off - 1;
     			}
@@ -289,6 +290,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
         			line += strlen("lastbyte");
         		    skip_spaces(line);
 
+                    eof = 1;
                     sscanf(line, "%x", &ptr_off);
                     pointer = dsize + ptr_off - 1;
     			}
@@ -345,11 +347,11 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    line = tmp+1;
 			    *tmp = ',';
 
-			    range_end = _parse_int_value(line, pointer, dsize, var_list) + 1;
+				range_end = _parse_int_value(line, pointer - eof, dsize, var_list) + 1;
 				if (range_end > dsize)
 					range_end = dsize;
 
-                LOG("RANGE = %ld (0x%lX) - %ld (0x%lX)\n", range_start, range_start, range_end-1, range_end-1);
+                LOG("RANGE = %ld (0x%lX) - %ld (0x%lX)\n", range_start, range_start, range_end, range_end);
 			}
 
 			// set crc_*:*

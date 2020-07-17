@@ -96,11 +96,10 @@ int nd_decrypt_data(u32* data, u32 size)
 	apply_keycode(key_table, KEY_DATA, SECRET_KEY);
 
 	LOG("NaughtyDog Decrypted size 0x%X (%d bytes)", size, size);
-	size = size/4 +2;
+	size = size/4;
+	data += 2;
 
-	data[0] = 0x0000157C;
-
-	for (i = 2; i < size; i+= 2)
+	for (i = 0; i < size; i+= 2)
 		crypt_64bit_down(key_table, &data[i]);
 
 	free(key_table);
@@ -119,11 +118,10 @@ int nd_encrypt_data(u32* data, u32 size)
 	apply_keycode(key_table, KEY_DATA, SECRET_KEY);
 
 	LOG("NaughtyDog Encrypted size 0x%X (%d bytes)", size, size);
-	size = size/4 +2;
+	size = size/4;
+	data += 2;
 
-	data[0] = 0x0000157D;
-
-	for (i = 2; i < size; i+= 2)
+	for (i = 0; i < size; i+= 2)
 		crypt_64bit_up(key_table, &data[i]);
 
 	free(key_table);
