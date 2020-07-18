@@ -92,8 +92,8 @@ Currently, the list of available games and files is limited, but the project aim
 You need to have installed:
 
 - [PS3 toolchain](https://github.com/bucanero/ps3toolchain)
-- [PSL1GHT](https://github.com/bucanero/PSL1GHT) SDK
-- [Tiny3D](https://github.com/Estwald/PSDK3v2/tree/master/libraries-src/Tiny3D) library (from Estwald)
+- [PSL1GHT](https://github.com/ps3dev/PSL1GHT) SDK
+- [Tiny3D](https://github.com/wargio/Tiny3D) library
 - [polarSSL](https://github.com/ps3dev/ps3libraries/blob/master/scripts/015-polarssl.sh) library
 - [dbglogger](https://github.com/bucanero/psl1ght-libs/tree/master/dbglogger) library (only required for debug logging)
 
