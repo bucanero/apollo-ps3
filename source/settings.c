@@ -97,26 +97,8 @@ void verm_callback(int sel)
 
 void clearcache_callback(int sel)
 {
-	DIR *d;
-	struct dirent *dir;
-	char dataPath[256];
-
-	d = opendir(APOLLO_LOCAL_CACHE);
-	if (!d)
-		return;
-
 	LOG("Cleaning folder '%s'...", APOLLO_LOCAL_CACHE);
-
-	while ((dir = readdir(d)) != NULL)
-	{
-		if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
-		{
-			snprintf(dataPath, sizeof(dataPath), "%s" "%s", APOLLO_LOCAL_CACHE, dir->d_name);
-			LOG("Removing %s", dataPath);
-			unlink_secure(dataPath);
-		}
-	}
-	closedir(d);
+	clean_directory(APOLLO_LOCAL_CACHE);
 
 	show_message("Local cache folder cleaned");
 }

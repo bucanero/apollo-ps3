@@ -90,8 +90,8 @@ app_config_t apollo_config = {
     .doSort = 1,
     .doAni = 1,
     .update = 1,
-    .marginH = 0,
-    .marginV = 0,
+    .marginH = 10,
+    .marginV = 20,
     .user_id = 0,
     .idps = {0, 0},
     .psid = {0, 0},
@@ -1260,7 +1260,10 @@ s32 main(s32 argc, const char* argv[])
 
 	// Unpack application data on first run
 	if (file_exists(APOLLO_LOCAL_CACHE "appdata.zip") == SUCCESS)
+	{
+		clean_directory(APOLLO_DATA_PATH);
 		unzip_app_data(APOLLO_LOCAL_CACHE "appdata.zip");
+	}
 
 	// Splash screen logo (fade-in)
 	drawSplashLogo(1);

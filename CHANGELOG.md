@@ -4,6 +4,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.2.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.2.0) - 2020-07-18
+
 ### Added
 
 * Add save-game region change support
@@ -11,6 +13,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 * Add bulk save-game resign support
 * Add View Save details option
 * Add Export licenses to HDD
+* Add proper detection of unprotected games
+* Add analog stick control support
 
 ### Fixed
 

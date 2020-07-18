@@ -20,6 +20,7 @@ int unlink_secure(const char *path);
 int mkdirs(const char* dir);
 int copy_file(const char* input, const char* output);
 int copy_directory(const char* startdir, const char* inputdir, const char* outputdir);
+int clean_directory(const char* inputdir);
 
 //----------------------------------------
 //CONSOLE ID UTILS

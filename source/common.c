@@ -180,6 +180,29 @@ int copy_directory(const char* startdir, const char* inputdir, const char* outpu
     return SUCCESS;
 }
 
+int clean_directory(const char* inputdir)
+{
+	DIR *d;
+	struct dirent *dir;
+	char dataPath[256];
+
+	d = opendir(inputdir);
+	if (!d)
+		return FAILED;
+
+	while ((dir = readdir(d)) != NULL)
+	{
+		if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
+		{
+			snprintf(dataPath, sizeof(dataPath), "%s" "%s", inputdir, dir->d_name);
+			unlink_secure(dataPath);
+		}
+	}
+	closedir(d);
+
+    return SUCCESS;
+}
+
 //----------------------------------------
 //POWER UTILS
 //----------------------------------------

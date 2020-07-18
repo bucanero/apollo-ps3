@@ -350,7 +350,7 @@ int _is_decrypted(list_t* list, const char* fname) {
 	list_node_t *node = list_head(list);
 	u8 *protected_file_id = get_secure_file_id(selected_entry->title_id, "UNPROTECTED");
 
-	if (protected_file_id && (strncmp("UNPROTECTEDGAME", (char*)protected_file_id, PFD_KEY_SIZE) == 0))
+	if (protected_file_id && (strncmp("UNPROTECTEDGAME", (char*)protected_file_id, 16) == 0))
 		return 1;
 
 	while (node) {
