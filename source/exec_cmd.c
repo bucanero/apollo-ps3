@@ -347,7 +347,11 @@ int apply_sfo_patches(sfo_patch_t* patch)
 }
 
 int _is_decrypted(list_t* list, const char* fname) {
-	list_node_t *node = list->head;
+	list_node_t *node = list_head(list);
+	u8 *protected_file_id = get_secure_file_id(selected_entry->title_id, "UNPROTECTED");
+
+	if (protected_file_id && (strncmp("UNPROTECTEDGAME", (char*)protected_file_id, PFD_KEY_SIZE) == 0))
+		return 1;
 
 	while (node) {
 		if (strcmp(list_get(node), fname) == 0)
@@ -528,22 +532,30 @@ void resignAllSaves(const char* path)
 	stop_loading_screen();
 }
 
+void decryptSaveFile(const char* filename)
+{
+	if (_is_decrypted(NULL, filename))
+	{
+		show_message("Save-game is not encrypted. No files decrypted");
+		return;
+	}
+
+	u8* protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
+
+	LOG("Decrypt '%s' from '%s'...", filename, selected_entry->name);
+
+	if (decrypt_save_file(selected_entry->path, filename, "/dev_hdd0/tmp/", protected_file_id))
+		show_message("File successfully decrypted to /dev_hdd0/tmp/");
+	else
+		show_message("Error! File couldn't be decrypted");
+}
+
 void execCodeCommand(code_entry_t* code, const char* codecmd)
 {
 	switch (codecmd[0])
 	{
 		case CMD_DECRYPT_FILE:
-			{
-				const char* filename = code->options[0].name[code->options[0].sel];
-				u8* protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
-
-				LOG("Decrypt '%s' from '%s'...", filename, selected_entry->name);
-
-				if (decrypt_save_file(selected_entry->path, filename, "/dev_hdd0/tmp/", protected_file_id))
-					show_message("File successfully decrypted to /dev_hdd0/tmp/");
-				else
-					show_message("Error! File couldn't be decrypted");
-			}
+			decryptSaveFile(code->options[0].name[code->options[0].sel]);
 			code->activated = 0;
 			break;
 

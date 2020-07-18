@@ -423,11 +423,10 @@ int decrypt_save_file(const char* path, const char* fname, const char* outpath, 
 	char file_path[256];
 	u8 *file_data;
 
-	// We take the risky assumption that if there's no key, then the file is not encrypted
 	if (!secure_file_key)
 	{
 		LOG("Skipping decryption: no Secure file key");
-		return 1;
+		return 0;
 	}
 
 	if (!_get_aes_details_pfd(path, fname, secure_file_key, &file_size, &aligned_file_size, entry_key))
@@ -497,11 +496,10 @@ int encrypt_save_file(const char* path, const char* fname, const char* outpath, 
 	char file_path[256];
 	u8 *file_data;
 
-	// We take the risky assumption that if there's no key, then the file is not encrypted
 	if (!secure_file_key)
 	{
 		LOG("Skipping encryption: no Secure file key");
-		return 1;
+		return 0;
 	}
 
 	if (!_update_details_pfd(path, fname))
