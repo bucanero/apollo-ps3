@@ -42,7 +42,9 @@ enum cmd_code_enum
     CMD_DOWNLOAD_USB,
     CMD_DOWNLOAD_HDD,
     CMD_COPY_SAVE_USB,
+    CMD_COPY_SAVE_HDD,
     CMD_EXPORT_ZIP_USB,
+    CMD_EXPORT_ZIP_HDD,
     CMD_VIEW_DETAILS,
 
 // Export commands
@@ -187,3 +189,5 @@ void execCodeCommand(code_entry_t* code, const char* codecmd);
 
 int rif2rap(const uint8_t* idps_key, const char* lic_path, const char* rifFile, const char* rap_path);
 int rap2rif(const uint8_t* idps_key, const char* exdata_path, const char* rap_file, const char *rif_path);
+
+int create_savegame_folder(const char* folder);

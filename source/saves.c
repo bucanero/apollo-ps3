@@ -400,14 +400,18 @@ void _addBackupCommands(code_entry_t * code, const char* path)
 	_setManualCode(code, PATCH_NULL, "----- \xE2\x98\x85 File Backup \xE2\x98\x85 -----", 0);
 	code++;
 
-	_setManualCode(code, PATCH_COMMAND, "\x0b Copy save game to USB", 0);
+	_setManualCode(code, PATCH_COMMAND, "\x0b Copy save game", 0);
 	code->options_count = 1;
-	code->options = _createOptions(2, "Copy to USB", CMD_COPY_SAVE_USB);
+	code->options = _createOptions(3, "Copy Save to USB", CMD_COPY_SAVE_USB);
+	asprintf(&code->options->name[2], "Copy Save to HDD");
+	asprintf(&code->options->value[2], "%c", CMD_COPY_SAVE_HDD);
 	code++;
 
 	_setManualCode(code, PATCH_COMMAND, "\x0c Export save game to Zip", 0);
 	code->options_count = 1;
-	code->options = _createOptions(2, "Export Zip to USB", CMD_EXPORT_ZIP_USB);
+	code->options = _createOptions(3, "Export Zip to USB", CMD_EXPORT_ZIP_USB);
+	asprintf(&code->options->name[2], "Export Zip to HDD");
+	asprintf(&code->options->value[2], "%c", CMD_EXPORT_ZIP_HDD);
 	code++;
 
 	_setManualCode(code, PATCH_COMMAND, "\x0b Decrypt save game files", 0);

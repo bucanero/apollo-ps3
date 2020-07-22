@@ -35,7 +35,7 @@ static char getBuffer[64*1024];
 int http_init(void)
 {
     int ret;
-	s32 cert_size=0;
+	u32 cert_size=0;
 	u8 module_https_loaded=HTTP_NO;
 	u8 module_http_loaded=HTTP_NO;
 	u8 module_net_loaded=HTTP_NO;
@@ -200,8 +200,8 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 	httpClientId httpClient = 0;
 	httpTransId httpTrans = 0;
 	FILE* fp=NULL;
-	s32 nRecv = -1;
-	s32 size = 0;
+	u32 nRecv = 0;
+	u32 size = 0;
 	uint64_t length = 0;
 	void *uri_pool = NULL;
 	char* escaped_name = NULL;
@@ -289,7 +289,7 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 	if (show_progress)
 		init_progress_bar("Downloading...", filename);
 	
-	while(nRecv != 0) {
+	do {
 		if(httpRecvResponse(httpTrans, (void*) getBuffer, sizeof(getBuffer)-1, &nRecv) > 0) break;
 		if(nRecv == 0)	break;
 		fwrite((char*) getBuffer, nRecv, 1, fp);
@@ -300,7 +300,7 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 			if (show_progress)
 				update_progress_bar(&prog_bar1_value, length, filename);
 		}
-	}
+	} while (nRecv != 0);
 	fclose(fp);
 	
 	if(cancel==HTTP_YES) {

@@ -127,6 +127,37 @@ void copySave(const char* save_path, const char* exp_path)
 	stop_loading_screen();
 }
 
+void copySaveHDD(const char* save_path)
+{
+	char* copy_path;
+	char* tmp;
+	const char* folder;
+
+	asprintf(&tmp, save_path);
+	*strrchr(tmp, '/') = 0;
+	folder = strrchr(tmp, '/')+1;
+	asprintf(&copy_path, SAVES_PATH_HDD "%s/", apollo_config.user_id, folder);
+
+	if (dir_exists(copy_path) == SUCCESS)
+	{
+		show_message("Error! Save-game folder already exists");
+		return;
+	}
+
+	init_loading_screen("Copying save game...");
+
+	if (create_savegame_folder(folder))
+	{
+		LOG("Copying <%s> to %s...", save_path, copy_path);
+		copy_directory(save_path, save_path, copy_path);
+	}
+
+	free(copy_path);
+	free(tmp);
+
+	stop_loading_screen();
+}
+
 void exportLicensesZip(const char* exp_path)
 {
 	char* export_file;
@@ -569,8 +600,18 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			code->activated = 0;
 			break;
 
+		case CMD_EXPORT_ZIP_HDD:
+			zipSave(selected_entry->path, "/dev_hdd0/tmp/");
+			code->activated = 0;
+			break;
+
 		case CMD_COPY_SAVE_USB:
 			copySave(selected_entry->path, codecmd[1] ? SAVES_PATH_USB1 : SAVES_PATH_USB0);
+			code->activated = 0;
+			break;
+
+		case CMD_COPY_SAVE_HDD:
+			copySaveHDD(selected_entry->path);
 			code->activated = 0;
 			break;
 

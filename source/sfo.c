@@ -319,7 +319,7 @@ void sfo_patch_lock(sfo_context_t *inout, unsigned int flags) {
 		p = sfo_context_get_param(inout, "ATTRIBUTE");
 		if (p != NULL && p->actual_length == 4) {
 			u32 *flag = (u32 *)p->value;
-			*flag = ES32(0);
+			*flag = 0;
 		}
 	}
 }

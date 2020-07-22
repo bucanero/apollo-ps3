@@ -535,20 +535,15 @@ void LoadSounds()
 	
 	background_music   = (short *) malloc(background_music_size);
 
-	//printf("Decoding Effect\n");
-
 	// decode the mp3 effect file included to memory. It stops by EOF or when samples exceed size_effects_samples
 	DecodeAudio( (void *) background_music_mp3, background_music_mp3_size, background_music, &background_music_size, &effect_freq, &effect_is_stereo);
 
 	// adjust the sound buffer sample correctly to the background_music_size
-	{
-		// SPU dma works aligned to 128 bytes. SPU module is designed to read unaligned buffers and it is better thing aligned buffers)
-		short *temp = (short *)memalign(128, SPU_SIZE(background_music_size));
-		memcpy((void *) temp, (void *) background_music, background_music_size);
-		free(background_music);
-
-		background_music = temp;
-	}
+	// SPU dma works aligned to 128 bytes. SPU module is designed to read unaligned buffers and it is better thing aligned buffers)
+	short *temp = (short *)memalign(128, SPU_SIZE(background_music_size));
+	memcpy((void *) temp, (void *) background_music, background_music_size);
+	free(background_music);
+	background_music = temp;
 	
 	SND_Pause(0);
 }
