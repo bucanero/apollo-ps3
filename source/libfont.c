@@ -29,9 +29,7 @@ struct t_font_description
 
 static struct t_font_datas
 {
-
     int number_of_fonts;
-
     int current_font;
 
     struct t_font_description fonts[8];
@@ -80,7 +78,7 @@ void ResetFont()
 
     font_datas.color = 0xffffffff;
     font_datas.bkcolor = 0;
-    font_datas.align = 0;
+    font_datas.align = FONT_ALIGN_LEFT;
     font_datas.X = font_datas.Y = font_datas.Z = 0.0f;
     font_datas.autonewline = 0;
 
@@ -101,7 +99,7 @@ u8 * AddFontFromBitmapArray(u8 *font, u8 *texture, u8 first_char, u8 last_char, 
     font_datas.fonts[font_datas.number_of_fonts].color_format = TINY3D_TEX_FORMAT_A4R4G4B4; //TINY3D_TEX_FORMAT_A8R8G8B8;
     font_datas.fonts[font_datas.number_of_fonts].first_char = first_char;
     font_datas.fonts[font_datas.number_of_fonts].last_char  = last_char;
-    font_datas.align =0;
+    font_datas.align = FONT_ALIGN_LEFT;
 
     font_datas.color = 0xffffffff;
     font_datas.bkcolor = 0x0;
@@ -192,7 +190,7 @@ u8 * AddFontFromTTF(u8 *texture, u8 first_char, u8 last_char, int w, int h,
     font_datas.fonts[font_datas.number_of_fonts].color_format = TINY3D_TEX_FORMAT_A4R4G4B4;
     font_datas.fonts[font_datas.number_of_fonts].first_char = first_char;
     font_datas.fonts[font_datas.number_of_fonts].last_char  = last_char;
-    font_datas.align =0;
+    font_datas.align = FONT_ALIGN_LEFT;
 
     font_datas.color = 0xffffffff;
     font_datas.bkcolor = 0x0;
@@ -294,7 +292,7 @@ void SetFontAlign(int mode)
 void SetFontAutoNewLine(int width)
 {
     font_datas.autonewline = width;
-    font_datas.align  = 0;
+    font_datas.align  = FONT_ALIGN_LEFT;
 }
 
 void SetFontZ(float z)
@@ -552,17 +550,23 @@ float DrawStringMono(float x, float y, const char *str)
 	int dx = font_datas.sx;
     font_datas.mono = font_datas.sx;
 	
-    if(font_datas.align == 1) {
-    
+    switch (font_datas.align)
+    {
+    case FONT_ALIGN_SCREEN_CENTER:
         x= (848 - WidthFromStrMono((u8 *) str)) / 2;
+        break;
 
-    }
-	else if (font_datas.align == 2) {
+    case FONT_ALIGN_RIGHT:
 		x -= WidthFromStrMono((u8 *) str);
-	}
-	else if (font_datas.align == 3) {
+        break;
+
+    case FONT_ALIGN_CENTER:
 		x -= WidthFromStrMono((u8 *) str)/2;
-	}
+        break;
+
+    default:
+        break;
+    }
 
     while (*str) {
         
@@ -608,31 +612,37 @@ int draw_icon(int x, int y, char c)
 
 float DrawString(float x, float y, const char *str)
 {
-    if(font_datas.align == 1) {
+    switch (font_datas.align)
+    {
+    case FONT_ALIGN_SCREEN_CENTER:
         x= (848 - WidthFromStr(str)) / 2;
-    }
-	else if (font_datas.align == 2) {
+        break;
+
+    case FONT_ALIGN_RIGHT:
 		x -= WidthFromStr(str);
-	}
-	else if (font_datas.align == 3) {
+        break;
+
+    case FONT_ALIGN_CENTER:
 		x -= WidthFromStr(str)/2;
-	}
+        break;
+
+    default:
+        break;
+    }
 
 	display_ttf_string((int)x +1, (int)y +1, str, 0x00000000 | (font_datas.color & 0x000000ff), 0, font_datas.sx, font_datas.sy+4, &skip_icon);
 
 	return display_ttf_string((int)x, (int)y, str, font_datas.color, font_datas.bkcolor, font_datas.sx, font_datas.sy+4, &draw_icon);
 }
 
-static char buff[4096];
-
 float DrawFormatString(float x, float y, char *format, ...)
 {
-    char *str = (char *) buff;
+    char buff[4096];
     va_list	opt;
 	
 	va_start(opt, format);
 	vsprintf( (void *) buff, format, opt);
 	va_end(opt);
 
-    return DrawString(x, y, str);
+    return DrawString(x, y, buff);
 }

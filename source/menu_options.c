@@ -13,14 +13,13 @@
 void _draw_OptionsMenu(u8 alpha)
 {
 	int c = 0, w = 0, h = 0;
-	char APP_OPTION_INC_TEMP[16];
 
     SetFontSize(APP_FONT_SIZE_SELECTION);
     int ind = 0, y_off = 120;
     while (menu_options[ind].name)
     {
         SetFontColor(APP_FONT_COLOR | alpha, 0);
-        float dx = DrawString(MENU_ICON_OFF + MENU_TITLE_OFF + 50, y_off, menu_options[ind].name);
+        DrawString(MENU_ICON_OFF + MENU_TITLE_OFF + 50, y_off, menu_options[ind].name);
         
 		switch (menu_options[ind].type)
 		{
@@ -36,15 +35,14 @@ void _draw_OptionsMenu(u8 alpha)
 				DrawTexture(&menu_textures[footer_ico_cross_png_index], OPTION_ITEM_OFF - 29, y_off+2, 0, w, h, 0xFFFFFF00 | alpha);
 				break;
 			case APP_OPTION_LIST:
-				SetFontAlign(2);
-				DrawString(dx + 40, y_off, menu_options[ind].options[*menu_options[ind].value]);
-				SetFontAlign(0);
+				SetFontAlign(FONT_ALIGN_CENTER);
+				DrawFormatString(OPTION_ITEM_OFF - 18, y_off, "< %s >", menu_options[ind].options[*menu_options[ind].value]);
+				SetFontAlign(FONT_ALIGN_LEFT);
 				break;
 			case APP_OPTION_INC:
-				SetFontAlign(0);
-				sprintf(APP_OPTION_INC_TEMP, "- %d +", *menu_options[ind].value);
-				int inc_width = WidthFromStr(APP_OPTION_INC_TEMP);
-				DrawString((OPTION_ITEM_OFF - 18) - (inc_width / 2), y_off, APP_OPTION_INC_TEMP);
+				SetFontAlign(FONT_ALIGN_CENTER);
+				DrawFormatString(OPTION_ITEM_OFF - 18, y_off, "- %d +", *menu_options[ind].value);
+				SetFontAlign(FONT_ALIGN_LEFT);
 				break;
 		}
         

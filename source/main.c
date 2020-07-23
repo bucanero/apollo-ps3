@@ -1346,10 +1346,10 @@ s32 main(s32 argc, const char* argv[])
 			
 			SetFontSize(APP_FONT_SIZE_DESCRIPTION);
 			SetCurrentFont(0);
-			SetFontAlign(1);
+			SetFontAlign(FONT_ALIGN_SCREEN_CENTER);
 			SetFontColor(APP_FONT_COLOR | alpha, 0);
 			DrawString(0, 480, (char *)menu_pad_help[menu_id]);
-			SetFontAlign(0);
+			SetFontAlign(FONT_ALIGN_LEFT);
 		}
 		
 		tiny3d_Flip();

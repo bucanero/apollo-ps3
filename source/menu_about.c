@@ -16,7 +16,7 @@ void _draw_AboutMenu(u8 alpha)
     //------------- About Menu Contents
 	DrawTextureCenteredX(&menu_textures[logo_text_png_index], 424, 70, 0, 245, 40, 0xFFFFFF00 | alpha);
 
-    SetFontAlign(1);
+    SetFontAlign(FONT_ALIGN_SCREEN_CENTER);
 	SetCurrentFont(font_adonais_regular);
 	SetFontColor(APP_FONT_MENU_COLOR | 0xFF, 0);
 	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
@@ -25,16 +25,16 @@ void _draw_AboutMenu(u8 alpha)
     
     for (cnt = 0; menu_about_strings[cnt] != NULL; cnt += 2)
     {
-        SetFontAlign(2);
+        SetFontAlign(FONT_ALIGN_RIGHT);
 		DrawStringMono((848 / 2) - 10, 150 + (cnt * 12), menu_about_strings[cnt]);
         
-		SetFontAlign(0);
+		SetFontAlign(FONT_ALIGN_LEFT);
 		DrawStringMono((848 / 2) + 10, 150 + (cnt * 12), menu_about_strings[cnt + 1]);
     }
 
 	DrawTexture(&menu_textures[help_png_index], help_png_x, 300, 0, help_png_w, 110, 0xFFFFFF00 | 0xFF);
 
-	SetFontAlign(1);
+	SetFontAlign(FONT_ALIGN_SCREEN_CENTER);
 	SetFontColor(APP_FONT_COLOR | 0xFF, 0);
 	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
 	DrawString(0, 150 + ((cnt + 3) * 12), "Console details:");
@@ -43,19 +43,19 @@ void _draw_AboutMenu(u8 alpha)
 	int off = cnt + 5;
 	for (cnt = 0; menu_about_strings_project[cnt] != NULL; cnt += 2)
 	{
-		SetFontAlign(2);
+		SetFontAlign(FONT_ALIGN_RIGHT);
 		DrawString((848 / 2) - 10, 155 + ((cnt + off) * 12), menu_about_strings_project[cnt]);
 
-		SetFontAlign(0);
+		SetFontAlign(FONT_ALIGN_LEFT);
 		DrawString((848 / 2) + 10, 155 + ((off + cnt) * 12), menu_about_strings_project[cnt + 1]);
 	}
 
-	SetFontAlign(1);
+	SetFontAlign(FONT_ALIGN_SCREEN_CENTER);
 	SetCurrentFont(font_adonais_regular);
 	SetFontColor(APP_FONT_MENU_COLOR | 0xFF, 0);
 	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
 	DrawStringMono(0, 430, "www.bucanero.com.ar");
-	SetFontAlign(0);
+	SetFontAlign(FONT_ALIGN_LEFT);
 }
 
 void Draw_AboutMenu_Ani()

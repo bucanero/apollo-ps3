@@ -28,7 +28,7 @@ void DrawScrollBar(int selIndex, int max, int y_inc, int xOff, u8 alpha)
         alpha -= dec;
     }
     
-    SetFontAlign(0);
+    SetFontAlign(FONT_ALIGN_LEFT);
     
     //Draw box
 	DrawTextureCenteredX(&menu_textures[scroll_bg_png_index], xOff, game_y, 0, 6, yTotal, 0xffffff00 | alpha);
@@ -444,10 +444,10 @@ void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)
 				DrawTexture(&menu_textures[cheat_png_index], MENU_ICON_OFF, game_y, 0, (MENU_TITLE_OFF * 3) - 15, y_inc + 2, 0xFFFFFF00 | a);
 
 				SetFontSize((int)(y_inc * 0.6), (int)(y_inc * 0.6));
-                SetFontAlign(3);
+                SetFontAlign(FONT_ALIGN_CENTER);
 				SetFontColor(APP_FONT_TAG_COLOR | a, 0);
 				DrawString(MENU_ICON_OFF + ((MENU_TITLE_OFF * 3) - 15) / 2, game_y + 2, "select");
-                SetFontAlign(0);
+                SetFontAlign(FONT_ALIGN_LEFT);
                 SetFontSize(APP_FONT_SIZE_SELECTION);
                 
                 if (game->codes[x].options_count > 0 && game->codes[x].options)

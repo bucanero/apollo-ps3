@@ -61,6 +61,11 @@ void SetFontSize(int sx, int sy);
 
 void SetFontColor(u32 color, u32 bkcolor);
 
+#define FONT_ALIGN_LEFT            0
+#define FONT_ALIGN_SCREEN_CENTER   1
+#define FONT_ALIGN_RIGHT           2
+#define FONT_ALIGN_CENTER          3
+
 // Set the DrawString alignment (0=left,1=center,2=right). don't use '\n' or unsupported characters here
 
 void SetFontAlign(int mode);

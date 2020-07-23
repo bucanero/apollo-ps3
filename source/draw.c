@@ -156,10 +156,10 @@ void DrawHeader_Ani(int icon, const char * hdrTitle, const char * headerSubTitle
 		{
 			tName[strlen(tName) - 1] = 0;
 		}
-		SetFontAlign(2);
+		SetFontAlign(FONT_ALIGN_RIGHT);
 		DrawString(800, 35, tName);
 		free(tName);
-		SetFontAlign(0);
+		SetFontAlign(FONT_ALIGN_LEFT);
 	}
 }
 
@@ -206,10 +206,10 @@ void DrawHeader(int icon, int xOff, const char * hdrTitle, const char * headerSu
 		{
 			tName[strlen(tName) - 1] = 0;
 		}
-		SetFontAlign(2);
+		SetFontAlign(FONT_ALIGN_RIGHT);
 		DrawString(800, 35, tName);
 		free(tName);
-		SetFontAlign(0);
+		SetFontAlign(FONT_ALIGN_LEFT);
 	}
 }
 
@@ -309,7 +309,7 @@ int init_loading_screen(const char* message)
     sys_ppu_thread_t tid;
     please_wait = 1;
 
-	SetFontAlign(1);
+	SetFontAlign(FONT_ALIGN_SCREEN_CENTER);
 	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
 	SetFontColor(APP_FONT_MENU_COLOR | 0xFF, 0);
 
@@ -363,7 +363,7 @@ void drawColumns(uint8_t alpha)
 
 void drawJars(uint8_t alpha)
 {
-	SetFontAlign(3);
+	SetFontAlign(FONT_ALIGN_CENTER);
 	SetFontSize(APP_FONT_SIZE_MENU);
 	SetCurrentFont(font_adonais_regular);
 
@@ -388,7 +388,7 @@ void drawJars(uint8_t alpha)
 	//About
 	drawJar(jar_about_png_index, jar_about_png_x, jar_about_png_y, (alpha == 0xFF ? "About" : ""), alpha);
 
-	SetFontAlign(0);
+	SetFontAlign(FONT_ALIGN_LEFT);
 }
 
 void drawSplashLogo(int mode)
