@@ -47,10 +47,14 @@ enum cmd_code_enum
     CMD_EXPORT_ZIP_HDD,
     CMD_VIEW_DETAILS,
 
+// Bulk commands
+    CMD_RESIGN_SAVES_USB,
+    CMD_COPY_SAVES_USB,
+    CMD_COPY_SAVES_HDD,
+
 // Export commands
     CMD_EXP_EXDATA_USB,
     CMD_EXP_TROPHY_USB,
-    CMD_EXP_SAVES_USB,
     CMD_EXP_RAPS_USB,
     CMD_EXP_RAPS_HDD,
     CMD_EXP_FLASH2_USB,
@@ -58,7 +62,6 @@ enum cmd_code_enum
 // Import commands
     CMD_IMP_EXDATA_USB,
     CMD_IMP_TROPHY_USB,
-    CMD_IMP_RESIGN_USB,
 
 // SFO patches
     SFO_UNLOCK_COPY,

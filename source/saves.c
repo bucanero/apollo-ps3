@@ -96,26 +96,26 @@ long getDirListSize(const char * path)
 {
 	DIR *d;
 	struct dirent *dir;
-	d = opendir(path);
-	
 	char sfoPath[256];
 	int count = 0;
-	
-	if (d)
+
+	d = opendir(path);
+
+	if (!d)
+		return 0;
+
+	while ((dir = readdir(d)) != NULL)
 	{
-		while ((dir = readdir(d)) != NULL)
+		if (dir->d_type == DT_DIR && strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
 		{
-			if (dir->d_type == DT_DIR && strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
+			snprintf(sfoPath, sizeof(sfoPath), "%s%s/PARAM.SFO", path, dir->d_name);
+			if (file_exists(sfoPath) == SUCCESS)
 			{
-				snprintf(sfoPath, sizeof(sfoPath), "%s%s/PARAM.SFO", path, dir->d_name);
-				if (file_exists(sfoPath) == SUCCESS)
-				{
-					count++;
-				}
+				count++;
 			}
 		}
-		closedir(d);
 	}
+	closedir(d);
 	
 	return count;
 }
@@ -124,21 +124,21 @@ long getDirListSizeByExt(const char * path, const char* fext)
 {
 	DIR *d;
 	struct dirent *dir;
-	d = opendir(path);
-
 	int count = 0;
 
-	if (d)
+	d = opendir(path);
+
+	if (!d)
+		return 0;
+
+	while ((dir = readdir(d)) != NULL)
 	{
-		while ((dir = readdir(d)) != NULL)
+		if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0  && endsWith(dir->d_name, fext))
 		{
-			if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0  && endsWith(dir->d_name, fext))
-			{
-				count++;
-			}
+			count++;
 		}
-		closedir(d);
 	}
+	closedir(d);
 
 	return count;
 }
@@ -737,7 +737,7 @@ save_entry_t * ReadBackupList(const char* userPath, int * gmc)
 {
 	int i = 0;
 
-	*gmc = 7;
+	*gmc = 5;
 	save_entry_t * ret = (save_entry_t *)malloc(sizeof(save_entry_t) * (*gmc));
 
 	memset(&ret[i], 0, sizeof(save_entry_t));
@@ -767,27 +767,6 @@ save_entry_t * ReadBackupList(const char* userPath, int * gmc)
 	_setManualCode(ret[i].codes, PATCH_COMMAND, "\x0b Backup Trophies to USB", 0);
 	ret[i].codes->options_count = 1;
 	ret[i].codes->options = _createOptions(2, "Save Trophies to USB", CMD_EXP_TROPHY_USB);
-	i++;
-
-	memset(&ret[i], 0, sizeof(save_entry_t));
-	asprintf(&ret[i].name, "\x0b Export HDD Saves");
-	asprintf(&ret[i].path, SAVES_PATH_HDD, apollo_config.user_id);
-	ret[i].flags = SAVE_FLAG_PS3;
-	ret[i].code_count = 1;
-	ret[i].codes = (code_entry_t *)malloc(sizeof(code_entry_t) * ret[i].code_count);
-	_setManualCode(ret[i].codes, PATCH_COMMAND, "\x0b Copy all HDD Saves to USB", 0);
-	ret[i].codes->options_count = 1;
-	ret[i].codes->options = _createOptions(2, "Copy Saves to USB", CMD_EXP_SAVES_USB);
-	i++;
-
-	memset(&ret[i], 0, sizeof(save_entry_t));
-	asprintf(&ret[i].name, "\x06 Resign & Unlock USB Saves");
-	ret[i].flags = SAVE_FLAG_PS3;
-	ret[i].code_count = 1;
-	ret[i].codes = (code_entry_t *)malloc(sizeof(code_entry_t) * ret[i].code_count);
-	_setManualCode(ret[i].codes, PATCH_COMMAND, "\x06 Resign all USB Saves", 0);
-	ret[i].codes->options_count = 1;
-	ret[i].codes->options = _createOptions(2, "Resign Saves from USB", CMD_IMP_RESIGN_USB);
 	i++;
 
 	memset(&ret[i], 0, sizeof(save_entry_t));
@@ -824,6 +803,7 @@ int ReadBackupCodes(save_entry_t * bup)
 
 	code_entry_t * ret = (code_entry_t *)malloc(sizeof(code_entry_t) * bup_count);
 	bup->code_count = bup_count;
+	bup->codes = ret;
 
 	bup_count = 0;
 	LOG("Loading backup files from '%s'...", bup->path);
@@ -897,7 +877,6 @@ int ReadBackupCodes(save_entry_t * bup)
 
 	LOG("%d items loaded", bup_count);
 
-	bup->codes = ret;
 	return bup_count;
 }
 
@@ -1015,14 +994,15 @@ int qsortSaveList_Compare(const void* a, const void* b)
  */
 save_entry_t * ReadUserList(const char* userPath, int * gmc)
 {
+	DIR *d;
+	struct dirent *dir;
 	int save_count = getDirListSize(userPath);
-	*gmc = save_count;
 
 	if (!save_count)
 		return NULL;
 
-	DIR *d;
-	struct dirent *dir;
+	save_count++;
+	*gmc = save_count;
 	d = opendir(userPath);
 	
 	if (!d)
@@ -1033,9 +1013,34 @@ save_entry_t * ReadUserList(const char* userPath, int * gmc)
 	char sfoPath[256];
 	int cur_count = 0;
 
+	memset(&ret[cur_count], 0, sizeof(save_entry_t));
+	asprintf(&ret[cur_count].name, "\x0b Bulk Save Management");
+	ret[cur_count].flags = SAVE_FLAG_PS3;
+
+	if (strncmp(userPath, "/dev_hdd0/", 10) == 0)
+	{
+		ret[cur_count].code_count = 1;
+		ret[cur_count].codes = (code_entry_t *)malloc(sizeof(code_entry_t) * ret[cur_count].code_count);
+		asprintf(&ret[cur_count].path, SAVES_PATH_HDD, apollo_config.user_id);
+
+		_setManualCode(ret[cur_count].codes, PATCH_COMMAND, "\x0b Copy all Saves to USB", 0);
+		ret[cur_count].codes->options_count = 1;
+		ret[cur_count].codes->options = _createOptions(2, "Copy Saves to USB", CMD_COPY_SAVES_USB);
+	}
+	else
+	{
+		ret[cur_count].code_count = 2;
+		ret[cur_count].codes = (code_entry_t *)malloc(sizeof(code_entry_t) * ret[cur_count].code_count);
+		asprintf(&ret[cur_count].path, "%s", userPath);
+
+		_setManualCode(&ret[cur_count].codes[0], PATCH_COMMAND, "\x06 Resign & Unlock all Saves", CMD_RESIGN_SAVES_USB);
+		_setManualCode(&ret[cur_count].codes[1], PATCH_COMMAND, "\x0b Copy all Saves to HDD", CMD_COPY_SAVES_HDD);
+	}
+	cur_count++;
+
 	while ((dir = readdir(d)) != NULL)
 	{
-		if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0)
+		if (dir->d_type != DT_DIR || strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0)
 			continue;
 
 		snprintf(sfoPath, sizeof(sfoPath), "%s%s/PARAM.SFO", userPath, dir->d_name);

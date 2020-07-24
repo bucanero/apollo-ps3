@@ -141,6 +141,8 @@ void copySaveHDD(const char* save_path)
 	if (dir_exists(copy_path) == SUCCESS)
 	{
 		show_message("Error! Save-game folder already exists");
+		free(copy_path);
+		free(tmp);
 		return;
 	}
 
@@ -156,6 +158,39 @@ void copySaveHDD(const char* save_path)
 	free(tmp);
 
 	stop_loading_screen();
+}
+
+void copyAllSavesHDD(const char* path)
+{
+	DIR *d;
+	struct dirent *dir;
+	char savePath[256];
+
+	if (dir_exists(path) != SUCCESS)
+	{
+		LOG("Folder not available: %s", path);
+		show_message("Error! Folder is not available");
+		return;
+	}
+
+	d = opendir(path);
+	if (!d)
+		return;
+
+	LOG("Copying all saves from '%s'...", path);
+	while ((dir = readdir(d)) != NULL)
+	{
+		if (dir->d_type == DT_DIR && strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
+		{
+			snprintf(savePath, sizeof(savePath), "%s%s/PARAM.SFO", path, dir->d_name);
+			if (file_exists(savePath) == SUCCESS)
+			{
+				snprintf(savePath, sizeof(savePath), "%s%s/", path, dir->d_name);
+				copySaveHDD(savePath);
+			}
+		}
+	}
+	closedir(d);
 }
 
 void exportLicensesZip(const char* exp_path)
@@ -635,7 +670,7 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			code->activated = 0;
 			break;
 
-		case CMD_EXP_SAVES_USB:
+		case CMD_COPY_SAVES_USB:
 			exportFolder(SAVES_PATH_HDD, codecmd[1] ? SAVES_PATH_USB1 : SAVES_PATH_USB0, "Copying saves...");
 			code->activated = 0;
 			break;
@@ -666,8 +701,13 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			code->activated = 0;
 			break;
 
-		case CMD_IMP_RESIGN_USB:
-			resignAllSaves(codecmd[1] ? SAVES_PATH_USB1 : SAVES_PATH_USB0);
+		case CMD_RESIGN_SAVES_USB:
+			resignAllSaves(selected_entry->path);
+			code->activated = 0;
+			break;
+
+		case CMD_COPY_SAVES_HDD:
+			copyAllSavesHDD(selected_entry->path);
 			code->activated = 0;
 			break;
 

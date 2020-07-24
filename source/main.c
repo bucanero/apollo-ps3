@@ -1284,8 +1284,7 @@ s32 main(s32 argc, const char* argv[])
 	
 	menu_options_maxsel = (int *)calloc(1, menu_options_maxopt * sizeof(int));
 	
-	int i = 0;
-	for (i = 0; i < menu_options_maxopt; i++)
+	for (int i = 0; i < menu_options_maxopt; i++)
 	{
 		menu_options_maxsel[i] = 0;
 		if (menu_options[i].type == APP_OPTION_LIST)
