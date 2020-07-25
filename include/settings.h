@@ -39,10 +39,11 @@ typedef struct
     uint64_t account_id;
 } app_config_t;
 
-extern const menu_option_t menu_options[];
+extern menu_option_t menu_options[];
 
 extern app_config_t apollo_config;
 
+void owner_callback(int sel);
 void music_callback(int sel);
 void sort_callback(int sel);
 void ani_callback(int sel);
@@ -52,3 +53,7 @@ void update_callback(int sel);
 void clearcache_callback(int sel);
 void upd_appdata_callback(int sel);
 void unzip_app_data(const char* zip_file);
+
+int save_xml_owner(const char *xmlfile, const char *owner);
+int read_xml_owner(const char *xmlfile, const char *owner);
+char** get_xml_owners(const char *xmlfile);

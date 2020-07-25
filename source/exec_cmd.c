@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
+#include <sysutil/sysutil.h>
 
 #include "saves.h"
 #include "menu.h"
@@ -33,14 +34,11 @@ void downloadSave(const char* file, const char* path)
 
 void _saveOwnerData(const char* path)
 {
-	FILE* f = fopen(path, "w");
-	if (!f)
-		return;
+	char buff[SYSUTIL_SYSTEMPARAM_CURRENT_USERNAME_SIZE+1];
 
-	fprintf(f, "%016lX %016lX\n", apollo_config.psid[0], apollo_config.psid[1]);
-	fprintf(f, "%016lX\n", apollo_config.account_id);
-	fprintf(f, "%08d\n", apollo_config.user_id);
-	fclose(f);
+	sysUtilGetSystemParamString(SYSUTIL_SYSTEMPARAM_ID_CURRENT_USERNAME, buff, SYSUTIL_SYSTEMPARAM_CURRENT_USERNAME_SIZE);
+	LOG("Saving User '%s'...", buff);
+	save_xml_owner(path, buff);
 }
 
 uint32_t get_filename_id(const char* dir)
@@ -89,7 +87,7 @@ void zipSave(const char* save_path, const char* exp_path)
 		fclose(f);
 	}
 
-	sprintf(export_file, "%s" "owner.txt", exp_path);
+	sprintf(export_file, "%s" OWNER_XML_FILE, exp_path);
 	_saveOwnerData(export_file);
 
 	free(export_file);
@@ -215,7 +213,7 @@ void exportLicensesZip(const char* exp_path)
 
 	zip_directory(tmp, lic_path, export_file);
 
-	sprintf(export_file, "%s" "owner.txt", exp_path);
+	sprintf(export_file, "%s" OWNER_XML_FILE, exp_path);
 	_saveOwnerData(export_file);
 
 	sprintf(export_file, "%s" "idps.hex", exp_path);
@@ -243,7 +241,7 @@ void exportFlashZip(const char* exp_path)
 	asprintf(&export_file, "%s" "dev_flash2.zip", exp_path);
 	zip_directory("/dev_flash2", "/dev_flash2/", export_file);
 
-	sprintf(export_file, "%s" "owner.txt", exp_path);
+	sprintf(export_file, "%s" OWNER_XML_FILE, exp_path);
 	_saveOwnerData(export_file);
 
 	sprintf(export_file, "%s" "idps.hex", exp_path);
@@ -528,7 +526,7 @@ void resignSave(sfo_patch_t* patch)
         show_message("Error! Cheat codes couldn't be applied");
 
     LOG("Resigning save '%s'...", selected_entry->name);
-    if (!pfd_util_init(selected_entry->title_id, selected_entry->path) ||
+    if (!pfd_util_init((u8*) apollo_config.psid, apollo_config.user_id, selected_entry->title_id, selected_entry->path) ||
         (pfd_util_process(PFD_CMD_UPDATE, 0) != SUCCESS))
         show_message("Error! Save file couldn't be resigned");
     else
@@ -585,7 +583,7 @@ void resignAllSaves(const char* path)
 				snprintf(message, sizeof(message), "Resigning %s...", dir->d_name);
 
 				LOG("Resigning save '%s'...", sfoPath);
-				if (!pfd_util_init(titleid, sfoPath) ||
+				if (!pfd_util_init((u8*) apollo_config.psid, apollo_config.user_id, titleid, sfoPath) ||
 					(pfd_util_process(PFD_CMD_UPDATE, 0) != SUCCESS))
 					LOG("Error! Save file couldn't be resigned");
 

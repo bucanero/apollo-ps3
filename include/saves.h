@@ -32,6 +32,8 @@
 #define ONLINE_URL				"http://apollo-db.psdev.tk/"
 #define ONLINE_CACHE_TIMEOUT    24*3600     // 1-day local cache
 
+#define OWNER_XML_FILE          "owners.xml"
+
 enum cmd_code_enum
 {
     CMD_CODE_NULL,

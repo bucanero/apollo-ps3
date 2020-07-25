@@ -165,13 +165,8 @@ static int games_config_handler(void *user, const char *section, const char *nam
 	return 0;
 }
 
-int pfd_util_setup_keys(const u8* console_id, u32 user_id) {
+int pfd_util_setup_keys() {
 	int result = 0;
-	char uid[9];
-
-	sprintf(uid, "%08d", user_id);
-	memcpy(config.user_id, uid, PFD_USER_ID_SIZE);
-	memcpy(config.console_id, console_id, PFD_CONSOLE_ID_SIZE);
 
 	setup_key(config.authentication_id, PFD_AUTHENTICATION_ID_SIZE);
 	setup_key(config.syscon_manager_key, PFD_SYSCON_MANAGER_KEY_SIZE);
@@ -228,10 +223,15 @@ char* get_game_title_ids(const char* game_id)
 	return (game_key->game_ids);
 }
 
-int pfd_util_init(const char* game_id, const char* database_path) {
+int pfd_util_init(const u8* psid, u32 user_id, const char* game_id, const char* database_path) {
 	u8 *disc_hash_key = NULL;
 	list_t *secure_file_ids = NULL;
 	game_keys_t *game_key = NULL;
+	char uid[9];
+
+	snprintf(uid, sizeof(uid), "%08d", user_id);
+	memcpy(config.user_id, uid, PFD_USER_ID_SIZE);
+	memcpy(config.console_id, psid, PFD_CONSOLE_ID_SIZE);
 
 	uint64_t* tmp = (uint64_t*)config.console_id;
 	LOG("pfdtool " PFDTOOL_VERSION " (c) 2012 by flatz");

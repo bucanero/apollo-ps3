@@ -7,8 +7,9 @@
 #include "common.h"
 #include "audioplayer.h"
 
+uint8_t owner_sel = 0;
 
-const menu_option_t menu_options[] = {
+menu_option_t menu_options[] = {
 	{ .name = "Background Music", 
 		.options = NULL, 
 		.type = APP_OPTION_BOOL, 
@@ -56,6 +57,12 @@ const menu_option_t menu_options[] = {
 		.type = APP_OPTION_CALL, 
 		.value = NULL, 
 		.callback = upd_appdata_callback 
+	},
+	{ .name = "Save Data Owner",
+		.options = NULL,
+		.type = APP_OPTION_LIST,
+		.value = &owner_sel,
+		.callback = owner_callback
 	},
 	{ .name = NULL }
 };
@@ -191,4 +198,10 @@ void update_callback(int sel)
 			show_message("Download error!");
 	}
 
+}
+
+void owner_callback(int sel)
+{
+	if (file_exists(APOLLO_PATH OWNER_XML_FILE) == SUCCESS)
+		read_xml_owner(APOLLO_PATH OWNER_XML_FILE, menu_options[8].options[sel]);
 }

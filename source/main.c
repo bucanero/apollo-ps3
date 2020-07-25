@@ -985,18 +985,6 @@ void doPatchViewMenu()
 	Draw_CheatsMenu_View("Patch view");
 }
 
-void _loadOwnerData(const char* path)
-{
-	FILE* f = fopen(path, "r");
-	if (!f)
-		return;
-
-	fscanf(f, "%lx %lx\n", &apollo_config.psid[0], &apollo_config.psid[1]);
-	fscanf(f, "%lx\n", &apollo_config.account_id);
-	fscanf(f, "%d\n", &apollo_config.user_id);
-	fclose(f);
-}
-
 void doCodeOptionsMenu()
 {
     code_entry_t* code = &selected_entry->codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]];
@@ -1266,11 +1254,13 @@ s32 main(s32 argc, const char* argv[])
 	// Load application settings
 	load_app_settings(&apollo_config);
 
-	if (file_exists(APOLLO_PATH "owner.txt") == SUCCESS)
-		_loadOwnerData(APOLLO_PATH "owner.txt");
+	if (file_exists(APOLLO_PATH OWNER_XML_FILE) == SUCCESS)
+		save_xml_owner(APOLLO_PATH OWNER_XML_FILE, NULL);
 
+	menu_options[8].options = get_xml_owners(APOLLO_PATH OWNER_XML_FILE);
+ 
 	// Set PFD keys from loaded settings
-	pfd_util_setup_keys((u8*) &(apollo_config.psid[0]), apollo_config.user_id);
+	pfd_util_setup_keys();
 
 	// Setup font
 	SetExtraSpace(5);
@@ -1302,6 +1292,7 @@ s32 main(s32 argc, const char* argv[])
 	//Set options
 	music_callback(!apollo_config.music);
 	update_callback(!apollo_config.update);
+	*menu_options[8].value = menu_options_maxsel[8] - 1;
 
 	SetMenu(MENU_MAIN_SCREEN);
 	
