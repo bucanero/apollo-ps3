@@ -47,11 +47,11 @@ On first run, the application will detect and setup the required user settings.
 
 Using the application is simple and straight-forward: 
 
- - Move **UP/DOWN** to select the save-game file you want to patch, and press ![X button](https://github.com/bucanero/pkgi-ps3/raw/master/data/CROSS.png). The patch screen will show the available fixes for the file. Select the patches and click `Apply`.
- - To see the item's details, press ![Square](https://github.com/bucanero/pkgi-ps3/raw/master/data/TRIANGLE.png).
+ - Move <kbd>UP</kbd>/<kbd>DOWN</kbd> to select the save-game file you want to patch, and press ![X button](https://github.com/bucanero/pkgi-ps3/raw/master/data/CROSS.png). The patch screen will show the available fixes for the file. Select the patches and click `Apply`.
+ - To view the item's details, press ![Triangle](https://github.com/bucanero/pkgi-ps3/raw/master/data/TRIANGLE.png).
 It will open the context menu on the screen. Press ![O button](https://github.com/bucanero/pkgi-ps3/raw/master/data/CIRCLE.png) to return to the list.
- - To reload the list, press ![Triangle](https://github.com/bucanero/pkgi-ps3/raw/master/data/SQUARE.png).
- - Press left **(L1/L2)** or right trigger buttons **(R1/R2)** to move pages up or down.
+ - To reload the list, press ![Square](https://github.com/bucanero/pkgi-ps3/raw/master/data/SQUARE.png).
+ - Press <kbd>L1</kbd>/<kbd>L2</kbd> or <kbd>R1</kbd>/<kbd>R2</kbd> trigger buttons to move pages up or down.
 
 ## Notes
 
