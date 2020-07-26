@@ -496,6 +496,10 @@ int ReadCodes(save_entry_t * save)
 
 	_setManualCode(&ret[cur_count++], PATCH_COMMAND, "\x06 Apply Changes & Resign", CMD_RESIGN_SAVE);
 	_setManualCode(&ret[cur_count++], PATCH_COMMAND, "\x07 View Save Details", CMD_VIEW_DETAILS);
+
+	_addBackupCommands(&ret[cur_count], save->path);
+	cur_count += MENU_COPY_CMDS;
+
 	_setManualCode(&ret[cur_count++], PATCH_NULL, "----- \xE2\x98\x85 SFO Patches \xE2\x98\x85 -----", 0);
 	_setManualCode(&ret[cur_count++], PATCH_SFO, "\x07 Remove Account ID", SFO_REMOVE_ACCOUNT_ID);
 	_setManualCode(&ret[cur_count++], PATCH_SFO, "\x07 Remove Console ID", SFO_REMOVE_PSID);
@@ -506,9 +510,6 @@ int ReadCodes(save_entry_t * save)
 	ret[cur_count].options_count = 1;
 	ret[cur_count].options = _getSaveTitleIDs(save->title_id);
 	cur_count++;
-
-	_addBackupCommands(&ret[cur_count], save->path);
-	cur_count += MENU_COPY_CMDS;
 
 	if (cheat_count == 0)
 	{
