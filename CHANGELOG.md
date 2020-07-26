@@ -4,6 +4,16 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.2.5](https://github.com/bucanero/apollo-ps3/releases/tag/v1.2.5) - 2020-07-26
+
+### Added
+
+* Updated `secure_file_id` database with new IDs and keys
+* Add `Copy savegame to HDD` option
+* Add `Zip savegame to HDD` option
+* Add bulk save-game copy to HDD support
+* Add `owners.xml` support (select owners from the Settings menu)
+
 ## [v1.2.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.2.0) - 2020-07-18
 
 ### Added
