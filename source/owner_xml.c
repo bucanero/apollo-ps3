@@ -46,11 +46,11 @@ void set_xml_owner(xmlNode * a_node)
 				LOG("xml user_id=%s", value);
 			}
 
-			value = (char*) xmlGetProp(cur_node, BAD_CAST "np_account_id");
+			value = (char*) xmlGetProp(cur_node, BAD_CAST "account_id");
 			if (value)
 			{
 				sscanf(value, "%lx\n", &apollo_config.account_id);
-				LOG("xml np_account_id=%s", value);
+				LOG("xml account_id=%s", value);
 			}
 		}
 
@@ -240,7 +240,7 @@ int save_xml_owner(const char *xmlfile, const char *username)
     xmlNewProp(node1, BAD_CAST "id", BAD_CAST buff);
 
     sprintf(buff, "%016lx", apollo_config.account_id);
-    xmlNewProp(node1, BAD_CAST "np_account_id", BAD_CAST buff);
+    xmlNewProp(node1, BAD_CAST "account_id", BAD_CAST buff);
 
     /* 
      * Dumping document to file
