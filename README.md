@@ -58,6 +58,35 @@ It will open the context menu on the screen. Press ![O button](https://github.co
 - **USB saves:** your files must be placed on `/dev_usb000/PS3/SAVEDATA/` or `/dev_usb001/PS3/SAVEDATA/`.
 - **HDD saves:** files will be scanned from `/dev_hdd0/home/000000XX/savedata/`, where `XX` is the current `User ID`.
 
+## Overriding auto-detected settings
+
+If you want to override the auto-detected IDs used by Apollo to resign the save-games, you can use the `owners.xml` file.
+For example:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<apollo version="1.2.0">
+  <owner name="PS3 User">
+    <console idps="AAAAAAAAAAAAAAAA 0123456789ABCDEF" psid="FFFFFFFFFFFFFFFF 0123456789ABCDEF"/>
+    <user id="00000002" account_id="0123456789abcdef"/>
+  </owner>
+  <owner name="Other User">
+    <console idps="AAAAAAAAAAAAAAAA 0123456789ABCDEF" psid="FFFFFFFFFFFFFFFF 0123456789ABCDEF"/>
+    <user id="00000008" account_id="abcdef0123456789"/>
+  </owner>
+</apollo>
+```
+
+The file must be saved on `/dev_hdd0/game/NP0APOLLO/USRDIR/owners.xml`. Apollo will load the hard-coded values when launched, and you should 
+select the desired Owner from the **Settings** menu.
+
+In the `owners.xml` you need to define:
+- Owner name
+- User ID (e.g.: `00000123`)
+- Account ID (e.g.: `0123456789abcdef`)
+- Console PSID (e.g.: `FFFFFFFFFFFFFFFF 0123456789ABCDEF`)
+- Console IDPS is optional (only required for license import/export)
+
 # Online Database
 
 The application also provides direct access to the [Apollo online database](https://github.com/bucanero/apollo-saves) of save-game files for PlayStation 3 games. These usually offer additional features such as completed games that can save you many hours of playing.
