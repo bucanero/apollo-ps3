@@ -196,3 +196,7 @@ int rif2rap(const uint8_t* idps_key, const char* lic_path, const char* rifFile, 
 int rap2rif(const uint8_t* idps_key, const char* exdata_path, const char* rap_file, const char *rif_path);
 
 int create_savegame_folder(const char* folder);
+
+void ps2_encrypt_image(uint8_t dex_mode, const char* image_name, const char* data_file);
+void ps2_decrypt_image(uint8_t dex_mode, const uint8_t* klicensee, const char* image_name, const char* data_file);
+void ps2_crypt_vmc(uint8_t dex_mode, const char* vmc_path, const char* vmc_out, int crypt_mode);
