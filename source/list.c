@@ -68,7 +68,7 @@ list_node_t * list_head(list_t *list) {
 }
 
 list_node_t * list_tail(list_t *list) {
-	list_node_t *node = list->head;
+	list_node_t *node = list_head(list);
 
 	while (node && node->next) {
 		node = node->next;
@@ -96,4 +96,57 @@ void * list_get(list_node_t *node) {
 		return NULL;
 
 	return node->value;
+}
+
+void * list_get_item(list_t *list, size_t item) {
+	list_node_t *node;
+
+	if (!list || (list_count(list) < item))
+		return NULL;
+
+	node = list_head(list);
+	while (item > 0) {
+		node = list_next(node);
+		item--;
+	}
+
+	return list_get(node);
+}
+
+/* function to swap data of two nodes a and b*/
+void list_swap(list_node_t *a, list_node_t *b)
+{
+	void* temp = a->value;
+	a->value = b->value;
+	b->value = temp;
+}
+
+/* Bubble sort the given linked list */
+void list_bubbleSort(list_t *list, int (*compar)(const void *, const void *))
+{ 
+	int swapped;
+	list_node_t *ptr1; 
+	list_node_t *lptr = NULL; 
+
+	/* Checking for empty list */
+	if (!list)
+		return;
+
+ 	do
+	{
+		swapped = 0;
+		ptr1 = list_head(list);
+
+		while (ptr1->next != lptr)
+		{
+			if (compar(ptr1->value, ptr1->next->value) > 0)
+			{
+				list_swap(ptr1, ptr1->next);
+				swapped = 1;
+			}
+			ptr1 = ptr1->next;
+		}
+		lptr = ptr1;
+	}
+	while (swapped);
 }

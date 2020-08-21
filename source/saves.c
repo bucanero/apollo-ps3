@@ -83,43 +83,6 @@ char* endsWith(const char * a, const char * b)
 	return (char*) (a - bl);
 }
 
-/*
- * Function:		getDirListSize()
- * File:			saves.c
- * Project:			Apollo PS3
- * Description:		Calculates the number of save files in a directory
- * Arguments:
- *	path:			path to directory
- * Return:			Number of results
- */
-long getDirListSize(const char * path)
-{
-	DIR *d;
-	struct dirent *dir;
-	char sfoPath[256];
-	int count = 0;
-
-	d = opendir(path);
-
-	if (!d)
-		return 0;
-
-	while ((dir = readdir(d)) != NULL)
-	{
-		if (dir->d_type == DT_DIR && strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
-		{
-			snprintf(sfoPath, sizeof(sfoPath), "%s%s/PARAM.SFO", path, dir->d_name);
-			if (file_exists(sfoPath) == SUCCESS)
-			{
-				count++;
-			}
-		}
-	}
-	closedir(d);
-	
-	return count;
-}
-
 long getDirListSizeByExt(const char * path, const char* fext)
 {
 	DIR *d;
@@ -734,54 +697,57 @@ int ReadOnlineSaves(save_entry_t * game)
 	return cur_count;
 }
 
-save_entry_t * ReadBackupList(const char* userPath, int * gmc)
+list_t * ReadBackupList(const char* userPath)
 {
-	int i = 0;
+	save_entry_t * item;
+	list_t *list = list_alloc();
 
-	*gmc = 5;
-	save_entry_t * ret = (save_entry_t *)malloc(sizeof(save_entry_t) * (*gmc));
+	item = (save_entry_t *)malloc(sizeof(save_entry_t));
+	memset(item, 0, sizeof(save_entry_t));
+	asprintf(&item->name, "\x0b Export Licenses");
+	asprintf(&item->path, EXDATA_PATH_HDD, apollo_config.user_id);
+	item->flags = SAVE_FLAG_PS3 | SAVE_FLAG_RIF;
+	list_append(list, item);
 
-	memset(&ret[i], 0, sizeof(save_entry_t));
-	asprintf(&ret[i].name, "\x0b Export Licenses");
-	asprintf(&ret[i].path, EXDATA_PATH_HDD, apollo_config.user_id);
-	ret[i].flags = SAVE_FLAG_PS3 | SAVE_FLAG_RIF;
-	i++;
+	item = (save_entry_t *)malloc(sizeof(save_entry_t));
+	memset(item, 0, sizeof(save_entry_t));
+	asprintf(&item->name, "\x0b Import Licenses (USB 0)");
+	asprintf(&item->path, IMPORT_RAP_PATH_USB0);
+	item->flags = SAVE_FLAG_PS3 | SAVE_FLAG_RAP;
+	list_append(list, item);
 
-	memset(&ret[i], 0, sizeof(save_entry_t));
-	asprintf(&ret[i].name, "\x0b Import Licenses (USB 0)");
-	asprintf(&ret[i].path, IMPORT_RAP_PATH_USB0);
-	ret[i].flags = SAVE_FLAG_PS3 | SAVE_FLAG_RAP;
-	i++;
+	item = (save_entry_t *)malloc(sizeof(save_entry_t));
+	memset(item, 0, sizeof(save_entry_t));
+	asprintf(&item->name, "\x0b Import Licenses (USB 1)");
+	asprintf(&item->path, IMPORT_RAP_PATH_USB1);
+	item->flags = SAVE_FLAG_PS3 | SAVE_FLAG_RAP;
+	list_append(list, item);
 
-	memset(&ret[i], 0, sizeof(save_entry_t));
-	asprintf(&ret[i].name, "\x0b Import Licenses (USB 1)");
-	asprintf(&ret[i].path, IMPORT_RAP_PATH_USB1);
-	ret[i].flags = SAVE_FLAG_PS3 | SAVE_FLAG_RAP;
-	i++;
+	item = (save_entry_t *)malloc(sizeof(save_entry_t));
+	memset(item, 0, sizeof(save_entry_t));
+	asprintf(&item->name, "\x0b Export Trophies");
+	asprintf(&item->path, TROPHY_PATH_HDD, apollo_config.user_id);
+	item->flags = SAVE_FLAG_PS3;
+	item->code_count = 1;
+	item->codes = (code_entry_t *)malloc(sizeof(code_entry_t) * item->code_count);
+	_setManualCode(item->codes, PATCH_COMMAND, "\x0b Backup Trophies to USB", 0);
+	item->codes->options_count = 1;
+	item->codes->options = _createOptions(2, "Save Trophies to USB", CMD_EXP_TROPHY_USB);
+	list_append(list, item);
 
-	memset(&ret[i], 0, sizeof(save_entry_t));
-	asprintf(&ret[i].name, "\x0b Export Trophies");
-	asprintf(&ret[i].path, TROPHY_PATH_HDD, apollo_config.user_id);
-	ret[i].flags = SAVE_FLAG_PS3;
-	ret[i].code_count = 1;
-	ret[i].codes = (code_entry_t *)malloc(sizeof(code_entry_t) * ret[i].code_count);
-	_setManualCode(ret[i].codes, PATCH_COMMAND, "\x0b Backup Trophies to USB", 0);
-	ret[i].codes->options_count = 1;
-	ret[i].codes->options = _createOptions(2, "Save Trophies to USB", CMD_EXP_TROPHY_USB);
-	i++;
+	item = (save_entry_t *)malloc(sizeof(save_entry_t));
+	memset(item, 0, sizeof(save_entry_t));
+	asprintf(&item->name, "\x0b Export /dev_flash2");
+	asprintf(&item->path, "/dev_flash2/");
+	item->flags = SAVE_FLAG_PS3;
+	item->code_count = 1;
+	item->codes = (code_entry_t *)malloc(sizeof(code_entry_t) * item->code_count);
+	_setManualCode(item->codes, PATCH_COMMAND, "\x0c Zip /dev_flash2 to USB", 0);
+	item->codes->options_count = 1;
+	item->codes->options = _createOptions(2, "Save dev_flash2.zip to USB", CMD_EXP_FLASH2_USB);
+	list_append(list, item);
 
-	memset(&ret[i], 0, sizeof(save_entry_t));
-	asprintf(&ret[i].name, "\x0b Export /dev_flash2");
-	asprintf(&ret[i].path, "/dev_flash2/");
-	ret[i].flags = SAVE_FLAG_PS3;
-	ret[i].code_count = 1;
-	ret[i].codes = (code_entry_t *)malloc(sizeof(code_entry_t) * ret[i].code_count);
-	_setManualCode(ret[i].codes, PATCH_COMMAND, "\x0c Zip /dev_flash2 to USB", 0);
-	ret[i].codes->options_count = 1;
-	ret[i].codes->options = _createOptions(2, "Save dev_flash2.zip to USB", CMD_EXP_FLASH2_USB);
-	i++;
-
-	return ret;
+	return list;
 }
 
 int ReadBackupCodes(save_entry_t * bup)
@@ -891,69 +857,72 @@ int ReadBackupCodes(save_entry_t * bup)
  *	count:			number of game entries
  * Return:			void
  */
-void UnloadGameList(save_entry_t * list, int count)
+void UnloadGameList(list_t * list)
 {
-	if (list)
+	list_node_t *node = list_head(list);
+	save_entry_t *item;
+
+	while (node)
 	{
-		int x = 0, y = 0, z = 0;
-		for (x = 0; x < count; x++)
+		item = list_get(node);
+		int y = 0, z = 0;
+
+		if (item->name)
 		{
-			if (list[x].name)
-			{
-				free(list[x].name);
-				list[x].name = NULL;
-			}
+			free(item->name);
+			item->name = NULL;
+		}
 
-			if (list[x].path)
-			{
-				free(list[x].path);
-				list[x].path = NULL;
-			}
+		if (item->path)
+		{
+			free(item->path);
+			item->path = NULL;
+		}
 
-			if (list[x].title_id)
-			{
-				free(list[x].title_id);
-				list[x].title_id = NULL;
-			}
-			
-			if (list[x].codes)
-			{
-				for (y = 0; y < list[x].code_count; y++)
-				{
-					if (list[x].codes[y].codes)
-					{
-						free (list[x].codes[y].codes);
-						list[x].codes[y].codes = NULL;
-					}
-					if (list[x].codes[y].name)
-					{
-						free (list[x].codes[y].name);
-						list[x].codes[y].name = NULL;
-					}
-					if (list[x].codes[y].options && list[x].codes[y].options_count > 0)
-					{
-						for (z = 0; z < list[x].codes[y].options_count; z++)
-						{
-							if (list[x].codes[y].options[z].line)
-								free(list[x].codes[y].options[z].line);
-							if (list[x].codes[y].options[z].name)
-								free(list[x].codes[y].options[z].name);
-							if (list[x].codes[y].options[z].value)
-								free(list[x].codes[y].options[z].value);
-						}
-						
-						free (list[x].codes[y].options);
-					}
-				}
-				
-				free(list[x].codes);
-				list[x].codes = NULL;
-			}
+		if (item->title_id)
+		{
+			free(item->title_id);
+			item->title_id = NULL;
 		}
 		
-		free (list);
-		list = NULL;
+		if (item->codes)
+		{
+			for (y = 0; y < item->code_count; y++)
+			{
+				if (item->codes[y].codes)
+				{
+					free (item->codes[y].codes);
+					item->codes[y].codes = NULL;
+				}
+				if (item->codes[y].name)
+				{
+					free (item->codes[y].name);
+					item->codes[y].name = NULL;
+				}
+				if (item->codes[y].options && item->codes[y].options_count > 0)
+				{
+					for (z = 0; z < item->codes[y].options_count; z++)
+					{
+						if (item->codes[y].options[z].line)
+							free(item->codes[y].options[z].line);
+						if (item->codes[y].options[z].name)
+							free(item->codes[y].options[z].name);
+						if (item->codes[y].options[z].value)
+							free(item->codes[y].options[z].value);
+					}
+					
+					free (item->codes[y].options);
+				}
+			}
+			
+			free(item->codes);
+			item->codes = NULL;
+		}
+		
+		node = list_next(node);
 	}
+
+	list_free(list);
 	
 	LOG("UnloadGameList() :: Successfully unloaded game list");
 }
@@ -993,51 +962,46 @@ int qsortSaveList_Compare(const void* a, const void* b)
  *	gmc:			Set as the number of games read
  * Return:			Pointer to array of game_entry, null if failed
  */
-save_entry_t * ReadUserList(const char* userPath, int * gmc)
+list_t * ReadUserList(const char* userPath)
 {
 	DIR *d;
 	struct dirent *dir;
-	int save_count = getDirListSize(userPath);
+	save_entry_t *item;
+	list_t *list;
+	char sfoPath[256];
 
-	if (!save_count)
-		return NULL;
-
-	save_count++;
-	*gmc = save_count;
 	d = opendir(userPath);
 	
 	if (!d)
 		return NULL;
 
-	save_entry_t * ret = (save_entry_t *)malloc(sizeof(save_entry_t) * save_count);
+	list = list_alloc();
 
-	char sfoPath[256];
-	int cur_count = 0;
-
-	memset(&ret[cur_count], 0, sizeof(save_entry_t));
-	asprintf(&ret[cur_count].name, "\x0b Bulk Save Management");
-	ret[cur_count].flags = SAVE_FLAG_PS3;
+	item = (save_entry_t *)malloc(sizeof(save_entry_t));
+	memset(item, 0, sizeof(save_entry_t));
+	asprintf(&item->name, "\x0b Bulk Save Management");
+	item->flags = SAVE_FLAG_PS3;
 
 	if (strncmp(userPath, "/dev_hdd0/", 10) == 0)
 	{
-		ret[cur_count].code_count = 1;
-		ret[cur_count].codes = (code_entry_t *)malloc(sizeof(code_entry_t) * ret[cur_count].code_count);
-		asprintf(&ret[cur_count].path, SAVES_PATH_HDD, apollo_config.user_id);
+		item->code_count = 1;
+		item->codes = (code_entry_t *)malloc(sizeof(code_entry_t) * item->code_count);
+		asprintf(&item->path, SAVES_PATH_HDD, apollo_config.user_id);
 
-		_setManualCode(ret[cur_count].codes, PATCH_COMMAND, "\x0b Copy all Saves to USB", 0);
-		ret[cur_count].codes->options_count = 1;
-		ret[cur_count].codes->options = _createOptions(2, "Copy Saves to USB", CMD_COPY_SAVES_USB);
+		_setManualCode(item->codes, PATCH_COMMAND, "\x0b Copy all Saves to USB", 0);
+		item->codes->options_count = 1;
+		item->codes->options = _createOptions(2, "Copy Saves to USB", CMD_COPY_SAVES_USB);
 	}
 	else
 	{
-		ret[cur_count].code_count = 2;
-		ret[cur_count].codes = (code_entry_t *)malloc(sizeof(code_entry_t) * ret[cur_count].code_count);
-		asprintf(&ret[cur_count].path, "%s", userPath);
+		item->code_count = 2;
+		item->codes = (code_entry_t *)malloc(sizeof(code_entry_t) * item->code_count);
+		asprintf(&item->path, "%s", userPath);
 
-		_setManualCode(&ret[cur_count].codes[0], PATCH_COMMAND, "\x06 Resign & Unlock all Saves", CMD_RESIGN_SAVES_USB);
-		_setManualCode(&ret[cur_count].codes[1], PATCH_COMMAND, "\x0b Copy all Saves to HDD", CMD_COPY_SAVES_HDD);
+		_setManualCode(&item->codes[0], PATCH_COMMAND, "\x06 Resign & Unlock all Saves", CMD_RESIGN_SAVES_USB);
+		_setManualCode(&item->codes[1], PATCH_COMMAND, "\x0b Copy all Saves to HDD", CMD_COPY_SAVES_HDD);
 	}
-	cur_count++;
+	list_append(list, item);
 
 	while ((dir = readdir(d)) != NULL)
 	{
@@ -1056,34 +1020,35 @@ save_entry_t * ReadUserList(const char* userPath, int * gmc)
 				continue;
 			}
 
-			ret[cur_count].codes = NULL;
-			ret[cur_count].code_count = 0;
-			ret[cur_count].flags = SAVE_FLAG_PS3;
+			item = (save_entry_t *)malloc(sizeof(save_entry_t));
+			item->codes = NULL;
+			item->code_count = 0;
+			item->flags = SAVE_FLAG_PS3;
 
-			asprintf(&ret[cur_count].path, "%s%s/", userPath, dir->d_name);
-			asprintf(&ret[cur_count].title_id, "%.9s", dir->d_name);
+			asprintf(&item->path, "%s%s/", userPath, dir->d_name);
+			asprintf(&item->title_id, "%.9s", dir->d_name);
 
 			char *sfo_data = (char*) sfo_get_param_value(sfo, "TITLE");
-			asprintf(&ret[cur_count].name, "%s", sfo_data);
+			asprintf(&item->name, "%s", sfo_data);
 
 			sfo_data = (char*) sfo_get_param_value(sfo, "ATTRIBUTE");
-			ret[cur_count].flags |=	(sfo_data[0] ? SAVE_FLAG_LOCKED : 0);
+			item->flags |=	(sfo_data[0] ? SAVE_FLAG_LOCKED : 0);
 
 			sprintf(sfoPath, "%016lx", apollo_config.account_id);
 			sfo_data = (char*) sfo_get_param_value(sfo, "ACCOUNT_ID");
 			if (strncmp(sfo_data, sfoPath, 16) == 0)
-				ret[cur_count].flags |=	SAVE_FLAG_OWNER;
+				item->flags |=	SAVE_FLAG_OWNER;
 
 			sfo_free(sfo);
 				
-			LOG("[%s] F(%d) name '%s'", ret[cur_count].title_id, ret[cur_count].flags, ret[cur_count].name);
-			cur_count++;
+			LOG("[%s] F(%d) name '%s'", item->title_id, item->flags, item->name);
+			list_append(list, item);
 		}
 	}
-		
+
 	closedir(d);
 	
-	return ret;
+	return list;
 }
 
 /*
@@ -1095,8 +1060,10 @@ save_entry_t * ReadUserList(const char* userPath, int * gmc)
  *	gmc:			Set as the number of games read
  * Return:			Pointer to array of game_entry, null if failed
  */
-save_entry_t * ReadOnlineList(const char* urlPath, int * gmc)
+list_t * ReadOnlineList(const char* urlPath)
 {
+	list_t *list;
+	save_entry_t *item;
 	const char* path = APOLLO_LOCAL_CACHE "games.txt";
 
 	if (file_exists(path) == SUCCESS)
@@ -1120,27 +1087,9 @@ save_entry_t * ReadOnlineList(const char* urlPath, int * gmc)
 	char *ptr = data;
 	char *end = data + fsize + 1;
 
-	int game_count = 0;
+	list = list_alloc();
 
 	while (ptr < end && *ptr)
-	{
-		if (*ptr == '\n')
-		{
-			game_count++;
-		}
-		ptr++;
-	}
-	
-	if (!game_count)
-		return NULL;
-
-	save_entry_t * ret = (save_entry_t *)malloc(sizeof(save_entry_t) * game_count);
-	*gmc = game_count;
-
-	int cur_count = 0;    
-	ptr = data;
-	
-	while (ptr < end && *ptr && cur_count < game_count)
 	{
 		char* content = ptr;
 
@@ -1153,15 +1102,16 @@ save_entry_t * ReadOnlineList(const char* urlPath, int * gmc)
 //        LOG("ReadUserList() :: Reading %s...", content);
 		if (content[9] == '=')
 		{
-			memset(&ret[cur_count], 0, sizeof(save_entry_t));
-			ret[cur_count].flags = SAVE_FLAG_PS3;
-			asprintf(&ret[cur_count].title_id, "%.9s", content);
+			item = (save_entry_t *)malloc(sizeof(save_entry_t));
+			memset(item, 0, sizeof(save_entry_t));
+			item->flags = SAVE_FLAG_PS3;
+			asprintf(&item->title_id, "%.9s", content);
 
 			content += 10;
-			asprintf(&ret[cur_count].name, "%s", content);
+			asprintf(&item->name, "%s", content);
 
-			LOG("%d - [%s] %s", cur_count, ret[cur_count].title_id, ret[cur_count].name);
-			cur_count++;
+			LOG("+ [%s] %s", item->title_id, item->name);
+			list_append(list, item);
 		}
 
 		if (ptr < end && *ptr == '\r')
@@ -1176,7 +1126,7 @@ save_entry_t * ReadOnlineList(const char* urlPath, int * gmc)
 
 	if (data) free(data);
 
-	return ret;
+	return list;
 }
 
 /*
@@ -1188,14 +1138,14 @@ save_entry_t * ReadOnlineList(const char* urlPath, int * gmc)
  *	game:			Game to read
  * Return:			1 if selected, 0 if not selected
  */
-int isGameActivated(save_entry_t game)
+int isGameActivated(save_entry_t *game)
 {
 	int x = 0;
-	for (x = 0; x < game.code_count; x++)
+	for (x = 0; x < game->code_count; x++)
 	{
-		if (game.codes)
+		if (game->codes)
 		{
-			if (game.codes[x].activated)
+			if (game->codes[x].activated)
 				return 1;
 		}
 	}

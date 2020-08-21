@@ -1,3 +1,5 @@
+#include "list.h"
+
 #ifdef APOLLO_ENABLE_LOGGING
 #include <dbglogger.h>
 #define LOG dbglogger_log
@@ -149,22 +151,20 @@ typedef struct save_entry
 
 typedef struct
 {
-    save_entry_t * list;
-    int count;
+    list_t * list;
     char path[128];
     char* title;
     uint8_t icon_id;
     void (*UpdatePath)(char *);
     int (*ReadCodes)(save_entry_t *);
-    save_entry_t* (*ReadList)(const char*, int *);
+    list_t* (*ReadList)(const char*);
 } save_list_t;
 
-save_entry_t * ReadUserList(const char* userPath, int * gmc);
-save_entry_t * ReadOnlineList(const char* urlPath, int * gmc);
-save_entry_t * ReadBackupList(const char* userPath, int * gmc);
-void UnloadGameList(save_entry_t * list, int count);
-int isGameActivated(save_entry_t game);
-char * ParseActivatedGameList(save_entry_t * list, int count);
+list_t * ReadUserList(const char* userPath);
+list_t * ReadOnlineList(const char* urlPath);
+list_t * ReadBackupList(const char* userPath);
+void UnloadGameList(list_t * list);
+int isGameActivated(save_entry_t * game);
 char * readFile(const char * path, long* size);
 int qsortSaveList_Compare(const void* A, const void* B);
 int qsortCodeList_Compare(const void* A, const void* B);

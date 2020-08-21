@@ -24,5 +24,8 @@ size_t list_count(list_t *list);
 
 list_node_t * list_next(list_node_t *node);
 void * list_get(list_node_t *node);
+void * list_get_item(list_t *list, size_t item);
+
+void list_bubbleSort(list_t *list, int (*compar)(const void *, const void *));
 
 #endif /* !_LIST_H_ */
