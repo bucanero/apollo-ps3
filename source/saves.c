@@ -953,6 +953,67 @@ int qsortSaveList_Compare(const void* a, const void* b)
 	return strcasecmp(((save_entry_t*) a)->name, ((save_entry_t*) b)->name);
 }
 
+void read_savegames(const char* userPath, list_t *list, uint32_t flag)
+{
+	DIR *d;
+	struct dirent *dir;
+	save_entry_t *item;
+	char sfoPath[256];
+
+	d = opendir(userPath);
+	
+	if (!d)
+		return;
+
+	while ((dir = readdir(d)) != NULL)
+	{
+		if (dir->d_type != DT_DIR || strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0)
+			continue;
+
+		snprintf(sfoPath, sizeof(sfoPath), "%s%s/PARAM.SFO", userPath, dir->d_name);
+		if (file_exists(sfoPath) == SUCCESS)
+		{
+			LOG("Reading %s...", sfoPath);
+
+			sfo_context_t* sfo = sfo_alloc();
+			if (sfo_read(sfo, sfoPath) < 0) {
+				LOG("Unable to read from '%s'", sfoPath);
+				sfo_free(sfo);
+				continue;
+			}
+
+			item = (save_entry_t *)malloc(sizeof(save_entry_t));
+			item->codes = NULL;
+			item->code_count = 0;
+			item->flags = flag;
+
+			asprintf(&item->path, "%s%s/", userPath, dir->d_name);
+			asprintf(&item->title_id, "%.9s", dir->d_name);
+
+			char *sfo_data = (char*) sfo_get_param_value(sfo, "TITLE");
+			asprintf(&item->name, "%s", sfo_data);
+
+			if (flag & SAVE_FLAG_PS3)
+			{
+				sfo_data = (char*) sfo_get_param_value(sfo, "ATTRIBUTE");
+				item->flags |=	(sfo_data[0] ? SAVE_FLAG_LOCKED : 0);
+
+				sprintf(sfoPath, "%016lx", apollo_config.account_id);
+				sfo_data = (char*) sfo_get_param_value(sfo, "ACCOUNT_ID");
+				if (strncmp(sfo_data, sfoPath, 16) == 0)
+					item->flags |=	SAVE_FLAG_OWNER;
+			}
+
+			sfo_free(sfo);
+				
+			LOG("[%s] F(%d) name '%s'", item->title_id, item->flags, item->name);
+			list_append(list, item);
+		}
+	}
+
+	closedir(d);
+}
+
 /*
  * Function:		ReadUserList()
  * File:			saves.c
@@ -964,15 +1025,12 @@ int qsortSaveList_Compare(const void* a, const void* b)
  */
 list_t * ReadUserList(const char* userPath)
 {
-	DIR *d;
-	struct dirent *dir;
 	save_entry_t *item;
 	list_t *list;
-	char sfoPath[256];
+	char savePath[256];
+	char * save_paths[3];
 
-	d = opendir(userPath);
-	
-	if (!d)
+	if (dir_exists(userPath) != SUCCESS)
 		return NULL;
 
 	list = list_alloc();
@@ -991,6 +1049,10 @@ list_t * ReadUserList(const char* userPath)
 		_setManualCode(item->codes, PATCH_COMMAND, "\x0b Copy all Saves to USB", 0);
 		item->codes->options_count = 1;
 		item->codes->options = _createOptions(2, "Copy Saves to USB", CMD_COPY_SAVES_USB);
+
+		save_paths[0] = PS3_SAVES_PATH_HDD;
+		save_paths[1] = PS2_SAVES_PATH_HDD;
+		save_paths[2] = PSP_SAVES_PATH_HDD;
 	}
 	else
 	{
@@ -1000,53 +1062,21 @@ list_t * ReadUserList(const char* userPath)
 
 		_setManualCode(&item->codes[0], PATCH_COMMAND, "\x06 Resign & Unlock all Saves", CMD_RESIGN_SAVES_USB);
 		_setManualCode(&item->codes[1], PATCH_COMMAND, "\x0b Copy all Saves to HDD", CMD_COPY_SAVES_HDD);
+
+		save_paths[0] = PS3_SAVES_PATH_USB;
+		save_paths[1] = PS2_SAVES_PATH_USB;
+		save_paths[2] = PSP_SAVES_PATH_USB;
 	}
 	list_append(list, item);
 
-	while ((dir = readdir(d)) != NULL)
-	{
-		if (dir->d_type != DT_DIR || strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0)
-			continue;
+	snprintf(savePath, sizeof(savePath), "%s%s", userPath, save_paths[0]);
+	read_savegames(savePath, list, SAVE_FLAG_PS3);
 
-		snprintf(sfoPath, sizeof(sfoPath), "%s%s/PARAM.SFO", userPath, dir->d_name);
-		if (file_exists(sfoPath) == SUCCESS)
-		{
-			LOG("ReadUserList() :: Reading %s...", dir->d_name);
+	snprintf(savePath, sizeof(savePath), "%s%s", userPath, save_paths[1]);
+	read_savegames(savePath, list, SAVE_FLAG_PS2);
 
-			sfo_context_t* sfo = sfo_alloc();
-			if (sfo_read(sfo, sfoPath) < 0) {
-				LOG("Unable to read from '%s'", sfoPath);
-				sfo_free(sfo);
-				continue;
-			}
-
-			item = (save_entry_t *)malloc(sizeof(save_entry_t));
-			item->codes = NULL;
-			item->code_count = 0;
-			item->flags = SAVE_FLAG_PS3;
-
-			asprintf(&item->path, "%s%s/", userPath, dir->d_name);
-			asprintf(&item->title_id, "%.9s", dir->d_name);
-
-			char *sfo_data = (char*) sfo_get_param_value(sfo, "TITLE");
-			asprintf(&item->name, "%s", sfo_data);
-
-			sfo_data = (char*) sfo_get_param_value(sfo, "ATTRIBUTE");
-			item->flags |=	(sfo_data[0] ? SAVE_FLAG_LOCKED : 0);
-
-			sprintf(sfoPath, "%016lx", apollo_config.account_id);
-			sfo_data = (char*) sfo_get_param_value(sfo, "ACCOUNT_ID");
-			if (strncmp(sfo_data, sfoPath, 16) == 0)
-				item->flags |=	SAVE_FLAG_OWNER;
-
-			sfo_free(sfo);
-				
-			LOG("[%s] F(%d) name '%s'", item->title_id, item->flags, item->name);
-			list_append(list, item);
-		}
-	}
-
-	closedir(d);
+	snprintf(savePath, sizeof(savePath), "%s%s", userPath, save_paths[2]);
+	read_savegames(savePath, list, SAVE_FLAG_PSP);
 	
 	return list;
 }

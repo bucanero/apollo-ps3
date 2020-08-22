@@ -546,17 +546,17 @@ void LoadSounds()
 
 void update_usb_path(char* path)
 {
-	if (dir_exists(SAVES_PATH_USB0) == SUCCESS)
-		strcpy(path, SAVES_PATH_USB0);
-	else if (dir_exists(SAVES_PATH_USB1) == SUCCESS)
-		strcpy(path, SAVES_PATH_USB1);
+	if (dir_exists(USB0_PATH) == SUCCESS)
+		strcpy(path, USB0_PATH);
+	else if (dir_exists(USB1_PATH) == SUCCESS)
+		strcpy(path, USB1_PATH);
 	else
 		strcpy(path, "");
 }
 
 void update_hdd_path(char* path)
 {
-	sprintf(path, SAVES_PATH_HDD, apollo_config.user_id);
+	sprintf(path, USER_PATH_HDD, apollo_config.user_id);
 }
 
 int ReloadUserSaves(save_list_t* save_list)
@@ -591,6 +591,9 @@ code_entry_t* LoadSaveDetails()
 {
 	char sfoPath[256];
 	code_entry_t* centry = calloc(1, sizeof(code_entry_t));
+
+	if (!(selected_entry->flags & SAVE_FLAG_PS3))
+		return(centry);
 
 	snprintf(sfoPath, sizeof(sfoPath), "%s" "PARAM.SFO", selected_entry->path);
 	LOG("Save Details :: Reading %s...", sfoPath);

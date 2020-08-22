@@ -16,9 +16,19 @@
 #define USB0_PATH               "/dev_usb000/"
 #define USB1_PATH               "/dev_usb001/"
 #define USER_PATH_HDD			"/dev_hdd0/home/%08d/"
-#define SAVES_PATH_USB0			USB0_PATH "PS3/SAVEDATA/"
-#define SAVES_PATH_USB1			USB1_PATH "PS3/SAVEDATA/"
-#define SAVES_PATH_HDD			USER_PATH_HDD "savedata/"
+
+#define PS3_SAVES_PATH_USB      "PS3/SAVEDATA/"
+#define PS2_SAVES_PATH_USB      "PS3/EXPORT/PS2SD/"
+#define PSP_SAVES_PATH_USB      "PSP/SAVEDATA/"
+
+#define PS3_SAVES_PATH_HDD      "savedata/"
+#define PS2_SAVES_PATH_HDD      "ps2emu2_savedata/"
+#define PSP_SAVES_PATH_HDD      "minis_savedata/"
+
+#define SAVES_PATH_USB0         USB0_PATH PS3_SAVES_PATH_USB
+#define SAVES_PATH_USB1         USB1_PATH PS3_SAVES_PATH_USB
+#define SAVES_PATH_HDD          USER_PATH_HDD PS3_SAVES_PATH_HDD
+
 #define TROPHY_PATH_HDD			USER_PATH_HDD "trophy/"
 #define EXDATA_PATH_HDD			USER_PATH_HDD "exdata/"
 
