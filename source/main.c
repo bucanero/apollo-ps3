@@ -160,7 +160,6 @@ save_list_t hdd_saves = {
 	.icon_id = cat_hdd_png_index,
 	.title = "HDD Saves",
     .list = NULL,
-    .count = 0,
     .path = "",
     .ReadList = &ReadUserList,
     .ReadCodes = &ReadCodes,
@@ -174,7 +173,6 @@ save_list_t usb_saves = {
 	.icon_id = cat_usb_png_index,
 	.title = "USB Saves",
     .list = NULL,
-    .count = 0,
     .path = "",
     .ReadList = &ReadUserList,
     .ReadCodes = &ReadCodes,
@@ -188,7 +186,6 @@ save_list_t online_saves = {
 	.icon_id = cat_db_png_index,
 	.title = "Online Database",
     .list = NULL,
-    .count = 0,
     .path = ONLINE_URL "PS3/",
     .ReadList = &ReadOnlineList,
     .ReadCodes = &ReadOnlineSaves,
@@ -202,7 +199,6 @@ save_list_t user_backup = {
     .icon_id = cat_bup_png_index,
     .title = "User Data Backup",
     .list = NULL,
-    .count = 0,
     .path = "",
     .ReadList = &ReadBackupList,
     .ReadCodes = &ReadBackupCodes,
@@ -569,17 +565,16 @@ int ReloadUserSaves(save_list_t* save_list)
 
 	if (save_list->list)
 	{
-		UnloadGameList(save_list->list, save_list->count);
-		save_list->count = 0;
+		UnloadGameList(save_list->list);
 		save_list->list = NULL;
 	}
 
 	if (save_list->UpdatePath)
 		save_list->UpdatePath(save_list->path);
 
-	save_list->list = save_list->ReadList(save_list->path, &(save_list->count));
+	save_list->list = save_list->ReadList(save_list->path);
 	if (apollo_config.doSort)
-		qsort(save_list->list, save_list->count, sizeof(save_entry_t), &qsortSaveList_Compare);
+		list_bubbleSort(save_list->list, &qsortSaveList_Compare);
 
     stop_loading_screen();
 
@@ -589,7 +584,7 @@ int ReloadUserSaves(save_list_t* save_list)
 		return 0;
 	}
 
-	return save_list->count;
+	return list_count(save_list->list);
 }
 
 code_entry_t* LoadSaveDetails()
@@ -746,10 +741,11 @@ void SetMenu(int id)
 	menu_sel = menu_old_sel[menu_id];
 }
 
-void move_letter_back(save_entry_t * games, int game_count)
+void move_letter_back(list_t * games)
 {
 	int i;
-	char ch = toupper(games[menu_sel].name[0]);
+	save_entry_t *game = list_get_item(games, menu_sel);
+	char ch = toupper(game->name[0]);
 
 	if ((ch > '\x29') && (ch < '\x40'))
 	{
@@ -757,23 +753,31 @@ void move_letter_back(save_entry_t * games, int game_count)
 		return;
 	}
 
-	for (i = menu_sel; (i > 0) && (ch == toupper(games[i].name[0])); i--) {}
+	for (i = menu_sel; (i > 0) && (ch == toupper(game->name[0])); i--)
+	{
+		game = list_get_item(games, i-1);
+	}
 
 	menu_sel = i;
 }
 
-void move_letter_fwd(save_entry_t * games, int game_count)
+void move_letter_fwd(list_t * games)
 {
 	int i;
-	char ch = toupper(games[menu_sel].name[0]);
+	int game_count = list_count(games) - 1;
+	save_entry_t *game = list_get_item(games, menu_sel);
+	char ch = toupper(game->name[0]);
 
 	if (ch == 'Z')
 	{
-		menu_sel = game_count - 1;
+		menu_sel = game_count;
 		return;
 	}
 	
-	for (i = menu_sel; (i < game_count - 2) && (ch == toupper(games[i].name[0])); i++) {}
+	for (i = menu_sel; (i < game_count) && (ch == toupper(game->name[0])); i++)
+	{
+		game = list_get_item(games, i+1);
+	}
 
 	menu_sel = i;
 }
@@ -801,28 +805,28 @@ void doSaveMenu(save_list_t * save_list)
     if(readPad(0))
     {
     	if(paddata[0].BTN_UP)
-    		move_selection_back(save_list->count, 1);
+    		move_selection_back(list_count(save_list->list), 1);
     
     	else if(paddata[0].BTN_DOWN)
-    		move_selection_fwd(save_list->count, 1);
+    		move_selection_fwd(list_count(save_list->list), 1);
     
     	else if (paddata[0].BTN_LEFT)
-    		move_selection_back(save_list->count, 5);
+    		move_selection_back(list_count(save_list->list), 5);
     
     	else if (paddata[0].BTN_L1)
-    		move_selection_back(save_list->count, 25);
+    		move_selection_back(list_count(save_list->list), 25);
     
     	else if (paddata[0].BTN_L2)
-    		move_letter_back(save_list->list, save_list->count);
+    		move_letter_back(save_list->list);
     
     	else if (paddata[0].BTN_RIGHT)
-    		move_selection_fwd(save_list->count, 5);
+    		move_selection_fwd(list_count(save_list->list), 5);
     
     	else if (paddata[0].BTN_R1)
-    		move_selection_fwd(save_list->count, 25);
+    		move_selection_fwd(list_count(save_list->list), 25);
     
     	else if (paddata[0].BTN_R2)
-    		move_letter_fwd(save_list->list, save_list->count);
+    		move_letter_fwd(save_list->list);
     
     	else if (paddata[0].BTN_CIRCLE)
     	{
@@ -831,20 +835,21 @@ void doSaveMenu(save_list_t * save_list)
     	}
     	else if (paddata[0].BTN_CROSS)
     	{
-    		if (!save_list->list[menu_sel].codes)
-    			save_list->ReadCodes(&save_list->list[menu_sel]);
+			selected_entry = list_get_item(save_list->list, menu_sel);
+
+    		if (!selected_entry->codes)
+    			save_list->ReadCodes(selected_entry);
 
     		if (apollo_config.doSort && 
 				((save_list->icon_id == cat_bup_png_index) || (save_list->icon_id == cat_db_png_index)))
-    			qsort(save_list->list[menu_sel].codes, save_list->list[menu_sel].code_count, sizeof(code_entry_t), &qsortCodeList_Compare);
+    			qsort(selected_entry->codes, selected_entry->code_count, sizeof(code_entry_t), &qsortCodeList_Compare);
 
-    		selected_entry = &save_list->list[menu_sel];
     		SetMenu(MENU_PATCHES);
     		return;
     	}
     	else if (paddata[0].BTN_TRIANGLE && save_list->UpdatePath)
     	{
-    		selected_entry = &save_list->list[menu_sel];
+			selected_entry = list_get_item(save_list->list, menu_sel);
     		SetMenu(MENU_SAVE_DETAILS);
     		return;
     	}
