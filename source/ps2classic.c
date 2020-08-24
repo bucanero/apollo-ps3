@@ -27,8 +27,11 @@
 #define PS2_VMC_ENCRYPT             1
 #define PS2_VMC_DECRYPT             0
 
-#define PS2_VMC_RAW_SIZE            0x800000
-#define PS2_VMC_ECC_SIZE            0x40000
+#define PS2_VMC_RAW_8MB             0x800000
+#define PS2_VMC_RAW_16MB            0x1000000
+#define PS2_VMC_RAW_32MB            0x2000000
+#define PS2_VMC_RAW_64MB            0x4000000
+#define PS2_VMC_ECC_SIZE(x)         x/32
 #define PS2_VMC_DATASIZE            512
 
 #define be32(x)                     *(u32*)(x)
