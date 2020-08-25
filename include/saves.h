@@ -20,6 +20,7 @@
 #define PS3_SAVES_PATH_USB      "PS3/SAVEDATA/"
 #define PS2_SAVES_PATH_USB      "PS3/EXPORT/PS2SD/"
 #define PSP_SAVES_PATH_USB      "PSP/SAVEDATA/"
+#define PSV_SAVES_PATH_USB      "PS3/EXPORT/PSV/"
 
 #define PS3_SAVES_PATH_HDD      "savedata/"
 #define PS2_SAVES_PATH_HDD      "ps2emu2_savedata/"
@@ -38,8 +39,16 @@
 #define EXPORT_RAP_PATH_USB1    EXPORT_PATH_USB1 "exdata/"
 #define EXPORT_RAP_PATH_HDD     "/dev_hdd0/exdata/"
 
+#define EXP_PS2_PATH_USB0       USB0_PATH "PS2/VMC/"
+#define EXP_PS2_PATH_USB1       USB1_PATH "PS2/VMC/"
+#define EXP_PS2_PATH_HDD        "/dev_hdd0/savedata/vmc/"
+
 #define IMPORT_RAP_PATH_USB0    USB0_PATH "exdata/"
 #define IMPORT_RAP_PATH_USB1    USB1_PATH "exdata/"
+
+#define IMPORT_PS2_PATH_USB0    USB0_PATH "PS2ISO/"
+#define IMPORT_PS2_PATH_USB1    USB1_PATH "PS2ISO/"
+#define IMPORT_PS2_PATH_HDD     "/dev_hdd0/PS2ISO/"
 
 #define ONLINE_URL				"http://apollo-db.psdev.tk/"
 #define ONLINE_CACHE_TIMEOUT    24*3600     // 1-day local cache
@@ -60,6 +69,9 @@ enum cmd_code_enum
     CMD_EXPORT_ZIP_USB,
     CMD_EXPORT_ZIP_HDD,
     CMD_VIEW_DETAILS,
+    CMD_RESIGN_PSV,
+    CMD_DECRYPT_PS2_VME,
+    CMD_ENCRYPT_PS2_VMC,
 
 // Bulk commands
     CMD_RESIGN_SAVES_USB,
@@ -76,6 +88,7 @@ enum cmd_code_enum
 // Import commands
     CMD_IMP_EXDATA_USB,
     CMD_IMP_TROPHY_USB,
+    CMD_IMP_PS2ISO_USB,
 
 // SFO patches
     SFO_UNLOCK_COPY,
@@ -94,6 +107,8 @@ enum cmd_code_enum
 #define SAVE_FLAG_PSV           64
 #define SAVE_FLAG_RIF           128
 #define SAVE_FLAG_RAP           256
+#define SAVE_FLAG_ISO           512
+#define SAVE_FLAG_BINENC        1024
 
 enum char_flag_enum
 {
@@ -207,7 +222,7 @@ int rap2rif(const uint8_t* idps_key, const char* exdata_path, const char* rap_fi
 
 int create_savegame_folder(const char* folder);
 
-void ps2_encrypt_image(uint8_t dex_mode, const char* image_name, const char* data_file);
+void ps2_encrypt_image(uint8_t dex_mode, const char* image_name, const char* data_file, char* msg_update);
 void ps2_decrypt_image(uint8_t dex_mode, const uint8_t* klicensee, const char* image_name, const char* data_file);
 void ps2_crypt_vmc(uint8_t dex_mode, const char* vmc_path, const char* vmc_out, int crypt_mode);
 int psv_resign(const char *src_psv);

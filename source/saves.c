@@ -419,6 +419,59 @@ option_entry_t* _getSaveTitleIDs(const char* title_id)
 	return opt;
 }
 
+int set_psp_codes(save_entry_t* item)
+{
+	int i = 0;
+
+	item->code_count = 1;
+	item->codes = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (item->code_count));
+
+	_setManualCode(&item->codes[i++], PATCH_COMMAND, "\x07 View Save Details", CMD_VIEW_DETAILS);
+
+	return item->code_count;
+}
+
+int set_psv_codes(save_entry_t* item)
+{
+	int i = 0;
+
+	item->code_count = 2;
+	item->codes = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (item->code_count));
+
+	_setManualCode(&item->codes[i++], PATCH_COMMAND, "\x06 Resign PSV", CMD_RESIGN_PSV);
+	_setManualCode(&item->codes[i++], PATCH_COMMAND, "\x07 View Save Details", CMD_VIEW_DETAILS);
+
+	return item->code_count;
+}
+
+int set_ps2_codes(save_entry_t* item)
+{
+	int i = 0;
+
+	item->code_count = 3;
+	item->codes = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (item->code_count));
+
+	_setManualCode(&item->codes[i], PATCH_COMMAND, "\x0b Decrypt SCEVMC0.VME", 0);
+	asprintf(&item->codes[i].file, "SCEVMC0.VME");
+	item->codes[i].options_count = 1;
+	item->codes[i].options = _createOptions(3, "Decrypt SCEVMC0.VME to USB", CMD_DECRYPT_PS2_VME);
+	asprintf(&item->codes[i].options->name[2], "Decrypt SCEVMC0.VME to HDD");
+	asprintf(&item->codes[i].options->value[2], "%c%c", CMD_DECRYPT_PS2_VME, 2);
+	i++;
+
+	_setManualCode(&item->codes[i], PATCH_COMMAND, "\x0b Decrypt SCEVMC1.VME", 0);
+	asprintf(&item->codes[i].file, "SCEVMC1.VME");
+	item->codes[i].options_count = 1;
+	item->codes[i].options = _createOptions(3, "Decrypt SCEVMC1.VME to USB", CMD_DECRYPT_PS2_VME);
+	asprintf(&item->codes[i].options->name[2], "Decrypt SCEVMC1.VME to HDD");
+	asprintf(&item->codes[i].options->value[2], "%c%c", CMD_DECRYPT_PS2_VME, 2);
+	i++;
+
+	_setManualCode(&item->codes[i++], PATCH_COMMAND, "\x07 View Save Details", CMD_VIEW_DETAILS);
+
+	return item->code_count;
+}
+
 /*
  * Function:		ReadLocalCodes()
  * File:			saves.c
@@ -438,6 +491,15 @@ int ReadCodes(save_entry_t * save)
 	char group = 0;
 	long bufferLen;
 	char * buffer = NULL;
+
+	if (save->flags & SAVE_FLAG_PSV)
+		return set_psv_codes(save);
+
+	if (save->flags & SAVE_FLAG_PS2)
+		return set_ps2_codes(save);
+
+	if (save->flags & SAVE_FLAG_PSP)
+		return set_psp_codes(save);
 
 	snprintf(filePath, sizeof(filePath), APOLLO_DATA_PATH "%s.ps3savepatch", save->title_id);
 
@@ -725,6 +787,34 @@ list_t * ReadBackupList(const char* userPath)
 
 	item = (save_entry_t *)malloc(sizeof(save_entry_t));
 	memset(item, 0, sizeof(save_entry_t));
+	asprintf(&item->name, "\x0b Import/Encrypt PS2 ISOs (USB 0)");
+	asprintf(&item->path, IMPORT_PS2_PATH_USB0);
+	item->flags = SAVE_FLAG_PS2 | SAVE_FLAG_ISO;
+	list_append(list, item);
+
+	item = (save_entry_t *)malloc(sizeof(save_entry_t));
+	memset(item, 0, sizeof(save_entry_t));
+	asprintf(&item->name, "\x0b Import/Encrypt PS2 ISOs (USB 1)");
+	asprintf(&item->path, IMPORT_PS2_PATH_USB1);
+	item->flags = SAVE_FLAG_PS2 | SAVE_FLAG_ISO;
+	list_append(list, item);
+
+	item = (save_entry_t *)malloc(sizeof(save_entry_t));
+	memset(item, 0, sizeof(save_entry_t));
+	asprintf(&item->name, "\x0b Import/Encrypt PS2 ISOs (HDD)");
+	asprintf(&item->path, IMPORT_PS2_PATH_HDD);
+	item->flags = SAVE_FLAG_PS2 | SAVE_FLAG_ISO;
+	list_append(list, item);
+
+	item = (save_entry_t *)malloc(sizeof(save_entry_t));
+	memset(item, 0, sizeof(save_entry_t));
+	asprintf(&item->name, "\x0b Export/Decrypt PS2 BIN.ENCs");
+	asprintf(&item->path, IMPORT_PS2_PATH_HDD);
+	item->flags = SAVE_FLAG_PS2 | SAVE_FLAG_BINENC;
+	list_append(list, item);
+
+	item = (save_entry_t *)malloc(sizeof(save_entry_t));
+	memset(item, 0, sizeof(save_entry_t));
 	asprintf(&item->name, "\x0b Export Trophies");
 	asprintf(&item->path, TROPHY_PATH_HDD, apollo_config.user_id);
 	item->flags = SAVE_FLAG_PS3;
@@ -750,10 +840,65 @@ list_t * ReadBackupList(const char* userPath)
 	return list;
 }
 
+int get_iso_files(save_entry_t * item)
+{
+	int i = 0;
+	DIR *d;
+	struct dirent *dir;
+
+	item->code_count  = getDirListSizeByExt(item->path, ".iso");
+	item->code_count += getDirListSizeByExt(item->path, ".ISO");
+	item->code_count += getDirListSizeByExt(item->path, ".bin");
+	item->code_count += getDirListSizeByExt(item->path, ".BIN");
+
+	if (!item->code_count)
+		return 0;
+
+	item->codes = (code_entry_t *)malloc(sizeof(code_entry_t) * item->code_count);
+
+	d = opendir(item->path);
+
+	if (d)
+	{
+		while ((dir = readdir(d)) != NULL)
+		{
+			if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0  && i < item->code_count &&
+				(endsWith(dir->d_name, ".iso") || endsWith(dir->d_name, ".ISO") ||
+				 endsWith(dir->d_name, ".bin") || endsWith(dir->d_name, ".BIN")))
+			{
+				memset(&item->codes[i], 0, sizeof(code_entry_t));
+				item->codes[i].type = PATCH_COMMAND;
+
+				asprintf(&item->codes[i].name, "Encode %s", dir->d_name);
+				asprintf(&item->codes[i].codes, "%c", CMD_IMP_PS2ISO_USB);
+
+				asprintf(&item->codes[i].file, dir->d_name);
+
+				LOG("[%d] File '%s'", i, item->codes[i].file);
+				i++;
+			}
+		}
+		closedir(d);
+	}
+
+	return item->code_count;
+}
+
+int get_binenc_files(save_entry_t * item)
+{
+	return 0;
+}
+
 int ReadBackupCodes(save_entry_t * bup)
 {
 	int bup_count = 0;
 	char fext[5] = "";
+
+	if (bup->flags & SAVE_FLAG_ISO)
+		return get_iso_files(bup);
+
+	if (bup->flags & SAVE_FLAG_BINENC)
+		return get_binenc_files(bup);
 
 	if (bup->flags & SAVE_FLAG_RIF)
 	{
@@ -961,7 +1106,7 @@ void read_savegames(const char* userPath, list_t *list, uint32_t flag)
 	char sfoPath[256];
 
 	d = opendir(userPath);
-	
+
 	if (!d)
 		return;
 
@@ -1009,6 +1154,67 @@ void read_savegames(const char* userPath, list_t *list, uint32_t flag)
 			LOG("[%s] F(%d) name '%s'", item->title_id, item->flags, item->name);
 			list_append(list, item);
 		}
+	}
+
+	closedir(d);
+}
+
+void read_psv_savegames(const char* userPath, list_t *list)
+{
+	DIR *d;
+	struct dirent *dir;
+	save_entry_t *item;
+	char psvPath[256];
+	char data[0x100];
+
+	d = opendir(userPath);
+
+	if (!d)
+		return;
+
+	while ((dir = readdir(d)) != NULL)
+	{
+		if (!endsWith(dir->d_name, ".PSV") || strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0)
+			continue;
+
+		snprintf(psvPath, sizeof(psvPath), "%s%s", userPath, dir->d_name);
+		LOG("Reading %s...", psvPath);
+
+		FILE *psvf = fopen(psvPath, "rb");
+		if (!psvf) {
+			LOG("Unable to open '%s'", psvPath);
+			continue;
+		}
+
+		fread(data, 1, sizeof(data), psvf);
+		if (memcmp(data, "\x00VSP", 4) != 0)
+		{
+			LOG("Not a PSV file");
+			fclose(psvf);
+			continue;
+		}
+
+		uint8_t type = data[0x3C];
+		uint32_t pos = ES32(*(uint32_t*)(data + 0x44));
+
+		fseek(psvf, pos, SEEK_SET);
+		fread(data, 1, sizeof(data), psvf);
+		fclose(psvf);
+
+		item = (save_entry_t *)malloc(sizeof(save_entry_t));
+		item->codes = NULL;
+		item->code_count = 0;
+		item->flags = SAVE_FLAG_PSV;
+
+		asprintf(&item->path, "%s%s", userPath, dir->d_name);
+		asprintf(&item->title_id, "%.12s", dir->d_name);
+
+		//PS2 Title offset 0xC0
+		//PS1 Title offset 0x04
+		item->name = sjis2utf8(data + (type == 1 ? 0x04 : 0xC0));
+			
+		LOG("[%s] F(%d) name '%s'", item->title_id, item->flags, item->name);
+		list_append(list, item);
 	}
 
 	closedir(d);
@@ -1077,7 +1283,13 @@ list_t * ReadUserList(const char* userPath)
 
 	snprintf(savePath, sizeof(savePath), "%s%s", userPath, save_paths[2]);
 	read_savegames(savePath, list, SAVE_FLAG_PSP);
-	
+
+	if (strncmp(userPath, "/dev_usb00", 10) == 0)
+	{
+		snprintf(savePath, sizeof(savePath), "%s%s", userPath, PSV_SAVES_PATH_USB);
+		read_psv_savegames(savePath, list);
+	}
+
 	return list;
 }
 

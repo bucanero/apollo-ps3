@@ -252,6 +252,73 @@ void exportFlashZip(const char* exp_path)
 	stop_loading_screen();
 }
 
+void resignPSVfile(const char* psv_path)
+{
+	init_loading_screen("Resigning PSV file...");
+	psv_resign(psv_path);
+	stop_loading_screen();
+}
+
+void decryptVMEfile(const char* vme_path, const char* vme_file, uint8_t dst)
+{
+	char vmefile[256];
+	char outfile[256];
+	char *path;
+
+	switch (dst)
+	{
+	case 0:
+		path = EXP_PS2_PATH_USB0;
+		break;
+
+	case 1:
+		path = EXP_PS2_PATH_USB1;
+		break;
+
+	case 2:
+		path = EXP_PS2_PATH_HDD;
+		break;
+
+	default:
+		return;
+	}
+
+	if (mkdirs(path) != SUCCESS)
+	{
+		show_message("Error! Export folder is not available");
+		return;
+	}
+
+	snprintf(vmefile, sizeof(vmefile), "%s%s", vme_path, vme_file);
+	snprintf(outfile, sizeof(outfile), "%sAPOLLO%c.VM2", path, vme_file[6]);
+
+	init_loading_screen("Decrypting VME card...");
+	ps2_crypt_vmc(0, vmefile, outfile, 0);
+	stop_loading_screen();
+}
+
+void importPS2classics(const char* iso_path, const char* iso_file)
+{
+	char ps2file[256];
+	char outfile[256];
+	char msg[128] = "Encrypting PS2 ISO...";
+
+	snprintf(ps2file, sizeof(ps2file), "%s%s", iso_path, iso_file);
+	snprintf(outfile, sizeof(outfile), IMPORT_PS2_PATH_HDD "%s", iso_file);
+	*strrchr(outfile, '.') = 0;
+	strcat(outfile, "/ISO.BIN.ENC");
+
+	if (mkdirs(outfile) != SUCCESS)
+	{
+		show_message("Error! Export folder is not available");
+		return;
+	}
+
+	init_loading_screen(msg);
+	ps2_encrypt_image(0, ps2file, outfile, msg);
+	stop_loading_screen();
+}
+
 void exportFolder(const char* src_path, const char* exp_path, const char* msg)
 {
 	char* save_path;
@@ -706,6 +773,21 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_COPY_SAVES_HDD:
 			copyAllSavesHDD(selected_entry->path);
+			code->activated = 0;
+			break;
+
+		case CMD_RESIGN_PSV:
+			resignPSVfile(selected_entry->path);
+			code->activated = 0;
+			break;
+
+		case CMD_DECRYPT_PS2_VME:
+			decryptVMEfile(selected_entry->path, code->file, codecmd[1]);
+			code->activated = 0;
+			break;
+
+		case CMD_IMP_PS2ISO_USB:
+			importPS2classics(selected_entry->path, code->file);
 			code->activated = 0;
 			break;
 

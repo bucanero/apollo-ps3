@@ -508,7 +508,7 @@ void ps2_decrypt_image(u8 dex_mode, const u8* klicensee, const char* image_name,
 	fclose(meta_out);
 }
 
-void ps2_encrypt_image(u8 dex_mode, const char* image_name, const char* data_file)
+void ps2_encrypt_image(u8 dex_mode, const char* image_name, const char* data_file, char* msg_update)
 {
 	FILE * in;
 	FILE * data_out;
@@ -613,9 +613,10 @@ void ps2_encrypt_image(u8 dex_mode, const char* image_name, const char* data_fil
 		fwrite(data_buffer, segment_size, num_child_segments, data_out);
 		
 		c += read;
-		if(c >= flush_size) {
+		if(msg_update && c >= flush_size) {
 			percent += 1;
 			encr_size = encr_size + c;
+			sprintf(msg_update, "Encrypted: %ld%% (%d Blocks)", (100*encr_size)/data_size, percent);
 			LOG("Encrypted: %d Blocks 0x%08lx", percent, encr_size);
 			c = 0;
 		}
