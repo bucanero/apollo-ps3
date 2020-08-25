@@ -685,12 +685,17 @@ void ps2_crypt_vmc(u8 dex_mode, const char* vmc_path, const char* vmc_out, int c
 
 	}
 
+	long sz = ftell(data_out);
+
 	//cleanup
 	free(data_buffer);
 
 	fclose(in);
 	fclose(data_out);
 	
+	// Remove hashes
+	if (crypt_mode == PS2_VMC_DECRYPT)
+		truncate(vmc_out, sz - 0x4000);
 }
 
 /*

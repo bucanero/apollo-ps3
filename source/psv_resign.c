@@ -13,12 +13,14 @@
 #include <polarssl/sha1.h>
 
 #include "types.h"
+#include "util.h"
+#include "shiftjis.h"
 
 #define PSV_SEED_OFFSET 0x8
 #define PSV_HASH_OFFSET 0x1C
 #define PSV_TYPE_OFFSET 0x3C
 
-#define PSV_MAGIC       "\x00\x56\x53\x50"
+#define PSV_MAGIC       "\x00VSP"
 
 const uint8_t psv_ps2key[0x10] = {
 	0xFA, 0x72, 0xCE, 0xEF, 0x59, 0xB4, 0xD2, 0x98, 0x9F, 0x11, 0x19, 0x13, 0x28, 0x7F, 0x51, 0xC7
@@ -118,31 +120,26 @@ void generateHash(uint8_t *input, uint8_t *dest, size_t sz, uint8_t type)
 	sha1_free(&sha1_ctx);
 }
 
-int psv_resign(const char *src_psv, const char *dst_psv)
+int psv_resign(const char *src_psv)
 {
+	size_t sz;
+	uint8_t *input;
+
 	LOG("\n=====ps3-psvresigner by @dots_tb=====");
 //	LOG("\nWith CBPS help especially: @AnalogMan151, @teakhanirons, Silica, @nyaaasen, and @notzecoxao\n");
 //	LOG("Resigns non-console specific PS3 PSV savefiles. PSV files embed PS1 and PS2 save data. This does not inject!\n\n");
 
-	FILE *fin = 0, *fout = 0;
-	fin = fopen(src_psv, "rb");
-	if (!fin) {
+	if (read_buffer(src_psv, &input, &sz) < 0) {
 		LOG("Failed to open input file");
-		goto error;
+		return 0;
 	}
 
-	fseek(fin, 0, SEEK_END);
-	size_t sz = ftell(fin);
 	LOG("File SZ: %lx\n", sz);
-	fseek(fin, 0, SEEK_SET);
-	
-	uint8_t *input = (unsigned char*) calloc (1, sz);
-	fread(input, sz,1,fin);
-	
+
 	if (memcmp(input, PSV_MAGIC, 4) != 0) {
 		LOG("Not a PSV file");
 		free(input);
-		goto error;
+		return 0;
 	}
 	
 	LOG("Old signature: ");
@@ -157,22 +154,272 @@ int psv_resign(const char *src_psv, const char *dst_psv)
 		LOG("%02X ", input[PSV_HASH_OFFSET + i]);
 	}
 
-	fout = fopen(dst_psv, "wb");
-	if (!fout) {
+	if (write_buffer(src_psv, input, sz) < 0) {
 		LOG("Failed to open output file");
 		free(input);
-		goto error;
+		return 0;
 	}
-	fwrite(input,  1, sz, fout);
+
 	free(input);
-	LOG("PSV resigned successfully: %s\n", dst_psv);
+	LOG("PSV resigned successfully: %s\n", src_psv);
 
+	return 1;
+}
 
-error:
-	if (fin)
-		fclose(fin);
-	if (fout)
-		fclose(fout);	
+//Convert Shift-JIS characters to ASCII equivalent
+void sjis2ascii(char* bData)
+{
+	uint16_t ch;
+	int i, j = 0;
+	int len = strlen(bData);
+	
+	for (i = 0; i < len; i += 2)
+	{
+		ch = (bData[i]<<8) | bData[i+1];
 
-	return 0;
+		// 'A' .. 'Z'
+		// '0' .. '9'
+		if ((ch >= 0x8260 && ch <= 0x8279) || (ch >= 0x824F && ch <= 0x8258))
+		{
+			bData[j++] = (ch & 0xFF) - 0x1F;
+			continue;
+		}
+
+		// 'a' .. 'z'
+		if (ch >= 0x8281 && ch <= 0x829A)
+		{
+			bData[j++] = (ch & 0xFF) - 0x20;
+			continue;
+		}
+
+		switch (ch)
+		{
+			case 0x0000:    //End of the string
+				bData[j] = 0;
+				return;
+
+			case 0x8140:
+				bData[j++] = ' ';
+				break;
+
+			case 0x8143:
+				bData[j++] = ',';
+				break;
+
+			case 0x8144:
+				bData[j++] = '.';
+				break;
+
+			case 0x8145:
+				bData[j++] = '\xFA';
+				break;
+
+			case 0x8146:
+				bData[j++] = ':';
+				break;
+
+			case 0x8147:
+				bData[j++] = ';';
+				break;
+
+			case 0x8148:
+				bData[j++] = '?';
+				break;
+
+			case 0x8149:
+				bData[j++] = '!';
+				break;
+
+			case 0x814F:
+				bData[j++] = '^';
+				break;
+
+			case 0x8151:
+				bData[j++] = '_';
+				break;
+
+			case 0x815B:
+			case 0x815C:
+			case 0x815D:
+				bData[j++] = '-';
+				break;
+
+			case 0x815E:
+				bData[j++] = '/';
+				break;
+
+			case 0x815F:
+				bData[j++] = '\\';
+				break;
+
+			case 0x8160:
+				bData[j++] = '~';
+				break;
+
+			case 0x8161:
+				bData[j++] = '|';
+				break;
+
+			case 0x8168:
+				bData[j++] = '"';
+				break;
+
+			case 0x8169:
+				bData[j++] = '(';
+				break;
+
+			case 0x816A:
+				bData[j++] = ')';
+				break;
+
+			case 0x816D:
+				bData[j++] = '[';
+				break;
+
+			case 0x816E:
+				bData[j++] = ']';
+				break;
+
+			case 0x816F:
+				bData[j++] = '{';
+				break;
+
+			case 0x8170:
+				bData[j++] = '}';
+				break;
+
+			case 0x817B:
+				bData[j++] = '+';
+				break;
+
+			case 0x817C:
+				bData[j++] = '-';
+				break;
+
+			case 0x817D:
+				bData[j++] = '\xF1';
+				break;
+
+			case 0x817E:
+				bData[j++] = '*';
+				break;
+
+			case 0x8180:
+				bData[j++] = '\xF6';
+					break;
+
+			case 0x8181:
+				bData[j++] = '=';
+				break;
+
+			case 0x8183:
+				bData[j++] = '<';
+				break;
+
+			case 0x8184:
+				bData[j++] = '>';
+				break;
+
+			case 0x818A:
+				bData[j++] = '\xF8';
+				break;
+
+			case 0x818B:
+				bData[j++] = '\'';
+				break;
+
+			case 0x818C:
+				bData[j++] = '"';
+				break;
+
+			case 0x8190:
+				bData[j++] = '$';
+				break;
+
+			case 0x8193:
+				bData[j++] = '%';
+				break;
+
+			case 0x8194:
+				bData[j++] = '#';
+				break;
+
+			case 0x8195:
+				bData[j++] = '&';
+				break;
+
+			case 0x8196:
+				bData[j++] = '*';
+				break;
+				
+			case 0x8197:
+				bData[j++] = '@';
+				break;
+
+			// Character not found
+			default:
+				bData[j++] = bData[i];
+				bData[j++] = bData[i+1];
+				break;
+		}
+	}
+
+	bData[j] = 0;
+	return;
+}
+
+// PSV files (PS1/PS2) savegame titles are stored in Shift-JIS
+char* sjis2utf8(char* input)
+{
+    // Simplify the input and decode standard ASCII characters
+    sjis2ascii(input);
+
+    int len = strlen(input);
+    char* output = malloc(3 * len); //ShiftJis won't give 4byte UTF8, so max. 3 byte per input char are needed
+    size_t indexInput = 0, indexOutput = 0;
+
+    while(indexInput < len)
+    {
+        char arraySection = ((uint8_t)input[indexInput]) >> 4;
+
+        size_t arrayOffset;
+        if(arraySection == 0x8) arrayOffset = 0x100; //these are two-byte shiftjis
+        else if(arraySection == 0x9) arrayOffset = 0x1100;
+        else if(arraySection == 0xE) arrayOffset = 0x2100;
+        else arrayOffset = 0; //this is one byte shiftjis
+
+        //determining real array offset
+        if(arrayOffset)
+        {
+            arrayOffset += (((uint8_t)input[indexInput]) & 0xf) << 8;
+            indexInput++;
+            if(indexInput >= len) break;
+        }
+        arrayOffset += (uint8_t)input[indexInput++];
+        arrayOffset <<= 1;
+
+        //unicode number is...
+        uint16_t unicodeValue = (shiftJIS_convTable[arrayOffset] << 8) | shiftJIS_convTable[arrayOffset + 1];
+
+        //converting to UTF8
+        if(unicodeValue < 0x80)
+        {
+            output[indexOutput++] = unicodeValue;
+        }
+        else if(unicodeValue < 0x800)
+        {
+            output[indexOutput++] = 0xC0 | (unicodeValue >> 6);
+            output[indexOutput++] = 0x80 | (unicodeValue & 0x3f);
+        }
+        else
+        {
+            output[indexOutput++] = 0xE0 | (unicodeValue >> 12);
+            output[indexOutput++] = 0x80 | ((unicodeValue & 0xfff) >> 6);
+            output[indexOutput++] = 0x80 | (unicodeValue & 0x3f);
+        }
+    }
+
+	//remove the unnecessary bytes
+    output[indexOutput] = 0;
+    return output;
 }

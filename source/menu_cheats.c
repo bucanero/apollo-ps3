@@ -396,6 +396,7 @@ void DrawGameList(int selIndex, list_t * games, u8 alpha)
 				DrawString(800 - (MENU_ICON_OFF * 3), game_y, item->title_id);
 
 			tmp[0] = ' ';
+			if (item->flags & SAVE_FLAG_PSV) tmp[0] = CHAR_TAG_PSV;
 			if (item->flags & SAVE_FLAG_PS2) tmp[0] = CHAR_TAG_PS2;
 			if (item->flags & SAVE_FLAG_PSP) tmp[0] = CHAR_TAG_PSP;
 			if (item->flags & SAVE_FLAG_PS3) tmp[0] = CHAR_TAG_PS3;
