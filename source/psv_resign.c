@@ -1,10 +1,6 @@
 //ps3-psvresigner by @dots_tb - Resigns non-console specific PS3 PSV savefiles. PSV files embed PS1 and PS2 save data. This does not inject!
 //With help from the CBPS (https://discord.gg/2nDCbxJ) , especially:
-// @AnalogMan151
-// @teakhanirons
-// Silica
-// @notzecoxao
-// @nyaaasen 
+// @AnalogMan151, @teakhanirons, Silica, @notzecoxao, @nyaaasen 
 
 #include <string.h>
 #include <stdio.h>
@@ -14,6 +10,7 @@
 
 #include "types.h"
 #include "util.h"
+#include "ps2mc.h"
 #include "shiftjis.h"
 
 #define PSV_SEED_OFFSET 0x8
@@ -21,6 +18,15 @@
 #define PSV_TYPE_OFFSET 0x3C
 
 #define PSV_MAGIC       "\x00VSP"
+
+const char SJIS_REPLACEMENT_LUT[] = \
+    " ,.,..:;?!\"*'`*^"
+    "-_????????*---/\\"
+    "~||--''\"\"()()[]{"
+    "}<><>[][][]+-+X?"
+    "-==<><>????*'\"CY"
+    "$c&%#&*@S*******"
+    "*******T><^_'='";
 
 const uint8_t psv_ps2key[0x10] = {
 	0xFA, 0x72, 0xCE, 0xEF, 0x59, 0xB4, 0xD2, 0x98, 0x9F, 0x11, 0x19, 0x13, 0x28, 0x7F, 0x51, 0xC7
@@ -125,7 +131,7 @@ int psv_resign(const char *src_psv)
 	size_t sz;
 	uint8_t *input;
 
-	LOG("\n=====ps3-psvresigner by @dots_tb=====");
+	LOG("=====ps3-psvresigner by @dots_tb=====");
 //	LOG("\nWith CBPS help especially: @AnalogMan151, @teakhanirons, Silica, @nyaaasen, and @notzecoxao\n");
 //	LOG("Resigns non-console specific PS3 PSV savefiles. PSV files embed PS1 and PS2 save data. This does not inject!\n\n");
 
@@ -134,7 +140,7 @@ int psv_resign(const char *src_psv)
 		return 0;
 	}
 
-	LOG("File SZ: %lx\n", sz);
+	LOG("File Size: %ld bytes\n", sz);
 
 	if (memcmp(input, PSV_MAGIC, 4) != 0) {
 		LOG("Not a PSV file");
@@ -166,6 +172,76 @@ int psv_resign(const char *src_psv)
 	return 1;
 }
 
+void get_psv_filename(char* psvName, const char* path, const char* dirName)
+{
+	char tmpName[13];
+	const char *ch = &dirName[12];
+
+	memcpy(tmpName, dirName, 12);
+	tmpName[12] = 0;
+
+	strcpy(psvName, path);
+	strcat(psvName, tmpName);
+	while (*ch)
+	{
+		snprintf(tmpName, sizeof(tmpName), "%02X", *ch++);
+		strcat(psvName, tmpName);
+	}
+	strcat(psvName, ".PSV");
+}
+
+int ps1_mcs2psv(const char* mcsfile, const char* psv_path)
+{
+	char dstName[256];
+	size_t sz;
+	uint8_t *input;
+	FILE *pf;
+	psv_header_t psvh;
+	uint8_t tmpFlags[] = {
+		0x00, 0x20, 0x00, 0x00, 0x84, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 
+		0x03, 0x90, 0x00, 0x00};
+
+	if (read_buffer(mcsfile, &input, &sz) < 0) {
+		LOG("Failed to open input file");
+		return 0;
+	}
+
+	if (memcmp(input, "Q\x00", 2) != 0) {
+		printf("Not a .mcs file\n");
+		free(input);
+		return 0;
+	}
+	
+	get_psv_filename(dstName, psv_path, (char*) &input[0x0A]);
+	pf = fopen(dstName, "wb");
+	if (!pf) {
+		perror("Failed to open output file");
+		free(input);
+		return 0;
+	}
+	
+	memset(&psvh, 0, sizeof(psv_header_t));
+	psvh.headerSize = ES32(0x00000014);
+	psvh.saveType = ES32(0x00000001);
+	memcpy(&psvh.magic, PSV_MAGIC, 4);
+	memcpy(&psvh.salt, "www.bucanero.com.ar", 20);
+
+	fwrite(&psvh, sizeof(psv_header_t), 1, pf);
+	fwrite(tmpFlags, 0x24, 1, pf);
+
+	memset(tmpFlags, 0, 0x20);
+	memcpy(tmpFlags, input + 0x0A, 0x14);
+	fwrite(tmpFlags, 0x20, 1, pf);
+
+	fwrite(input + 0x80, sz - 0x80, 1, pf);
+	fclose(pf);
+
+	psv_resign(dstName);
+
+	return 1;
+}
+
 //Convert Shift-JIS characters to ASCII equivalent
 void sjis2ascii(char* bData)
 {
@@ -192,176 +268,22 @@ void sjis2ascii(char* bData)
 			continue;
 		}
 
-		switch (ch)
+		if (ch >= 0x8140 && ch <= 0x81AC)
 		{
-			case 0x0000:    //End of the string
-				bData[j] = 0;
-				return;
-
-			case 0x8140:
-				bData[j++] = ' ';
-				break;
-
-			case 0x8143:
-				bData[j++] = ',';
-				break;
-
-			case 0x8144:
-				bData[j++] = '.';
-				break;
-
-			case 0x8145:
-				bData[j++] = '\xFA';
-				break;
-
-			case 0x8146:
-				bData[j++] = ':';
-				break;
-
-			case 0x8147:
-				bData[j++] = ';';
-				break;
-
-			case 0x8148:
-				bData[j++] = '?';
-				break;
-
-			case 0x8149:
-				bData[j++] = '!';
-				break;
-
-			case 0x814F:
-				bData[j++] = '^';
-				break;
-
-			case 0x8151:
-				bData[j++] = '_';
-				break;
-
-			case 0x815B:
-			case 0x815C:
-			case 0x815D:
-				bData[j++] = '-';
-				break;
-
-			case 0x815E:
-				bData[j++] = '/';
-				break;
-
-			case 0x815F:
-				bData[j++] = '\\';
-				break;
-
-			case 0x8160:
-				bData[j++] = '~';
-				break;
-
-			case 0x8161:
-				bData[j++] = '|';
-				break;
-
-			case 0x8168:
-				bData[j++] = '"';
-				break;
-
-			case 0x8169:
-				bData[j++] = '(';
-				break;
-
-			case 0x816A:
-				bData[j++] = ')';
-				break;
-
-			case 0x816D:
-				bData[j++] = '[';
-				break;
-
-			case 0x816E:
-				bData[j++] = ']';
-				break;
-
-			case 0x816F:
-				bData[j++] = '{';
-				break;
-
-			case 0x8170:
-				bData[j++] = '}';
-				break;
-
-			case 0x817B:
-				bData[j++] = '+';
-				break;
-
-			case 0x817C:
-				bData[j++] = '-';
-				break;
-
-			case 0x817D:
-				bData[j++] = '\xF1';
-				break;
-
-			case 0x817E:
-				bData[j++] = '*';
-				break;
-
-			case 0x8180:
-				bData[j++] = '\xF6';
-					break;
-
-			case 0x8181:
-				bData[j++] = '=';
-				break;
-
-			case 0x8183:
-				bData[j++] = '<';
-				break;
-
-			case 0x8184:
-				bData[j++] = '>';
-				break;
-
-			case 0x818A:
-				bData[j++] = '\xF8';
-				break;
-
-			case 0x818B:
-				bData[j++] = '\'';
-				break;
-
-			case 0x818C:
-				bData[j++] = '"';
-				break;
-
-			case 0x8190:
-				bData[j++] = '$';
-				break;
-
-			case 0x8193:
-				bData[j++] = '%';
-				break;
-
-			case 0x8194:
-				bData[j++] = '#';
-				break;
-
-			case 0x8195:
-				bData[j++] = '&';
-				break;
-
-			case 0x8196:
-				bData[j++] = '*';
-				break;
-				
-			case 0x8197:
-				bData[j++] = '@';
-				break;
-
-			// Character not found
-			default:
-				bData[j++] = bData[i];
-				bData[j++] = bData[i+1];
-				break;
+			bData[j++] = SJIS_REPLACEMENT_LUT[(ch & 0xFF) - 0x40];
+			continue;
 		}
+
+		if (ch == 0x0000)
+		{
+			//End of the string
+			bData[j] = 0;
+			return;
+		}
+
+		// Character not found
+		bData[j++] = bData[i];
+		bData[j++] = bData[i+1];
 	}
 
 	bData[j] = 0;
