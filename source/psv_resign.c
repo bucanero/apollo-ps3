@@ -55,14 +55,14 @@ void XorWithIv(uint8_t* buf, const uint8_t* Iv)
   }
 }
  
-void generateHash(uint8_t *input, uint8_t *dest, size_t sz, uint8_t type)
+void generateHash(const uint8_t *input, uint8_t *dest, size_t sz, uint8_t type)
 {
 	aes_context aes_ctx;
 	sha1_context sha1_ctx;
 	uint8_t iv[0x10];
 	uint8_t salt[0x40];
 	uint8_t work_buf[0x14];
-	uint8_t *salt_seed = input + PSV_SEED_OFFSET;
+	const uint8_t *salt_seed = input + PSV_SEED_OFFSET;
 
 	memset(salt , 0, sizeof(salt));
 	memset(&aes_ctx, 0, sizeof(aes_context));
@@ -99,29 +99,32 @@ void generateHash(uint8_t *input, uint8_t *dest, size_t sz, uint8_t type)
 		XorWithIv(laid_paid, psv_ps2key);
 
 		aes_setkey_dec(&aes_ctx, laid_paid, 128);
-		aes_crypt_cbc(&aes_ctx, AES_DECRYPT, 0x40, iv, salt, salt);
+		aes_crypt_cbc(&aes_ctx, AES_DECRYPT, sizeof(salt), iv, salt, salt);
+	}
+	else
+	{
+		LOG("Error: Unknown type");
+		return;
 	}
 	
 	memset(salt + 0x14, 0, sizeof(salt) - 0x14);
-	memset(input + PSV_HASH_OFFSET, 0, 0x14);
+	memset(dest, 0, 0x14);
 
-	XorWithByte(salt, 0x36, 0x40);
+	XorWithByte(salt, 0x36, sizeof(salt));
 
-	sha1_init(&sha1_ctx);
+	memset(&sha1_ctx, 0, sizeof(sha1_context));
 	sha1_starts(&sha1_ctx);
-	sha1_update(&sha1_ctx, salt, 0x40);
+	sha1_update(&sha1_ctx, salt, sizeof(salt));
 	sha1_update(&sha1_ctx, input, sz);
 	sha1_finish(&sha1_ctx, work_buf);
-	sha1_free(&sha1_ctx);
 
-	XorWithByte(salt, 0x6A, 0x40);
+	XorWithByte(salt, 0x6A, sizeof(salt));
 
-	sha1_init(&sha1_ctx);
+	memset(&sha1_ctx, 0, sizeof(sha1_context));
 	sha1_starts(&sha1_ctx);
-	sha1_update(&sha1_ctx, salt, 0x40);
+	sha1_update(&sha1_ctx, salt, sizeof(salt));
 	sha1_update(&sha1_ctx, work_buf, 0x14);
 	sha1_finish(&sha1_ctx, dest);
-	sha1_free(&sha1_ctx);
 }
 
 int psv_resign(const char *src_psv)
