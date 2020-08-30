@@ -17,8 +17,6 @@
 #define PSV_HASH_OFFSET 0x1C
 #define PSV_TYPE_OFFSET 0x3C
 
-#define PSV_MAGIC       "\x00VSP"
-
 const char SJIS_REPLACEMENT_LUT[] = \
     " ,.,..:;?!\"*'`*^"
     "-_????????*---/\\"
@@ -224,8 +222,8 @@ int ps1_mcs2psv(const char* mcsfile, const char* psv_path)
 	memset(&psvh, 0, sizeof(psv_header_t));
 	psvh.headerSize = ES32(0x00000014);
 	psvh.saveType = ES32(0x00000001);
-	memcpy(&psvh.magic, PSV_MAGIC, 4);
-	memcpy(&psvh.salt, "www.bucanero.com.ar", 20);
+	memcpy(&psvh.magic, PSV_MAGIC, sizeof(psvh.magic));
+	memcpy(&psvh.salt, PSV_SALT, sizeof(psvh.salt));
 
 	fwrite(&psvh, sizeof(psv_header_t), 1, pf);
 	fwrite(tmpFlags, 0x24, 1, pf);

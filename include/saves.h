@@ -229,5 +229,6 @@ int psv_resign(const char *src_psv);
 int ps1_mcs2psv(const char* save, const char* psv_path);
 int ps2_psu2psv(const char *save, const char* psv_path);
 int ps2_max2psv(const char *save, const char* psv_path);
+int ps2_cbs2psv(const char *save, const char *psv_path);
 
 char* sjis2utf8(char* input);

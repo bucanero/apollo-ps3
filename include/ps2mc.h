@@ -1,5 +1,8 @@
 #include <inttypes.h>
 
+#define PSV_MAGIC       "\x00VSP"
+#define PSV_SALT        "www.bucanero.com.ar"
+
 typedef struct _sceMcStDateTime
 {
     uint8_t  Resv2;
@@ -112,3 +115,30 @@ typedef struct maxEntry
     uint32_t length;
     char     name[32];
 } maxEntry_t;
+
+typedef struct cbsHeader
+{
+    char magic[4];
+    uint32_t unk1;
+    uint32_t dataOffset;
+    uint32_t decompressedSize;
+    uint32_t compressedSize;
+    char name[32];
+    sceMcStDateTime created;
+    sceMcStDateTime modified;
+    uint32_t unk2;
+    uint32_t mode;
+    char unk3[16];
+    char title[72];
+    char description[132];
+} cbsHeader_t;
+
+typedef struct cbsEntry
+{
+    sceMcStDateTime created;
+    sceMcStDateTime modified;
+    uint32_t length;
+    uint32_t mode;
+    char unk1[8];
+    char name[32];
+} cbsEntry_t;
