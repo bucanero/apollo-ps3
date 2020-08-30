@@ -1,3 +1,11 @@
+/*
+*  PSV file format information from:
+*  - https://github.com/PMStanley/PSV-Exporter
+*
+*  PSU, MAX, CBS file format information from:
+*  - https://github.com/root670/CheatDevicePS2
+*/
+
 #include <inttypes.h>
 
 #define PSV_MAGIC       "\x00VSP"

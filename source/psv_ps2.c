@@ -1,3 +1,8 @@
+/*
+* original .MAX, .CBS, .PSU file decoding from Cheat Device PS2 by root670
+* https://github.com/root670/CheatDevicePS2
+*/
+
 #include <stdio.h>
 #include <zlib.h>
 #include <polarssl/arc4.h>

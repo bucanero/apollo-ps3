@@ -1,6 +1,9 @@
-//ps3-psvresigner by @dots_tb - Resigns non-console specific PS3 PSV savefiles. PSV files embed PS1 and PS2 save data. This does not inject!
-//With help from the CBPS (https://discord.gg/2nDCbxJ) , especially:
-// @AnalogMan151, @teakhanirons, Silica, @notzecoxao, @nyaaasen 
+/*
+*  ps3-psvresigner by @dots_tb - Resigns non-console specific PS3 PSV savefiles.
+*  PSV files embed PS1 and PS2 save data. This does not inject!
+*  With help from the CBPS (https://discord.gg/2nDCbxJ) , especially:
+*   @AnalogMan151, @teakhanirons, Silica, @notzecoxao, @nyaaasen
+*/
 
 #include <string.h>
 #include <stdio.h>
@@ -17,7 +20,7 @@
 #define PSV_HASH_OFFSET 0x1C
 #define PSV_TYPE_OFFSET 0x3C
 
-const char SJIS_REPLACEMENT_LUT[] = \
+const char SJIS_REPLACEMENT_TABLE[] = 
     " ,.,..:;?!\"*'`*^"
     "-_????????*---/\\"
     "~||--''\"\"()()[]{"
@@ -271,7 +274,7 @@ void sjis2ascii(char* bData)
 
 		if (ch >= 0x8140 && ch <= 0x81AC)
 		{
-			bData[j++] = SJIS_REPLACEMENT_LUT[(ch & 0xFF) - 0x40];
+			bData[j++] = SJIS_REPLACEMENT_TABLE[(ch & 0xFF) - 0x40];
 			continue;
 		}
 
