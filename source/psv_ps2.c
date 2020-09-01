@@ -53,6 +53,7 @@ const uint8_t cbsKey[256] = {
 }; 
 
 int psv_resign(const char *src_psv);
+void write_psvheader(FILE *fp, uint32_t type);
 void get_psv_filename(char* psvName, const char* path, const char* dirName);
 
 static void printMAXHeader(const maxHeader_t *header)
@@ -117,19 +118,6 @@ void setMcDateTime(sceMcStDateTime* mc, struct tm *ftm)
     mc->Day = ftm->tm_mday;
     mc->Month = ftm->tm_mon + 1;
     mc->Year = ES16(ftm->tm_year + 1900);
-}
-
-void write_psvheader(FILE *fp)
-{
-    psv_header_t ph;
-
-    memset(&ph, 0, sizeof(psv_header_t));
-    ph.headerSize = ES32(0x0000002C);
-    ph.saveType = ES32(0x00000002);
-    memcpy(&ph.magic, PSV_MAGIC, sizeof(ph.magic));
-    memcpy(&ph.salt, PSV_SALT, sizeof(ph.salt));
-
-    fwrite(&ph, sizeof(psv_header_t), 1, fp);
 }
 
 void set_ps2header_values(ps2_header_t *ps2h, const ps2_FileInfo_t *ps2fi, const ps2_IconSys_t *ps2sys)
@@ -240,7 +228,7 @@ int ps2_max2psv(const char *save, const char* psv_path)
     memcpy(&ps2md.modified, &fmtime, sizeof(sceMcStDateTime));
     memcpy(&ps2md.filename, &dirName, sizeof(ps2md.filename));
     
-    write_psvheader(psv);
+    write_psvheader(psv, 2);
 
     LOG("\nSave contents:\n");
 
@@ -355,7 +343,7 @@ int ps2_psu2psv(const char *save, const char* psv_path)
     memcpy(&ps2md.modified, &entry.modified, sizeof(sceMcStDateTime));
     memcpy(&ps2md.filename, &entry.name, sizeof(ps2md.filename));
     
-    write_psvheader(psvFile);
+    write_psvheader(psvFile, 2);
 
     // Skip "." and ".."
     fseek(psuFile, sizeof(ps2_McFsEntry)*2, SEEK_CUR);
@@ -542,7 +530,7 @@ int ps2_cbs2psv(const char *save, const char *psv_path)
     memcpy(&ps2md.modified, &header->modified, sizeof(sceMcStDateTime));
     memcpy(&ps2md.filename, &header->name, sizeof(ps2md.filename));
     
-    write_psvheader(dstFile);
+    write_psvheader(dstFile, 2);
 
     LOG("Save contents:\n");
 
