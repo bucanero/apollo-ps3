@@ -259,6 +259,45 @@ void resignPSVfile(const char* psv_path)
 	stop_loading_screen();
 }
 
+void convertSavePSV(const char* save_path, const char* out_path, uint16_t type)
+{
+	if (mkdirs(out_path) != SUCCESS)
+	{
+		show_message("Error! Export folder is not available");
+		return;
+	}
+
+	init_loading_screen("Converting Save to PSV file...");
+
+	switch (type)
+	{
+	case FILE_TYPE_MCS:
+		ps1_mcs2psv(save_path, out_path);
+		break;
+
+	case FILE_TYPE_PSX:
+		ps1_psx2psv(save_path, out_path);
+		break;
+
+	case FILE_TYPE_MAX:
+		ps2_max2psv(save_path, out_path);
+		break;
+
+	case FILE_TYPE_PSU:
+		ps2_psu2psv(save_path, out_path);
+		break;
+
+	case FILE_TYPE_CBS:
+		ps2_cbs2psv(save_path, out_path);
+		break;
+
+	default:
+		break;
+	}
+
+	stop_loading_screen();
+}
+
 void decryptVMEfile(const char* vme_path, const char* vme_file, uint8_t dst)
 {
 	char vmefile[256];
@@ -788,6 +827,11 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_IMP_PS2ISO_USB:
 			importPS2classics(selected_entry->path, code->file);
+			code->activated = 0;
+			break;
+
+		case CMD_CONVERT_TO_PSV:
+			convertSavePSV(selected_entry->path, codecmd[1] ? EXP_PSV_PATH_USB1 : EXP_PSV_PATH_USB0, selected_entry->type);
 			code->activated = 0;
 			break;
 

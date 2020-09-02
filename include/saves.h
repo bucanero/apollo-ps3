@@ -26,6 +26,9 @@
 #define PS2_SAVES_PATH_HDD      "ps2emu2_savedata/"
 #define PSP_SAVES_PATH_HDD      "minis_savedata/"
 
+#define PS1_IMP_PATH_USB        "PS1/SAVES/"
+#define PS2_IMP_PATH_USB        "PS2/SAVES/"
+
 #define SAVES_PATH_USB0         USB0_PATH PS3_SAVES_PATH_USB
 #define SAVES_PATH_USB1         USB1_PATH PS3_SAVES_PATH_USB
 #define SAVES_PATH_HDD          USER_PATH_HDD PS3_SAVES_PATH_HDD
@@ -38,6 +41,9 @@
 #define EXPORT_RAP_PATH_USB0    EXPORT_PATH_USB0 "exdata/"
 #define EXPORT_RAP_PATH_USB1    EXPORT_PATH_USB1 "exdata/"
 #define EXPORT_RAP_PATH_HDD     "/dev_hdd0/exdata/"
+
+#define EXP_PSV_PATH_USB0       USB0_PATH PSV_SAVES_PATH_USB
+#define EXP_PSV_PATH_USB1       USB1_PATH PSV_SAVES_PATH_USB
 
 #define EXP_PS2_PATH_USB0       USB0_PATH "PS2/VMC/"
 #define EXP_PS2_PATH_USB1       USB1_PATH "PS2/VMC/"
@@ -72,6 +78,7 @@ enum cmd_code_enum
     CMD_RESIGN_PSV,
     CMD_DECRYPT_PS2_VME,
     CMD_ENCRYPT_PS2_VMC,
+    CMD_CONVERT_TO_PSV,
 
 // Bulk commands
     CMD_RESIGN_SAVES_USB,
@@ -109,6 +116,28 @@ enum cmd_code_enum
 #define SAVE_FLAG_RAP           256
 #define SAVE_FLAG_ISO           512
 #define SAVE_FLAG_BINENC        1024
+
+enum save_type_enum
+{
+    FILE_TYPE_PSV,
+
+    // PS1 File Types
+    FILE_TYPE_PSX,
+    FILE_TYPE_MCS,
+
+    // PS2 File Types
+    FILE_TYPE_PSU,
+    FILE_TYPE_MAX,
+    FILE_TYPE_CBS,
+
+    // License Files
+    FILE_TYPE_RIF,
+    FILE_TYPE_RAP,
+
+    // ISO Files
+    FILE_TYPE_ISO,
+    FILE_TYPE_BINENC,
+};
 
 enum char_flag_enum
 {
@@ -169,7 +198,8 @@ typedef struct save_entry
     char * name;
 	char * title_id;
 	char * path;
-	uint32_t flags;
+	uint16_t flags;
+    uint16_t type;
     int code_count;
     code_entry_t * codes;
 } save_entry_t;
@@ -227,6 +257,7 @@ void ps2_decrypt_image(uint8_t dex_mode, const uint8_t* klicensee, const char* i
 void ps2_crypt_vmc(uint8_t dex_mode, const char* vmc_path, const char* vmc_out, int crypt_mode);
 int psv_resign(const char *src_psv);
 int ps1_mcs2psv(const char* save, const char* psv_path);
+int ps1_psx2psv(const char* save, const char* psv_path);
 int ps2_psu2psv(const char *save, const char* psv_path);
 int ps2_max2psv(const char *save, const char* psv_path);
 int ps2_cbs2psv(const char *save, const char *psv_path);

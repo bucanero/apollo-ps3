@@ -78,7 +78,7 @@ char* endsWith(const char * a, const char * b)
 
 	a += (al - bl);
 	while (*a)
-		if (*a++ != *b++) return NULL;
+		if (toupper(*a++) != toupper(*b++)) return NULL;
 
 	return (char*) (a - bl);
 }
@@ -417,6 +417,20 @@ option_entry_t* _getSaveTitleIDs(const char* title_id)
 	}
 
 	return opt;
+}
+
+int set_psx_import_codes(save_entry_t* item)
+{
+	int i = 0;
+
+	item->code_count = 1;
+	item->codes = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (item->code_count));
+
+	_setManualCode(&item->codes[i], PATCH_COMMAND, "\x0b Convert to .PSV", 0);
+	item->codes[i].options_count = 1;
+	item->codes[i].options = _createOptions(2, "Save .PSV file to USB", CMD_CONVERT_TO_PSV);
+
+	return item->code_count;
 }
 
 int set_psp_codes(save_entry_t* item)
@@ -846,9 +860,7 @@ int get_iso_files(save_entry_t * item)
 	DIR *d;
 	struct dirent *dir;
 
-	item->code_count  = getDirListSizeByExt(item->path, ".iso");
 	item->code_count += getDirListSizeByExt(item->path, ".ISO");
-	item->code_count += getDirListSizeByExt(item->path, ".bin");
 	item->code_count += getDirListSizeByExt(item->path, ".BIN");
 
 	if (!item->code_count)
@@ -862,9 +874,8 @@ int get_iso_files(save_entry_t * item)
 	{
 		while ((dir = readdir(d)) != NULL)
 		{
-			if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0  && i < item->code_count &&
-				(endsWith(dir->d_name, ".iso") || endsWith(dir->d_name, ".ISO") ||
-				 endsWith(dir->d_name, ".bin") || endsWith(dir->d_name, ".BIN")))
+			if (dir->d_type == DT_REG  && i < item->code_count &&
+				(endsWith(dir->d_name, ".BIN") || endsWith(dir->d_name, ".ISO")))
 			{
 				memset(&item->codes[i], 0, sizeof(code_entry_t));
 				item->codes[i].type = PATCH_COMMAND;
@@ -1174,7 +1185,7 @@ void read_psv_savegames(const char* userPath, list_t *list)
 
 	while ((dir = readdir(d)) != NULL)
 	{
-		if (!endsWith(dir->d_name, ".PSV") || strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0)
+		if (dir->d_type != DT_REG || !endsWith(dir->d_name, ".PSV"))
 			continue;
 
 		snprintf(psvPath, sizeof(psvPath), "%s%s", userPath, dir->d_name);
@@ -1212,6 +1223,86 @@ void read_psv_savegames(const char* userPath, list_t *list)
 		//PS2 Title offset 0xC0
 		//PS1 Title offset 0x04
 		item->name = sjis2utf8(data + (type == 1 ? 0x04 : 0xC0));
+			
+		LOG("[%s] F(%d) name '%s'", item->title_id, item->flags, item->name);
+		list_append(list, item);
+	}
+
+	closedir(d);
+}
+
+void read_psx_savegames(const char* userPath, list_t *list)
+{
+	DIR *d;
+	struct dirent *dir;
+	save_entry_t *item;
+	char psvPath[256];
+	char data[64];
+	int type, toff;
+
+	d = opendir(userPath);
+
+	if (!d)
+		return;
+
+	while ((dir = readdir(d)) != NULL)
+	{
+		if (dir->d_type != DT_REG)
+			continue;
+
+		if (endsWith(dir->d_name, ".PSX"))
+		{
+			toff = 0;
+			type = FILE_TYPE_PSX;
+		}
+		else if (endsWith(dir->d_name, ".MCS"))
+		{
+			toff = 0x0A;
+			type = FILE_TYPE_MCS;
+		}
+		else if (endsWith(dir->d_name, ".MAX"))
+		{
+			toff = 0x10;
+			type = FILE_TYPE_MAX;
+		}
+		else if (endsWith(dir->d_name, ".CBS"))
+		{
+			toff = 0x14;
+			type = FILE_TYPE_CBS;
+		}
+		else if (endsWith(dir->d_name, ".PSU"))
+		{
+			toff = 0x40;
+			type = FILE_TYPE_PSU;
+		}
+		else
+			continue;
+
+		snprintf(psvPath, sizeof(psvPath), "%s%s", userPath, dir->d_name);
+		LOG("Reading %s...", psvPath);
+
+		FILE *fp = fopen(psvPath, "rb");
+		if (!fp) {
+			LOG("Unable to open '%s'", psvPath);
+			continue;
+		}
+
+		fseek(fp, toff, SEEK_SET);
+		fread(data, 1, sizeof(data), fp);
+		fclose(fp);
+
+		item = (save_entry_t *)malloc(sizeof(save_entry_t));
+		set_psx_import_codes(item);
+
+		if (type == FILE_TYPE_PSX || type == FILE_TYPE_MCS)
+			item->flags = SAVE_FLAG_PS1;
+		else
+			item->flags = SAVE_FLAG_PS2;
+
+		item->type = type;
+		asprintf(&item->path, "%s%s", userPath, dir->d_name);
+		asprintf(&item->title_id, "%.12s", data);
+		asprintf(&item->name, dir->d_name);
 			
 		LOG("[%s] F(%d) name '%s'", item->title_id, item->flags, item->name);
 		list_append(list, item);
@@ -1288,6 +1379,12 @@ list_t * ReadUserList(const char* userPath)
 	{
 		snprintf(savePath, sizeof(savePath), "%s%s", userPath, PSV_SAVES_PATH_USB);
 		read_psv_savegames(savePath, list);
+
+		snprintf(savePath, sizeof(savePath), "%s%s", userPath, PS2_IMP_PATH_USB);
+		read_psx_savegames(savePath, list);
+
+		snprintf(savePath, sizeof(savePath), "%s%s", userPath, PS1_IMP_PATH_USB);
+		read_psx_savegames(savePath, list);
 	}
 
 	return list;
