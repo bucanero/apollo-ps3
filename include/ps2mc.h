@@ -150,3 +150,20 @@ typedef struct cbsEntry
     char unk1[8];
     char name[32];
 } cbsEntry_t;
+
+typedef struct __attribute__((__packed__)) xpsEntry
+{
+    uint16_t entry_sz;
+    char name[64];
+    uint32_t length;
+    uint32_t start;
+    uint32_t end;
+    uint32_t mode;
+    sceMcStDateTime created;
+    sceMcStDateTime modified;
+    char unk1[4];
+    char padding[12];
+    char title_ascii[64];
+    char title_sjis[64];
+    char unk2[8];
+} xpsEntry_t;

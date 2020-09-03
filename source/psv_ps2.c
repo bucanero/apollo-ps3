@@ -13,9 +13,12 @@
 
 #define  MAX_HEADER_MAGIC   "Ps2PowerSave"
 #define  CBS_HEADER_MAGIC   "CFU\0"
+#define  XPS_HEADER_MAGIC   "SharkPortSave\0\0\0"
+
+#define  xps_mode_swap(M)   ((M & 0x00FF0000) << 8) + ((M & 0xFF000000) >> 8)
 
 // This is the initial permutation state ("S") for the RC4 stream cipher
-// algorithm used to encrpyt and decrypt Codebreaker saves.
+// algorithm used to encrypt and decrypt Codebreaker saves.
 // Source: https://github.com/ps2dev/mymc/blob/master/ps2save.py#L36
 const uint8_t cbsKey[256] = {
     0x5f, 0x1f, 0x85, 0x6f, 0x31, 0xaa, 0x3b, 0x18,
@@ -612,6 +615,144 @@ int ps2_cbs2psv(const char *save, const char *psv_path)
     fclose(dstFile);
     free(decompressed);
     free(cbsData);
+
+    return psv_resign(dstName);
+}
+
+int ps2_xps2psv(const char *save, const char *psv_path)
+{
+    u32 len, dataPos = 0;
+    FILE *xpsFile, *psvFile;
+    int numFiles, i;
+    char dstName[128];
+    char tmp[100];
+    u8 *data;
+    xpsEntry_t entry;
+
+    xpsFile = fopen(save, "rb");
+    if(!xpsFile)
+        return 0;
+
+    fread(&tmp, 1, 0x15, xpsFile);
+
+    if (memcmp(&tmp[4], XPS_HEADER_MAGIC, 16) != 0)
+    {
+        fclose(xpsFile);
+        return 0;
+    }
+
+    // Skip the variable size header
+    fread(&len, 1, sizeof(uint32_t), xpsFile);
+    fread(&tmp, 1, ES32(len), xpsFile);
+    fread(&len, 1, sizeof(uint32_t), xpsFile);
+    fread(&tmp, 1, ES32(len), xpsFile);
+    fread(&len, 1, sizeof(uint32_t), xpsFile);
+    fread(&len, 1, sizeof(uint32_t), xpsFile);
+
+    // Read main directory entry
+    fread(&entry, 1, sizeof(xpsEntry_t), xpsFile);
+
+    numFiles = ES32(entry.length) - 2;
+
+    // Keep the file position (start of file entries)
+    len = ftell(xpsFile);
+
+    get_psv_filename(dstName, psv_path, entry.name);
+    psvFile = fopen(dstName, "wb");
+
+    if(!psvFile)
+    {
+        fclose(xpsFile);
+        return 0;
+    }
+
+    ps2_header_t ps2h;
+    ps2_IconSys_t ps2sys;
+    ps2_MainDirInfo_t ps2md;
+
+    memset(&ps2h, 0, sizeof(ps2_header_t));
+    memset(&ps2md, 0, sizeof(ps2_MainDirInfo_t));
+
+    ps2h.numberOfFiles = ES32(numFiles);
+
+    ps2md.attribute = xps_mode_swap(entry.mode);
+    ps2md.numberOfFilesInDir = entry.length;
+    memcpy(&ps2md.created, &entry.created, sizeof(sceMcStDateTime));
+    memcpy(&ps2md.modified, &entry.modified, sizeof(sceMcStDateTime));
+    memcpy(&ps2md.filename, &entry.name, sizeof(ps2md.filename));
+
+    write_psvheader(psvFile, 2);
+
+    // Find the icon.sys (need to know the icons names)
+    for(i = 0; i < numFiles; i++)
+    {
+        fread(&entry, 1, sizeof(xpsEntry_t), xpsFile);
+        entry.length = ES32(entry.length);
+
+        if(strcmp(entry.name, "icon.sys") == 0)
+            fread(&ps2sys, 1, sizeof(ps2_IconSys_t), xpsFile);
+        else
+            fseek(xpsFile, entry.length, SEEK_CUR);
+
+        ps2h.displaySize += entry.length;
+
+        LOG(" %8d bytes  : %s", entry.length, entry.name);
+    }
+
+    LOG(" %8d Total bytes", ps2h.displaySize);
+    ps2h.displaySize = ES32(ps2h.displaySize);
+
+    // Rewind
+    fseek(xpsFile, len, SEEK_SET);
+
+    // Calculate the start offset for the file's data
+    dataPos = sizeof(psv_header_t) + sizeof(ps2_header_t) + sizeof(ps2_MainDirInfo_t) + sizeof(ps2_FileInfo_t)*numFiles;
+
+    ps2_FileInfo_t *ps2fi = malloc(sizeof(ps2_FileInfo_t)*numFiles);
+
+    // Build the PS2 FileInfo entries
+    for(i = 0; i < numFiles; i++)
+    {
+        fread(&entry, 1, sizeof(xpsEntry_t), xpsFile);
+
+        ps2fi[i].attribute = xps_mode_swap(entry.mode);
+        ps2fi[i].positionInFile = ES32(dataPos);
+        ps2fi[i].filesize = entry.length;
+        memcpy(&ps2fi[i].created, &entry.created, sizeof(sceMcStDateTime));
+        memcpy(&ps2fi[i].modified, &entry.modified, sizeof(sceMcStDateTime));
+        memcpy(&ps2fi[i].filename, &entry.name, sizeof(ps2fi[i].filename));
+
+        entry.length = ES32(entry.length);
+        dataPos += entry.length;
+        fseek(xpsFile, entry.length, SEEK_CUR);
+        
+        set_ps2header_values(&ps2h, &ps2fi[i], &ps2sys);
+    }
+
+    fwrite(&ps2h, sizeof(ps2_header_t), 1, psvFile);
+    fwrite(&ps2md, sizeof(ps2_MainDirInfo_t), 1, psvFile);
+    fwrite(ps2fi, sizeof(ps2_FileInfo_t), numFiles, psvFile);
+
+    free(ps2fi);
+
+    // Rewind
+    fseek(xpsFile, len, SEEK_SET);
+
+    // Copy each file entry
+    for(i = 0; i < numFiles; i++)
+    {
+        fread(&entry, 1, sizeof(xpsEntry_t), xpsFile);
+        entry.length = ES32(entry.length);
+        
+        data = malloc(entry.length);
+        fread(data, 1, entry.length, xpsFile);
+        fwrite(data, 1, entry.length, psvFile);
+
+        free(data);
+    }
+
+    fclose(psvFile);
+    fclose(xpsFile);
 
     return psv_resign(dstName);
 }

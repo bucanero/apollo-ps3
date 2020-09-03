@@ -291,6 +291,10 @@ void convertSavePSV(const char* save_path, const char* out_path, uint16_t type)
 		ps2_cbs2psv(save_path, out_path);
 		break;
 
+	case FILE_TYPE_XPS:
+		ps2_xps2psv(save_path, out_path);
+		break;
+
 	default:
 		break;
 	}

@@ -1275,6 +1275,11 @@ void read_psx_savegames(const char* userPath, list_t *list)
 			toff = 0x40;
 			type = FILE_TYPE_PSU;
 		}
+		else if (endsWith(dir->d_name, ".XPS") || endsWith(dir->d_name, ".SPS"))
+		{
+			toff = 0x04;
+			type = FILE_TYPE_XPS;
+		}
 		else
 			continue;
 
