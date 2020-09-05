@@ -199,7 +199,7 @@ void write_psvheader(FILE *fp, uint32_t type)
     psv_header_t ph;
 
     memset(&ph, 0, sizeof(psv_header_t));
-    ph.headerSize = (type == 1) ? ES32(0x00000014) : ES32(0x0000002C);
+    ph.headerSize = (type == 1) ? 0x14000000 : 0x2C000000;
     ph.saveType = ES32(type);
     memcpy(&ph.magic, PSV_MAGIC, sizeof(ph.magic));
     memcpy(&ph.salt, PSV_SALT, sizeof(ph.salt));
@@ -213,10 +213,7 @@ int ps1_mcs2psv(const char* mcsfile, const char* psv_path)
 	size_t sz;
 	uint8_t *input;
 	FILE *pf;
-	uint8_t tmpFlags[] = {
-		0x00, 0x20, 0x00, 0x00, 0x84, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 
-		0x03, 0x90, 0x00, 0x00};
+	ps1_header_t ps1h;
 
 	if (read_buffer(mcsfile, &input, &sz) < 0) {
 		LOG("Failed to open input file");
@@ -238,12 +235,16 @@ int ps1_mcs2psv(const char* mcsfile, const char* psv_path)
 	}
 	
 	write_psvheader(pf, 1);
-	fwrite(tmpFlags, 0x24, 1, pf);
 
-	memset(tmpFlags, 0, 0x20);
-	memcpy(tmpFlags, input + 0x0A, 0x14);
-	fwrite(tmpFlags, 0x20, 1, pf);
+	memset(&ps1h, 0, sizeof(ps1_header_t));
+	ps1h.saveSize = ES32(sz - 0x80);
+	ps1h.startOfSaveData = 0x84000000;
+	ps1h.blockSize = 0x00020000;
+	ps1h.dataSize = ps1h.saveSize;
+	ps1h.unknown1 = 0x03900000;
+	memcpy(ps1h.prodCode, input + 0x0A, sizeof(ps1h.prodCode));
 
+	fwrite(&ps1h, sizeof(ps1_header_t), 1, pf);
 	fwrite(input + 0x80, sz - 0x80, 1, pf);
 	fclose(pf);
 	free(input);
@@ -259,10 +260,7 @@ int ps1_psx2psv(const char* psxfile, const char* psv_path)
 	size_t sz;
 	uint8_t *input;
 	FILE *pf;
-	uint8_t tmpFlags[] = {
-		0x00, 0x20, 0x00, 0x00, 0x84, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 
-		0x03, 0x90, 0x00, 0x00};
+	ps1_header_t ps1h;
 
 	if (read_buffer(psxfile, &input, &sz) < 0) {
 		LOG("Failed to open input file");
@@ -284,12 +282,16 @@ int ps1_psx2psv(const char* psxfile, const char* psv_path)
 	}
 	
 	write_psvheader(pf, 1);
-	fwrite(tmpFlags, 0x24, 1, pf);
 
-	memset(tmpFlags, 0, 0x20);
-	memcpy(tmpFlags, input, 0x14);
-	fwrite(tmpFlags, 0x20, 1, pf);
+	memset(&ps1h, 0, sizeof(ps1_header_t));
+	ps1h.saveSize = ES32(sz - 0x36);
+	ps1h.startOfSaveData = 0x84000000;
+	ps1h.blockSize = 0x00020000;
+	ps1h.dataSize = ps1h.saveSize;
+	ps1h.unknown1 = 0x03900000;
+	memcpy(ps1h.prodCode, input, sizeof(ps1h.prodCode));
 
+	fwrite(&ps1h, sizeof(ps1_header_t), 1, pf);
 	fwrite(input + 0x36, sz - 0x36, 1, pf);
 	fclose(pf);
 	free(input);

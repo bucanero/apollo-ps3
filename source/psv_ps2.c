@@ -225,11 +225,11 @@ int ps2_max2psv(const char *save, const char* psv_path)
     
     ps2h.numberOfFiles = ES32(header.numFiles);
 
-    ps2md.attribute = ES32(0x00008427);
+    ps2md.attribute = 0x27840000;
     ps2md.numberOfFilesInDir = ES32(header.numFiles+2);
     memcpy(&ps2md.created, &fctime, sizeof(sceMcStDateTime));
     memcpy(&ps2md.modified, &fmtime, sizeof(sceMcStDateTime));
-    memcpy(&ps2md.filename, &dirName, sizeof(ps2md.filename));
+    memcpy(ps2md.filename, dirName, sizeof(ps2md.filename));
     
     write_psvheader(psv, 2);
 
@@ -268,12 +268,12 @@ int ps2_max2psv(const char *save, const char* psv_path)
         entry = (maxEntry_t*) &decompressed[offset];
         offset += sizeof(maxEntry_t);
 
-        ps2fi[i].attribute = ES32(0x00008497);
+        ps2fi[i].attribute = 0x97840000;
         ps2fi[i].positionInFile = ES32(dataPos);
         ps2fi[i].filesize = ES32(entry->length);
         memcpy(&ps2fi[i].created, &fctime, sizeof(sceMcStDateTime));
         memcpy(&ps2fi[i].modified, &fmtime, sizeof(sceMcStDateTime));
-        memcpy(&ps2fi[i].filename, &entry->name, sizeof(ps2fi[i].filename));
+        memcpy(ps2fi[i].filename, entry->name, sizeof(ps2fi[i].filename));
 
         dataPos += entry->length;
 
@@ -344,7 +344,7 @@ int ps2_psu2psv(const char *save, const char* psv_path)
     ps2md.numberOfFilesInDir = entry.length;
     memcpy(&ps2md.created, &entry.created, sizeof(sceMcStDateTime));
     memcpy(&ps2md.modified, &entry.modified, sizeof(sceMcStDateTime));
-    memcpy(&ps2md.filename, &entry.name, sizeof(ps2md.filename));
+    memcpy(ps2md.filename, entry.name, sizeof(ps2md.filename));
     
     write_psvheader(psvFile, 2);
 
@@ -392,7 +392,7 @@ int ps2_psu2psv(const char *save, const char* psv_path)
         ps2fi[i].filesize = entry.length;
         memcpy(&ps2fi[i].created, &entry.created, sizeof(sceMcStDateTime));
         memcpy(&ps2fi[i].modified, &entry.modified, sizeof(sceMcStDateTime));
-        memcpy(&ps2fi[i].filename, &entry.name, sizeof(ps2fi[i].filename));
+        memcpy(ps2fi[i].filename, entry.name, sizeof(ps2fi[i].filename));
         
         entry.length = ES32(entry.length);
         dataPos += entry.length;
@@ -483,7 +483,7 @@ int ps2_cbs2psv(const char *save, const char *psv_path)
     u8 *compressed;
     u8 *decompressed;
     cbsHeader_t *header;
-    cbsEntry_t entryHeader;
+    cbsEntry_t *entryHeader;
     unsigned long decompressedSize;
     size_t cbsLen;
     int i, numFiles = 0;
@@ -531,7 +531,7 @@ int ps2_cbs2psv(const char *save, const char *psv_path)
     ps2md.attribute = header->mode;
     memcpy(&ps2md.created, &header->created, sizeof(sceMcStDateTime));
     memcpy(&ps2md.modified, &header->modified, sizeof(sceMcStDateTime));
-    memcpy(&ps2md.filename, &header->name, sizeof(ps2md.filename));
+    memcpy(ps2md.filename, header->name, sizeof(ps2md.filename));
     
     write_psvheader(dstFile, 2);
 
@@ -542,22 +542,18 @@ int ps2_cbs2psv(const char *save, const char *psv_path)
     {
         numFiles++;
 
-        /* Entry header can't be read directly because it might not be 32-bit aligned.
-        GCC will likely emit an lw instruction for reading the 32-bit variables in the
-        struct which will halt the processor if it tries to load from an address
-        that's misaligned. */
-        memcpy(&entryHeader, &decompressed[offset], sizeof(cbsEntry_t));
-        entryHeader.length = ES32(entryHeader.length);
+        entryHeader = (cbsEntry_t*) &decompressed[offset];
+        entryHeader->length = ES32(entryHeader->length);
         
         offset += sizeof(cbsEntry_t);
 
-        if(strcmp(entryHeader.name, "icon.sys") == 0)
+        if(strcmp(entryHeader->name, "icon.sys") == 0)
             ps2sys = (ps2_IconSys_t*) &decompressed[offset];
 
-        ps2h.displaySize += entryHeader.length;
-        offset += entryHeader.length;
+        ps2h.displaySize += entryHeader->length;
+        offset += entryHeader->length;
 
-        LOG(" %8d bytes  : %s", entryHeader.length, entryHeader.name);
+        LOG(" %8d bytes  : %s", entryHeader->length, entryHeader->name);
     }
 
     LOG(" %8d Total bytes", ps2h.displaySize);
@@ -576,22 +572,21 @@ int ps2_cbs2psv(const char *save, const char *psv_path)
     // Build the PS2 FileInfo entries
     for(i = 0, offset = 0; i < numFiles; i++)
     {
-        memcpy(&entryHeader, &decompressed[offset], sizeof(cbsEntry_t));
+        entryHeader = (cbsEntry_t*) &decompressed[offset];
         offset += sizeof(cbsEntry_t);
 
-        ps2fi[i].attribute = entryHeader.mode;
+        ps2fi[i].attribute = entryHeader->mode;
         ps2fi[i].positionInFile = ES32(dataPos);
-        ps2fi[i].filesize = entryHeader.length;
-        memcpy(&ps2fi[i].created, &entryHeader.created, sizeof(sceMcStDateTime));
-        memcpy(&ps2fi[i].modified, &entryHeader.modified, sizeof(sceMcStDateTime));
-        memcpy(&ps2fi[i].filename, &entryHeader.name, sizeof(ps2fi[i].filename));
+        ps2fi[i].filesize = ES32(entryHeader->length);
+        memcpy(&ps2fi[i].created, &entryHeader->created, sizeof(sceMcStDateTime));
+        memcpy(&ps2fi[i].modified, &entryHeader->modified, sizeof(sceMcStDateTime));
+        memcpy(ps2fi[i].filename, entryHeader->name, sizeof(ps2fi[i].filename));
 
-        entryHeader.length = ES32(entryHeader.length);
-        dataPos += entryHeader.length;
+        dataPos += entryHeader->length;
 
         set_ps2header_values(&ps2h, &ps2fi[i], ps2sys);
 
-        offset += entryHeader.length;
+        offset += entryHeader->length;
     }
 
     fwrite(&ps2h, sizeof(ps2_header_t), 1, dstFile);
@@ -603,13 +598,12 @@ int ps2_cbs2psv(const char *save, const char *psv_path)
     // Write the file's data
     for(i = 0, offset = 0; i < numFiles; i++)
     {
-        memcpy(&entryHeader, &decompressed[offset], sizeof(cbsEntry_t));
-        entryHeader.length = ES32(entryHeader.length);
+        entryHeader = (cbsEntry_t*) &decompressed[offset];
         offset += sizeof(cbsEntry_t);
 
-        fwrite(&decompressed[offset], 1, entryHeader.length, dstFile);
+        fwrite(&decompressed[offset], 1, entryHeader->length, dstFile);
  
-        offset += entryHeader.length;
+        offset += entryHeader->length;
     }
 
     fclose(dstFile);
@@ -679,7 +673,7 @@ int ps2_xps2psv(const char *save, const char *psv_path)
     ps2md.numberOfFilesInDir = entry.length;
     memcpy(&ps2md.created, &entry.created, sizeof(sceMcStDateTime));
     memcpy(&ps2md.modified, &entry.modified, sizeof(sceMcStDateTime));
-    memcpy(&ps2md.filename, &entry.name, sizeof(ps2md.filename));
+    memcpy(ps2md.filename, entry.name, sizeof(ps2md.filename));
 
     write_psvheader(psvFile, 2);
 
@@ -720,7 +714,7 @@ int ps2_xps2psv(const char *save, const char *psv_path)
         ps2fi[i].filesize = entry.length;
         memcpy(&ps2fi[i].created, &entry.created, sizeof(sceMcStDateTime));
         memcpy(&ps2fi[i].modified, &entry.modified, sizeof(sceMcStDateTime));
-        memcpy(&ps2fi[i].filename, &entry.name, sizeof(ps2fi[i].filename));
+        memcpy(ps2fi[i].filename, entry.name, sizeof(ps2fi[i].filename));
 
         entry.length = ES32(entry.length);
         dataPos += entry.length;

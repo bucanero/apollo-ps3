@@ -51,6 +51,23 @@ typedef struct
 
 typedef struct
 {
+    uint32_t saveSize;          // e.g. 0x00200000
+    uint32_t startOfSaveData;   // always 0x84000000 (132)
+    uint32_t blockSize;         // always 0x00020000 (512). Block size?
+    uint32_t padding1;          // always 0x00000000?
+    uint32_t padding2;          // always 0x00000000?
+    uint32_t padding3;          // always 0x00000000?
+    uint32_t padding4;          // always 0x00000000?
+    uint32_t dataSize;          // save size repeated?
+    uint32_t unknown1;          // always 0x03900000 (36867)?
+    char prodCode[20];          // 20 bytes, 0x00 filled & terminated
+    uint32_t padding6;          // always 0x00000000?
+    uint32_t padding7;          // always 0x00000000?
+    uint32_t padding8;          // always 0x00000000?
+} ps1_header_t;
+
+typedef struct
+{
 	uint32_t displaySize;            //PS3 will just round this up to the neaest 1024 boundary so just make it as good as possible
 	uint32_t sysPos;                 //location in file of icon.sys
 	uint32_t sysSize;                //icon.sys size
