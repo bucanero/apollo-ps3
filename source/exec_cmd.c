@@ -306,7 +306,7 @@ void decryptVMEfile(const char* vme_path, const char* vme_file, uint8_t dst)
 {
 	char vmefile[256];
 	char outfile[256];
-	char *path;
+	const char *path;
 
 	switch (dst)
 	{
@@ -362,6 +362,49 @@ void importPS2classics(const char* iso_path, const char* iso_file)
 	stop_loading_screen();
 }
 
+void exportPS2classics(const char* enc_path, const char* enc_file, uint8_t dst)
+{
+	char ps2file[256];
+	char outfile[256];
+	char msg[128] = "Decrypting PS2 BIN.ENC...";
+	const char *path;
+
+	switch (dst)
+	{
+	case 0:
+		path = IMPORT_PS2_PATH_USB0;
+		break;
+
+	case 1:
+		path = IMPORT_PS2_PATH_USB1;
+		break;
+
+	case 2:
+		path = IMPORT_PS2_PATH_HDD;
+		break;
+
+	default:
+		return;
+	}
+
+	snprintf(ps2file, sizeof(ps2file), "%s%s", enc_path, enc_file);
+	snprintf(outfile, sizeof(outfile), "%s%s", path, enc_file);
+	*strrchr(outfile, '.') = 0;
+	strcat(outfile, ".ps2.iso");
+
+	if (mkdirs(outfile) != SUCCESS)
+	{
+		show_message("Error! Export folder is not available");
+		return;
+	}
+
+	init_loading_screen(msg);
+	// Hardcoded to 2P0001-PS2U10000_00-0000111122223333 klicensee
+	ps2_decrypt_image(0, (u8*)"\xe4\xe5\x4f\xd6\x7c\x16\xc3\x16\xf4\x78\x29\xa3\x04\x84\xd8\x43", ps2file, outfile, msg);
+	stop_loading_screen();
+}
+
+
 void exportFolder(const char* src_path, const char* exp_path, const char* msg)
 {
 	char* save_path;
@@ -384,11 +427,31 @@ void exportFolder(const char* src_path, const char* exp_path, const char* msg)
 	stop_loading_screen();
 }
 
-void exportLicensesRap(const char* fname, const char* exp_path)
+void exportLicensesRap(const char* fname, uint8_t dest)
 {
 	DIR *d;
 	struct dirent *dir;
 	char lic_path[256];
+	char msg[128] = "Exporting user licenses...";
+	const char* exp_path;
+
+	switch (dest)
+	{
+	case 0:
+		exp_path = EXPORT_RAP_PATH_USB0;
+		break;
+	
+	case 1:
+		exp_path = EXPORT_RAP_PATH_USB1;
+		break;
+
+	case 2:
+		exp_path = EXPORT_RAP_PATH_HDD;
+		break;
+
+	default:
+		return;
+	}
 
 	if (mkdirs(exp_path) != SUCCESS)
 	{
@@ -401,7 +464,7 @@ void exportLicensesRap(const char* fname, const char* exp_path)
 	if (!d)
 		return;
 
-    init_loading_screen("Exporting user licenses...");
+    init_loading_screen(msg);
 
 	LOG("Exporting RAPs from folder '%s'...", lic_path);
 	while ((dir = readdir(d)) != NULL)
@@ -411,6 +474,7 @@ void exportLicensesRap(const char* fname, const char* exp_path)
 			strcmp(strrchr(dir->d_name, '.'), ".rif") == 0)
 		{
 			LOG("Exporting %s", dir->d_name);
+			snprintf(msg, sizeof(msg), "Exporting %.36s...", dir->d_name);
 			rif2rap((u8*) apollo_config.idps, lic_path, dir->d_name, exp_path);
 		}
 	}
@@ -763,13 +827,8 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			code->activated = 0;
 			break;
 
-		case CMD_EXP_RAPS_USB:
-			exportLicensesRap(code->file, codecmd[1] ? EXPORT_RAP_PATH_USB1 : EXPORT_RAP_PATH_USB0);
-			code->activated = 0;
-			break;
-
-		case CMD_EXP_RAPS_HDD:
-			exportLicensesRap(code->file, EXPORT_RAP_PATH_HDD);
+		case CMD_EXP_LICS_RAPS:
+			exportLicensesRap(code->file, codecmd[1]);
 			code->activated = 0;
 			break;
 
@@ -836,6 +895,11 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_CONVERT_TO_PSV:
 			convertSavePSV(selected_entry->path, codecmd[1] ? EXP_PSV_PATH_USB1 : EXP_PSV_PATH_USB0, selected_entry->type);
+			code->activated = 0;
+			break;
+
+		case CMD_EXP_PS2_BINENC:
+			exportPS2classics(selected_entry->path, code->file, codecmd[1]);
 			code->activated = 0;
 			break;
 

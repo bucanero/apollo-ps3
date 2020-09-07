@@ -412,11 +412,10 @@ static void build_ps2_header(u8 * buffer, int npd_type, const char* content_id, 
 
 }
 
-void ps2_decrypt_image(u8 dex_mode, const u8* klicensee, const char* image_name, const char* data_file)
+void ps2_decrypt_image(u8 dex_mode, const u8* klicensee, const char* image_name, const char* data_file, char* msg_update)
 {
 	FILE * in;
 	FILE * data_out;
-	FILE * meta_out;
 
 	u8 ps2_data_key[0x10];
 	u8 ps2_meta_key[0x10];
@@ -438,7 +437,6 @@ void ps2_decrypt_image(u8 dex_mode, const u8* klicensee, const char* image_name,
 
 	//open files
 	in = fopen(image_name, "rb");
-	meta_out = fopen("/dev_hdd0/tmp/meta_file.bin", "wb");
 	data_out = fopen(data_file, "wb");
 
 	//get file info
@@ -477,8 +475,6 @@ void ps2_decrypt_image(u8 dex_mode, const u8* klicensee, const char* image_name,
 	{
 		//decrypt meta
 		read = fread(meta_buffer, 1, segment_size, in);
-		aes128cbc(ps2_meta_key, iv, meta_buffer, read, meta_buffer);
-		fwrite(meta_buffer, read, 1, meta_out);
 
 		read = fread(data_buffer, 1, segment_size*num_child_segments, in);		
 		for(i=0;i<num_child_segments;i++)	
@@ -492,6 +488,7 @@ void ps2_decrypt_image(u8 dex_mode, const u8* klicensee, const char* image_name,
 		if(c >= flush_size) {
 			percent += 1;
 			decr_size = decr_size + c;
+			sprintf(msg_update, "Decrypted: %ld%% (%d Blocks)", (100*decr_size)/total_size, percent);
 			LOG("Decrypted: %d Blocks 0x%08lx", percent, decr_size);
 			c = 0;
 		}
@@ -505,7 +502,6 @@ void ps2_decrypt_image(u8 dex_mode, const u8* klicensee, const char* image_name,
 
 	fclose(in);
 	fclose(data_out);
-	fclose(meta_out);
 }
 
 void ps2_encrypt_image(u8 dex_mode, const char* image_name, const char* data_file, char* msg_update)

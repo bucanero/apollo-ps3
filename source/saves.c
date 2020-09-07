@@ -782,49 +782,56 @@ list_t * ReadBackupList(const char* userPath)
 	memset(item, 0, sizeof(save_entry_t));
 	asprintf(&item->name, "\x0b Export Licenses");
 	asprintf(&item->path, EXDATA_PATH_HDD, apollo_config.user_id);
-	item->flags = SAVE_FLAG_PS3 | SAVE_FLAG_RIF;
+	item->flags = SAVE_FLAG_PS3;
+	item->type = FILE_TYPE_RIF;
 	list_append(list, item);
 
 	item = (save_entry_t *)malloc(sizeof(save_entry_t));
 	memset(item, 0, sizeof(save_entry_t));
 	asprintf(&item->name, "\x0b Import Licenses (USB 0)");
 	asprintf(&item->path, IMPORT_RAP_PATH_USB0);
-	item->flags = SAVE_FLAG_PS3 | SAVE_FLAG_RAP;
+	item->flags = SAVE_FLAG_PS3;
+	item->type = FILE_TYPE_RAP;
 	list_append(list, item);
 
 	item = (save_entry_t *)malloc(sizeof(save_entry_t));
 	memset(item, 0, sizeof(save_entry_t));
 	asprintf(&item->name, "\x0b Import Licenses (USB 1)");
 	asprintf(&item->path, IMPORT_RAP_PATH_USB1);
-	item->flags = SAVE_FLAG_PS3 | SAVE_FLAG_RAP;
+	item->flags = SAVE_FLAG_PS3;
+	item->type = FILE_TYPE_RAP;
 	list_append(list, item);
 
 	item = (save_entry_t *)malloc(sizeof(save_entry_t));
 	memset(item, 0, sizeof(save_entry_t));
-	asprintf(&item->name, "\x0b Import/Encrypt PS2 ISOs (USB 0)");
+	asprintf(&item->name, "\x0b PS2 Classics: Import & Encrypt ISOs (USB 0)");
 	asprintf(&item->path, IMPORT_PS2_PATH_USB0);
-	item->flags = SAVE_FLAG_PS2 | SAVE_FLAG_ISO;
+	item->flags = SAVE_FLAG_PS2;
+	item->type = FILE_TYPE_ISO;
 	list_append(list, item);
 
 	item = (save_entry_t *)malloc(sizeof(save_entry_t));
 	memset(item, 0, sizeof(save_entry_t));
-	asprintf(&item->name, "\x0b Import/Encrypt PS2 ISOs (USB 1)");
+	asprintf(&item->name, "\x0b PS2 Classics: Import & Encrypt ISOs (USB 1)");
 	asprintf(&item->path, IMPORT_PS2_PATH_USB1);
-	item->flags = SAVE_FLAG_PS2 | SAVE_FLAG_ISO;
+	item->flags = SAVE_FLAG_PS2;
+	item->type = FILE_TYPE_ISO;
 	list_append(list, item);
 
 	item = (save_entry_t *)malloc(sizeof(save_entry_t));
 	memset(item, 0, sizeof(save_entry_t));
-	asprintf(&item->name, "\x0b Import/Encrypt PS2 ISOs (HDD)");
+	asprintf(&item->name, "\x0b PS2 Classics: Import & Encrypt ISOs (HDD)");
 	asprintf(&item->path, IMPORT_PS2_PATH_HDD);
-	item->flags = SAVE_FLAG_PS2 | SAVE_FLAG_ISO;
+	item->flags = SAVE_FLAG_PS2;
+	item->type = FILE_TYPE_ISO;
 	list_append(list, item);
 
 	item = (save_entry_t *)malloc(sizeof(save_entry_t));
 	memset(item, 0, sizeof(save_entry_t));
-	asprintf(&item->name, "\x0b Export/Decrypt PS2 BIN.ENCs");
+	asprintf(&item->name, "\x0b PS2 Classics: Export & Decrypt BIN.ENC files");
 	asprintf(&item->path, IMPORT_PS2_PATH_HDD);
-	item->flags = SAVE_FLAG_PS2 | SAVE_FLAG_BINENC;
+	item->flags = SAVE_FLAG_PS2;
+	item->type = FILE_TYPE_BINENC;
 	list_append(list, item);
 
 	item = (save_entry_t *)malloc(sizeof(save_entry_t));
@@ -897,7 +904,45 @@ int get_iso_files(save_entry_t * item)
 
 int get_binenc_files(save_entry_t * item)
 {
-	return 0;
+	int i = 0;
+	DIR *d;
+	struct dirent *dir;
+
+	item->code_count += getDirListSizeByExt(item->path, ".BIN.ENC");
+
+	if (!item->code_count)
+		return 0;
+
+	item->codes = (code_entry_t *)malloc(sizeof(code_entry_t) * item->code_count);
+
+	d = opendir(item->path);
+
+	if (d)
+	{
+		while ((dir = readdir(d)) != NULL && i < item->code_count)
+		{
+			if (dir->d_type == DT_REG && endsWith(dir->d_name, ".BIN.ENC"))
+			{
+				memset(&item->codes[i], 0, sizeof(code_entry_t));
+				item->codes[i].type = PATCH_COMMAND;
+
+				asprintf(&item->codes[i].name, "Decode %s to .ISO", dir->d_name);
+				asprintf(&item->codes[i].file, dir->d_name);
+				asprintf(&item->codes[i].codes, "%c", 0);
+
+				item->codes[i].options_count = 1;
+				item->codes[i].options = _createOptions(3, "Save .ISO to USB", CMD_EXP_PS2_BINENC);
+				asprintf(&item->codes[i].options->name[2], "Save .ISO to HDD");
+				asprintf(&item->codes[i].options->value[2], "%c%c", CMD_EXP_PS2_BINENC, 2);
+
+				LOG("[%d] File '%s'", i, item->codes[i].file);
+				i++;
+			}
+		}
+		closedir(d);
+	}
+
+	return item->code_count;
 }
 
 int ReadBackupCodes(save_entry_t * bup)
@@ -905,18 +950,18 @@ int ReadBackupCodes(save_entry_t * bup)
 	int bup_count = 0;
 	char fext[5] = "";
 
-	if (bup->flags & SAVE_FLAG_ISO)
+	if (bup->type == FILE_TYPE_ISO)
 		return get_iso_files(bup);
 
-	if (bup->flags & SAVE_FLAG_BINENC)
+	if (bup->type == FILE_TYPE_BINENC)
 		return get_binenc_files(bup);
 
-	if (bup->flags & SAVE_FLAG_RIF)
+	if (bup->type == FILE_TYPE_RIF)
 	{
 		sprintf(fext, ".rif");
 		bup_count = getDirListSizeByExt(bup->path, fext) + 2;
 	}
-	else if (bup->flags & SAVE_FLAG_RAP)
+	else if (bup->type == FILE_TYPE_RAP)
 	{
 		sprintf(fext, ".rap");
 		bup_count = getDirListSizeByExt(bup->path, fext) + 1;
@@ -931,7 +976,7 @@ int ReadBackupCodes(save_entry_t * bup)
 	bup_count = 0;
 	LOG("Loading backup files from '%s'...", bup->path);
 
-	if (bup->flags & SAVE_FLAG_RIF)
+	if (bup->type == FILE_TYPE_RIF)
 	{
 		_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0c Backup All Licenses to .Zip", 0);
 		ret[bup_count].options_count = 1;
@@ -940,13 +985,13 @@ int ReadBackupCodes(save_entry_t * bup)
 
 		_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0b Export All Licenses as .RAPs", 0);
 		ret[bup_count].options_count = 1;
-		ret[bup_count].options = _createOptions(3, "Save .RAPs to USB", CMD_EXP_RAPS_USB);
+		ret[bup_count].options = _createOptions(3, "Save .RAPs to USB", CMD_EXP_LICS_RAPS);
 		asprintf(&ret[bup_count].options->name[2], "Save .RAPs to HDD");
-		asprintf(&ret[bup_count].options->value[2], "%c", CMD_EXP_RAPS_HDD);
+		asprintf(&ret[bup_count].options->value[2], "%c%c", CMD_EXP_LICS_RAPS, 2);
 		bup_count++;
 	}
 
-	if (bup->flags & SAVE_FLAG_RAP)
+	if (bup->type == FILE_TYPE_RAP)
 	{
 		_setManualCode(&ret[bup_count], PATCH_COMMAND, "\x0b Import All .RAPs as .RIF Licenses", CMD_IMP_EXDATA_USB);
 		bup_count++;
@@ -966,16 +1011,16 @@ int ReadBackupCodes(save_entry_t * bup)
 				memset(&ret[bup_count], 0, sizeof(code_entry_t));
 				ret[bup_count].type = PATCH_COMMAND;
 
-				if (bup->flags & SAVE_FLAG_RIF)
+				if (bup->type == FILE_TYPE_RIF)
 				{
 					_setManualCode(&ret[bup_count], PATCH_COMMAND, dir->d_name, 0);
 					*strrchr(ret[bup_count].name, '.') = 0;
 					ret[bup_count].options_count = 1;
-					ret[bup_count].options = _createOptions(3, "Save .RAP to USB", CMD_EXP_RAPS_USB);
+					ret[bup_count].options = _createOptions(3, "Save .RAP to USB", CMD_EXP_LICS_RAPS);
 					asprintf(&ret[bup_count].options->name[2], "Save .RAP to HDD");
-					asprintf(&ret[bup_count].options->value[2], "%c", CMD_EXP_RAPS_HDD);
+					asprintf(&ret[bup_count].options->value[2], "%c%c", CMD_EXP_LICS_RAPS, 2);
 				}
-				else if (bup->flags & SAVE_FLAG_RAP)
+				else if (bup->type == FILE_TYPE_RAP)
 				{
 					asprintf(&ret[bup_count].name, dir->d_name);
 					*strrchr(ret[bup_count].name, '.') = 0;
@@ -1215,7 +1260,7 @@ void read_psv_savegames(const char* userPath, list_t *list)
 		item = (save_entry_t *)malloc(sizeof(save_entry_t));
 		item->codes = NULL;
 		item->code_count = 0;
-		item->flags = SAVE_FLAG_PSV;
+		item->flags = SAVE_FLAG_PSV | (type == 1 ? SAVE_FLAG_PS1 : SAVE_FLAG_PS2);
 
 		asprintf(&item->path, "%s%s", userPath, dir->d_name);
 		asprintf(&item->title_id, "%.12s", dir->d_name);

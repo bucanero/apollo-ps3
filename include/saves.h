@@ -88,9 +88,9 @@ enum cmd_code_enum
 // Export commands
     CMD_EXP_EXDATA_USB,
     CMD_EXP_TROPHY_USB,
-    CMD_EXP_RAPS_USB,
-    CMD_EXP_RAPS_HDD,
+    CMD_EXP_LICS_RAPS,
     CMD_EXP_FLASH2_USB,
+    CMD_EXP_PS2_BINENC,
 
 // Import commands
     CMD_IMP_EXDATA_USB,
@@ -112,10 +112,6 @@ enum cmd_code_enum
 #define SAVE_FLAG_PS2           16
 #define SAVE_FLAG_PSP           32
 #define SAVE_FLAG_PSV           64
-#define SAVE_FLAG_RIF           128
-#define SAVE_FLAG_RAP           256
-#define SAVE_FLAG_ISO           512
-#define SAVE_FLAG_BINENC        1024
 
 enum save_type_enum
 {
@@ -254,7 +250,7 @@ int rap2rif(const uint8_t* idps_key, const char* exdata_path, const char* rap_fi
 int create_savegame_folder(const char* folder);
 
 void ps2_encrypt_image(uint8_t dex_mode, const char* image_name, const char* data_file, char* msg_update);
-void ps2_decrypt_image(uint8_t dex_mode, const uint8_t* klicensee, const char* image_name, const char* data_file);
+void ps2_decrypt_image(uint8_t dex_mode, const uint8_t* klicensee, const char* image_name, const char* data_file, char* msg_update);
 void ps2_crypt_vmc(uint8_t dex_mode, const char* vmc_path, const char* vmc_out, int crypt_mode);
 int psv_resign(const char *src_psv);
 
