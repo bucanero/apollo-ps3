@@ -127,8 +127,8 @@ void aesOmacMode1(u8* output, const u8* input, int len, const u8* aes_key_data, 
 /*
  *  vmc proper hash
  */
-int vmc_hash(const char *mc_in) {
-    
+int vmc_hash(const char *mc_in)
+{    
     int i, segment_count = 0, TotalSize=0 ;
     uint8_t segment_hashes[16384], segment_data[16384], sha1_hash[0x14];
     u32 read = 0;
@@ -158,13 +158,12 @@ int vmc_hash(const char *mc_in) {
         fseeko(f, 0, SEEK_END);
         TotalSize = ftello(f);
         
-        segment_count = (TotalSize - sizeof(segment_data)) / sizeof(segment_data);
+        segment_count = TotalSize / sizeof(segment_data);
         
         for (i = 0; i < segment_count; i++)
         {
             fseek(f, (i * sizeof(segment_data)), SEEK_SET);
             read = fread(segment_data, 1, sizeof(segment_data), f);
-            //fwrite(segment_data, 1, sizeof(segment_data), out);
             sha1(segment_data, sizeof(segment_data), sha1_hash);
             memcpy(segment_hashes + i * sizeof(sha1_hash), sha1_hash, sizeof(sha1_hash));
             
@@ -636,16 +635,11 @@ void ps2_crypt_vmc(u8 dex_mode, const char* vmc_path, const char* vmc_out, int c
 {
 	FILE * in;
 	FILE * data_out;
-
 	u8 ps2_vmc_key[0x10];
 	u8 iv[0x10];
-
-	int segment_size;
 	u8 * data_buffer;
 	u32 read = 0;
 
-	segment_size = PS2_DEFAULT_SEGMENT_SIZE;
-	
 	// Validate new hashes
 	if ((crypt_mode == PS2_VMC_ENCRYPT) && !vmc_hash(vmc_path))
 		return;
@@ -655,7 +649,7 @@ void ps2_crypt_vmc(u8 dex_mode, const char* vmc_path, const char* vmc_out, int c
 	data_out = fopen(vmc_out, "wb");
 
 	//alloc buffers
-	data_buffer = malloc(segment_size);
+	data_buffer = malloc(PS2_DEFAULT_SEGMENT_SIZE);
 
 	//generate keys
 	if(dex_mode)
@@ -669,7 +663,7 @@ void ps2_crypt_vmc(u8 dex_mode, const char* vmc_path, const char* vmc_out, int c
 	
 	set_ps2_iv(iv);
 
-	while((read = fread(data_buffer, 1, segment_size, in)))
+	while((read = fread(data_buffer, 1, PS2_DEFAULT_SEGMENT_SIZE, in)))
 	{
 		//decrypt or encrypt vmc
 		if(crypt_mode == PS2_VMC_DECRYPT)
@@ -691,8 +685,7 @@ void ps2_crypt_vmc(u8 dex_mode, const char* vmc_path, const char* vmc_out, int c
 	fclose(data_out);
 	
 	// Remove hashes
-	if (crypt_mode == PS2_VMC_DECRYPT)
-		truncate(vmc_out, sz - 0x4000);
+	truncate((crypt_mode ? vmc_path : vmc_out), sz - PS2_DEFAULT_SEGMENT_SIZE);
 }
 
 /*

@@ -462,7 +462,7 @@ int set_ps2_codes(save_entry_t* item)
 {
 	int i = 0;
 
-	item->code_count = 3;
+	item->code_count = 5;
 	item->codes = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (item->code_count));
 
 	_setManualCode(&item->codes[i], PATCH_COMMAND, "\x0b Decrypt SCEVMC0.VME", 0);
@@ -479,6 +479,18 @@ int set_ps2_codes(save_entry_t* item)
 	item->codes[i].options = _createOptions(3, "Decrypt SCEVMC1.VME to USB", CMD_DECRYPT_PS2_VME);
 	asprintf(&item->codes[i].options->name[2], "Decrypt SCEVMC1.VME to HDD");
 	asprintf(&item->codes[i].options->value[2], "%c%c", CMD_DECRYPT_PS2_VME, 2);
+	i++;
+
+	_setManualCode(&item->codes[i], PATCH_COMMAND, "\x0b Import a .VM2 to SCEVMC0.VME", 0);
+	asprintf(&item->codes[i].file, "SCEVMC0.VME");
+	item->codes[i].options_count = 1;
+	item->codes[i].options = _getFileOptions(EXP_PS2_PATH_HDD, "*.VM2", CMD_ENCRYPT_PS2_VMC);
+	i++;
+
+	_setManualCode(&item->codes[i], PATCH_COMMAND, "\x0b Import a .VM2 to SCEVMC1.VME", 0);
+	asprintf(&item->codes[i].file, "SCEVMC1.VME");
+	item->codes[i].options_count = 1;
+	item->codes[i].options = _getFileOptions(EXP_PS2_PATH_HDD, "*.VM2", CMD_ENCRYPT_PS2_VMC);
 	i++;
 
 	_setManualCode(&item->codes[i++], PATCH_COMMAND, "\x07 View Save Details", CMD_VIEW_DETAILS);

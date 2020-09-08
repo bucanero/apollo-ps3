@@ -340,6 +340,19 @@ void decryptVMEfile(const char* vme_path, const char* vme_file, uint8_t dst)
 	stop_loading_screen();
 }
 
+void encryptVM2file(const char* vme_path, const char* vme_file, const char* src_name)
+{
+	char vmefile[256];
+	char srcfile[256];
+
+	snprintf(vmefile, sizeof(vmefile), "%s%s", vme_path, vme_file);
+	snprintf(srcfile, sizeof(srcfile), "%s%s", EXP_PS2_PATH_HDD, src_name);
+
+	init_loading_screen("Encrypting VM2 card...");
+	ps2_crypt_vmc(0, srcfile, vmefile, 1);
+	stop_loading_screen();
+}
+
 void importPS2classics(const char* iso_path, const char* iso_file)
 {
 	char ps2file[256];
@@ -885,6 +898,11 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_DECRYPT_PS2_VME:
 			decryptVMEfile(selected_entry->path, code->file, codecmd[1]);
+			code->activated = 0;
+			break;
+
+		case CMD_ENCRYPT_PS2_VMC:
+			encryptVM2file(selected_entry->path, code->file, code->options[0].name[code->options[0].sel]);
 			code->activated = 0;
 			break;
 
