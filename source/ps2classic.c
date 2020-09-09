@@ -14,6 +14,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 #include <polarssl/aes.h>
 #include <polarssl/sha1.h>
 
@@ -49,7 +50,7 @@ typedef struct
 //prototypes
 static void build_ps2_header(u8 * buffer, int npd_type, const char* content_id, const char* filename, s64 iso_size);
 int vmc_hash(const char *mc_in);
-int ps2_iso9660_sig(FILE *f, const char *img_in);
+int ps2_iso9660_sig(const char *img_in);
 void ps2_build_limg(const char *img_in, int64_t size);
 
 
@@ -235,7 +236,9 @@ int ps2_add_vmc_ecc(const char* src, const char* dst)
 /*
  *  ps2_iso9660_sig
  */
-int ps2_iso9660_sig(FILE *f, const char *img_in) {
+int ps2_iso9660_sig(const char *img_in)
+{
+	FILE *f = fopen(img_in, "rb");
     
 	/* iso9660 offset DVD */
 	if(fseek(f, 0x8000, SEEK_SET) == 0) {
@@ -260,9 +263,9 @@ int ps2_iso9660_sig(FILE *f, const char *img_in) {
                 }
             }
         }
-
-		fseek(f, 0, SEEK_SET);
 	}
+	fclose(f);
+
 	return 1;
 }
 
@@ -380,14 +383,12 @@ void wbe64(u8* buf, u64 data)
 static void build_ps2_header(u8 * buffer, int npd_type, const char* content_id, const char* filename, s64 iso_size)
 {
 	int i;
-	u32 type = 1;
-//	u8 test_hash[] = { 0xBF, 0x2E, 0x44, 0x15, 0x52, 0x8F, 0xD7, 0xDD, 0xDB, 0x0A, 0xC2, 0xBF, 0x8C, 0x15, 0x87, 0x51 };
 
 	wbe32(buffer, 0x50533200);			// PS2\0
 	wbe16(buffer + 0x4, 0x1);			// ver major
 	wbe16(buffer + 0x6, 0x1);			// ver minor
 	wbe32(buffer + 0x8, npd_type);		// NPD type XX
-	wbe32(buffer + 0xc, type);			// type
+	wbe32(buffer + 0xc, 0x1);			// type
 		
 	wbe64(buffer + 0x88, iso_size); 		//iso size
 	wbe32(buffer + 0x84, PS2_DEFAULT_SEGMENT_SIZE); //segment size
@@ -398,8 +399,7 @@ static void build_ps2_header(u8 * buffer, int npd_type, const char* content_id, 
 
 	for(i=0;i<0x10;i++) npd_omac_key[i] = npd_kek[i] ^ npd_omac_key2[i];
 
-	get_rand(buffer + 0x40, 0x10); //npdhash1
-	//memcpy(buffer + 0x40, test_hash, 0x10);
+	memcpy(buffer + 0x40, "bucanero.com.ar", 0x10);
 
   	int buf_len = 0x30+strlen(filename);
 	char *buf = (char*)malloc(buf_len+1);
@@ -503,6 +503,13 @@ void ps2_decrypt_image(u8 dex_mode, const u8* klicensee, const char* image_name,
 	fclose(data_out);
 }
 
+int64_t get_fsize(const char* fname)
+{
+	struct stat st;
+	stat(fname, &st);
+	return st.st_size;
+}
+
 void ps2_encrypt_image(u8 dex_mode, const char* image_name, const char* data_file, char* msg_update)
 {
 	FILE * in;
@@ -529,18 +536,15 @@ void ps2_encrypt_image(u8 dex_mode, const char* image_name, const char* data_fil
 	encr_size = c = percent = 0;
 
 	//open files
-	in = fopen(image_name, "rb");
 	data_out = fopen(data_file, "wb");
 	
 	/* iso9660 check */
-	if (!ps2_iso9660_sig(in, image_name))
+	if (!ps2_iso9660_sig(image_name))
 		return;
 
 	//Get file info
 	segment_size = PS2_DEFAULT_SEGMENT_SIZE;
-	fseeko(in, 0, SEEK_END);
-	data_size = ftello(in);
-	fclose(in);
+	data_size = get_fsize(image_name);
 	
 	total_size = data_size;
 	flush_size = total_size / 100;
@@ -549,10 +553,9 @@ void ps2_encrypt_image(u8 dex_mode, const char* image_name, const char* data_fil
 	ps2_build_limg(image_name, data_size);
 	
 	// Get new file info -- FIX FAKE SIZE VALUE on PS2 HEADER
+	data_size = get_fsize(image_name);
+
 	in = fopen(image_name, "rb");
-	fseeko(in, 0, SEEK_END);
-	data_size = ftello(in);
-	fseeko(in, 0, SEEK_SET);
 
 	LOG("segment size: %x\ndata_size: %lx\nfile name: %s\nContent_id: %s\niso %s\nout file: %s\n", segment_size, data_size, PS2_REAL_OUT_NAME, PS2_PLACEHOLDER_CID, image_name, data_file);
 
@@ -629,6 +632,9 @@ void ps2_encrypt_image(u8 dex_mode, const char* image_name, const char* data_fil
 
 	fclose(in);
 	fclose(data_out);
+
+	// Restore original image file size
+	truncate(image_name, total_size);
 }
 
 void ps2_crypt_vmc(u8 dex_mode, const char* vmc_path, const char* vmc_out, int crypt_mode)
