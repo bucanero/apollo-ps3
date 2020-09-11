@@ -412,8 +412,7 @@ void exportPS2classics(const char* enc_path, const char* enc_file, uint8_t dst)
 	}
 
 	init_loading_screen(msg);
-	// Hardcoded to 2P0001-PS2U10000_00-0000111122223333 klicensee
-	ps2_decrypt_image(0, (u8*)"\xe4\xe5\x4f\xd6\x7c\x16\xc3\x16\xf4\x78\x29\xa3\x04\x84\xd8\x43", ps2file, outfile, msg);
+	ps2_decrypt_image(0, ps2file, outfile, msg);
 	stop_loading_screen();
 }
 

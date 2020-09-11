@@ -246,11 +246,12 @@ void execCodeCommand(code_entry_t* code, const char* codecmd);
 
 int rif2rap(const uint8_t* idps_key, const char* lic_path, const char* rifFile, const char* rap_path);
 int rap2rif(const uint8_t* idps_key, const char* exdata_path, const char* rap_file, const char *rif_path);
+int rif2klicensee(const u8* idps_key, const char* exdata_path, const char* rif_file, u8* klic);
 
 int create_savegame_folder(const char* folder);
 
 void ps2_encrypt_image(uint8_t dex_mode, const char* image_name, const char* data_file, char* msg_update);
-void ps2_decrypt_image(uint8_t dex_mode, const uint8_t* klicensee, const char* image_name, const char* data_file, char* msg_update);
+void ps2_decrypt_image(uint8_t dex_mode, const char* image_name, const char* data_file, char* msg_update);
 void ps2_crypt_vmc(uint8_t dex_mode, const char* vmc_path, const char* vmc_out, int crypt_mode);
 int psv_resign(const char *src_psv);
 

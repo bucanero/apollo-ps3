@@ -282,15 +282,13 @@ fail:
 	return 0;
 }
 
-int rif2rap(const u8* idps_key, const char* exdata_path, const char* rif_file, const char* rap_path)
+int rif2klicensee(const u8* idps_key, const char* exdata_path, const char* rif_file, u8* rifKey)
 {
 	struct rif rif;
 	struct actdat *actdat = NULL;
 
-    uint8_t rifKey[0x10];
     uint8_t encryptedConst[0x10];
     uint8_t decryptedConst[0x10];
-    uint8_t rap[0x10];
 	char path[256];
 
     snprintf(path, sizeof(path), "%s%s", exdata_path, rif_file);
@@ -313,17 +311,6 @@ int rif2rap(const u8* idps_key, const char* exdata_path, const char* rif_file, c
     aesecb128_decrypt(encryptedConst, &actdat->keyTable[rif.actDatIndex * 0x10], decryptedConst);
     aesecb128_decrypt(decryptedConst, rif.key, rifKey);
 
-    klicensee_to_rap(rifKey, rap);
-
-    snprintf(path, sizeof(path), "%s%s", rap_path, rif_file);
-    strcpy(strrchr(path, '.'), ".rap");
-
-	LOG("Saving RAP to '%s'...", path);
-	if (write_file(path, rap, sizeof(rap)) < 0) {
-		LOG("Error: unable to create rap file");
-		goto fail;
-	}
-
     free(actdat);
 	return 1;
 
@@ -333,4 +320,27 @@ fail:
 	} 
 
 	return 0;
+}
+
+int rif2rap(const u8* idps_key, const char* exdata_path, const char* rif_file, const char* rap_path)
+{
+    uint8_t rifKey[0x10];
+    uint8_t rap[0x10];
+    char path[256];
+
+    if (!rif2klicensee(idps_key, exdata_path, rif_file, rifKey))
+        return 0;
+
+    klicensee_to_rap(rifKey, rap);
+
+    snprintf(path, sizeof(path), "%s%s", rap_path, rif_file);
+    strcpy(strrchr(path, '.'), ".rap");
+
+	LOG("Saving RAP to '%s'...", path);
+	if (write_file(path, rap, sizeof(rap)) < 0) {
+		LOG("Error: unable to create rap file");
+		return 0;
+	}
+
+	return 1;
 }

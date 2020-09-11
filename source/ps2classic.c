@@ -6,14 +6,16 @@
 /*|DISAGREE TO RELEASE SRC :P   |*/
 /*+-----------------------------+*/
 
-#include "ecdsa.h"
 #include "types.h"
 #include "ps2_data.h"
+#include "settings.h"
+#include "common.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <dirent.h>
 #include <sys/stat.h>
 #include <polarssl/aes.h>
 #include <polarssl/sha1.h>
@@ -24,6 +26,7 @@
 #define PS2_META_ENTRY_SIZE         0x20
 #define PS2_REAL_OUT_NAME           "ISO.BIN.ENC"
 #define PS2_PLACEHOLDER_CID         "2P0001-PS2U10000_00-0000111122223333"
+#define PS2_REACTPSN_CID            "UP0001-RPS200000_00-0000000000000000"
 
 #define PS2_VMC_ENCRYPT             1
 #define PS2_VMC_DECRYPT             0
@@ -52,6 +55,7 @@ static void build_ps2_header(u8 * buffer, int npd_type, const char* content_id, 
 int vmc_hash(const char *mc_in);
 int ps2_iso9660_sig(const char *img_in);
 void ps2_build_limg(const char *img_in, int64_t size);
+int rif2klicensee(const u8* idps_key, const char* exdata_path, const char* rif_file, u8* klic);
 
 
 void aes128cbc(const u8 *key, const u8 *iv_in, const u8 *in, u64 len, u8 *out)
@@ -365,6 +369,55 @@ void ps2_build_limg(const char *img_in, int64_t size) {
 	fclose(f);
 }
 
+int get_image_klicensee(const char* fname, u8* klic)
+{
+	char cid[37];
+	FILE* fp;
+	
+	fp = fopen(fname, "rb");
+	fseek(fp, 0x10, SEEK_SET);
+	fread(cid, 1, sizeof(cid), fp);
+	fclose(fp);
+
+	if (memcmp(cid, PS2_PLACEHOLDER_CID, 36) == 0)
+	{
+		memcpy(klic, ps2_placeholder_klic, 16);
+		return 1;
+	}
+	else if (memcmp(cid, PS2_REACTPSN_CID, 36) == 0)
+	{
+		memcpy(klic, ps2_reactpsn_klic, 16);
+		return 1;
+	}
+	else
+	{
+		/* look for .rif and get klic */
+		char path[256];
+		struct dirent *dir;
+
+		DIR *d = opendir("/dev_hdd0/home/");
+
+		if (!d)
+			return 0;
+
+		while ((dir = readdir(d)) != NULL)
+		{
+			snprintf(path, sizeof(path), "/dev_hdd0/home/%s/exdata/%s.rif", dir->d_name, cid);
+			if (dir->d_type == DT_DIR && file_exists(path) == SUCCESS)
+			{
+				snprintf(path, sizeof(path), "/dev_hdd0/home/%s/exdata//%s.rif", dir->d_name, cid);
+				char *rif = strrchr(path, '/');
+				*rif = 0;
+
+				return rif2klicensee((u8*) apollo_config.idps, path, ++rif, klic);
+			}
+		}
+		closedir(d);
+	}
+	
+	return 0;
+}
+
 void wbe16(u8* buf, u16 data)
 {
 	memcpy(buf, &data, sizeof(u16));
@@ -411,7 +464,7 @@ static void build_ps2_header(u8 * buffer, int npd_type, const char* content_id, 
 
 }
 
-void ps2_decrypt_image(u8 dex_mode, const u8* klicensee, const char* image_name, const char* data_file, char* msg_update)
+void ps2_decrypt_image(u8 dex_mode, const char* image_name, const char* data_file, char* msg_update)
 {
 	FILE * in;
 	FILE * data_out;
@@ -419,6 +472,7 @@ void ps2_decrypt_image(u8 dex_mode, const u8* klicensee, const char* image_name,
 	u8 ps2_data_key[0x10];
 	u8 ps2_meta_key[0x10];
 	u8 iv[0x10];
+	u8 klicensee[0x10];
 
 	int segment_size;
 	s64 data_size;
@@ -433,6 +487,9 @@ void ps2_decrypt_image(u8 dex_mode, const u8* klicensee, const char* image_name,
 	int percent;
 	
 	decr_size = c = percent = 0;
+
+	if (!get_image_klicensee(image_name, klicensee))
+		return;
 
 	//open files
 	in = fopen(image_name, "rb");
@@ -621,9 +678,6 @@ void ps2_encrypt_image(u8 dex_mode, const char* image_name, const char* data_fil
 	
 		memset(data_buffer, 0, segment_size*num_child_segments);
 	}
-
-	//finalize ps2_header
-	// - wtf is between signature and first segment?
 
 	//cleanup
 	free(data_buffer);

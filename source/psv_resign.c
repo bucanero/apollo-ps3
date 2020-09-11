@@ -75,12 +75,10 @@ void generateHash(const uint8_t *input, uint8_t *dest, size_t sz, uint8_t type)
 	{	//PS1
 		LOG("PS1 Save File");
 		//idk why the normal cbc doesn't work.
+		memcpy(work_buf, salt_seed, 0x10);
+
 		aes_setkey_dec(&aes_ctx, psv_ps1key, 128);
-		memcpy(work_buf, salt_seed, 0x10);
-
 		aes_crypt_ecb(&aes_ctx, AES_DECRYPT, work_buf, salt);
-
-		memcpy(work_buf, salt_seed, 0x10);
 		aes_setkey_enc(&aes_ctx, psv_ps1key, 128);
 		aes_crypt_ecb(&aes_ctx, AES_ENCRYPT, work_buf, salt + 0x10);
 
