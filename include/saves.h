@@ -79,6 +79,7 @@ enum cmd_code_enum
     CMD_DECRYPT_PS2_VME,
     CMD_ENCRYPT_PS2_VMC,
     CMD_CONVERT_TO_PSV,
+    CMD_COPY_DUMMY_PSV,
 
 // Bulk commands
     CMD_RESIGN_SAVES_USB,

@@ -462,7 +462,7 @@ int set_ps2_codes(save_entry_t* item)
 {
 	int i = 0;
 
-	item->code_count = 5;
+	item->code_count = 6;
 	item->codes = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (item->code_count));
 
 	_setManualCode(&item->codes[i], PATCH_COMMAND, "\x0b Decrypt SCEVMC0.VME", 0);
@@ -491,6 +491,12 @@ int set_ps2_codes(save_entry_t* item)
 	asprintf(&item->codes[i].file, "SCEVMC1.VME");
 	item->codes[i].options_count = 1;
 	item->codes[i].options = _getFileOptions(EXP_PS2_PATH_HDD, "*.VM2", CMD_ENCRYPT_PS2_VMC);
+	i++;
+
+	_setManualCode(&item->codes[i], PATCH_COMMAND, "\x0b Copy dummy .PSV Save", 0);
+	asprintf(&item->codes[i].file, "APOLLO-99PS2.PSV");
+	item->codes[i].options_count = 1;
+	item->codes[i].options = _createOptions(2, "Copy APOLLO-99PS2.PSV to USB", CMD_COPY_DUMMY_PSV);
 	i++;
 
 	_setManualCode(&item->codes[i++], PATCH_COMMAND, "\x07 View Save Details", CMD_VIEW_DETAILS);

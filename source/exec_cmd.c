@@ -259,6 +259,27 @@ void resignPSVfile(const char* psv_path)
 	stop_loading_screen();
 }
 
+void copyDummyPSV(const char* psv_file, const char* out_path)
+{
+	char *in, *out;
+
+	if (mkdirs(out_path) != SUCCESS)
+	{
+		show_message("Error! Export folder is not available");
+		return;
+	}
+
+	asprintf(&in, APOLLO_DATA_PATH "%s", psv_file);
+	asprintf(&out, "%s%s", out_path, psv_file);
+
+	init_loading_screen("Copying PSV file...");
+	copy_file(in, out);
+	stop_loading_screen();
+
+	free(in);
+	free(out);
+}
+
 void convertSavePSV(const char* save_path, const char* out_path, uint16_t type)
 {
 	if (mkdirs(out_path) != SUCCESS)
@@ -912,6 +933,11 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_CONVERT_TO_PSV:
 			convertSavePSV(selected_entry->path, codecmd[1] ? EXP_PSV_PATH_USB1 : EXP_PSV_PATH_USB0, selected_entry->type);
+			code->activated = 0;
+			break;
+
+		case CMD_COPY_DUMMY_PSV:
+			copyDummyPSV(code->file, codecmd[1] ? EXP_PSV_PATH_USB1 : EXP_PSV_PATH_USB0);
 			code->activated = 0;
 			break;
 
