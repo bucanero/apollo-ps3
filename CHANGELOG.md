@@ -4,6 +4,19 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.4.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.4.0) - 2020-09-12
+
+### Added
+
+* PS2 Classics: decrypt `.VME` memcards
+* PS2 Classics: encrypt `.VM2` memcards
+* PS2 Classics: decrypt `BIN.ENC` images
+* PS2 Classics: encrypt `.ISO` images
+* Add `.PSV` resigning (PS1/PS2)
+* Add PS1 `.mcs`/`.psx` conversion to `.PSV`
+* Add PS2 `.max`/`.cbs`/`.xps`/`.psu` conversion to `.PSV`
+* Added `APOLLO-99PS2.PSV` dummy save (to refresh XMB virtual memcards)
+
 ## [v1.2.5](https://github.com/bucanero/apollo-ps3/releases/tag/v1.2.5) - 2020-07-26
 
 ### Added

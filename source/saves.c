@@ -847,7 +847,7 @@ list_t * ReadBackupList(const char* userPath)
 
 	item = (save_entry_t *)malloc(sizeof(save_entry_t));
 	memset(item, 0, sizeof(save_entry_t));
-	asprintf(&item->name, "\x0b PS2 Classics: Export & Decrypt BIN.ENC files");
+	asprintf(&item->name, "\x0b PS2 Classics: Export & Decrypt BIN.ENC images");
 	asprintf(&item->path, IMPORT_PS2_PATH_HDD);
 	item->flags = SAVE_FLAG_PS2;
 	item->type = FILE_TYPE_BINENC;

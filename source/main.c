@@ -47,8 +47,8 @@ enum menu_screen_ids
 
 //Sound
 #include "spu_soundmodule_bin.h"
-#include "spu_soundlib.h"
-#include "audioplayer.h"
+#include <soundlib/spu_soundlib.h>
+#include <soundlib/audioplayer.h>
 #include "background_music_mp3.h"
 
 // SPU
