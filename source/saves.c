@@ -423,9 +423,10 @@ int set_psx_import_codes(save_entry_t* item)
 {
 	int i = 0;
 
-	item->code_count = 1;
+	item->code_count = 2;
 	item->codes = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (item->code_count));
 
+	_setManualCode(&item->codes[i++], PATCH_COMMAND, "\x07 View Save Details", CMD_VIEW_DETAILS);
 	_setManualCode(&item->codes[i], PATCH_COMMAND, "\x0b Convert to .PSV", 0);
 	item->codes[i].options_count = 1;
 	item->codes[i].options = _createOptions(2, "Save .PSV file to USB", CMD_CONVERT_TO_PSV);
@@ -452,8 +453,8 @@ int set_psv_codes(save_entry_t* item)
 	item->code_count = 2;
 	item->codes = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (item->code_count));
 
-	_setManualCode(&item->codes[i++], PATCH_COMMAND, "\x06 Resign PSV", CMD_RESIGN_PSV);
 	_setManualCode(&item->codes[i++], PATCH_COMMAND, "\x07 View Save Details", CMD_VIEW_DETAILS);
+	_setManualCode(&item->codes[i++], PATCH_COMMAND, "\x06 Resign .PSV file", CMD_RESIGN_PSV);
 
 	return item->code_count;
 }
@@ -464,6 +465,8 @@ int set_ps2_codes(save_entry_t* item)
 
 	item->code_count = 6;
 	item->codes = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (item->code_count));
+
+	_setManualCode(&item->codes[i++], PATCH_COMMAND, "\x07 View Save Details", CMD_VIEW_DETAILS);
 
 	_setManualCode(&item->codes[i], PATCH_COMMAND, "\x0b Decrypt SCEVMC0.VME", 0);
 	asprintf(&item->codes[i].file, "SCEVMC0.VME");
@@ -498,8 +501,6 @@ int set_ps2_codes(save_entry_t* item)
 	item->codes[i].options_count = 1;
 	item->codes[i].options = _createOptions(2, "Copy APOLLO-99PS2.PSV to USB", CMD_COPY_DUMMY_PSV);
 	i++;
-
-	_setManualCode(&item->codes[i++], PATCH_COMMAND, "\x07 View Save Details", CMD_VIEW_DETAILS);
 
 	return item->code_count;
 }

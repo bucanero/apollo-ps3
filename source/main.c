@@ -592,8 +592,13 @@ code_entry_t* LoadSaveDetails()
 	char sfoPath[256];
 	code_entry_t* centry = calloc(1, sizeof(code_entry_t));
 
+	asprintf(&centry->name, selected_entry->title_id);
+
 	if (!(selected_entry->flags & SAVE_FLAG_PS3))
+	{
+		asprintf(&centry->codes, "%s\n\nTitle: %s\n", selected_entry->path, selected_entry->name);
 		return(centry);
+	}
 
 	snprintf(sfoPath, sizeof(sfoPath), "%s" "PARAM.SFO", selected_entry->path);
 	LOG("Save Details :: Reading %s...", sfoPath);
@@ -609,7 +614,6 @@ code_entry_t* LoadSaveDetails()
 	sfo_params_ids_t* param_ids = (sfo_params_ids_t*)(sfo_get_param_value(sfo, "PARAMS") + 0x1C);
 	param_ids->user_id = ES32(param_ids->user_id);
 
-    asprintf(&centry->name, selected_entry->title_id);
     asprintf(&centry->codes, "%s\n\n"
         "Title: %s\n"
         "Sub-Title: %s\n"
@@ -962,7 +966,7 @@ void doOptionsMenu()
 	Draw_OptionsMenu();
 }
 
-void doPatchViewMenu()
+int count_code_lines()
 {
 	//Calc max
 	int max = 0;
@@ -970,9 +974,16 @@ void doPatchViewMenu()
 
 	for(str = selected_centry->codes; *str; ++str)
 		max += (*str == '\n');
-	//max += -((512 - (120*2))/18) + 1; //subtract the max per page
+
 	if (max <= 0)
 		max = 1;
+
+	return max;
+}
+
+void doPatchViewMenu()
+{
+	int max = count_code_lines();
 	
 	// Check the pads.
 	if (readPad(0))
@@ -1035,17 +1046,17 @@ void doCodeOptionsMenu()
 
 void doSaveDetailsMenu()
 {
+	int max = count_code_lines();
+
 	// Check the pads.
 	if (readPad(0))
 	{
 		if(paddata[0].BTN_UP)
-		{
-			move_selection_back(9, 1);
-		}
+			move_selection_back(max, 1);
+
 		else if(paddata[0].BTN_DOWN)
-		{
-			move_selection_fwd(9, 1);
-		}
+			move_selection_fwd(max, 1);
+
 		if (paddata[0].BTN_CIRCLE)
 		{
 			if (selected_centry->name)
