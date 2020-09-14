@@ -152,6 +152,12 @@ exec:
 	make run
 
 #---------------------------------------------------------------------------------
+createzip:
+	@echo "creating appdata.zip ..."
+	@rm -fr pkgfiles/USRDIR/CACHE/appdata.zip
+	@cd appdata && zip ../pkgfiles/USRDIR/CACHE/appdata.zip *.*
+
+#---------------------------------------------------------------------------------
 pkg:	$(BUILD) $(OUTPUT).pkg
 
 #---------------------------------------------------------------------------------
