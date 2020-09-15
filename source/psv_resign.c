@@ -252,6 +252,54 @@ int ps1_mcs2psv(const char* mcsfile, const char* psv_path)
 	return 1;
 }
 
+int ps1_psv2mcs(const char* psvfile, const char* mcs_path)
+{
+	char dstName[256];
+	uint8_t mcshdr[128];
+	size_t sz;
+	uint8_t *input;
+	FILE *pf;
+	ps1_header_t *ps1h;
+
+	if (read_buffer(psvfile, &input, &sz) < 0) {
+		LOG("Failed to open input file");
+		return 0;
+	}
+
+	if (memcmp(input, PSV_MAGIC, 4) != 0) {
+		printf("Not a .psv file");
+		free(input);
+		return 0;
+	}
+
+	snprintf(dstName, sizeof(dstName), "%s%s.mcs", mcs_path, strrchr(psvfile, '/')+1);
+	pf = fopen(dstName, "wb");
+	if (!pf) {
+		perror("Failed to open output file");
+		free(input);
+		return 0;
+	}
+	
+	ps1h = (ps1_header_t*)(input + 0x40);
+
+	memset(mcshdr, 0, sizeof(mcshdr));
+	memcpy(mcshdr + 4, &ps1h->saveSize, 4);
+	memcpy(mcshdr + 10, ps1h->prodCode, sizeof(ps1h->prodCode));
+	mcshdr[0] = 0x51;
+	mcshdr[8] = 0xFF;
+	mcshdr[9] = 0xFF;
+
+	for (int x=0; x<127; x++)
+		mcshdr[127] ^= mcshdr[x];
+
+	fwrite(mcshdr, sizeof(mcshdr), 1, pf);
+	fwrite(input + 0x84, sz - 0x84, 1, pf);
+	fclose(pf);
+	free(input);
+
+	return 1;
+}
+
 int ps1_psx2psv(const char* psxfile, const char* psv_path)
 {
 	char dstName[256];

@@ -750,3 +750,93 @@ int ps2_xps2psv(const char *save, const char *psv_path)
 
     return psv_resign(dstName);
 }
+
+int ps2_psv2psu(const char *save, const char* psu_path)
+{
+    u32 dataPos = 0;
+    FILE *psuFile, *psvFile;
+    int numFiles, next;
+    char dstName[256];
+    u8 *data;
+    ps2_McFsEntry entry;
+    ps2_MainDirInfo_t ps2md;
+    ps2_FileInfo_t ps2fi;
+    
+    psvFile = fopen(save, "rb");
+    if(!psvFile)
+        return 0;
+
+    snprintf(dstName, sizeof(dstName), "%s%s.psu", psu_path, strrchr(save, '/')+1);
+    psuFile = fopen(dstName, "wb");
+    
+    if(!psuFile)
+    {
+        fclose(psvFile);
+        return 0;
+    }
+
+    // Read main directory entry
+    fseek(psvFile, 0x68, SEEK_SET);
+    fread(&ps2md, sizeof(ps2_MainDirInfo_t), 1, psvFile);
+    numFiles = ES32(ps2md.numberOfFilesInDir);
+
+    memset(&entry, 0, sizeof(entry));
+    memcpy(&entry.created, &ps2md.created, sizeof(sceMcStDateTime));
+    memcpy(&entry.modified, &ps2md.modified, sizeof(sceMcStDateTime));
+    memcpy(entry.name, ps2md.filename, sizeof(entry.name));
+    entry.mode = ps2md.attribute;
+    entry.length = ps2md.numberOfFilesInDir;
+    fwrite(&entry, sizeof(entry), 1, psuFile);
+
+    // "."
+    memset(entry.name, 0, sizeof(entry.name));
+    strcpy(entry.name, ".");
+    entry.length = 0;
+    fwrite(&entry, sizeof(entry), 1, psuFile);
+    numFiles--;
+
+    // ".."
+    strcpy(entry.name, "..");
+    fwrite(&entry, sizeof(entry), 1, psuFile);
+    numFiles--;
+
+    while (numFiles > 0)
+    {
+        fread(&ps2fi, sizeof(ps2_FileInfo_t), 1, psvFile);
+        dataPos = ftell(psvFile);
+
+        memset(&entry, 0, sizeof(entry));
+        memcpy(&entry.created, &ps2fi.created, sizeof(sceMcStDateTime));
+        memcpy(&entry.modified, &ps2fi.modified, sizeof(sceMcStDateTime));
+        memcpy(entry.name, ps2fi.filename, sizeof(entry.name));
+        entry.mode = ps2fi.attribute;
+        entry.length = ps2fi.filesize;
+        fwrite(&entry, sizeof(entry), 1, psuFile);
+
+        ps2fi.positionInFile = ES32(ps2fi.positionInFile);
+        ps2fi.filesize = ES32(ps2fi.filesize);
+        data = malloc(ps2fi.filesize);
+
+        fseek(psvFile, ps2fi.positionInFile, SEEK_SET);
+        fread(data, 1, ps2fi.filesize, psvFile);
+        fwrite(data, 1, ps2fi.filesize, psuFile);
+        free(data);
+
+        next = 1024 - (ps2fi.filesize % 1024);
+        if(next < 1024)
+        {
+            data = malloc(next);
+            memset(data, 0xFF, next);
+            fwrite(data, 1, next, psuFile);
+            free(data);
+        }
+
+        fseek(psvFile, dataPos, SEEK_SET);
+        numFiles--;
+    }
+
+    fclose(psvFile);
+    fclose(psuFile);
+    
+    return 1;
+}

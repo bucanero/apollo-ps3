@@ -280,6 +280,24 @@ void copyDummyPSV(const char* psv_file, const char* out_path)
 	free(out);
 }
 
+void exportPSVfile(const char* in_file, const char* out_path)
+{
+	if (mkdirs(out_path) != SUCCESS)
+	{
+		show_message("Error! Export folder is not available");
+		return;
+	}
+
+	init_loading_screen("Exporting PSV file...");
+
+	if (selected_entry->flags & SAVE_FLAG_PS1)
+		ps1_psv2mcs(in_file, out_path);
+	else
+		ps2_psv2psu(in_file, out_path);
+
+	stop_loading_screen();
+}
+
 void convertSavePSV(const char* save_path, const char* out_path, uint16_t type)
 {
 	if (mkdirs(out_path) != SUCCESS)
@@ -943,6 +961,16 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_EXP_PS2_BINENC:
 			exportPS2classics(selected_entry->path, code->file, codecmd[1]);
+			code->activated = 0;
+			break;
+
+		case CMD_EXP_PSV_MCS:
+			exportPSVfile(selected_entry->path, codecmd[1] ? USB1_PATH PS1_IMP_PATH_USB : USB0_PATH PS1_IMP_PATH_USB);
+			code->activated = 0;
+			break;
+
+		case CMD_EXP_PSV_PSU:
+			exportPSVfile(selected_entry->path, codecmd[1] ? USB1_PATH PS2_IMP_PATH_USB : USB0_PATH PS2_IMP_PATH_USB);
 			code->activated = 0;
 			break;
 

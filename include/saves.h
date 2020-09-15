@@ -92,6 +92,8 @@ enum cmd_code_enum
     CMD_EXP_LICS_RAPS,
     CMD_EXP_FLASH2_USB,
     CMD_EXP_PS2_BINENC,
+    CMD_EXP_PSV_MCS,
+    CMD_EXP_PSV_PSU,
 
 // Import commands
     CMD_IMP_EXDATA_USB,
@@ -262,5 +264,7 @@ int ps2_psu2psv(const char *save, const char* psv_path);
 int ps2_max2psv(const char *save, const char* psv_path);
 int ps2_cbs2psv(const char *save, const char *psv_path);
 int ps2_xps2psv(const char *save, const char *psv_path);
+int ps1_psv2mcs(const char* save, const char* mcs_path);
+int ps2_psv2psu(const char *save, const char* psu_path);
 
 char* sjis2utf8(char* input);

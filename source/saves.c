@@ -450,11 +450,24 @@ int set_psv_codes(save_entry_t* item)
 {
 	int i = 0;
 
-	item->code_count = 2;
+	item->code_count = 3;
 	item->codes = (code_entry_t *)calloc(1, sizeof(code_entry_t) * (item->code_count));
 
 	_setManualCode(&item->codes[i++], PATCH_COMMAND, "\x07 View Save Details", CMD_VIEW_DETAILS);
 	_setManualCode(&item->codes[i++], PATCH_COMMAND, "\x06 Resign .PSV file", CMD_RESIGN_PSV);
+
+	if (item->flags & SAVE_FLAG_PS1)
+	{
+		_setManualCode(&item->codes[i], PATCH_COMMAND, "\x0b Export PS1 save to .MCS", 0);
+		item->codes[i].options_count = 1;
+		item->codes[i].options = _createOptions(2, "Save .MCS file to USB", CMD_EXP_PSV_MCS);
+	}
+	else
+	{
+		_setManualCode(&item->codes[i], PATCH_COMMAND, "\x0b Export PS2 save to .PSU", 0);
+		item->codes[i].options_count = 1;
+		item->codes[i].options = _createOptions(2, "Save .PSU file to USB", CMD_EXP_PSV_PSU);
+	}
 
 	return item->code_count;
 }
