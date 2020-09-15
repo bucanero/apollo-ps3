@@ -94,11 +94,13 @@ enum cmd_code_enum
     CMD_EXP_PS2_BINENC,
     CMD_EXP_PSV_MCS,
     CMD_EXP_PSV_PSU,
+    CMD_EXP_VM2_RAW,
 
 // Import commands
     CMD_IMP_EXDATA_USB,
     CMD_IMP_TROPHY_USB,
     CMD_IMP_PS2ISO_USB,
+    CMD_IMP_PS2VMC_USB,
 
 // SFO patches
     SFO_UNLOCK_COPY,
@@ -129,6 +131,8 @@ enum save_type_enum
     FILE_TYPE_MAX,
     FILE_TYPE_CBS,
     FILE_TYPE_XPS,
+    FILE_TYPE_VM2,
+    FILE_TYPE_PS2RAW,
 
     // License Files
     FILE_TYPE_RIF,
@@ -256,6 +260,8 @@ int create_savegame_folder(const char* folder);
 void ps2_encrypt_image(uint8_t dex_mode, const char* image_name, const char* data_file, char* msg_update);
 void ps2_decrypt_image(uint8_t dex_mode, const char* image_name, const char* data_file, char* msg_update);
 void ps2_crypt_vmc(uint8_t dex_mode, const char* vmc_path, const char* vmc_out, int crypt_mode);
+int ps2_add_vmc_ecc(const char* src, const char* dst);
+int ps2_remove_vmc_ecc(const char* src, const char* dst);
 int psv_resign(const char *src_psv);
 
 int ps1_mcs2psv(const char* save, const char* psv_path);

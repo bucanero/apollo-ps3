@@ -35,7 +35,7 @@
 #define PS2_VMC_RAW_16MB            0x1000000
 #define PS2_VMC_RAW_32MB            0x2000000
 #define PS2_VMC_RAW_64MB            0x4000000
-#define PS2_VMC_ECC_SIZE(x)         x/32
+#define PS2_VMC_ECC_SIZE(x)         x/32 + x
 #define PS2_VMC_DATASIZE            512
 
 #define be32(x)                     *(u32*)(x)
@@ -56,6 +56,7 @@ int vmc_hash(const char *mc_in);
 int ps2_iso9660_sig(const char *img_in);
 void ps2_build_limg(const char *img_in, int64_t size);
 int rif2klicensee(const u8* idps_key, const char* exdata_path, const char* rif_file, u8* klic);
+int64_t get_fsize(const char* fname);
 
 
 void aes128cbc(const u8 *key, const u8 *iv_in, const u8 *in, u64 len, u8 *out)
@@ -219,8 +220,38 @@ int ps2_add_vmc_ecc(const char* src, const char* dst)
 {
 	ps2_block_t block;
 	int i;
+	int64_t vmc_size = get_fsize(src);
+
+	switch (vmc_size)
+	{
+	case PS2_VMC_RAW_8MB:
+	case PS2_VMC_RAW_16MB:
+	case PS2_VMC_RAW_32MB:
+		LOG("Adding ECC to '%s' (0x%X)", src, vmc_size);
+		break;
+
+	case PS2_VMC_RAW_64MB:
+	case PS2_VMC_ECC_SIZE(PS2_VMC_RAW_64MB):
+		LOG("Error: 64Mb memcards are not supported by the PS3");
+		return 0;
+
+	case PS2_VMC_ECC_SIZE(PS2_VMC_RAW_8MB):
+	case PS2_VMC_ECC_SIZE(PS2_VMC_RAW_16MB):
+	case PS2_VMC_ECC_SIZE(PS2_VMC_RAW_32MB):
+		LOG("[!] File already has ECC '%s' (0x%X)", src, vmc_size);
+		copy_file(src, dst);
+		return 1;
+
+	default:
+		LOG("Error: invalid memcard size");
+		return 0;
+	}
+
 	FILE *in = fopen(src, "rb");
 	FILE *fo = fopen(dst, "wb");
+
+	if (!in || !fo)
+		return 0;
 
 	while(fread(&block, 1, PS2_VMC_DATASIZE, in) > 0)
 	{
@@ -234,7 +265,28 @@ int ps2_add_vmc_ecc(const char* src, const char* dst)
 	fclose(in);
 	fclose(fo);
 
-	return 0;
+	return 1;
+}
+
+int ps2_remove_vmc_ecc(const char* src, const char* dst)
+{
+	ps2_block_t block;
+
+	FILE *in = fopen(src, "rb");
+	FILE *fo = fopen(dst, "wb");
+
+	if (!in || !fo)
+		return 0;
+
+	while(fread(&block, 1, sizeof(ps2_block_t), in) > 0)
+	{
+		fwrite(&block, PS2_VMC_DATASIZE, 1, fo);
+	}
+
+	fclose(in);
+	fclose(fo);
+
+	return 1;
 }
 
 /*

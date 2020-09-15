@@ -890,6 +890,30 @@ list_t * ReadBackupList(const char* userPath)
 	item->codes->options = _createOptions(2, "Save dev_flash2.zip to USB", CMD_EXP_FLASH2_USB);
 	list_append(list, item);
 
+	item = (save_entry_t *)malloc(sizeof(save_entry_t));
+	memset(item, 0, sizeof(save_entry_t));
+	asprintf(&item->name, "\x0b Export PS2 .VM2 memory cards to USB");
+	asprintf(&item->path, EXP_PS2_PATH_HDD);
+	item->flags = SAVE_FLAG_PS2;
+	item->type = FILE_TYPE_VM2;
+	list_append(list, item);
+
+	item = (save_entry_t *)malloc(sizeof(save_entry_t));
+	memset(item, 0, sizeof(save_entry_t));
+	asprintf(&item->name, "\x0b Import PS2 raw memory cards (USB 0)");
+	asprintf(&item->path, EXP_PS2_PATH_USB0);
+	item->flags = SAVE_FLAG_PS2;
+	item->type = FILE_TYPE_PS2RAW;
+	list_append(list, item);
+
+	item = (save_entry_t *)malloc(sizeof(save_entry_t));
+	memset(item, 0, sizeof(save_entry_t));
+	asprintf(&item->name, "\x0b Import PS2 raw memory cards (USB 1)");
+	asprintf(&item->path, EXP_PS2_PATH_USB1);
+	item->flags = SAVE_FLAG_PS2;
+	item->type = FILE_TYPE_PS2RAW;
+	list_append(list, item);
+
 	return list;
 }
 
@@ -977,6 +1001,85 @@ int get_binenc_files(save_entry_t * item)
 	return item->code_count;
 }
 
+int get_vm2_files(save_entry_t * item)
+{
+	int i = 0;
+	DIR *d;
+	struct dirent *dir;
+
+	item->code_count += getDirListSizeByExt(item->path, ".VM2");
+
+	if (!item->code_count)
+		return 0;
+
+	item->codes = (code_entry_t *)malloc(sizeof(code_entry_t) * item->code_count);
+
+	d = opendir(item->path);
+
+	if (d)
+	{
+		while ((dir = readdir(d)) != NULL && i < item->code_count)
+		{
+			if (dir->d_type == DT_REG && endsWith(dir->d_name, ".VM2"))
+			{
+				memset(&item->codes[i], 0, sizeof(code_entry_t));
+				item->codes[i].type = PATCH_COMMAND;
+
+				asprintf(&item->codes[i].name, "Export %s to .RAW", dir->d_name);
+				asprintf(&item->codes[i].file, dir->d_name);
+				asprintf(&item->codes[i].codes, "%c", 0);
+
+				item->codes[i].options_count = 1;
+				item->codes[i].options = _createOptions(2, "Save .RAW to USB", CMD_EXP_VM2_RAW);
+
+				LOG("[%d] File '%s'", i, item->codes[i].file);
+				i++;
+			}
+		}
+		closedir(d);
+	}
+
+	return item->code_count;
+}
+
+int get_ps2_raw_files(save_entry_t * item)
+{
+	int i = 0;
+	DIR *d;
+	struct dirent *dir;
+
+	item->code_count += getDirListSizeByExt(item->path, ".RAW");
+
+	if (!item->code_count)
+		return 0;
+
+	item->codes = (code_entry_t *)malloc(sizeof(code_entry_t) * item->code_count);
+
+	d = opendir(item->path);
+
+	if (d)
+	{
+		while ((dir = readdir(d)) != NULL && i < item->code_count)
+		{
+			if (dir->d_type == DT_REG && endsWith(dir->d_name, ".RAW"))
+			{
+				memset(&item->codes[i], 0, sizeof(code_entry_t));
+				item->codes[i].type = PATCH_COMMAND;
+
+				asprintf(&item->codes[i].name, "Import %s to .VM2 (HDD)", dir->d_name);
+				asprintf(&item->codes[i].file, dir->d_name);
+				asprintf(&item->codes[i].codes, "%c", CMD_IMP_PS2VMC_USB);
+
+				LOG("[%d] File '%s'", i, item->codes[i].file);
+				i++;
+			}
+		}
+		closedir(d);
+	}
+
+	return item->code_count;
+}
+
 int ReadBackupCodes(save_entry_t * bup)
 {
 	int bup_count = 0;
@@ -987,6 +1090,12 @@ int ReadBackupCodes(save_entry_t * bup)
 
 	if (bup->type == FILE_TYPE_BINENC)
 		return get_binenc_files(bup);
+
+	if (bup->type == FILE_TYPE_VM2)
+		return get_vm2_files(bup);
+
+	if (bup->type == FILE_TYPE_PS2RAW)
+		return get_ps2_raw_files(bup);
 
 	if (bup->type == FILE_TYPE_RIF)
 	{

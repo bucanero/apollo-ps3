@@ -392,6 +392,39 @@ void encryptVM2file(const char* vme_path, const char* vme_file, const char* src_
 	stop_loading_screen();
 }
 
+void importPS2VMC(const char* vmc_path, const char* vmc_file)
+{
+	char vm2file[256];
+	char srcfile[256];
+
+	snprintf(srcfile, sizeof(srcfile), "%s%s", vmc_path, vmc_file);
+	snprintf(vm2file, sizeof(vm2file), "%s%s", EXP_PS2_PATH_HDD, vmc_file);
+	strcpy(strrchr(vm2file, '.'), ".VM2");
+
+	init_loading_screen("Importing PS2 memory card...");
+	ps2_add_vmc_ecc(srcfile, vm2file);
+	stop_loading_screen();
+}
+
+void exportVM2raw(const char* vm2_path, const char* vm2_file, const char* dst_path)
+{
+	char vm2file[256];
+	char dstfile[256]; 
+
+	if (mkdirs(dst_path) != SUCCESS)
+	{
+		show_message("Error! Export folder is not available");
+		return;
+	}
+
+	snprintf(vm2file, sizeof(vm2file), "%s%s", vm2_path, vm2_file);
+	snprintf(dstfile, sizeof(dstfile), "%s%s.raw", dst_path, vm2_file);
+
+	init_loading_screen("Exporting PS2 .VM2 memory card...");
+	ps2_remove_vmc_ecc(vm2file, dstfile);
+	stop_loading_screen();
+}
+
 void importPS2classics(const char* iso_path, const char* iso_file)
 {
 	char ps2file[256];
@@ -971,6 +1004,16 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_EXP_PSV_PSU:
 			exportPSVfile(selected_entry->path, codecmd[1] ? USB1_PATH PS2_IMP_PATH_USB : USB0_PATH PS2_IMP_PATH_USB);
+			code->activated = 0;
+			break;
+
+		case CMD_EXP_VM2_RAW:
+			exportVM2raw(selected_entry->path, code->file, codecmd[1] ? EXP_PS2_PATH_USB1 : EXP_PS2_PATH_USB0);
+			code->activated = 0;
+			break;
+
+		case CMD_IMP_PS2VMC_USB:
+			importPS2VMC(selected_entry->path, code->file);
 			code->activated = 0;
 			break;
 
