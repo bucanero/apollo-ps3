@@ -38,8 +38,8 @@
 
 #define EXPORT_PATH_USB0        USB0_PATH "PS3/EXPORT/"
 #define EXPORT_PATH_USB1        USB1_PATH "PS3/EXPORT/"
-#define EXPORT_RAP_PATH_USB0    EXPORT_PATH_USB0 "exdata/"
-#define EXPORT_RAP_PATH_USB1    EXPORT_PATH_USB1 "exdata/"
+#define EXPORT_RAP_PATH_USB0    USB0_PATH "exdata/"
+#define EXPORT_RAP_PATH_USB1    USB1_PATH "exdata/"
 #define EXPORT_RAP_PATH_HDD     "/dev_hdd0/exdata/"
 
 #define EXP_PSV_PATH_USB0       USB0_PATH PSV_SAVES_PATH_USB

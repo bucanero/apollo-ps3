@@ -14,12 +14,29 @@ The `apollo-ps3` homebrew app allows to download, unlock, patch and resign save-
 
 * **Easy to use:** no crypto-key configuration or advanced setup needed.
 * **Standalone:** no computer required, everything happens on the PS3.
+* **Automatic settings:** auto-detection of PSID, IDPS and Account-ID settings.
+* **Multi-user:** supports multiple user accounts.
+
+## Save Management
+
 * **Save files listing:** quick access to all the save files on USB and the internal PS3 HDD (+ file details)
 * **Save SFO unlocking:** allows the user to remove the copy-lock flag, enabling transfer of `Copying Prohibited` save files.
 * **Save files patching:** supports [Bruteforce Save Data](https://bruteforcesavedata.forumms.net/) and Game Genie cheat patches to enhance your savegames.
 * **Save PFD resigning:** allows the user to resign save files made by other users and consoles.
 * **Save downloading:** easy access to an Online Database of save-game files to download straight to your PlayStation.
-* **Automatic settings:** auto-detection of PSID and Account-ID settings.
+* **Save file conversion:** converts and resigns PS1 and PS2 save-game formats to PS3 `.PSV` format.
+
+## Backup Management
+
+* **License exporting:** easy backup of user licenses to `.zip` and `.rap` formats.
+* **License importing:** allows to import `.rap` files to user `.rif` licenses.
+
+## PS2 Classics Management
+
+* **Memory card exporting:** decrypt and export `.VME` memory cards.
+* **Memory card importing:** allows to import `.VM2` files to encrypted `.VME` memcards.
+* **ISO importing:** import PS2 `.ISO` files to `.BIN.ENC` encrypted image format.
+* **BIN.ENC exporting:** decrypt and export `BIN.ENC` images to `.ISO`.
 
 # Download
 
@@ -33,6 +50,38 @@ See the [latest changes here](https://github.com/bucanero/apollo-ps3/blob/master
 
 No special setup is needed. Just download the latest `apollo-ps3.pkg` package and install it on your PlayStation 3.
 On first run, the application will detect and setup the required user settings.
+
+## Data folders
+
+### PS3
+
+| PS3 | Folder |
+|-----|--------|
+| **USB saves** | your files must be placed on `/dev_usb00x/PS3/SAVEDATA/`. |
+| **HDD saves** | files will be scanned from `/dev_hdd0/home/000000XX/savedata/`, where `XX` is the current `User ID`. |
+| **HDD licenses** | `/dev_hdd0/home/000000XX/exdata/` (`*.rif`) |
+| **USB licenses** | `/dev_usb00x/exdata/` (`*.rap`) |
+
+### PS2
+
+| PS2 | Folder |
+|-----|--------|
+| **USB saves** | `/dev_usb00x/PS2/SAVEDATA/` (`*.xps`, `*.max`, `*.psu`, `*.cbs`, `*.sps`) |
+| **VMC cards** | `/dev_usb00x/PS2/VMC/` (`*.raw`) |
+| **VME cards** | `/dev_usb00x/PS3/EXPORT/PS2SD/` |
+| **PSV saves** | `/dev_usb00x/PS3/EXPORT/PSV/` |
+| **HDD VME cards** | `/dev_hdd0/home/000000XX/ps2emu2_savedata/`, where `XX` is the current `User ID`. |
+| **HDD VM2 cards** | `/dev_hdd0/savedata/vmc/` |
+| **HDD ISOs** | `/dev_hdd0/PS2ISO/` (`*.bin`, `*.iso`, `*.bin.enc`) |
+| **USB ISOs** | `/dev_usb00x/PS2ISO/` (`*.bin`, `*.iso`, `*.bin.enc`) |
+
+### PS1
+
+| PS1 | Folder |
+|-----|--------|
+| **USB saves** | `/dev_usb00x/PS1/SAVEDATA/` (`*.mcs`, `*.psx`) |
+| **PSV saves** | `/dev_usb00x/PS3/EXPORT/PSV/` |
+| **HDD VM1 cards** | `/dev_hdd0/savedata/vmc/` |
 
 # Usage
 
