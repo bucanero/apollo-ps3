@@ -4,6 +4,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.4.2](https://github.com/bucanero/apollo-ps3/releases/tag/v1.4.2) - 2020-09-18
+
 ### Added
 
 * Export PS1 `.PSV` saves to `.mcs`
