@@ -1025,12 +1025,12 @@ int get_vm2_files(save_entry_t * item)
 				memset(&item->codes[i], 0, sizeof(code_entry_t));
 				item->codes[i].type = PATCH_COMMAND;
 
-				asprintf(&item->codes[i].name, "Export %s to .RAW", dir->d_name);
+				asprintf(&item->codes[i].name, "Export %s to .VMC", dir->d_name);
 				asprintf(&item->codes[i].file, dir->d_name);
 				asprintf(&item->codes[i].codes, "%c", 0);
 
 				item->codes[i].options_count = 1;
-				item->codes[i].options = _createOptions(2, "Save .RAW to USB", CMD_EXP_VM2_RAW);
+				item->codes[i].options = _createOptions(2, "Save .VMC to USB", CMD_EXP_VM2_RAW);
 
 				LOG("[%d] File '%s'", i, item->codes[i].file);
 				i++;
@@ -1048,7 +1048,7 @@ int get_ps2_raw_files(save_entry_t * item)
 	DIR *d;
 	struct dirent *dir;
 
-	item->code_count += getDirListSizeByExt(item->path, ".RAW");
+	item->code_count += getDirListSizeByExt(item->path, ".VMC");
 
 	if (!item->code_count)
 		return 0;
@@ -1061,7 +1061,7 @@ int get_ps2_raw_files(save_entry_t * item)
 	{
 		while ((dir = readdir(d)) != NULL && i < item->code_count)
 		{
-			if (dir->d_type == DT_REG && endsWith(dir->d_name, ".RAW"))
+			if (dir->d_type == DT_REG && endsWith(dir->d_name, ".VMC"))
 			{
 				memset(&item->codes[i], 0, sizeof(code_entry_t));
 				item->codes[i].type = PATCH_COMMAND;

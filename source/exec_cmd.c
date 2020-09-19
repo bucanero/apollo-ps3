@@ -418,7 +418,7 @@ void exportVM2raw(const char* vm2_path, const char* vm2_file, const char* dst_pa
 	}
 
 	snprintf(vm2file, sizeof(vm2file), "%s%s", vm2_path, vm2_file);
-	snprintf(dstfile, sizeof(dstfile), "%s%s.raw", dst_path, vm2_file);
+	snprintf(dstfile, sizeof(dstfile), "%s%s.vmc", dst_path, vm2_file);
 
 	init_loading_screen("Exporting PS2 .VM2 memory card...");
 	ps2_remove_vmc_ecc(vm2file, dstfile);

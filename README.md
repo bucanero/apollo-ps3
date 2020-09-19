@@ -67,7 +67,7 @@ On first run, the application will detect and setup the required user settings.
 | PS2 | Folder |
 |-----|--------|
 | **USB saves** | `/dev_usb00x/PS2/SAVEDATA/` (`*.xps`, `*.max`, `*.psu`, `*.cbs`, `*.sps`) |
-| **VMC cards** | `/dev_usb00x/PS2/VMC/` (`*.raw`) |
+| **VMC cards** | `/dev_usb00x/PS2/VMC/` (`*.vmc`) |
 | **VME cards** | `/dev_usb00x/PS3/EXPORT/PS2SD/` |
 | **PSV saves** | `/dev_usb00x/PS3/EXPORT/PSV/` |
 | **HDD VME cards** | `/dev_hdd0/home/000000XX/ps2emu2_savedata/`, where `XX` is the current `User ID`. |
