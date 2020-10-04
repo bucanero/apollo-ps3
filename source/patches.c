@@ -1,8 +1,8 @@
 #include <polarssl/md.h>
 #include <polarssl/md5.h>
 #include <polarssl/sha1.h>
-#include <polarssl/sha2.h>
-#include <polarssl/sha4.h>
+#include <polarssl/sha256.h>
+#include <polarssl/sha512.h>
 #include <zlib.h>
 #include <dirent.h>
 
@@ -681,7 +681,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
                     var->len = BSD_VAR_SHA256;
                     var->data = malloc(var->len);
-					sha2(start, len, var->data, 0);
+					sha256(start, len, var->data, 0);
 
     			    LOG("len %d SHA256 HASH = %llx%llx%llx%llx\n", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint64_t*)var->data)[2], ((uint64_t*)var->data)[3]);
 			    }
@@ -694,7 +694,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
                     var->len = BSD_VAR_SHA512;
                     var->data = malloc(var->len);
-					sha4(start, len, var->data, 1);
+					sha512(start, len, var->data, 1);
 
     			    LOG("len %d SHA384 HASH = %llx%llx%llx%llx %llx%llx%llx%llx\n", len,
 						((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint64_t*)var->data)[2], ((uint64_t*)var->data)[3],
@@ -709,7 +709,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
                     var->len = BSD_VAR_SHA512;
                     var->data = malloc(var->len);
-					sha4(start, len, var->data, 0);
+					sha512(start, len, var->data, 0);
 
     			    LOG("len %d SHA512 HASH = %llx%llx%llx%llx %llx%llx%llx%llx\n", len,
 						((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint64_t*)var->data)[2], ((uint64_t*)var->data)[3],
