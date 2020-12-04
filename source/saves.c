@@ -765,7 +765,7 @@ int ReadOnlineSaves(save_entry_t * game)
 	
 	while (ptr < end && *ptr && cur_count < game_count)
 	{
-		char* content = ptr;
+		const char* content = ptr;
 
 		while (ptr < end && *ptr != '\n' && *ptr != '\r')
 		{
@@ -773,10 +773,11 @@ int ReadOnlineSaves(save_entry_t * game)
 		}
 		*ptr++ = 0;
 
-        LOG("ReadUserList() :: Reading %s...", content);
+        LOG("ReadOnlineSaves() :: Reading %s...", content);
 		if (content[12] == '=')
 		{
 			ret[cur_count].activated = 0;
+			ret[cur_count].type = PATCH_COMMAND;
 			asprintf(&ret[cur_count].codes, "%s/%.12s", game->title_id, content);
 
 			content += 13;
