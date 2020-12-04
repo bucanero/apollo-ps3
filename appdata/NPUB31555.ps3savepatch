@@ -7,6 +7,10 @@
 [Max Medals]
 2000b5c4 0098967F
 
+;by bucanero
+[Max W$ Money]
+2000D6AC 0098967F
+
 ;by chaoszage
 [Update CRC32 for SYSTEM.DAT (Required)]
 ;set range:0x000010,0x012D67
