@@ -112,6 +112,11 @@ void _drawListBackground(int off, int icon)
 		case cat_about_png_index:
 			break;
 
+		// for system dialogs
+		case 0xFFFFFFFF:
+			DrawTexture(&menu_textures[help_png_index], help_png_x, help_png_y + 50, 0, help_png_w, help_png_h - 100, 0xFFFFFF00 | 0xFF);
+			break;
+
 		default:
 			break;
 	}
