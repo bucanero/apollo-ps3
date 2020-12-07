@@ -1632,9 +1632,111 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     			//	Y = flag relative to read add (very tricky to understand)
     			//	Z = flag relative to current pointer (very tricky to understand)
     			//	V = Data
-    		{
-    		}
-    			break;
+			{
+				char t = line[1];
+				char w = line[2];
+				char x = line[3];
+//				char y = line[5];
+//				char z = line[7];
+				uint32_t val;
+
+				sprintf(tmp8, "%.8s", line+9);
+				sscanf(tmp8, "%x", &val);
+
+				char* write = data;
+
+				switch (w)
+				{
+				case '0':
+					// 0 = Read "address" from file
+					write += val;
+
+					switch (t)
+					{
+					case '0':
+					case '8':
+						// Data size = 8 bits
+						// 000000VV
+						pointer = (uint8_t) write[0];
+						break;
+
+					case '1':
+					case '9':
+						// Data size = 16 bits
+						// 0000VVVV
+						pointer = ((uint16_t*) write)[0];
+						break;
+
+					case '2':
+					case 'A':
+						// Data size = 32 bits
+						// VVVVVVVV
+						pointer = ((uint32_t*) write)[0];
+						break;
+
+					default:
+						break;
+					}
+					LOG("Read address (%X) = %lX", val, pointer);
+					break;
+
+				case '1':
+					// 1X = Move pointer from obtained address ?? (X = 0:add, 1:substract, 2:multiply)
+				case '2':
+					// 2X = Move pointer ?? (X = 0:add, 1:substract, 2:multiply)
+					switch (x)
+					{
+					case '0':
+						// 0:add
+						pointer += val;
+						break;
+
+					case '1':
+						// 1:substract
+						pointer -= val;
+						break;
+
+					case '2':
+						// 2:multiply
+						pointer *= val;
+						break;
+					
+					default:
+						break;
+					}
+					LOG("Pointer %ld (0x%lX) [val=%x]", pointer, pointer, val);
+					break;
+
+				case '4':
+					// 4X = Write value: X=0 at read address, X=1 at pointer address
+					write += pointer;
+
+					switch (t)
+					{
+						case '0':
+						case '8':
+							memcpy(write, (char*) &val +3, 1);
+							LOG("6-Wrote 1 byte (%02X) to 0x%lX", val, pointer);
+							break;
+						case '1':
+						case '9':
+							memcpy(write, (char*) &val +2, 2);
+							LOG("6-Wrote 2 bytes (%04X) to 0x%lX", val, pointer);
+							break;
+						case '2':
+						case 'A':
+							memcpy(write, (char*) &val, 4);
+							LOG("6-Wrote 4 bytes (%08X) to 0x%lX", val, pointer);
+							break;
+					}
+					break;
+
+				default:
+					break;
+				}
+
+			}
+				break;
 
     		case '7':
     			//	Add Write
@@ -1691,8 +1793,8 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     			//	8ZZZXXXX YYYYYYYY
     			//	Z= Amount of times to find before Write
     			//	X= Amount of data to Match
-    			//	Y= Seach For (note can be xtended for more just continue it like YYYYYYYY YYYYYYYY under it)
-    			//	Once u have your Seach type done then place one of the standard code types under it with setting T to the Pointer type
+    			//	Y= Seach For (note can be extended for more just continue it like YYYYYYYY YYYYYYYY under it)
+    			//	Once u have your Search type done then place one of the standard code types under it with setting T to the Pointer type
     		{
     			int i, cnt, len;
     			uint32_t val;

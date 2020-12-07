@@ -577,7 +577,7 @@ int ReadCodes(save_entry_t * save)
 	if (save->flags & SAVE_FLAG_LOCKED)
 		_setManualCode(&ret[cur_count++], PATCH_SFO, "\x08 Remove copy protection", SFO_UNLOCK_COPY);
 
-	_setManualCode(&ret[cur_count], PATCH_SFO, "\x07 Change region Title ID", SFO_CHANGE_TITLE_ID);
+	_setManualCode(&ret[cur_count], PATCH_SFO, "\x07 Change Region Title ID", SFO_CHANGE_TITLE_ID);
 	ret[cur_count].options_count = 1;
 	ret[cur_count].options = _getSaveTitleIDs(save->title_id);
 	cur_count++;
