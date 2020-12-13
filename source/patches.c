@@ -1471,6 +1471,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     char *data;
 	size_t dsize;
 	long pointer = 0;
+	uint32_t ptr_value = 0;
 	char tmp3[4], tmp4[5], tmp6[7], tmp8[9];
 	int codelen = strlen(code->codes);
     char *line = strtok(code->codes, "\n");
@@ -1624,31 +1625,36 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     			//	6 = Type 6: Pointer codes
     			//	T = Data size of VVVVVVVV: 0:8bit, 1:16bit, 2:32bit, search-> 8:8bit, 9:16bit, A:32bit
     			//	W = operator:
-    			//	      0 = Read "address" from file
+    			//	      0X = Read "address" from file (X = 0:none, 1:add, 2:multiply)
     			//	      1X = Move pointer from obtained address ?? (X = 0:add, 1:substract, 2:multiply)
     			//	      2X = Move pointer ?? (X = 0:add, 1:substract, 2:multiply)
     			//	      4X = Write value: X=0 at read address, X=1 at pointer address
-    			//	Y = flag relative to read add (very tricky to understand)
+    			//	Y = flag relative to read add (very tricky to understand; 0=absolute, 1=pointer)
     			//	Z = flag relative to current pointer (very tricky to understand)
     			//	V = Data
 			{
 				char t = line[1];
 				char w = line[2];
 				char x = line[3];
-//				char y = line[5];
-//				char z = line[7];
+				char y = line[5];
+				char z = line[7];
 				uint32_t val;
 
 				sprintf(tmp8, "%.8s", line+9);
 				sscanf(tmp8, "%x", &val);
 
 				char* write = data;
+				int off = ((t == '8' || t == '9' || t == 'A') ? pointer : 0);
 
 				switch (w)
 				{
 				case '0':
-					// 0 = Read "address" from file
-					write += val;
+					// 0X = Read "address" from file (X = 0:none, 1:add, 2:multiply)
+					val += (x == '1' ? ptr_value : 0);
+					write += (val + off);
+
+					if (y == '1')
+						pointer = val;
 
 					switch (t)
 					{
@@ -1656,31 +1662,58 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 					case '8':
 						// Data size = 8 bits
 						// 000000VV
-						pointer = (uint8_t) write[0];
+						ptr_value = (uint8_t) write[0];
 						break;
 
 					case '1':
 					case '9':
 						// Data size = 16 bits
 						// 0000VVVV
-						pointer = ((uint16_t*) write)[0];
+						ptr_value = ((uint16_t*) write)[0];
 						break;
 
 					case '2':
 					case 'A':
 						// Data size = 32 bits
 						// VVVVVVVV
-						pointer = ((uint32_t*) write)[0];
+						ptr_value = ((uint32_t*) write)[0];
 						break;
 
 					default:
 						break;
 					}
-					LOG("Read address (%X) = %lX", val, pointer);
+					LOG("Read address (%X) = %X", val, ptr_value);
 					break;
 
 				case '1':
 					// 1X = Move pointer from obtained address ?? (X = 0:add, 1:substract, 2:multiply)
+					switch (x)
+					{
+					case '0':
+						// 0:add
+						ptr_value += val;
+						break;
+
+					case '1':
+						// 1:substract
+						ptr_value -= val;
+						break;
+
+					case '2':
+						// 2:multiply
+						ptr_value *= val;
+						break;
+					
+					default:
+						break;
+					}
+
+					ptr_value += (z == '1' ? pointer : 0);
+					pointer = ptr_value;
+
+					LOG("Pointer %ld (0x%lX) [val=%x]", pointer, pointer, val);
+					break;
+
 				case '2':
 					// 2X = Move pointer ?? (X = 0:add, 1:substract, 2:multiply)
 					switch (x)
@@ -1703,6 +1736,10 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 					default:
 						break;
 					}
+
+					if (y == '1')
+						ptr_value = pointer;
+
 					LOG("Pointer %ld (0x%lX) [val=%x]", pointer, pointer, val);
 					break;
 
