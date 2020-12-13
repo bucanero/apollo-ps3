@@ -226,7 +226,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 		    sscanf(line, "(%d)", &tmpi);
 			carry = tmpi;
 		    
-		    LOG("Set carry bytes = %d\n", carry);
+		    LOG("Set carry bytes = %d", carry);
 		}
 
         // set *:*
@@ -319,7 +319,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			// set pointer:[*]*
     			else if (wildcard_match_icase(line, "[*]*"))
     			{
-    			    LOG("Getting value for %s\n", line);
+    			    LOG("Getting value for %s", line);
     			    pointer = _parse_int_value(line, pointer, dsize, var_list);
     			}
     			// set pointer:* (e.g. 0x00000000)
@@ -329,7 +329,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                     pointer = ptr_off;
     			}
 
-                LOG("POINTER = %ld (0x%lX)\n", pointer, pointer);
+                LOG("POINTER = %ld (0x%lX)", pointer, pointer);
 			}
 
 			// set range:*,*
@@ -351,7 +351,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 				if (range_end > dsize)
 					range_end = dsize;
 
-                LOG("RANGE = %ld (0x%lX) - %ld (0x%lX)\n", range_start, range_start, range_end, range_end);
+                LOG("RANGE = %ld (0x%lX) - %ld (0x%lX)", range_start, range_start, range_end, range_end);
 			}
 
 			// set crc_*:*
@@ -443,10 +443,10 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			        var->data = NULL;
     			    }
 
-    			    LOG("Old value 0x%X\n", old_val);
+    			    LOG("Old value 0x%X", old_val);
     			}
 
-        	    LOG("Var name = %s\n", var->name);
+        	    LOG("Var name = %s", var->name);
 
 			    line = tmp+2;
 			    *tmp = ']';
@@ -487,7 +487,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 					var->data = malloc(var->len);
 					memcpy(var->data, (u8*) &val, var->len);
 
-					LOG("Var [%s]:%s = %08X\n", var->name, line, val);
+					LOG("Var [%s]:%s = %08X", var->name, line, val);
 				}
 
 			    // set [*]:crc32*
@@ -514,7 +514,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 						custom_crc.reflection_output = 0;
 
         			    hash = crc32_hash(start, len, &custom_crc);
-        			    LOG("len %d CRC32Big HASH = %X\n", len, hash);
+        			    LOG("len %d CRC32Big HASH = %X", len, hash);
     			    }
     			    else
     			    {
@@ -523,7 +523,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 						custom_crc.reflection_output = 1;
 
         			    hash = crc32_hash(start, len, &custom_crc);
-        			    LOG("len %d CRC32 HASH = %X\n", len, hash);    			    
+        			    LOG("len %d CRC32 HASH = %X", len, hash);    			    
     			    }
 
                     var->len = BSD_VAR_INT32;
@@ -551,7 +551,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                     var->data = malloc(var->len);
                     memcpy(var->data, (u8*) &hash, var->len);
 
-    			    LOG("len %d CRC16 HASH = %X\n", len, hash);
+    			    LOG("len %d CRC16 HASH = %X", len, hash);
 			    }
 
 			    // set [*]:crc*
@@ -561,7 +561,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    u8* start = (u8*)data + range_start;
     			    len = range_end - range_start;
 
-                    LOG("ref.in %d ref.out %d\n", custom_crc.reflection_input, custom_crc.reflection_output);
+                    LOG("ref.in %d ref.out %d", custom_crc.reflection_input, custom_crc.reflection_output);
 
 			        if (custom_crc.bandwidth == 16)
 			        {
@@ -572,7 +572,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                         var->data = malloc(var->len);
                         memcpy(var->data, (u8*) &hash, var->len);
 
-        			    LOG("len %d Custom CRC16 HASH = %X\n", len, hash);
+        			    LOG("len %d Custom CRC16 HASH = %X", len, hash);
 			        }
 			        else
 			        {
@@ -583,7 +583,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                         var->data = malloc(var->len);
                         memcpy(var->data, (u8*) &hash, var->len);
 
-        			    LOG("len %d Custom CRC32 HASH = %X\n", len, hash);
+        			    LOG("len %d Custom CRC32 HASH = %X", len, hash);
 			        }
 			    }
 
@@ -618,7 +618,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                     var->data = malloc(var->len);
                     memcpy(var->data, (u8*) hash, var->len);
 
-    			    LOG("len %d MD5_XOR HASH = %X\n", len, *(uint32_t*)hash);
+    			    LOG("len %d MD5_XOR HASH = %X", len, *(uint32_t*)hash);
 			    }
 
 			    // set [*]:md5*
@@ -631,7 +631,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                     var->data = malloc(var->len);
 			        md5(start, len, var->data);
 
-    			    LOG("len %d MD5 HASH = %llx%llx\n", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1]);
+    			    LOG("len %d MD5 HASH = %llx%llx", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1]);
 			    }
 
 			    // set [*]:md2*
@@ -644,7 +644,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                     var->data = malloc(var->len);
                     md(md_info_from_type(POLARSSL_MD_MD2), start, len, var->data);
 
-    			    LOG("len %d MD2 HASH = %llx%llx\n", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1]);
+    			    LOG("len %d MD2 HASH = %llx%llx", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1]);
 			    }
 
 			    // set [*]:md4*
@@ -657,7 +657,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                     var->data = malloc(var->len);
                     md(md_info_from_type(POLARSSL_MD_MD4), start, len, var->data);
 
-    			    LOG("len %d MD4 HASH = %llx%llx\n", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1]);
+    			    LOG("len %d MD4 HASH = %llx%llx", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1]);
 				}
 
 			    // set [*]:sha1*
@@ -670,7 +670,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                     var->data = malloc(var->len);
 			        sha1(start, len, var->data);
 
-    			    LOG("len %d SHA1 HASH = %llx%llx%x\n", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint32_t*)var->data)[4]);
+    			    LOG("len %d SHA1 HASH = %llx%llx%x", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint32_t*)var->data)[4]);
 			    }
 
 			    // set [*]:sha256*
@@ -683,7 +683,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                     var->data = malloc(var->len);
 					sha256(start, len, var->data, 0);
 
-    			    LOG("len %d SHA256 HASH = %llx%llx%llx%llx\n", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint64_t*)var->data)[2], ((uint64_t*)var->data)[3]);
+    			    LOG("len %d SHA256 HASH = %llx%llx%llx%llx", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint64_t*)var->data)[2], ((uint64_t*)var->data)[3]);
 			    }
 
 			    // set [*]:sha384*
@@ -696,7 +696,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                     var->data = malloc(var->len);
 					sha512(start, len, var->data, 1);
 
-    			    LOG("len %d SHA384 HASH = %llx%llx%llx%llx %llx%llx%llx%llx\n", len,
+    			    LOG("len %d SHA384 HASH = %llx%llx%llx%llx %llx%llx%llx%llx", len,
 						((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint64_t*)var->data)[2], ((uint64_t*)var->data)[3],
 						((uint64_t*)var->data)[4], ((uint64_t*)var->data)[5], ((uint64_t*)var->data)[6], ((uint64_t*)var->data)[7]);
 			    }
@@ -711,7 +711,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                     var->data = malloc(var->len);
 					sha512(start, len, var->data, 0);
 
-    			    LOG("len %d SHA512 HASH = %llx%llx%llx%llx %llx%llx%llx%llx\n", len,
+    			    LOG("len %d SHA512 HASH = %llx%llx%llx%llx %llx%llx%llx%llx", len,
 						((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint64_t*)var->data)[2], ((uint64_t*)var->data)[3],
 						((uint64_t*)var->data)[4], ((uint64_t*)var->data)[5], ((uint64_t*)var->data)[6], ((uint64_t*)var->data)[7]);
 			    }
@@ -729,7 +729,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                     var->data = malloc(var->len);
                     memcpy(var->data, (u8*) &hash, var->len);
 
-    			    LOG("len %d Adler32 HASH = %X\n", len, hash);
+    			    LOG("len %d Adler32 HASH = %X", len, hash);
 			    }
 
 			    // set [*]:adler16*
@@ -750,7 +750,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                     var->data = malloc(var->len);
 					sha1_hmac((u8*) TLOU_HMAC_KEY, strlen(TLOU_HMAC_KEY), start, len, var->data);
 
-    			    LOG("len %d SHA1/HMAC HASH = %llx%llx%x\n", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint32_t*)var->data)[4]);
+    			    LOG("len %d SHA1/HMAC HASH = %llx%llx%x", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint32_t*)var->data)[4]);
 			    }
 
 			    // set [*]:eachecksum*
@@ -766,7 +766,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                     var->data = malloc(var->len);
                     memcpy(var->data, (u8*) &hash, var->len);
 
-    			    LOG("len %d EA/MC02 HASH = %X\n", len, hash);
+    			    LOG("len %d EA/MC02 HASH = %X", len, hash);
 			    }
 
 			    // set [*]:qwadd(*,*)*
@@ -814,7 +814,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                     var->data = malloc(var->len);
                     memcpy(var->data, (u8*) &add, var->len);
     			    
-    			    LOG("[%s]:dwadd(0x%X , 0x%X) = %X\n", var->name, add_s, add_e, add);
+    			    LOG("[%s]:dwadd(0x%X , 0x%X) = %X", var->name, add_s, add_e, add);
 			    }
 
 			    // set [*]:wadd(*,*)*
@@ -941,7 +941,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                     var->data = malloc(var->len);
                     memcpy(var->data, (u8*) &sub, var->len);
     			    
-    			    LOG("[%s]:wsub(0x%X , 0x%X) = %X\n", var->name, sub_s, sub_e, sub);
+    			    LOG("[%s]:wsub(0x%X , 0x%X) = %X", var->name, sub_s, sub_e, sub);
 			    }
 
 			    // set [*]:xor(*,*,*)*
@@ -986,7 +986,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                     var->data = malloc(var->len);
                     memcpy(var->data, (u8*) xor, var->len);
 
-    			    LOG("[%s]:XOR(0x%X , 0x%X, %d) = %X\n", var->name, xor_s, xor_e, xor_i, ((uint32_t*)var->data)[0]);
+    			    LOG("[%s]:XOR(0x%X , 0x%X, %d) = %X", var->name, xor_s, xor_e, xor_i, ((uint32_t*)var->data)[0]);
 			    }
 
 			    // set [*]:read(*,*)*
@@ -1031,7 +1031,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 					var->data = malloc(var->len);
 					memcpy(var->data, (u8*) read, var->len);
 
-					LOG("[%s]:read(0x%X , 0x%X) = %X\n", var->name, read_s, read_l, ((uint32_t*)var->data)[0]);
+					LOG("[%s]:read(0x%X , 0x%X) = %X", var->name, read_s, read_l, ((uint32_t*)var->data)[0]);
 			    }
 
 			    // set [*]:right(*,*)*
@@ -1068,7 +1068,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                     var->data = malloc(var->len);
                     memcpy(var->data, (u8*) &tval, var->len);
 
-    			    LOG("[%s]:%s = %X\n", var->name, line, tval);
+    			    LOG("[%s]:%s = %X", var->name, line, tval);
 			    }
 			        
 			}
@@ -1153,7 +1153,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    for (int i=0; i < wlen; i++)
 			        write_val[i] ^= data[off + i];
 
-				LOG(":xor:%s\n", line);
+				LOG(":xor:%s", line);
 			}
 
 			// write at/next *:repeat(*,*)*
@@ -1186,13 +1186,13 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 				free(r_val);
 				wlen = r_cnt * wlen;
 
-				LOG(":repeat(0x%X , %s)\n", r_cnt, line);
+				LOG(":repeat(0x%X , %s)", r_cnt, line);
 			}
 
 		    // write at/next *:[*]
 			else if (wildcard_match(line, "[*]"))
 			{
-			    LOG("Getting value for %s\n", line);
+			    LOG("Getting value for %s", line);
 			    write_val = _decode_variable_data(line, &wlen, var_list);
 			}
 
@@ -1216,7 +1216,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			memcpy(write, write_val, wlen);
 			free(write_val);
 
-            LOG("Wrote %d bytes (%s) to 0x%X\n", wlen, line, off);
+            LOG("Wrote %d bytes (%s) to 0x%X", wlen, line, off);
 		}
 
 		// insert *:*
@@ -1285,7 +1285,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			data = write;
 			dsize += ilen;
 
-            LOG("Inserted %d bytes (%s) from 0x%X to 0x%X\n", ilen, line, off, off + ilen);
+            LOG("Inserted %d bytes (%s) from 0x%X to 0x%X", ilen, line, off, off + ilen);
 		}
 
 		// delete *:*
@@ -1363,7 +1363,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			dsize -= dlen;
 			bcopy(write + dlen, write, dsize - off);
 
-            LOG("Deleted %d bytes (%s) from 0x%X to 0x%X\n", dlen, line, off, off + dlen);
+            LOG("Deleted %d bytes (%s) from 0x%X to 0x%X", dlen, line, off, off + dlen);
 		}
 
         // search *
@@ -1405,7 +1405,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			if (tmp)
 			    *tmp = ':';
 
-			LOG("Searching {%s} ...\n", line);
+			LOG("Searching {%s} ...", line);
 			pointer = search_data(data, dsize, find, len, cnt);
 			
 			if (pointer < 0)
@@ -1414,7 +1414,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 				return 0;
 			}
 			
-			LOG("POINTER = %ld (0x%lX)\n", pointer, pointer);
+			LOG("POINTER = %ld (0x%lX)", pointer, pointer);
 
 			free(find);
 		}
@@ -1580,8 +1580,6 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 
 	    			val += incval;
 				}
-
-//    			LOG("%s\n", line);
     		}
     			break;
 

@@ -64,6 +64,12 @@ menu_option_t menu_options[] = {
 		.value = &owner_sel,
 		.callback = owner_callback
 	},
+	{ .name = "Enable Debug Log",
+		.options = NULL,
+		.type = APP_OPTION_CALL,
+		.value = NULL,
+		.callback = log_callback 
+	},
 	{ .name = NULL }
 };
 
@@ -204,4 +210,10 @@ void owner_callback(int sel)
 {
 	if (file_exists(APOLLO_PATH OWNER_XML_FILE) == SUCCESS)
 		read_xml_owner(APOLLO_PATH OWNER_XML_FILE, menu_options[8].options[sel]);
+}
+
+void log_callback(int sel)
+{
+	dbglogger_init_mode(FILE_LOGGER, "/dev_hdd0/tmp/apollo.log", 0);
+	show_dialog(0, "Debug Logging Enabled!\n\n/dev_hdd0/tmp/apollo.log");
 }

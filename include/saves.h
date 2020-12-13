@@ -1,12 +1,7 @@
 #include "list.h"
 
-#ifdef APOLLO_ENABLE_LOGGING
 #include <dbglogger.h>
 #define LOG dbglogger_log
-#else
-#define LOG(...)
-#define dbglogger_init(...)
-#endif
 
 #define APOLLO_PATH				"/dev_hdd0/game/NP0APOLLO/USRDIR/"
 #define APOLLO_DATA_PATH		APOLLO_PATH "DATA/"

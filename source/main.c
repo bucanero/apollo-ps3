@@ -1241,7 +1241,9 @@ void registerSpecialChars()
 */
 s32 main(s32 argc, const char* argv[])
 {
+#ifdef APOLLO_ENABLE_LOGGING
 	dbglogger_init();
+#endif
 
 	http_init();
 

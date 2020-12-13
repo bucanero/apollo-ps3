@@ -31,12 +31,8 @@
 
 #include "packzip.h"
 
-#ifdef APOLLO_ENABLE_LOGGING
 #include <dbglogger.h>
 #define LOG dbglogger_log
-#else
-#define LOG(...)
-#endif
 
 
 typedef uint8_t     u8;
