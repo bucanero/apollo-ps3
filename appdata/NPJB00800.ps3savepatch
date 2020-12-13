@@ -1,0 +1,17 @@
+; BlazBlue: Centralfiction
+; NPJB00800
+
+:SYSTEM.DAT
+
+;by bucanero
+[Max P$ Money]
+2000BBF8 0098967F
+
+;by bucanero
+[Update WADD for SYSTEM.DAT (Required)]
+set [csum]:0
+carry(2)
+set pointer:eof+1
+set [csum]:wadd(0x000004,pointer)
+set [csum]:xor:FFFF
+write at 0x000000:[csum]

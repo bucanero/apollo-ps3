@@ -1,0 +1,15 @@
+; BLJS10329
+; Guilty Gear Xrd -REVELATOR- / REV 2
+
+:SYS2ND.DAT
+
+;by bucanero
+[Max W$ Money]
+2000E150 0098967F
+
+;by bucanero
+[Update CRC32 for SYS2ND.DAT (Required)]
+set pointer:eof+1
+set range:0x000010,pointer
+set [hash]:CRC32
+write at 0x000004:[hash]

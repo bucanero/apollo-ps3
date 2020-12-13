@@ -1,0 +1,19 @@
+; BLUS31467
+; Guilty Gear Xrd -SIGN-
+
+:SYSTEM.DAT
+
+;by Easko
+[Max Medals]
+2000b5c4 0098967F
+
+;by bucanero
+[Max W$ Money]
+2000D6AC 0098967F
+
+;by chaoszage
+[Update CRC32 for SYSTEM.DAT (Required)]
+set pointer:eof+1
+set range:0x000010,pointer
+set [hash]:CRC32
+write at 0x000004:[hash]
