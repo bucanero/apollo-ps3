@@ -459,6 +459,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     
     			    int wlen;
     			    char* xor_val = _decode_variable_data(line, &wlen, var_list);
+					u8* old_ptr = (u8*)&old_val + (4 - var->len);
 
     			    if (var->len != wlen)
     			    {
@@ -468,12 +469,12 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    }
     			    
     			    for (int i=0; i < wlen; i++)
-    			        ((u8*)&old_val)[i] ^= xor_val[i];
+    			        old_ptr[i] ^= xor_val[i];
 
                     var->data = malloc(var->len);
-                    memcpy(var->data, (u8*) &old_val, var->len);
+                    memcpy(var->data, old_ptr, var->len);
 
-    			    LOG("Var [%s]:XOR:%s = %X\n", var->name, line, old_val);
+    			    LOG("Var [%s]:XOR:%s = %X", var->name, line, old_val);
     			}
 
 				// set [*]:[*]*
