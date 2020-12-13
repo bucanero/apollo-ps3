@@ -853,11 +853,11 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    	add = (add & 0x0000FFFF) + ((add & 0xFFFF0000) >> 8*carry);
     			    }
 
-                    var->len = BSD_VAR_INT32;
+                    var->len = BSD_VAR_INT32 - carry;
                     var->data = malloc(var->len);
-                    memcpy(var->data, (u8*) &add, var->len);
+                    memcpy(var->data, (u8*) &add + carry, var->len);
     			    
-    			    LOG("[%s]:wadd(0x%X , 0x%X) = %X\n", var->name, add_s, add_e, add);
+    			    LOG("[%s]:wadd(0x%X , 0x%X) = %X", var->name, add_s, add_e, add);
 			    }
 
 			    // set [*]:add(*,*)*
@@ -896,11 +896,11 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    	add = (add & 0x0000FFFF) + ((add & 0xFFFF0000) >> 8*carry);
     			    }
 
-                    var->len = BSD_VAR_INT32;
+                    var->len = BSD_VAR_INT32 - carry;
                     var->data = malloc(var->len);
-                    memcpy(var->data, (u8*) &add, var->len);
+                    memcpy(var->data, (u8*) &add + carry, var->len);
     			    
-    			    LOG("[%s]:add(0x%X , 0x%X) = %X\n", var->name, add_s, add_e, add);
+    			    LOG("[%s]:add(0x%X , 0x%X) = %X", var->name, add_s, add_e, add);
 			    }
 
 			    // set [*]:wsub(*,*)*
