@@ -99,7 +99,7 @@ enum cmd_code_enum
 
 // SFO patches
     SFO_UNLOCK_COPY,
-    SFO_REMOVE_ACCOUNT_ID,
+    SFO_CHANGE_ACCOUNT_ID,
     SFO_REMOVE_PSID,
     SFO_CHANGE_TITLE_ID,
 };

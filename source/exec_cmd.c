@@ -628,11 +628,11 @@ int apply_sfo_patches(sfo_patch_t* patch)
             patch->flags = SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION;
             break;
 
-        case SFO_REMOVE_ACCOUNT_ID:
+        case SFO_CHANGE_ACCOUNT_ID:
             if (selected_entry->flags & SAVE_FLAG_OWNER)
                 selected_entry->flags ^= SAVE_FLAG_OWNER;
 
-            bzero(patch->account_id, SFO_ACCOUNT_ID_SIZE);
+            memcpy(patch->account_id, code->options->value[code->options->sel], SFO_ACCOUNT_ID_SIZE);
             break;
 
         case SFO_REMOVE_PSID:

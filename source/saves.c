@@ -572,7 +572,15 @@ int ReadCodes(save_entry_t * save)
 	cur_count += MENU_COPY_CMDS;
 
 	_setManualCode(&ret[cur_count++], PATCH_NULL, "----- \xE2\x98\x85 SFO Patches \xE2\x98\x85 -----", 0);
-	_setManualCode(&ret[cur_count++], PATCH_SFO, "\x07 Remove Account ID", SFO_REMOVE_ACCOUNT_ID);
+	_setManualCode(&ret[cur_count], PATCH_SFO, "\x07 Change Account ID", SFO_CHANGE_ACCOUNT_ID);
+	ret[cur_count].options_count = 1;
+	ret[cur_count].options = _initOptions(2);
+	ret[cur_count].options->name[0] = strdup("Remove Account");
+	ret[cur_count].options->value[0] = calloc(1, SFO_ACCOUNT_ID_SIZE);
+	ret[cur_count].options->name[1] = strdup("Fake Owner/Rebug");
+	ret[cur_count].options->value[1] = strdup("FFFFFFFFFFFFFFFF");
+	cur_count++;
+
 	_setManualCode(&ret[cur_count++], PATCH_SFO, "\x07 Remove Console ID", SFO_REMOVE_PSID);
 	if (save->flags & SAVE_FLAG_LOCKED)
 		_setManualCode(&ret[cur_count++], PATCH_SFO, "\x08 Remove copy protection", SFO_UNLOCK_COPY);
