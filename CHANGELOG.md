@@ -4,6 +4,25 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.4.5](https://github.com/bucanero/apollo-ps3/releases/tag/v1.4.5) - 2020-12-13
+
+### Added
+
+* Added `Change Account ID` option (Remove ID, Fake Owner/Rebug)
+* Added background to PS3 system Dialogs
+* Added `Enable Debug Log` setting
+* Game Genie Type 6 code support
+* New cheats
+  * Guilty Gear Xrd -SIGN-
+  * Guilty Gear Xrd Rev 2
+  * BlazBlue: Centralfiction
+* Updated `secure_file_id` database with new Title IDs and keys
+* Updated Online Database with new save-games
+
+### Fixed
+
+* Fixed Online Database save-game download bug
+
 ## [v1.4.2](https://github.com/bucanero/apollo-ps3/releases/tag/v1.4.2) - 2020-09-18
 
 ### Added

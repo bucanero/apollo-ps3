@@ -575,7 +575,7 @@ int ReadCodes(save_entry_t * save)
 	_setManualCode(&ret[cur_count], PATCH_SFO, "\x07 Change Account ID", SFO_CHANGE_ACCOUNT_ID);
 	ret[cur_count].options_count = 1;
 	ret[cur_count].options = _initOptions(2);
-	ret[cur_count].options->name[0] = strdup("Remove Account");
+	ret[cur_count].options->name[0] = strdup("Remove ID/Blank");
 	ret[cur_count].options->value[0] = calloc(1, SFO_ACCOUNT_ID_SIZE);
 	ret[cur_count].options->name[1] = strdup("Fake Owner/Rebug");
 	ret[cur_count].options->value[1] = strdup("FFFFFFFFFFFFFFFF");

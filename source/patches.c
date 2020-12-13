@@ -459,7 +459,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     
     			    int wlen;
     			    char* xor_val = _decode_variable_data(line, &wlen, var_list);
-					u8* old_ptr = (u8*)&old_val + (4 - var->len);
+    			    u8* old_ptr = (u8*)&old_val + (4 - var->len);
 
     			    if (var->len != wlen)
     			    {
@@ -1678,10 +1678,8 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 						// VVVVVVVV
 						ptr_value = ((uint32_t*) write)[0];
 						break;
-
-					default:
-						break;
 					}
+
 					LOG("Read address (%X) = %X", val, ptr_value);
 					break;
 
@@ -1702,9 +1700,6 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 					case '2':
 						// 2:multiply
 						ptr_value *= val;
-						break;
-					
-					default:
 						break;
 					}
 
@@ -1732,9 +1727,6 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 						// 2:multiply
 						pointer *= val;
 						break;
-					
-					default:
-						break;
 					}
 
 					if (y == '1')
@@ -1754,20 +1746,19 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 							memcpy(write, (char*) &val +3, 1);
 							LOG("6-Wrote 1 byte (%02X) to 0x%lX", val, pointer);
 							break;
+
 						case '1':
 						case '9':
 							memcpy(write, (char*) &val +2, 2);
 							LOG("6-Wrote 2 bytes (%04X) to 0x%lX", val, pointer);
 							break;
+
 						case '2':
 						case 'A':
 							memcpy(write, (char*) &val, 4);
 							LOG("6-Wrote 4 bytes (%08X) to 0x%lX", val, pointer);
 							break;
 					}
-					break;
-
-				default:
 					break;
 				}
 
@@ -1807,12 +1798,14 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 		    			memcpy(write, (char*) &val +3, 1);
 		    			LOG("Add-Wrote 1 byte (%02X) to 0x%X", val, off);
 						break;
+
 					case '1':
 					case '9':
 						val += ((uint16_t*) write)[0];
 		    			memcpy(write, (char*) &val +2, 2);
 		    			LOG("Add-Wrote 2 bytes (%04X) to 0x%X", val, off);
 						break;
+
 					case '2':
 					case 'A':
 						val += ((uint32_t*) write)[0];
