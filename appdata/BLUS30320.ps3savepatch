@@ -1,18 +1,11 @@
 ;BLES00705
 ;Darksiders
 ;From zeick
- 
-:*\~extracted\00000035.dat
 
-red:INSTRUCTIONS
-red:1 decrypt save
-red:2 double click DSSAVE (A new window will open)
-red:3 right click 00000035.dat
-red:4 click apply cheats and tick cheats you want click apply
-red:5 close window showing 00000035.dat file
-red:It will ask DO YOU WANT TO RECOMPRESS click yes
-red:6 new window will open asking for packzip settings use -w 15 click ok
-red:7 encrypt pfd and load on PS3
+[Decompress DSSAVE (Required)]
+Decompress DSSAVE
+
+:*\~extracted\00000035.dat
 
 [Max Health]
 search "Health"
@@ -61,3 +54,6 @@ write next (21):95
 [26 Artifacts Collected]
 search "NumberOfArtifactsCollected"
 write next (27):1A
+
+[Compress DSSAVE (Required)]
+Compress DSSAVE,-w 15
