@@ -38,64 +38,46 @@
 typedef uint8_t     u8;
 typedef uint16_t    u16;
 typedef uint32_t    u32;
-typedef uint64_t    u64;
 
 
-// use FREE instead of free
-#define FREE(X)         if(X) { \
-                            free(X); \
-                            X = NULL; \
-                        }
-
-#define VER             "0.4.1"
+#define VER             "0.3.5"
 #define INSZ            0x800   // the amount of bytes we want to decompress each time
 #define OUTSZ           0x10000 // the buffer used for decompressing the data
 #define FBUFFSZ         0x40000 // this buffer is used for reading, faster
 #define SHOWX           0x7ff   // AND to show the current scanned offset each SHOWX offsets
+#define FCLOSE(X)       { if(X) fclose(X); X = NULL; }
 
 enum {
-    ZIPDOSCAN2,
+    ZIPDOSCAN1,
     ZIPDOSCAN,
+    ZIPDOWRITE,
     ZIPDODUMP,
-    ZIPDODUMP2,
     ZIPDOFILE,
-    ZIPDOERROR
 };
 
 #define Z_INIT_ERROR    -1000
 #define Z_END_ERROR     -1001
 #define Z_RESET_ERROR   -1002
 
-#define MAXZIPLEN(n) ((n)+(((n)/1000)+1)+12)
-
-#define PRId            PRId64
-#define PRIu            PRIu64
-#define PRIx            "08"PRIx64 //"016"PRIx64
-
 #define g_minzip        32
 
 
 
-int offzip(const char *file_input, const char *file_output, u64 file_offset, int zipdo, FILE **fdo);
 int buffread(FILE *fd, u8 *buff, int size);
-void buffseek(FILE *fd, u64 off, int mode);
+void buffseek(FILE *fd, int off, int mode);
 void buffinc(int increase);
 int zip_search(FILE *fd);
-int unzip_all(FILE *fd, FILE **fdo, const char* fpath, int zipdo);
-int unzip(FILE *fd, FILE **fdo, u64 *inlen, u64 *outlen, int zipdo, char *dumpname);
+int unzip_all(FILE *fd, const char* out_path, int zipdo);
+int unzip(FILE *fd, FILE **fdo, u32 *inlen, u32 *outlen, int zipdo, const char *dumpname);
 int zlib_err(int err);
-FILE *save_file(char *fname);
+FILE *save_file(const char *fname);
 int myfwrite(u8 *buff, int size, FILE *fd);
-void FCLOSE(FILE **fd);
 
 
 z_stream    z;
-u64     g_total_zsize   = 0,
-        g_total_size    = 0,
-        g_offset        = 0,
+u32     g_offset        = 0,
         g_filebuffoff   = 0,
-        g_filebuffsz    = 0,
-        g_last_offset   = 0;
+        g_filebuffsz    = 0;
 int     g_zipwbits      = OFFZIP_WBITS_ZLIB;
 char    *g_basename     = NULL;
 u8      *g_in           = NULL,
@@ -103,8 +85,10 @@ u8      *g_in           = NULL,
         *g_filebuff     = NULL;
 
 
-int offzip_util(const char *f_input, const char *output_dir, const char *basename, int wbits) {
-    FILE    *fdo            = NULL;
+int offzip_util(const char *file_input, const char *output_dir, const char *basename, int wbits) {
+    FILE    *fd,
+            *fdo  = NULL;
+    int     files;
 
     LOG("Offzip "VER"\n"
         "by Luigi Auriemma\n"
@@ -113,82 +97,40 @@ int offzip_util(const char *f_input, const char *output_dir, const char *basenam
 
 /*
         LOG("\n"
-            "Usage: %s [options] <input/dir> [output/dir] [offset]\n"
+            "Usage: %s [options] <input> <output/dir> <offset>\n"
             "\n"
             "Options:\n"
-            "-s       scan for one compressed data in the input from the specified offset\n"
-            "-S       as above but continues the scan, just like -a without extraction\n"
-            "-a       extracts all the compressed data found in the input file into the\n"
-            "         specified output folder, each output file is identified by the offset\n"
-            "         of where the data was located\n"
-            "-A       as above but without decompressing the data, just dumped \"as-is\"\n"
+            "-s       search for possible zip/gzip data in the input file, the scan starts\n"
+            "         from the specified offset and finishs when something is found\n"
+            "         the output field is ignored so you can use any name you want\n"
+            "-S       as above but continues the scan (just like -a but without extraction)\n"
+            "-a       unzip all the possible zip data found in the file. the output\n"
+            "         directory where are unzipped the files is identified by <output>\n"
+            "         all the output filenames contain the offset where they have been found\n"
+            "-A       as above but without unzipping data, the output files will contain the\n"
+            "         same original zipped data, just like a simple data dumper\n"
             "-1       related to -a/-A, generates one unique output file instead of many\n"
-            "-m SIZE  minimum compressed size to check for valid data. default is %d, use a\n"
-            "         higher value to reduce the false positives or a smaller one (eg 16) to\n"
-            "         see very small compressed data too\n"
-            "-z NUM   this option sets the windowBits value:\n"
-            "         -z  15 = zlib data (default) zlib is header+deflate+crc\n"
-            "         -z -15 = deflate data (many false positives, used in ZIP archives)\n"
+            "-m SIZE  lets you to decide the length of the zip block to check if it is a\n"
+            "         valid zip data. default is %d. use a higher value to reduce the number\n"
+            "         of false positive or a smaller one (eg 16) to see small zip data too\n"
+            "-z NUM   this option is needed to specify a windowBits value. If you don't find\n"
+            "         zip data in a file (like a classical zip file) try to set it to -15\n"
+            "         valid values go from -8 to -15 and from 8 to 15. Default is 15\n"
             "-q       quiet, all the verbose error messages will be suppressed (-Q for more)\n"
-            "-R       do not remove the invalid uncompressed files generated with -a and -A\n"
-            "-x       visualization of hexadecimal numbers\n"
-            "-L FILE  dump the list of \"0xoffset zsize size\" into the specified FILE\n"
-            "-D FD    use a dictionary from file FD\n"
-            "-d N     hex dump of N bytes before and after the compressed stream\n"
-            "-c N     experimental guessing of files splitted in chunks where N is the max\n"
-            "         uncompressed size of the chunks, note that the non-compressed chunks\n"
-            "         can be recognized only if the chunks are sequential, requires -a\n"
-            "-o       overwrite existent files without asking\n"
-            "-r       reimport mode that works EXACTLY like in QuickBMS\n"
+            "-r       don't remove the invalid uncompressed files generated with -a and -A\n"
+            "-x       visualize hexadecimal numbers\n"
+            "-L FILE  dump the list of \"0xoffset zsize size\" in the specified FILE\n"
             "\n"
-            "Note: Offset is a decimal number or a hex number if you use the 0x prefix, for\n"
-            "      example: 1234 or 0x4d2\n"
-            "      The displayed zlib info are CM, CINFO, FCHECK, FDICT, FLEVEL, ADLER32.\n"
-            "\n"
-            "Quick examples:\n"
-            "  scan zlib        offzip -S input.dat\n"
-            "  scan offset      offzip -S input.dat 0 0x12345678\n"
-            "  cool scan zlib   offzip -S -x -Q input.dat\n"
-            "  extract zlib     offzip -a input.dat c:\\output\n"
-            "  extract deflate  offzip -a -z -15 -Q input.dat c:\\output\n"
-            "  reimport zlib    offzip -a -r file.dat c:\\input\n"
+            "Note: offset is a decimal number or a hex number if you add a 0x before it\n"
+            "      examples: 1234 or 0x4d2\n"
             "\n", argv[0], g_minzip);
 */
 
     g_zipwbits = wbits;
     g_basename = (char*)basename;
-
-    if(!g_in)       g_in       = calloc(INSZ,    1);
-    if(!g_out)      g_out      = calloc(OUTSZ,   1);
-    if(!g_filebuff) g_filebuff = calloc(FBUFFSZ, 1);
-    if(!g_in || !g_out || !g_filebuff)
-    {
-        LOG("Error: unable to create buffers");
-        return 0;
-    }
-
-    int ret = offzip(f_input, output_dir, 0, ZIPDODUMP, &fdo);
-
-    FCLOSE(&fdo);
-    FREE(g_in);
-    FREE(g_out);
-    FREE(g_filebuff);
-    return (ret > 0);
-}
-
-
-int offzip(const char *file_input, const char *file_output, u64 file_offset, int zipdo, FILE **fdo) {
-    FILE    *fdo_dummy = NULL; // totally useless, just for testing
-    if(!fdo) fdo = &fdo_dummy;
-    FILE    *fd     = NULL;
-    int     files, ret = 0;
-
-    g_total_zsize   = 0;
-    g_total_size    = 0;
     g_offset        = 0;
     g_filebuffoff   = 0;
     g_filebuffsz    = 0;
-    g_last_offset   = 0;
 
     LOG("- open input file:    %s", file_input);
     fd = fopen(file_input, "rb");
@@ -198,62 +140,50 @@ int offzip(const char *file_input, const char *file_output, u64 file_offset, int
         return 0;
     }
 
-//    if(g_minzip > INSZ) g_minzip = INSZ;
-//    if(g_minzip < 1)    g_minzip = 1;
-
-    if((zipdo == ZIPDODUMP) || (zipdo == ZIPDODUMP2)) {
-        if(file_output && file_output[0]) {
-            LOG("- dump to directory:  %s", file_output);
-        }
-    }
-
     LOG("- zip data to check:  %d bytes", g_minzip);
     LOG("- zip windowBits:     %d", g_zipwbits);
 
-    g_offset = file_offset;  // do not skip, needed for buffseek
-    LOG("- seek offset:        0x%"PRIx"  (%"PRIu")", g_offset, g_offset);
+    g_in       = malloc(INSZ);
+    g_out      = malloc(OUTSZ);
+    g_filebuff = malloc(FBUFFSZ);
+    if(!g_in || !g_out || !g_filebuff)
+    {
+        LOG("Error: unable to create buffers");
+        return 0;
+    }
+
+    LOG("- seek offset:        0x%08x  (%u)", g_offset, g_offset);
     buffseek(fd, g_offset, SEEK_SET);
 
     memset(&z, 0, sizeof(z));
     if(inflateInit2(&z, g_zipwbits) != Z_OK) 
         return zlib_err(Z_INIT_ERROR);
 
-    if(zipdo == ZIPDODUMP) {
-        LOG("+------------+-----+----------------------------+----------------------+");
-        LOG("| hex_offset | ... | zip -> unzip size / offset | spaces before | info |");
-        LOG("+------------+-----+----------------------------+----------------------+");
+    LOG("+------------+-------------+-------------------------+");
+    LOG("| hex_offset | blocks_dots | zip_size --> unzip_size |");
+    LOG("+------------+-------------+-------------------------+");
 
-        files = unzip_all(fd, fdo, file_output, zipdo);
-        if(files) {
-            //if(g_offset - g_last_offset) LOG("  0x%08x spaces from the last compressed stream\n", g_offset - g_last_offset);
-            LOG("- %u valid compressed streams found", files);
-            LOG("- 0x%"PRIx" -> 0x%"PRIx" bytes covering the %"PRId"%% of the file", g_total_zsize, g_total_size,
-                ((u64)((u64)g_total_zsize * (u64)100) / (u64)ftell(fd)));
-            
-            ret = files;
-        } else {
-            LOG("- no valid full zip data found");
-            ret = 0;
-        }
+    files = unzip_all(fd, output_dir, ZIPDOFILE);
+    if(files) {
+        LOG("- %u valid zip blocks found", files);
+    } else {
+        LOG("- no valid full zip data found");
     }
 
     FCLOSE(fdo);
-    FCLOSE(&fd);
+    FCLOSE(fd);
     inflateEnd(&z);
-    if(*fdo && (fdo == &fdo_dummy)) FCLOSE(fdo);
-    return ret;
+    free(g_in);
+    free(g_out);
+    free(g_filebuff);
+    return(files > 0);
 }
 
-
-// these buffering functions are just specific for this usage
 
 int buffread(FILE *fd, u8 *buff, int size) {
     int     len,
             rest,
             ret;
-
-    if(size > FBUFFSZ)
-        return(0); // ???
 
     rest = g_filebuffsz - g_filebuffoff;
 
@@ -276,7 +206,7 @@ int buffread(FILE *fd, u8 *buff, int size) {
 }
 
 
-void buffseek(FILE *fd, u64 off, int mode) {
+void buffseek(FILE *fd, int off, int mode) {
     if(fseek(fd, off, mode) < 0)
     {
         LOG("Error: buffseek");
@@ -309,95 +239,64 @@ int zip_search(FILE *fd) {
         zerr = inflate(&z, Z_SYNC_FLUSH);
 
         if(zerr == Z_OK) {  // do not use Z_STREAM_END here! gives only troubles!!!
-            LOG("Zip found at 0x%"PRIx" offset", g_offset);
+            LOG("Zip found at 0x%08x offset", g_offset);
 
             ret = 0;
             break;
         }
 
         if(!(g_offset & SHOWX))
-            LOG("Scanned 0x%"PRIx" offset", g_offset);
+            LOG("Scanned 0x%08x offset", g_offset);
     }
     return ret;
 }
 
 
-int unzip_all(FILE *fd, FILE **fdo, const char* fpath, int zipdo) {
-    FILE    *fdo_dummy = NULL; // totally useless, just for testing
-    if(!fdo) fdo = &fdo_dummy;
-    u64     backup_offset,
-            start_offset;
-    u64     inlen,
+int unzip_all(FILE *fd, const char* out_path, int zipdo) {
+    FILE    *fdo    = NULL;
+    u32     inlen,
             outlen;
-    u32     crc;
     int     zipres,
             extracted;
     char    filename[256]   = "";
-    u8      zlib_header[2],
-            *tmp_buff       = NULL;
 
     extracted = 0;
     zipres    = -1;
 
     while(!zip_search(fd)) {
-        LOG("  0x%"PRIx" ", g_offset);
-        start_offset = g_offset;
+        snprintf(filename, sizeof(filename), "%s[%s]%08x.dat", out_path, g_basename, g_offset);
+        LOG("Unzip (0x%08x) to %s", g_offset, filename);
 
-        snprintf(filename, sizeof(filename), "%s[%s]%"PRIx ".dat", fpath, g_basename, g_offset);    // create the file
-        //sprintf(filename, "%"PRIx".dat", g_offset);
-        //*fdo = save_file(filename, 1);
-
-        zipres = unzip(fd, fdo, &inlen, &outlen, zipdo, filename);
-
+        zipres = unzip(fd, &fdo, &inlen, &outlen, zipdo, filename);
         FCLOSE(fdo);
 
         if((zipres < 0) && filename[0]) unlink(filename);
 
         if(!zipres) {
-            LOG(" %"PRIu" -> %"PRIu" / 0x%"PRIx" _ %"PRIu, inlen, outlen, g_offset, (start_offset - g_last_offset));
+            LOG(" %u --> %u", inlen, outlen);
 
             extracted++;
-            g_last_offset = g_offset;   // g_offset points to start_offset + inlen, so it's ok
-
-            if(g_zipwbits > 0) {
-                backup_offset = ftell(fd);
-                fseek(fd, start_offset, SEEK_SET);
-                if(fread(zlib_header, 1, 2, fd) != 2) memset(zlib_header, 0, 2);
-                fseek(fd, g_offset - 4, SEEK_SET);
-                crc = (fgetc(fd) << 24) | (fgetc(fd) << 16) | (fgetc(fd) << 8) | fgetc(fd);
-                LOG(" CM=%d CINFO=%d FCHECK=%d FDICT=%d FLEVEL=%d ADLER32=%08x",
-                    (zlib_header[0] & 0xf),         // CM
-                    (zlib_header[0] >> 4) & 0xf,    // CINFO
-                    (zlib_header[1] & 0x1f),        // FCHECK
-                    (zlib_header[1] >> 5) & 1,      // FDICT
-                    (zlib_header[0] >> 6) & 3,      // FLEVEL
-                    crc);                           // ADLER32
-                fseek(fd, backup_offset, SEEK_SET);
-            }
-
         } else {
             LOG(" error");
         }
 
     }
 
-    if(*fdo && (fdo == &fdo_dummy)) FCLOSE(fdo);
-    if(tmp_buff) FREE(tmp_buff);
+    FCLOSE(fdo);
     return extracted;
 }
 
 
-int unzip(FILE *fd, FILE **fdo, u64 *inlen, u64 *outlen, int zipdo, char *dumpname) {
-    FILE    *fdo_dummy = NULL; // totally useless, just for testing
-    if(!fdo) fdo = &fdo_dummy;
-    u64     oldsz   = 0,
-            oldoff;
-    int     len;
+int unzip(FILE *fd, FILE **fdo, u32 *inlen, u32 *outlen, int zipdo, const char *dumpname) {
+    u32     oldsz = 0,
+            oldoff,
+            len;
     int     ret     = -1,
             zerr    = Z_OK;
-    char    *freeme = NULL;
 
-    if(dumpname && !dumpname[0]) dumpname = NULL;
+    if ((*fdo = save_file(dumpname)) == NULL)
+        return 0;
+
     oldoff = g_offset;
     inflateReset(&z);
 
@@ -410,11 +309,6 @@ int unzip(FILE *fd, FILE **fdo, u64 *inlen, u64 *outlen, int zipdo, char *dumpna
             z.next_out  = g_out;
             z.avail_out = OUTSZ;
             zerr = inflate(&z, Z_SYNC_FLUSH);
-
-            if(!dumpname) break;
-
-            if(!*fdo) *fdo = save_file(dumpname);
-            dumpname = NULL;
 
             myfwrite(g_out, z.total_out - oldsz, *fdo);
             oldsz = z.total_out;
@@ -433,18 +327,14 @@ int unzip(FILE *fd, FILE **fdo, u64 *inlen, u64 *outlen, int zipdo, char *dumpna
         if(zerr != Z_OK) break;     // Z_STREAM_END included, for avoiding "goto"
     }
 
-    if(inlen)  *inlen  = z.total_in;
-    if(outlen) *outlen = z.total_out;
+    *inlen  = z.total_in;
+    *outlen = z.total_out;
     if(!ret) {
-        oldoff        += z.total_in;
-        g_total_zsize += z.total_in;
-        g_total_size  += z.total_out;
+        oldoff += z.total_in;
     } else {
         oldoff++;
     }
     buffseek(fd, oldoff, SEEK_SET);
-    FREE(freeme);
-    if(*fdo && (fdo == &fdo_dummy)) FCLOSE(fdo);
     return ret;
 }
 
@@ -452,8 +342,8 @@ int unzip(FILE *fd, FILE **fdo, u64 *inlen, u64 *outlen, int zipdo, char *dumpna
 int zlib_err(int zerr) {
     switch(zerr) {
         case Z_DATA_ERROR: {
-            LOG("- zlib Z_DATA_ERROR, the data in the file is not in zip format\n"
-                "  or uses a different windowBits value (-z). Try to use -z %d\n",
+            LOG("- zlib Z_DATA_ERROR, the data in the file is not in zip format"
+                "  or uses a different windowBits value (-z). Try to use -z %d",
                 -g_zipwbits);
             break;
         }
@@ -490,7 +380,7 @@ int zlib_err(int zerr) {
 }
 
 
-FILE *save_file(char *fname) {
+FILE *save_file(const char *fname) {
     FILE    *fd;
 
     fd = fopen(fname, "wb");
@@ -514,12 +404,4 @@ int myfwrite(u8 *buff, int size, FILE *fd) {
         return(0);
     }
     return 1;
-}
-
-
-void FCLOSE(FILE **fd) {
-    if(fd && *fd) {
-        fclose(*fd);
-        *fd = NULL;
-    }
 }

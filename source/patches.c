@@ -1989,7 +1989,15 @@ int apply_cheat_patch_code(const char* fpath, const char* title_id, code_entry_t
 		{
 			// decompress FILENAME
 			LOG("Decompressing '%s' (w=%d)...", fpath, OFFZIP_WBITS_ZLIB);
-			return offzip_util(fpath, APOLLO_LOCAL_CACHE, title_id, OFFZIP_WBITS_ZLIB);
+
+			// try zlib data (default) zlib is header+deflate+crc
+			int ret = offzip_util(fpath, APOLLO_LOCAL_CACHE, title_id, OFFZIP_WBITS_ZLIB);
+
+			// if zlib didn't work, try deflate (many false positives, used in Zip archives)
+			if (!ret)
+				ret = offzip_util(fpath, APOLLO_LOCAL_CACHE, title_id, OFFZIP_WBITS_DEFLATE);
+
+			return ret;
 		}
 		else if (wildcard_match_icase(code->codes, "compress *,-w*"))
 		{
