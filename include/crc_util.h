@@ -48,6 +48,9 @@ typedef struct
 #define CRC_32_INIT_VALUE                   0xFFFFFFFFu
 #define CRC_32_XOR_VALUE                    0xFFFFFFFFu
 
+/* ---------- Defines for 64-bit CRC calculation -------------------------------------------------------------- */
+#define CRC64_ECMA182_POLY                  0xC96C5795D7870F42
+#define CRC64_ISO_POLY                      0xD800000000000000
 
 /**
  * This function makes a CRC16 calculation on Length data bytes
@@ -69,6 +72,13 @@ uint32_t crc32_hash(const uint8_t* message, int nBytes, custom_crc_t* cfg);
  * RETURN VALUE: 32 bit result of CRC calculation
  */
 uint32_t MC02_hash(const uint8_t *pb, uint32_t cb);
+
+/**
+ * This function makes a CRC64 calculation on Length data bytes
+ *
+ * RETURN VALUE: 64 bit result of CRC calculation
+ */
+uint64_t crc64_hash(uint64_t poly, const uint8_t *data, uint64_t len);
 
 
 #ifdef __cplusplus
