@@ -555,6 +555,33 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    LOG("len %d CRC16 HASH = %X", len, hash);
 			    }
 
+			    // set [*]:crc64*
+			    else if (wildcard_match_icase(line, "crc64*"))
+			    {
+					//crc64_ecma / crc64_iso
+					uint64_t hash;
+
+					u8* start = (u8*)data + range_start;
+					len = range_end - range_start;
+
+					if (wildcard_match_icase(line, "crc64_ecma*"))
+					{
+						// CRC-64 ECMA
+						hash = crc64_hash(CRC64_ECMA182_POLY, start, len);
+						LOG("len %d CRC64 ECMA HASH = %llX", len, hash);
+					}
+					else
+					{
+						// CRC-64 ISO
+						hash = crc64_hash(CRC64_ISO_POLY, start, len);
+						LOG("len %d CRC64 ISO HASH = %llX", len, hash);
+					}
+
+					var->len = BSD_VAR_INT64;
+					var->data = malloc(var->len);
+					memcpy(var->data, (u8*) &hash, var->len);
+			    }
+
 			    // set [*]:crc*
 			    // Custom CRC
 			    else if (wildcard_match_icase(line, "crc*"))
@@ -586,33 +613,6 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
         			    LOG("len %d Custom CRC32 HASH = %X", len, hash);
 			        }
-			    }
-
-			    // set [*]:crc64*
-			    else if (wildcard_match_icase(line, "crc64*"))
-			    {
-					//crc64_ecma / crc64_iso
-					uint64_t hash;
-
-					u8* start = (u8*)data + range_start;
-					len = range_end - range_start;
-
-					if (wildcard_match_icase(line, "crc64_ecma*"))
-					{
-						// CRC-64 ECMA
-						hash = crc64_hash(CRC64_ECMA182_POLY, start, len);
-						LOG("len %d CRC64 ECMA HASH = %llX", len, hash);
-					}
-					else
-					{
-						// CRC-64 ISO
-						hash = crc64_hash(CRC64_ISO_POLY, start, len);
-						LOG("len %d CRC64 ISO HASH = %llX", len, hash);
-					}
-
-					var->len = BSD_VAR_INT64;
-					var->data = malloc(var->len);
-					memcpy(var->data, (u8*) &hash, var->len);
 			    }
 
 			    // set [*]:md5_xor*

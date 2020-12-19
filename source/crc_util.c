@@ -36,6 +36,18 @@ void generate_crc32_table(uint32_t poly, uint32_t* crc_table)
     }
 }
 
+/* Reverse the bytes in a 64-bit word. */
+static inline uint64_t rev8(uint64_t a)
+{
+    uint64_t m;
+
+    m = UINT64_C(0xff00ff00ff00ff);
+    a = ((a >> 8) & m) | (a & m) << 8;
+    m = UINT64_C(0xffff0000ffff);
+    a = ((a >> 16) & m) | (a & m) << 16;
+    return a >> 32 | a << 32;
+}
+
 void generate_crc64_table(uint64_t poly, uint64_t* crc_table)
 {
     for(int i=0; i<256; i++)
@@ -45,7 +57,7 @@ void generate_crc64_table(uint64_t poly, uint64_t* crc_table)
         for(int j=0; j<8; j++)
             crc = (crc & 1) ? (crc >> 1) ^ poly : (crc >> 1);
 
-        crc_table[i] = crc;
+        crc_table[i] = rev8(crc);
     }
 }
 
@@ -161,12 +173,12 @@ uint32_t crc32_hash(const uint8_t* data, uint32_t len, custom_crc_t* cfg)
 uint64_t crc64_hash(uint64_t poly, const uint8_t *data, uint64_t len)
 {
     uint64_t crc64_table[256];
-    uint64_t crc = poly; // initial value
+    uint64_t crc = rev8(poly); // initial value
 
     generate_crc64_table(poly, crc64_table);
 
     while (len--)
-        crc = crc64_table[(crc ^ *data++) & 0xFF] ^ (crc >> 8);
+        crc = crc64_table[(crc >> 56) ^ *data++] ^ (crc << 8);
 
-    return crc;
+    return rev8(crc);
 }
