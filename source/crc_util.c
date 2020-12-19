@@ -100,64 +100,41 @@ uint32_t reflect(uint32_t data, uint8_t nBits)
 
 }   /* reflect() */
 
-uint16_t crc16_hash(const uint8_t* message, int nBytes, custom_crc_t* cfg)
+uint16_t crc16_hash(const uint8_t* data, uint32_t len, custom_crc_t* cfg)
 {
-    uint16_t remainder = (uint16_t)cfg->initial_value;
-    int byte;
+    uint16_t crc = (uint16_t)cfg->initial_value;
     uint8_t bit;
 
-    /*
-     * Perform modulo-2 division, a byte at a time.
-     */
-    for (byte = 0; byte < nBytes; ++byte)
+    while (len--)
     {
-        /*
-         * Bring the next byte into the remainder.
-         */
-        remainder ^= ((cfg->reflection_input ? REFLECT_DATA(message[byte]) : message[byte]) << (CRC_16_RESULT_WIDTH - 8));
+        crc ^= ((cfg->reflection_input ? REFLECT_DATA(*data++) : *data++) << (CRC_16_RESULT_WIDTH - 8));
 
-        /*
-         * Perform modulo-2 division, a bit at a time.
-         */
         for (bit = 8; bit > 0; --bit)
-        {
-            /*
-             * Try to divide the current data bit.
-             */
-            if (remainder & TOPBIT(CRC_16_RESULT_WIDTH))
-            {
-                remainder = (remainder << 1) ^ (uint16_t)cfg->polynomial;
-            }
-            else
-            {
-                remainder = (remainder << 1);
-            }
-        }
+            crc = (crc & TOPBIT(CRC_16_RESULT_WIDTH)) ? (crc << 1) ^ (uint16_t)cfg->polynomial : (crc << 1);
     }
 
-    /*
-     * The final remainder is the CRC result.
-     */
-    return ((cfg->reflection_output ? REFLECT_REMAINDER16(remainder) : remainder) ^ (uint16_t)cfg->output_xor);
+    if (cfg->reflection_output)
+        crc = REFLECT_REMAINDER16(crc);
+
+    return (crc ^ (uint16_t)cfg->output_xor);
 
 }   /* crc16() */
 
 
-uint32_t crc32_hash(const uint8_t* message, int nBytes, custom_crc_t* cfg)
+uint32_t crc32_hash(const uint8_t* data, uint32_t len, custom_crc_t* cfg)
 {
-    uint32_t remainder = cfg->initial_value;
-    int byte;
+    uint32_t crc = cfg->initial_value;
     uint8_t bit;
 
     /*
      * Perform modulo-2 division, a byte at a time.
      */
-    for (byte = 0; byte < nBytes; ++byte)
+    while (len--)
     {
         /*
          * Bring the next byte into the remainder.
          */
-        remainder ^= ((cfg->reflection_input ? REFLECT_DATA(message[byte]) : message[byte]) << (CRC_32_RESULT_WIDTH - 8));
+        crc ^= ((cfg->reflection_input ? REFLECT_DATA(*data++) : *data++) << (CRC_32_RESULT_WIDTH - 8));
 
         /*
          * Perform modulo-2 division, a bit at a time.
@@ -167,21 +144,17 @@ uint32_t crc32_hash(const uint8_t* message, int nBytes, custom_crc_t* cfg)
             /*
              * Try to divide the current data bit.
              */
-            if (remainder & TOPBIT(CRC_32_RESULT_WIDTH))
-            {
-                remainder = (remainder << 1) ^ cfg->polynomial;
-            }
-            else
-            {
-                remainder = (remainder << 1);
-            }
+            crc = (crc & TOPBIT(CRC_32_RESULT_WIDTH)) ? (crc << 1) ^ cfg->polynomial : (crc << 1);
         }
     }
 
     /*
      * The final remainder is the CRC result.
      */
-    return ((cfg->reflection_output ? REFLECT_REMAINDER32(remainder) : remainder) ^ cfg->output_xor);
+    if (cfg->reflection_output)
+        crc = REFLECT_REMAINDER32(crc);
+
+    return (crc ^ cfg->output_xor);
 
 }   /* crc32() */
 
