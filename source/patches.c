@@ -519,7 +519,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    }
     			    else
     			    {
-    			        // CRC-32
+						// CRC-32 (crc32, crc32little)
 						custom_crc.reflection_input = 1;
 						custom_crc.reflection_output = 1;
 

@@ -9,11 +9,26 @@ write at 0x3740:0x0098967F
 write at 0x3A78:0x0098967F
 
 
-
+; The custom CRC64 hash in Fuse requires two steps:
+; 1. Calculate the CRC64 of the data, and then
+; 2. Calculate the final CRC64(0x3141281814285714 + data_crc64_hash)
+; (the 8-byte constant + the 8-byte data hash = 16-byte len)
+; 
 [Update CRC64 ECMA 182 for GAMESAVE (Required)]
-set range:0x000000,0x0068AF
+set pointer:eof-0x7
+set range:0x0,pointer
 set [hash]:crc64_ecma
-write at 0x0068B0:[hash]
+set pointer:eof-0x7
+write next (0):[hash]
+set pointer:eof-0x7
+insert next (0):0x3141281814285714
+set pointer:eof-0xF
+set range:pointer,eof+1
+set [hash]:crc64_ecma
+set pointer:eof-0x7
+delete next (0):0x8
+set pointer:eof-0x7
+write next (0):[hash]
 
 ;[Update CRC64 ECMA 182 for GAMESAVE (Required)]
 ;set [size]:read(8,4)
