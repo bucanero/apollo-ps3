@@ -4,6 +4,18 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+### Added
+
+* Added BSD `crc64_ecma` and `crc64_iso` hash commands
+* Added `deflate` support to BSD `decompression` command
+
+### Fixed
+
+* Fixed save-game patches
+  * Darksiders
+  * Call of Juarez Bound in Blood
+  * Fuse
+
 ## [v1.4.5](https://github.com/bucanero/apollo-ps3/releases/tag/v1.4.5) - 2020-12-13
 
 ### Added
@@ -12,10 +24,10 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 * Added background to PS3 system Dialogs
 * Added `Enable Debug Log` setting
 * Game Genie Type 6 code support
-* New cheats
+* New save-game cheats
   * Guilty Gear Xrd -SIGN-
   * Guilty Gear Xrd Rev 2
-  * BlazBlue: Centralfiction
+  * BlazBlue: Central fiction
 * Updated `secure_file_id` database with new Title IDs and keys
 * Updated Online Database with new save-games
 
