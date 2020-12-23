@@ -370,19 +370,19 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    else if (wildcard_match_icase(line, "polynomial:*"))
 			    {
     			    line += strlen("polynomial:");
-    			    sscanf(line, "%x", &custom_crc.polynomial);
+    			    sscanf(line, "%lx", &custom_crc.polynomial);
 			    }
 
 			    else if (wildcard_match_icase(line, "initial_value:*"))
 			    {
     			    line += strlen("initial_value:");
-    			    sscanf(line, "%x", &custom_crc.initial_value);
+    			    sscanf(line, "%lx", &custom_crc.initial_value);
 			    }
 
 			    else if (wildcard_match_icase(line, "output_xor:*"))
 			    {
     			    line += strlen("output_xor:");
-    			    sscanf(line, "%x", &custom_crc.output_xor);
+    			    sscanf(line, "%lx", &custom_crc.output_xor);
 			    }
 
 			    else if (wildcard_match_icase(line, "reflection_input:*"))
@@ -502,7 +502,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    tmp = strchr(line, ':');
     			    if (tmp)
     			    {
-    			        sscanf(tmp+1, "%x", &custom_crc.initial_value);
+    			        sscanf(tmp+1, "%lx", &custom_crc.initial_value);
     			    }
     			    
     			    u8* start = (u8*)data + range_start;
@@ -566,14 +566,26 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
 					if (wildcard_match_icase(line, "crc64_ecma*"))
 					{
-						// CRC-64 ECMA
-						hash = crc64_hash(CRC64_ECMA182_POLY, start, len);
+						// CRC-64 ECMA 182
+						custom_crc.polynomial = CRC_64_ECMA182_POLY;
+						custom_crc.initial_value = CRC_64_ECMA182_INIT_VALUE;
+						custom_crc.output_xor = CRC_64_ECMA182_XOR_VALUE;
+						custom_crc.reflection_input = 0;
+						custom_crc.reflection_output = 0;
+
+						hash = crc64_hash(start, len, &custom_crc);
 						LOG("len %d CRC64 ECMA HASH = %llX", len, hash);
 					}
 					else
 					{
 						// CRC-64 ISO
-						hash = crc64_hash(CRC64_ISO_POLY, start, len);
+						custom_crc.polynomial = CRC_64_ISO_POLY;
+						custom_crc.initial_value = CRC_64_ISO_INIT_VALUE;
+						custom_crc.output_xor = CRC_64_ISO_XOR_VALUE;
+						custom_crc.reflection_input = 1;
+						custom_crc.reflection_output = 1;
+
+						hash = crc64_hash(start, len, &custom_crc);
 						LOG("len %d CRC64 ISO HASH = %llX", len, hash);
 					}
 
@@ -591,7 +603,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
                     LOG("ref.in %d ref.out %d", custom_crc.reflection_input, custom_crc.reflection_output);
 
-			        if (custom_crc.bandwidth == 16)
+			        if (custom_crc.bandwidth == CRC_16_RESULT_WIDTH)
 			        {
     			        // Custom CRC-16
     			        uint16_t hash = crc16_hash(start, len, &custom_crc);
@@ -602,6 +614,17 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
         			    LOG("len %d Custom CRC16 HASH = %X", len, hash);
 			        }
+					else if (custom_crc.bandwidth == CRC_64_RESULT_WIDTH)
+					{
+						// Custom CRC-64
+						uint64_t hash = crc64_hash(start, len, &custom_crc);
+
+						var->len = BSD_VAR_INT64;
+						var->data = malloc(var->len);
+						memcpy(var->data, (u8*) &hash, var->len);
+
+						LOG("len %d Custom CRC64 HASH = %llX", len, hash);
+					}
 			        else
 			        {
     			        // Custom CRC-32

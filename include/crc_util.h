@@ -26,9 +26,9 @@ extern "C" {
 typedef struct
 {
     uint8_t bandwidth;
-    uint32_t polynomial;
-    uint32_t initial_value;
-    uint32_t output_xor;
+    uint64_t polynomial;
+    uint64_t initial_value;
+    uint64_t output_xor;
     uint8_t reflection_input;
     uint8_t reflection_output;
 } custom_crc_t;
@@ -49,8 +49,15 @@ typedef struct
 #define CRC_32_XOR_VALUE                    0xFFFFFFFFu
 
 /* ---------- Defines for 64-bit CRC calculation -------------------------------------------------------------- */
-#define CRC64_ECMA182_POLY                  0xC96C5795D7870F42
-#define CRC64_ISO_POLY                      0xD800000000000000
+#define CRC_64_RESULT_WIDTH                 64u
+#define CRC_64_ECMA182_POLY                 0x42F0E1EBA9EA3693
+#define CRC_64_ECMA182_INIT_VALUE           0x0000000000000000
+#define CRC_64_ECMA182_XOR_VALUE            0x0000000000000000
+
+// 64-bit GO-ISO
+#define CRC_64_ISO_POLY                     0x000000000000001B
+#define CRC_64_ISO_INIT_VALUE               0xFFFFFFFFFFFFFFFF
+#define CRC_64_ISO_XOR_VALUE                0xFFFFFFFFFFFFFFFF
 
 /**
  * This function makes a CRC16 calculation on Length data bytes
@@ -78,7 +85,7 @@ uint32_t MC02_hash(const uint8_t *pb, uint32_t cb);
  *
  * RETURN VALUE: 64 bit result of CRC calculation
  */
-uint64_t crc64_hash(uint64_t poly, const uint8_t *data, uint64_t len);
+uint64_t crc64_hash(const uint8_t *data, uint32_t len, custom_crc_t* cfg);
 
 
 #ifdef __cplusplus

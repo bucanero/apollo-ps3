@@ -18,10 +18,24 @@
 #include <stdio.h>
 #include "crc_util.h"
 
-#define TOPBIT(W) (1 << (W - 1))
-#define REFLECT_DATA(X)         ((uint8_t) reflect((X), 8))
-#define REFLECT_REMAINDER16(X)  ((uint16_t) reflect((X), CRC_16_RESULT_WIDTH))
-#define REFLECT_REMAINDER32(X)  ((uint32_t) reflect((X), CRC_32_RESULT_WIDTH))
+#define CREATE_CRC_FUNCTION(UINT, CRC_WIDTH) \
+    UINT crc##CRC_WIDTH##_hash (const uint8_t* data, uint32_t len, custom_crc_t* cfg) \
+    { \
+        UINT crc = (UINT)cfg->initial_value; \
+        /* Perform modulo-2 division, a byte at a time. */ \
+        while (len--) { \
+            /* Bring the next byte into the remainder. */ \
+            crc ^= ((UINT)(cfg->reflection_input ? (uint8_t)reflect(*data++, 8) : *data++) << (CRC_WIDTH - 8)); \
+            /* Perform modulo-2 division, a bit at a time. */ \
+            for (uint8_t bit = 8; bit > 0; --bit) \
+                /* Try to divide the current data bit. */ \
+                crc = (crc & ((UINT)1 << (CRC_WIDTH - 1))) ? (crc << 1) ^ (UINT)cfg->polynomial : (crc << 1); \
+        } \
+        /* The final remainder is the CRC result. */ \
+        if (cfg->reflection_output) \
+            crc = (UINT)reflect(crc, CRC_WIDTH); \
+        return (crc ^ (UINT)cfg->output_xor); \
+    }
 
 void generate_crc32_table(uint32_t poly, uint32_t* crc_table)
 {
@@ -33,31 +47,6 @@ void generate_crc32_table(uint32_t poly, uint32_t* crc_table)
             r = (r & 0x80000000) ? (r << 1) ^ poly : (r << 1);
         
         crc_table[i] = r;
-    }
-}
-
-/* Reverse the bytes in a 64-bit word. */
-static inline uint64_t rev8(uint64_t a)
-{
-    uint64_t m;
-
-    m = UINT64_C(0xff00ff00ff00ff);
-    a = ((a >> 8) & m) | (a & m) << 8;
-    m = UINT64_C(0xffff0000ffff);
-    a = ((a >> 16) & m) | (a & m) << 16;
-    return a >> 32 | a << 32;
-}
-
-void generate_crc64_table(uint64_t poly, uint64_t* crc_table)
-{
-    for(int i=0; i<256; i++)
-    {
-        uint64_t crc = i;
-
-        for(int j=0; j<8; j++)
-            crc = (crc & 1) ? (crc >> 1) ^ poly : (crc >> 1);
-
-        crc_table[i] = rev8(crc);
     }
 }
 
@@ -90,9 +79,9 @@ uint32_t MC02_hash(const uint8_t *pb, uint32_t cb)
 	return ~seedValue;
 }
 
-uint32_t reflect(uint32_t data, uint8_t nBits)
+uint64_t reflect(uint64_t data, uint8_t nBits)
 {
-    uint32_t  reflection = 0;
+    uint64_t reflection = 0;
     uint8_t bit;
     /*
      * Reflect the data about the center bit.
@@ -103,7 +92,7 @@ uint32_t reflect(uint32_t data, uint8_t nBits)
          * If the LSB bit is set, set the reflection of it.
          */
         if (data & 0x01)
-            reflection |= (1 << ((nBits - 1) - bit));
+            reflection |= ((uint64_t)1 << ((nBits - 1) - bit));
 
         data = (data >> 1);
     }
@@ -112,73 +101,11 @@ uint32_t reflect(uint32_t data, uint8_t nBits)
 
 }   /* reflect() */
 
-uint16_t crc16_hash(const uint8_t* data, uint32_t len, custom_crc_t* cfg)
-{
-    uint16_t crc = (uint16_t)cfg->initial_value;
-    uint8_t bit;
+/* crc16_hash() */
+CREATE_CRC_FUNCTION(uint16_t, 16)
 
-    while (len--)
-    {
-        crc ^= ((cfg->reflection_input ? REFLECT_DATA(*data++) : *data++) << (CRC_16_RESULT_WIDTH - 8));
+/* crc32_hash() */
+CREATE_CRC_FUNCTION(uint32_t, 32)
 
-        for (bit = 8; bit > 0; --bit)
-            crc = (crc & TOPBIT(CRC_16_RESULT_WIDTH)) ? (crc << 1) ^ (uint16_t)cfg->polynomial : (crc << 1);
-    }
-
-    if (cfg->reflection_output)
-        crc = REFLECT_REMAINDER16(crc);
-
-    return (crc ^ (uint16_t)cfg->output_xor);
-
-}   /* crc16() */
-
-
-uint32_t crc32_hash(const uint8_t* data, uint32_t len, custom_crc_t* cfg)
-{
-    uint32_t crc = cfg->initial_value;
-    uint8_t bit;
-
-    /*
-     * Perform modulo-2 division, a byte at a time.
-     */
-    while (len--)
-    {
-        /*
-         * Bring the next byte into the remainder.
-         */
-        crc ^= ((cfg->reflection_input ? REFLECT_DATA(*data++) : *data++) << (CRC_32_RESULT_WIDTH - 8));
-
-        /*
-         * Perform modulo-2 division, a bit at a time.
-         */
-        for (bit = 8; bit > 0; --bit)
-        {
-            /*
-             * Try to divide the current data bit.
-             */
-            crc = (crc & TOPBIT(CRC_32_RESULT_WIDTH)) ? (crc << 1) ^ cfg->polynomial : (crc << 1);
-        }
-    }
-
-    /*
-     * The final remainder is the CRC result.
-     */
-    if (cfg->reflection_output)
-        crc = REFLECT_REMAINDER32(crc);
-
-    return (crc ^ cfg->output_xor);
-
-}   /* crc32() */
-
-uint64_t crc64_hash(uint64_t poly, const uint8_t *data, uint64_t len)
-{
-    uint64_t crc64_table[256];
-    uint64_t crc = rev8(poly); // initial value
-
-    generate_crc64_table(poly, crc64_table);
-
-    while (len--)
-        crc = crc64_table[(crc >> 56) ^ *data++] ^ (crc << 8);
-
-    return rev8(crc);
-}
+/* crc64_hash() */
+CREATE_CRC_FUNCTION(uint64_t, 64)
