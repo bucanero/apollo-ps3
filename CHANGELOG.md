@@ -4,9 +4,12 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.4.6](https://github.com/bucanero/apollo-ps3/releases/tag/v1.4.6) - 2020-12-23
+
 ### Added
 
 * Added BSD `crc64_ecma` and `crc64_iso` hash commands
+* Added custom CRC-64 hash support (see `BLES01724.ps3savepatch` example)
 * Added `deflate` support to BSD `decompression` command
 
 ### Fixed
