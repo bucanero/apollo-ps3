@@ -378,10 +378,7 @@ void DrawGameList(int selIndex, list_t * games, u8 alpha)
         {
 			item = list_get(node);
 			u8 a = ((alpha * CalculateAlphaList(x, selIndex, maxPerPage)) / 0xFF);
-			if (isGameActivated(item))
-			{
-				//DrawTextureCentered(&menu_textures[mark_arrow_png_index], MENU_ICON_OFF + (MENU_TITLE_OFF / 2), game_y + (y_inc / 2), 0, MENU_TITLE_OFF / 3, y_inc / 2, 0xFFFFFF00 | a);
-			}
+
             SetFontColor(APP_FONT_COLOR | a, 0);
 			if (item->name)
 			{
@@ -427,6 +424,8 @@ void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)
 {
     SetFontSize(APP_FONT_SIZE_SELECTION);
     
+    list_node_t *node;
+    code_entry_t *code;
     int game_y = 80, y_inc = 20;
     int maxPerPage = (512 - (game_y * 2)) / y_inc;
     
@@ -436,20 +435,24 @@ void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)
     if (max > game->code_count)
         max = game->code_count;
     
+    node = list_head(game->codes);
+    for (int i = 0; i < x; i++)
+        node = list_next(node);
+
     for (; x < max; x++)
     {
         int xo = 0; //(((selIndex - x) < 0) ? -(selIndex - x) : (selIndex - x));
         
-        if (x >= 0 && game->codes[x].name)
+        if (x >= 0 && node)
         {
+			code = list_get(node);
             //u32 color = game.codes[x].activated ? 0x4040C000 : 0x00000000;
 			u8 a = (u8)((alpha * CalculateAlphaList(x, selIndex, maxPerPage)) / 0xFF);
             SetFontColor(APP_FONT_COLOR | a, 0);
             //printf ("Drawing code name %d\n", x);
-            float dx = DrawString(MENU_ICON_OFF + (MENU_TITLE_OFF * 3) - xo, game_y, game->codes[x].name);
-            //DrawString(MENU_ICON_OFF + (MENU_TITLE_OFF * 3), game_y, game.codes[x].name);
+            float dx = DrawString(MENU_ICON_OFF + (MENU_TITLE_OFF * 3) - xo, game_y, code->name);
             
-            if (game->codes[x].activated)
+            if (code->activated)
             {
 				DrawTexture(&menu_textures[cheat_png_index], MENU_ICON_OFF, game_y, 0, (MENU_TITLE_OFF * 3) - 15, y_inc + 2, 0xFFFFFF00 | a);
 
@@ -460,21 +463,21 @@ void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)
                 SetFontAlign(FONT_ALIGN_LEFT);
                 SetFontSize(APP_FONT_SIZE_SELECTION);
                 
-                if (game->codes[x].options_count > 0 && game->codes[x].options)
+                if (code->options_count > 0 && code->options)
                 {
                     int od = 0;
-                    for (od = 0; od < game->codes[x].options_count; od++)
+                    for (od = 0; od < code->options_count; od++)
                     {
-                        if (game->codes[x].options[od].sel >= 0 && game->codes[x].options[od].name && game->codes[x].options[od].name[game->codes[x].options[od].sel])
+                        if (code->options[od].sel >= 0 && code->options[od].name && code->options[od].name[code->options[od].sel])
                         {
                             //Allocate option
-                            char * option = calloc(1, strlen(game->codes[x].options[od].name[game->codes[x].options[od].sel]) + 4);
+                            char * option = calloc(1, strlen(code->options[od].name[code->options[od].sel]) + 4);
 
                             //If first print "(NAME", else add to list of names ", NAME"
-                            sprintf(option, (od == 0) ? " (%s" : ", %s", game->codes[x].options[od].name[game->codes[x].options[od].sel]);
+                            sprintf(option, (od == 0) ? " (%s" : ", %s", code->options[od].name[code->options[od].sel]);
                             
                             //If it's the last one then end the list
-                            if (od == (game->codes[x].options_count - 1))
+                            if (od == (code->options_count - 1))
                                 option[strlen(option)] = ')';
                             
 							SetFontColor(APP_FONT_COLOR | a, 0);
@@ -484,8 +487,8 @@ void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)
                         }
                     }
                 }
-                
             }
+            node = list_next(node);
         }
         
         if (x == selIndex)

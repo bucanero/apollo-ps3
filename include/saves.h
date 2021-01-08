@@ -200,7 +200,7 @@ typedef struct save_entry
 	uint16_t flags;
     uint16_t type;
     int code_count;
-    code_entry_t * codes;
+    list_t * codes;
 } save_entry_t;
 
 typedef struct
@@ -220,8 +220,8 @@ list_t * ReadBackupList(const char* userPath);
 void UnloadGameList(list_t * list);
 int isGameActivated(save_entry_t * game);
 char * readFile(const char * path, long* size);
-int qsortSaveList_Compare(const void* A, const void* B);
-int qsortCodeList_Compare(const void* A, const void* B);
+int sortSaveList_Compare(const void* A, const void* B);
+int sortCodeList_Compare(const void* A, const void* B);
 long getFileSize(const char * path);
 int ReadCodes(save_entry_t * save);
 int ReadOnlineSaves(save_entry_t * game);

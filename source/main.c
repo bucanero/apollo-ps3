@@ -574,7 +574,7 @@ int ReloadUserSaves(save_list_t* save_list)
 
 	save_list->list = save_list->ReadList(save_list->path);
 	if (apollo_config.doSort)
-		list_bubbleSort(save_list->list, &qsortSaveList_Compare);
+		list_bubbleSort(save_list->list, &sortSaveList_Compare);
 
     stop_loading_screen();
 
@@ -849,7 +849,7 @@ void doSaveMenu(save_list_t * save_list)
 
     		if (apollo_config.doSort && 
 				((save_list->icon_id == cat_bup_png_index) || (save_list->icon_id == cat_db_png_index)))
-    			qsort(selected_entry->codes, selected_entry->code_count, sizeof(code_entry_t), &qsortCodeList_Compare);
+    			list_bubbleSort(selected_entry->codes, &sortCodeList_Compare);
 
     		SetMenu(MENU_PATCHES);
     		return;
@@ -1006,7 +1006,7 @@ void doPatchViewMenu()
 
 void doCodeOptionsMenu()
 {
-    code_entry_t* code = &selected_entry->codes[menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]];
+    code_entry_t* code = list_get_item(selected_entry->codes, menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]);
 	// Check the pads.
 	if (readPad(0))
 	{
@@ -1097,7 +1097,7 @@ void doPatchMenu()
 		}
 		else if (paddata[0].BTN_CROSS)
 		{
-			selected_centry = &selected_entry->codes[menu_sel];
+			selected_centry = list_get_item(selected_entry->codes, menu_sel);
 
 			if (selected_centry->type != PATCH_NULL)
 				selected_centry->activated = !selected_centry->activated;
@@ -1110,10 +1110,12 @@ void doPatchMenu()
 				// Only activate Required codes if a cheat is selected
 				if (selected_centry->type == PATCH_GAMEGENIE || selected_centry->type == PATCH_BSD)
 				{
+					code_entry_t* code;
 					for (int i=0; i < selected_entry->code_count; i++)
 					{
-						if (wildcard_match_icase(selected_entry->codes[i].name, "*(REQUIRED)*"))
-							selected_entry->codes[i].activated = 1;
+						code = list_get_item(selected_entry->codes, i);
+						if (wildcard_match_icase(code->name, "*(REQUIRED)*"))
+							code->activated = 1;
 					}
 				}
 				/*
@@ -1143,7 +1145,7 @@ void doPatchMenu()
 		}
 		else if (paddata[0].BTN_TRIANGLE)
 		{
-			selected_centry = &selected_entry->codes[menu_sel];
+			selected_centry = list_get_item(selected_entry->codes, menu_sel);
 
 			if (selected_centry->type == PATCH_GAMEGENIE || selected_centry->type == PATCH_BSD)
 			{

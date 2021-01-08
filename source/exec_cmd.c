@@ -613,7 +613,7 @@ int apply_sfo_patches(sfo_patch_t* patch)
 
 	for (j = 0; j < selected_entry->code_count; j++)
 	{
-		code = &selected_entry->codes[j];
+		code = list_get_item(selected_entry->codes, j);
 		if (!code->activated || code->type != PATCH_SFO)
 		    continue;
 
@@ -698,7 +698,7 @@ int apply_cheat_patches()
 
 	for (j = 0; j < selected_entry->code_count; j++)
 	{
-		code = &selected_entry->codes[j];
+		code = list_get_item(selected_entry->codes, j);
 
 		if (!code->activated || (code->type != PATCH_GAMEGENIE && code->type != PATCH_BSD))
 		    continue;
