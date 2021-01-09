@@ -67,7 +67,7 @@ bsd_variable_t* _get_bsd_variable(list_t* list, const char* vname)
 		if (strcmp(var->name, vname) == 0)
 			return var;
 
-		node = node->next;
+		node = list_next(node);
 	}
 
 	return NULL;
@@ -193,7 +193,7 @@ void _cleanup_var_list(list_t* list)
 
 			free(node->value);
 		}
-		node = node->next;
+		node = list_next(node);
 	}
     list_free(list);
 }

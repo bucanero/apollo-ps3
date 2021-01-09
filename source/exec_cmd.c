@@ -609,13 +609,12 @@ int apply_sfo_patches(sfo_patch_t* patch)
     char in_file_path[256];
     char tmp_dir[SFO_DIRECTORY_SIZE];
     u8 tmp_psid[SFO_PSID_SIZE];
-    int j;
+    list_node_t* node;
 
-	for (j = 0; j < selected_entry->code_count; j++)
-	{
-		code = list_get_item(selected_entry->codes, j);
-		if (!code->activated || code->type != PATCH_SFO)
-		    continue;
+    for (node = list_head(selected_entry->codes); (code = list_get(node)); node = list_next(node))
+    {
+        if (!code->activated || code->type != PATCH_SFO)
+            continue;
 
         LOG("Active: [%s]", code->name);
 
@@ -659,8 +658,8 @@ int apply_sfo_patches(sfo_patch_t* patch)
             break;
         }
 
-		code->activated = 0;
-	}
+        code->activated = 0;
+    }
 
 	snprintf(in_file_path, sizeof(in_file_path), "%s" "PARAM.SFO", selected_entry->path);
 	LOG("Applying SFO patches '%s'...", in_file_path);
@@ -669,39 +668,35 @@ int apply_sfo_patches(sfo_patch_t* patch)
 }
 
 int _is_decrypted(list_t* list, const char* fname) {
-	list_node_t *node = list_head(list);
+	list_node_t *node;
 	u8 *protected_file_id = get_secure_file_id(selected_entry->title_id, "UNPROTECTED");
 
 	if (protected_file_id && (strncmp("UNPROTECTEDGAME", (char*)protected_file_id, 16) == 0))
 		return 1;
 
-	while (node) {
+	for (node = list_head(list); node; node = list_next(node))
 		if (strcmp(list_get(node), fname) == 0)
 			return 1;
-
-		node = node->next;
-	}
 
 	return 0;
 }
 
 int apply_cheat_patches()
 {
-    int j, ret = 1;
+	int ret = 1;
 	char tmpfile[256];
 	char* filename;
 	code_entry_t* code;
 	uint8_t* protected_file_id;
 	list_t* decrypted_files = list_alloc();
+	list_node_t* node;
 
 	init_loading_screen("Applying changes...");
 
-	for (j = 0; j < selected_entry->code_count; j++)
+	for (node = list_head(selected_entry->codes); (code = list_get(node)); node = list_next(node))
 	{
-		code = list_get_item(selected_entry->codes, j);
-
 		if (!code->activated || (code->type != PATCH_GAMEGENIE && code->type != PATCH_BSD))
-		    continue;
+			continue;
 
     	LOG("Active code: [%s]", code->name);
 
@@ -747,11 +742,8 @@ int apply_cheat_patches()
 		code->activated = 0;
 	}
 
-	list_node_t *node = list_head(decrypted_files);
-
-	while (node)
+	for (node = list_head(decrypted_files); (filename = list_get(node)); node = list_next(node))
 	{
-		filename = list_get(node);
 		snprintf(tmpfile, sizeof(tmpfile), "%s%s", selected_entry->path, filename);
 
 		LOG("Encrypting '%s'...", tmpfile);
@@ -765,7 +757,6 @@ int apply_cheat_patches()
 		}
 
 		free(filename);
-		node = node->next;
 	}
 
 	list_free(decrypted_files);

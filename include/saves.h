@@ -199,7 +199,6 @@ typedef struct save_entry
 	char * path;
 	uint16_t flags;
     uint16_t type;
-    int code_count;
     list_t * codes;
 } save_entry_t;
 

@@ -844,8 +844,11 @@ void doSaveMenu(save_list_t * save_list)
     	{
 			selected_entry = list_get_item(save_list->list, menu_sel);
 
-    		if (!selected_entry->codes)
-    			save_list->ReadCodes(selected_entry);
+    		if (!selected_entry->codes && !save_list->ReadCodes(selected_entry))
+    		{
+    			show_message("No data found");
+    			return;
+    		}
 
     		if (apollo_config.doSort && 
 				((save_list->icon_id == cat_bup_png_index) || (save_list->icon_id == cat_db_png_index)))
@@ -1079,16 +1082,16 @@ void doPatchMenu()
 	if (readPad(0))
 	{
 		if(paddata[0].BTN_UP)
-			move_selection_back(selected_entry->code_count, 1);
+			move_selection_back(list_count(selected_entry->codes), 1);
 
 		else if(paddata[0].BTN_DOWN)
-			move_selection_fwd(selected_entry->code_count, 1);
+			move_selection_fwd(list_count(selected_entry->codes), 1);
 
 		else if (paddata[0].BTN_LEFT)
-			move_selection_back(selected_entry->code_count, 5);
+			move_selection_back(list_count(selected_entry->codes), 5);
 
 		else if (paddata[0].BTN_RIGHT)
-			move_selection_fwd(selected_entry->code_count, 5);
+			move_selection_fwd(list_count(selected_entry->codes), 5);
 
 		else if (paddata[0].BTN_CIRCLE)
 		{
@@ -1111,12 +1114,11 @@ void doPatchMenu()
 				if (selected_centry->type == PATCH_GAMEGENIE || selected_centry->type == PATCH_BSD)
 				{
 					code_entry_t* code;
-					for (int i=0; i < selected_entry->code_count; i++)
-					{
-						code = list_get_item(selected_entry->codes, i);
+					list_node_t* node;
+
+					for (node = list_head(selected_entry->codes); (code = list_get(node)); node = list_next(node))
 						if (wildcard_match_icase(code->name, "*(REQUIRED)*"))
 							code->activated = 1;
-					}
 				}
 				/*
 				if (!selected_centry->options)

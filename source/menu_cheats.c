@@ -360,13 +360,12 @@ void DrawGameList(int selIndex, list_t * games, u8 alpha)
     char tmp[4] = "   ";
     int game_y = 80, y_inc = 20;
     int maxPerPage = (512 - (game_y * 2)) / y_inc;
-    int glen = list_count(games);
     
     int x = selIndex - (maxPerPage / 2);
     int max = maxPerPage + selIndex;
     
-    if (max > glen)
-        max = glen;
+    if (max > list_count(games))
+        max = list_count(games);
     
     node = list_head(games);
     for (int i = 0; i < x; i++)
@@ -417,7 +416,7 @@ void DrawGameList(int selIndex, list_t * games, u8 alpha)
         game_y += y_inc;
     }
     
-    DrawScrollBar(selIndex, glen, y_inc, 800, alpha);
+    DrawScrollBar(selIndex, list_count(games), y_inc, 800, alpha);
 }
 
 void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)
@@ -432,8 +431,8 @@ void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)
     int x = selIndex - (maxPerPage / 2);
     int max = maxPerPage + selIndex;
     
-    if (max > game->code_count)
-        max = game->code_count;
+    if (max > list_count(game->codes))
+        max = list_count(game->codes);
     
     node = list_head(game->codes);
     for (int i = 0; i < x; i++)
@@ -504,7 +503,7 @@ void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)
         game_y += y_inc;
     }
     
-    DrawScrollBar(selIndex, game->code_count, y_inc, 800, alpha);
+    DrawScrollBar(selIndex, list_count(game->codes), y_inc, 800, alpha);
 }
 
 void Draw_CheatsMenu_Selection_Ani()
