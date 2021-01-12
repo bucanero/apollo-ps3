@@ -217,7 +217,6 @@ list_t * ReadUserList(const char* userPath);
 list_t * ReadOnlineList(const char* urlPath);
 list_t * ReadBackupList(const char* userPath);
 void UnloadGameList(list_t * list);
-int isGameActivated(save_entry_t * game);
 char * readFile(const char * path, long* size);
 int sortSaveList_Compare(const void* A, const void* B);
 int sortCodeList_Compare(const void* A, const void* B);
