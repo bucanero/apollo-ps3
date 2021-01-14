@@ -3,6 +3,11 @@
 #define SECRET_KEY      "(SH[@2>r62%5+QKpy|g6"
 #define SHA1_HMAC_KEY   "xM;6X%/p^L/:}-5QoA+K8:F*M!~sb(WK<E%6sW_un0a[7Gm6,()kHoXY+yI/s;Ba"
 
+#define DIABLO3_KEY1    0x305f92d8
+#define DIABLO3_KEY2    0x2ec9a01b
+
+#define AES_BLOCK_SIZE  16
+
 /*
 uint8_t SHA1_HMAC_KEY[64] = {
 	0x78, 0x4D, 0x3B, 0x36, 0x58, 0x25, 0x2F, 0x70, 0x5E, 0x4C, 0x2F, 0x3A, 0x7D, 0x2D, 0x35, 0x51, 

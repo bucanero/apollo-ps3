@@ -1437,15 +1437,15 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
 			find = _decode_variable_data(line, &len, var_list);
 
+			if (tmp)
+				*tmp = ':';
+
 		    if (!find)
 		    {
 		        // error decoding
 				LOG("Error parsing search pattern!");
 		        return 0;
 		    }
-			
-			if (tmp)
-			    *tmp = ':';
 
 			LOG("Searching {%s} ...", line);
 			pointer = search_data(data, dsize, find, len, cnt);
@@ -1453,6 +1453,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			if (pointer < 0)
 			{
 				LOG("ERROR: SEARCH PATTERN NOT FOUND");
+				free(find);
 				return 0;
 			}
 			
@@ -1477,6 +1478,47 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 				LOG("Decrypt NaughtyDog data");
 				nd_decrypt_data((uint32_t*) data, dsize);
 			}
+			else if (wildcard_match_icase(line, "diablo3*"))
+			{
+				LOG("Decrypt Diablo 3 data");
+				d3_decrypt_data((u8*) data, dsize);
+			}
+			else if (wildcard_match_icase(line, "aes_ecb(*)*"))
+			{
+				int key_len;
+				char *key, *tmp;
+				u8* start = (u8*)data + range_start;
+
+				line += strlen("aes_ecb(");
+				tmp = strrchr(line, ')');
+				*tmp = 0;
+
+				LOG("Encryption Key=%s", line);
+
+				key = _decode_variable_data(line, &key_len, var_list);
+				*tmp = ')';
+
+				aes_ecb_decrypt(start, (range_end - range_start), (u8*) key, key_len);
+				free(key);
+			}
+			else if (wildcard_match_icase(line, "blowfish_ecb(*)*"))
+			{
+				int key_len;
+				char *key, *tmp;
+				u8* start = (u8*)data + range_start;
+
+				line += strlen("blowfish_ecb(");
+				tmp = strrchr(line, ')');
+				*tmp = 0;
+
+				LOG("Encryption Key=%s", line);
+
+				key = _decode_variable_data(line, &key_len, var_list);
+				*tmp = ')';
+
+				blowfish_ecb_decrypt(start, (range_end - range_start), (u8*) key, key_len);
+				free(key);
+			}
 
 		}
 
@@ -1489,6 +1531,47 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			{
 				LOG("Encrypt NaughtyDog data");
 				nd_encrypt_data((uint32_t*) data, dsize);
+			}
+			else if (wildcard_match_icase(line, "diablo3*"))
+			{
+				LOG("Encrypt Diablo 3 data");
+				d3_encrypt_data((u8*) data, dsize);
+			}
+			else if (wildcard_match_icase(line, "aes_ecb(*)*"))
+			{
+				int key_len;
+				char *key, *tmp;
+				u8* start = (u8*)data + range_start;
+
+				line += strlen("aes_ecb(");
+				tmp = strrchr(line, ')');
+				*tmp = 0;
+
+				LOG("Encryption Key=%s", line);
+
+				key = _decode_variable_data(line, &key_len, var_list);
+				*tmp = ')';
+
+				aes_ecb_encrypt(start, (range_end - range_start), (u8*) key, key_len);
+				free(key);
+			}
+			else if (wildcard_match_icase(line, "blowfish_ecb(*)*"))
+			{
+				int key_len;
+				char *key, *tmp;
+				u8* start = (u8*)data + range_start;
+
+				line += strlen("blowfish_ecb(");
+				tmp = strrchr(line, ')');
+				*tmp = 0;
+
+				LOG("Encryption Key=%s", line);
+
+				key = _decode_variable_data(line, &key_len, var_list);
+				*tmp = ')';
+
+				blowfish_ecb_encrypt(start, (range_end - range_start), (u8*) key, key_len);
+				free(key);
 			}
 
 		}

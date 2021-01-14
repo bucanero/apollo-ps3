@@ -1,18 +1,14 @@
 /*
 *
-*	Naughty Dog PS3 Save Decrypter - (c) 2020 by Bucanero - www.bucanero.com.ar
-*
-* This tool is based (reversed) on the original tlou_save_data_decrypter by Red-EyeX32 and aerosoul94
-*
-* Information about the encryption method:
-*	- https://github.com/RocketRobz/NTR_Launcher_3D/blob/master/twlnand-side/BootLoader/source/encryption.c
-*	- http://www.ssugames.org/pluginfile.php/998/mod_resource/content/0/gbatek.htm#dsencryptionbygamecodeidcodekey1
+*	Custom PS3 Save Decrypters - (c) 2020 by Bucanero - www.bucanero.com.ar
 *
 */
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <polarssl/aes.h>
+#include <polarssl/blowfish.h>
 #include "keys.h"
 #include "types.h"
 
@@ -84,46 +80,143 @@ void apply_keycode(u32* keybuf, const u8* keydata, const char* keycode)
 	}
 }
 
+void blowfish_ecb_decrypt(u8* data, u32 len, u8* key, u32 key_len)
+{
+	blowfish_context ctx;
+
+	LOG("Decrypting Blowfish ECB data (%d bytes)", len);
+
+	blowfish_init(&ctx);
+	blowfish_setkey(&ctx, key, key_len * 8);
+	len = len / BLOWFISH_BLOCKSIZE;
+
+	while (len--)
+	{
+		blowfish_crypt_ecb(&ctx, BLOWFISH_DECRYPT, data, data);
+		data += BLOWFISH_BLOCKSIZE;
+	}
+
+	return;
+}
+
+void blowfish_ecb_encrypt(u8* data, u32 len, u8* key, u32 key_len)
+{
+	blowfish_context ctx;
+
+	LOG("Encrypting Blowfish ECB data (%d bytes)", len);
+
+	blowfish_init(&ctx);
+	blowfish_setkey(&ctx, key, key_len * 8);
+	len = len / BLOWFISH_BLOCKSIZE;
+
+	while (len--)
+	{
+		blowfish_crypt_ecb(&ctx, BLOWFISH_ENCRYPT, data, data);
+		data += BLOWFISH_BLOCKSIZE;
+	}
+
+	return;
+}
+
 int nd_decrypt_data(u32* data, u32 size)
 {
 	int i;
 	size = data[size/4 -1];
-	u32* key_table = malloc(KEYSIZE);
-
-	if (!key_table)
-		return 0;
-
-	apply_keycode(key_table, KEY_DATA, SECRET_KEY);
 
 	LOG("NaughtyDog Decrypted size 0x%X (%d bytes)", size, size);
-	size = size/4;
 	data += 2;
 
-	for (i = 0; i < size; i+= 2)
-		crypt_64bit_down(key_table, &data[i]);
+	blowfish_ecb_decrypt((u8*) data, size, (u8*) SECRET_KEY, strlen(SECRET_KEY));
 
-	free(key_table);
 	return 1;
 }
 
 int nd_encrypt_data(u32* data, u32 size)
 {
-	int i;
 	size = data[size/4 -1];
-	u32* key_table = malloc(KEYSIZE);
-
-	if (!key_table)
-		return 0;
-
-	apply_keycode(key_table, KEY_DATA, SECRET_KEY);
 
 	LOG("NaughtyDog Encrypted size 0x%X (%d bytes)", size, size);
-	size = size/4;
 	data += 2;
 
-	for (i = 0; i < size; i+= 2)
-		crypt_64bit_up(key_table, &data[i]);
+	blowfish_ecb_encrypt((u8*) data, size, (u8*) SECRET_KEY, strlen(SECRET_KEY));
 
-	free(key_table);
 	return 1;
+}
+
+void d3_decrypt_data(u8* data, u32 size)
+{
+	u32 xor_key1 = DIABLO3_KEY1;
+	u32 xor_key2 = DIABLO3_KEY2;
+	u32 tmp;
+
+	LOG("[*] Total Decrypted Size 0x%X (%d bytes)", size, size);
+
+	for (int i = 0; i < size; i++)
+	{
+		data[i] ^= (xor_key1 & 0xFF);
+		tmp = data[i] ^ xor_key1;
+		xor_key1 = xor_key1 >> 8 | xor_key2 << 0x18;
+		xor_key2 = xor_key2 >> 8 | tmp << 0x18;
+	}
+
+	LOG("[*] Decrypted File Successfully!");
+	return;
+}
+
+void d3_encrypt_data(u8* data, u32 size)
+{
+	u32 xor_key1 = DIABLO3_KEY1;
+	u32 xor_key2 = DIABLO3_KEY2;
+	u32 tmp;
+
+	LOG("[*] Total Encrypted Size 0x%X (%d bytes)", size, size);
+
+	for (int i = 0; i < size; i++)
+	{
+		tmp = data[i] ^ xor_key1;
+		data[i] ^= (xor_key1 & 0xFF);
+		xor_key1 = xor_key1 >> 8 | xor_key2 << 0x18;
+		xor_key2 = xor_key2 >> 8 | tmp << 0x18;
+	}
+
+	LOG("[*] Encrypted File Successfully!");
+	return;
+}
+
+void aes_ecb_decrypt(u8* data, u32 len, u8* key, u32 key_len)
+{
+	aes_context ctx;
+
+	LOG("Decrypting AES ECB data (%d bytes)", len);
+
+	aes_init(&ctx);
+	aes_setkey_dec(&ctx, key, key_len * 8);
+	len = len / AES_BLOCK_SIZE;
+
+	while (len--)
+	{
+		aes_crypt_ecb(&ctx, AES_DECRYPT, data, data);
+		data += AES_BLOCK_SIZE;
+	}
+
+	return;
+}
+
+void aes_ecb_encrypt(u8* data, u32 len, u8* key, u32 key_len)
+{
+	aes_context ctx;
+
+	LOG("Encrypting AES ECB data (%d bytes)", len);
+
+	aes_init(&ctx);
+	aes_setkey_enc(&ctx, key, key_len * 8);
+	len = len / AES_BLOCK_SIZE;
+
+	while (len--)
+	{
+		aes_crypt_ecb(&ctx, AES_ENCRYPT, data, data);
+		data += AES_BLOCK_SIZE;
+	}
+
+	return;
 }
