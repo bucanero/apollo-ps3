@@ -5,7 +5,9 @@
 :USR-DATA
 
 [Decrypt USR-DATA (Required)]
-DECRYPT naughtydog
+set [end]:read(EOF-3, 4)
+set range:0x000008,[end]+7
+DECRYPT blowfish_ecb("(SH[@2>r62%5+QKpy|g6")
 
 :BCUS98123_NDI_UNCHARTED2_BT_P\USR-DATA
 
@@ -40,9 +42,11 @@ write at 0x588:[hash]
 [Update HMAC SHA1 checksum for USR-DATA (Required)]
 set pointer:EOF-0x1F
 set range:0x000008,pointer
-set [hash]:hmac_sha1(*)
+set [hash]:hmac_sha1("xM;6X%/p^L/:}-5QoA+K8:F*M!~sb(WK<E%6sW_un0a[7Gm6,()kHoXY+yI/s;Ba")
 set pointer:EOF-0x1F
 write next (0):[hash]
 
 [Encrypt USR-DATA (Required)]
-ENCRYPT naughtydog
+set [end]:read(EOF-3, 4)
+set range:0x000008,[end]+7
+ENCRYPT blowfish_ecb("(SH[@2>r62%5+QKpy|g6")
