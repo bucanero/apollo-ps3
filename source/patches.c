@@ -14,7 +14,6 @@
 #include "common.h"
 
 #define skip_spaces(str)        while (*str == ' ') str++;
-#define TLOU_HMAC_KEY			"xM;6X%/p^L/:}-5QoA+K8:F*M!~sb(WK<E%6sW_un0a[7Gm6,()kHoXY+yI/s;Ba"
 
 typedef enum
 {
@@ -471,7 +470,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    for (int i=0; i < wlen; i++)
     			        old_ptr[i] ^= xor_val[i];
 
-                    var->data = malloc(var->len);
+                    var->data = (u8*) xor_val;
                     memcpy(var->data, old_ptr, var->len);
 
     			    LOG("Var [%s]:XOR:%s = %X", var->name, line, old_val);
@@ -783,16 +782,28 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    }
 
 			    // set [*]:hmac_sha1*
-			    else if (wildcard_match_icase(line, "hmac_sha1*"))
+			    else if (wildcard_match_icase(line, "hmac_sha1(*)*"))
 			    {
-    			    u8* start = (u8*)data + range_start;
-    			    len = range_end - range_start;
+					char *key;
+					int key_len;
+					u8* start = (u8*)data + range_start;
+					len = range_end - range_start;
 
-                    var->len = BSD_VAR_SHA1;
-                    var->data = malloc(var->len);
-					sha1_hmac((u8*) TLOU_HMAC_KEY, strlen(TLOU_HMAC_KEY), start, len, var->data);
+					line += strlen("hmac_sha1(");
+					tmp = strrchr(line, ')');
+					*tmp = 0;
 
-    			    LOG("len %d SHA1/HMAC HASH = %llx%llx%x", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint32_t*)var->data)[4]);
+					LOG("HMAC Key=%s", line);
+
+					key = _decode_variable_data(line, &key_len, var_list);
+					*tmp = ')';
+
+					var->len = BSD_VAR_SHA1;
+					var->data = malloc(var->len);
+					sha1_hmac((u8*) key, key_len, start, len, var->data);
+					free(key);
+
+					LOG("len %d SHA1/HMAC HASH = %llx%llx%x", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint32_t*)var->data)[4]);
 			    }
 
 			    // set [*]:eachecksum*
@@ -1473,15 +1484,10 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			line += strlen("decrypt");
 			skip_spaces(line);
 
-			if (wildcard_match_icase(line, "naughtydog"))
-			{
-				LOG("Decrypt NaughtyDog data");
-				nd_decrypt_data((uint32_t*) data, dsize);
-			}
-			else if (wildcard_match_icase(line, "diablo3*"))
+			if (wildcard_match_icase(line, "diablo3*"))
 			{
 				LOG("Decrypt Diablo 3 data");
-				d3_decrypt_data((u8*) data, dsize);
+				diablo_decrypt_data((u8*) data, dsize);
 			}
 			else if (wildcard_match_icase(line, "aes_ecb(*)*"))
 			{
@@ -1499,6 +1505,24 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 				*tmp = ')';
 
 				aes_ecb_decrypt(start, (range_end - range_start), (u8*) key, key_len);
+				free(key);
+			}
+			else if (wildcard_match_icase(line, "des_ecb(*)*"))
+			{
+				int key_len;
+				char *key, *tmp;
+				u8* start = (u8*)data + range_start;
+
+				line += strlen("des_ecb(");
+				tmp = strrchr(line, ')');
+				*tmp = 0;
+
+				LOG("Encryption Key=%s", line);
+
+				key = _decode_variable_data(line, &key_len, var_list);
+				*tmp = ')';
+
+				des_ecb_decrypt(start, (range_end - range_start), (u8*) key, key_len);
 				free(key);
 			}
 			else if (wildcard_match_icase(line, "blowfish_ecb(*)*"))
@@ -1527,15 +1551,10 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			line += strlen("encrypt");
 			skip_spaces(line);
 
-			if (wildcard_match_icase(line, "naughtydog"))
-			{
-				LOG("Encrypt NaughtyDog data");
-				nd_encrypt_data((uint32_t*) data, dsize);
-			}
-			else if (wildcard_match_icase(line, "diablo3*"))
+			if (wildcard_match_icase(line, "diablo3*"))
 			{
 				LOG("Encrypt Diablo 3 data");
-				d3_encrypt_data((u8*) data, dsize);
+				diablo_encrypt_data((u8*) data, dsize);
 			}
 			else if (wildcard_match_icase(line, "aes_ecb(*)*"))
 			{
@@ -1553,6 +1572,24 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 				*tmp = ')';
 
 				aes_ecb_encrypt(start, (range_end - range_start), (u8*) key, key_len);
+				free(key);
+			}
+			else if (wildcard_match_icase(line, "des_ecb(*)*"))
+			{
+				int key_len;
+				char *key, *tmp;
+				u8* start = (u8*)data + range_start;
+
+				line += strlen("des_ecb(");
+				tmp = strrchr(line, ')');
+				*tmp = 0;
+
+				LOG("Encryption Key=%s", line);
+
+				key = _decode_variable_data(line, &key_len, var_list);
+				*tmp = ')';
+
+				des_ecb_encrypt(start, (range_end - range_start), (u8*) key, key_len);
 				free(key);
 			}
 			else if (wildcard_match_icase(line, "blowfish_ecb(*)*"))
