@@ -23,14 +23,9 @@ set crc_reflection_output:1
 set pointer:eof-0x7
 set range:0x0,pointer
 set [hash]:crc
-set pointer:eof-0x7
 write next (0):[hash]
-set pointer:eof-0x7
 insert next (0):0x3141281814285714
-set pointer:eof-0xF
 set range:pointer,eof+1
 set [hash]:crc
-set pointer:eof-0x7
 delete next (0):0x8
-set pointer:eof-0x7
 write next (0):[hash]
