@@ -1,11 +1,14 @@
-; NPUB30830
+; BLUS30723
 ; DmC: Devil May Cry
-
-; By Dark Nacho
+;From Game Genie For PS3
 
 ;:BLUS30723_*\CHECKPNT
 
 :PROFILE
+
+[Decrypt PROFILE (Required)]
+set range:0x000000,eof+1
+DECRYPT blowfish_ecb("8jdf*jsd@dfd8*P:QcNt")
 
 ;:BLUS30723_DLC_1*\PROFILE
 
@@ -234,3 +237,15 @@ write next (7):0x0014000F423F
 40060021 00000000
 400001D8 00000064
 40060021 00000000
+
+[GROUP:Checksum]
+
+[Update SHA1 for PROFILE (Required)]
+set pointer:read(0x18, 4)
+set range:0x00001C,pointer+0x1B
+set [hash]:SHA1
+write at 0x4:[hash]
+
+[Encrypt PROFILE (Required)]
+set range:0x000000,eof+1
+ENCRYPT blowfish_ecb("8jdf*jsd@dfd8*P:QcNt")
