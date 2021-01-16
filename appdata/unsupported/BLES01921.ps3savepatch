@@ -1,8 +1,0 @@
-;BLES01921
-;Diablo III
-; From twerkformiley
-
-:ACCOUNT.DAT
-
-[Paragon XP Boost]
-write at 0x000001F6:0xFFAB9D7B

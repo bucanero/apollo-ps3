@@ -1,0 +1,16 @@
+;BLES01921
+;Diablo III
+; From twerkformiley
+
+:ACCOUNT.DAT
+
+[Decrypt ACCOUNT.DAT (Required)]
+set range:0x000000,eof+1
+DECRYPT diablo3
+
+[Paragon XP Boost]
+write at 0x000001F6:0xFFAB9D7B
+
+[Encrypt ACCOUNT.DAT (Required)]
+set range:0x000000,eof+1
+ENCRYPT diablo3
