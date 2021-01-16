@@ -592,7 +592,7 @@ void importLicenses(const char* fname, const char* exdata_path)
 	{
 		if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0 &&
 			(!fname || (strcmp(dir->d_name, fname)) == 0) &&
-			strcmp(strrchr(dir->d_name, '.'), ".rap") == 0)
+			strcasecmp(strrchr(dir->d_name, '.'), ".rap") == 0)
 		{
 			LOG("Importing %s", dir->d_name);
 			rap2rif((u8*) apollo_config.idps, exdata_path, dir->d_name, lic_path);
