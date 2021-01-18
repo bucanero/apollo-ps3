@@ -8,6 +8,8 @@
 #include <sysutil/video.h>
 #include <time.h>
 #include <dirent.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 
 #include "saves.h"
 #include "common.h"
@@ -677,6 +679,109 @@ int ReadCodes(save_entry_t * save)
 	return list_count(save->codes);
 }
 
+char* _get_xml_node_value(xmlNode * a_node, const xmlChar* node_name)
+{
+	xmlNode *cur_node = NULL;
+	char *value = NULL;
+
+	for (cur_node = a_node; cur_node && !value; cur_node = cur_node->next)
+	{
+		if (cur_node->type != XML_ELEMENT_NODE)
+			continue;
+
+		if (xmlStrcasecmp(cur_node->name, node_name) == 0)
+		{
+			value = (char*) xmlNodeGetContent(cur_node);
+//			LOG("xml value=%s", value);
+		}
+	}
+
+	return value;
+}
+
+int ReadTrophies(save_entry_t * game)
+{
+	int trop_count = 0;
+	code_entry_t * trophy;
+	char filePath[256];
+	long bufferLen;
+	char * buffer = NULL;
+	xmlDoc *doc = NULL;
+	xmlNode *root_element = NULL;
+	xmlNode *cur_node = NULL;
+	char *value;
+
+	snprintf(filePath, sizeof(filePath), "%s" "TROPCONF.SFM", game->path);
+	if (file_exists(filePath) != SUCCESS)
+		return 0;
+
+	buffer = readFile(filePath, &bufferLen);
+	buffer[bufferLen]=0;
+
+	/*parse the file and get the DOM */
+	doc = xmlReadMemory(buffer + 0x40, bufferLen - 0x40, NULL, NULL, XML_PARSE_NONET);
+
+	if (!doc)
+	{
+		LOG("XML: could not parse file %s", filePath);
+		free(buffer);
+		return 0;
+	}
+
+	game->codes = list_alloc();
+
+	trophy = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN "Resign Trophy Set", CMD_RESIGN_TROPHY);
+	list_append(game->codes, trophy);
+
+	trophy = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Backup Trophy Set to USB", 0);
+	trophy->file = strdup(game->path);
+	trophy->options_count = 1;
+	trophy->options = _createOptions(2, "Copy Trophy to USB", CMD_EXP_TROPHY_USB);
+	list_append(game->codes, trophy);
+
+	trophy = _createCmdCode(PATCH_NULL, "----- " UTF8_CHAR_STAR " Trophies " UTF8_CHAR_STAR " -----", 0);
+	list_append(game->codes, trophy);
+
+	/*Get the root element node */
+	root_element = xmlDocGetRootElement(doc);
+
+	for (cur_node = root_element->children; cur_node; cur_node = cur_node->next)
+	{
+		if (cur_node->type != XML_ELEMENT_NODE)
+			continue;
+
+		if (xmlStrcasecmp(cur_node->name, BAD_CAST "trophy") == 0)
+		{
+			value = _get_xml_node_value(cur_node->children, BAD_CAST "name");
+			trophy = _createCmdCode(PATCH_NULL, value, CMD_CODE_NULL);
+
+			value = _get_xml_node_value(cur_node->children, BAD_CAST "detail");
+			trophy->codes = strdup(value);
+
+			value = (char*) xmlGetProp(cur_node, BAD_CAST "ttype");
+			trophy->type = value[0];
+
+			value = (char*) xmlGetProp(cur_node, BAD_CAST "id");
+			if (value)
+			{
+				sscanf(value, "%d", &trop_count);
+				trophy->file = malloc(sizeof(trop_count));
+				memcpy(trophy->file, &trop_count, sizeof(trop_count));
+			}
+			LOG("Trophy=%d [%c] '%s' (%s)", trop_count, trophy->type, trophy->name, trophy->codes);
+
+			list_append(game->codes, trophy);
+		}
+	}
+
+	/*free the document */
+	xmlFreeDoc(doc);
+	xmlCleanupParser();
+	free(buffer);
+
+	return list_count(game->codes);
+}
+
 /*
  * Function:		ReadOnlineSaves()
  * File:			saves.c
@@ -816,15 +921,6 @@ list_t * ReadBackupList(const char* userPath)
 	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " PS2 Classics: Export & Decrypt BIN.ENC images");
 	asprintf(&item->path, IMPORT_PS2_PATH_HDD);
 	item->type = FILE_TYPE_BINENC;
-	list_append(list, item);
-
-	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " Export Trophies");
-	asprintf(&item->path, TROPHY_PATH_HDD, apollo_config.user_id);
-	item->codes = list_alloc();
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Backup Trophies to USB", 0);
-	cmd->options_count = 1;
-	cmd->options = _createOptions(2, "Save Trophies to USB", CMD_EXP_TROPHY_USB);
-	list_append(item->codes, cmd);
 	list_append(list, item);
 
 	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " Export /dev_flash2");
@@ -1549,6 +1645,87 @@ list_t * ReadOnlineList(const char* urlPath)
 	}
 
 	if (data) free(data);
+
+	return list;
+}
+
+list_t * ReadTrophyList(const char* userPath)
+{
+	DIR *d;
+	struct dirent *dir;
+	save_entry_t *item;
+	code_entry_t *cmd;
+	list_t *list;
+	char filePath[256];
+	xmlDoc *doc = NULL;
+	xmlNode *root_element = NULL;
+	char *value, *buffer;
+	long bufferLen;
+
+	if (dir_exists(userPath) != SUCCESS)
+		return NULL;
+
+	list = list_alloc();
+
+	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " Export Trophies");
+	asprintf(&item->path, userPath);
+	item->codes = list_alloc();
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Backup Trophies to USB", 0);
+	cmd->options_count = 1;
+	cmd->options = _createOptions(2, "Save Trophies to USB", CMD_EXP_TROPHY_USB);
+	list_append(item->codes, cmd);
+	list_append(list, item);
+
+	d = opendir(userPath);
+
+	if (!d)
+		return list;
+
+	while ((dir = readdir(d)) != NULL)
+	{
+		if (dir->d_type != DT_DIR || strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0)
+			continue;
+
+		snprintf(filePath, sizeof(filePath), "%s%s/TROPCONF.SFM", userPath, dir->d_name);
+		if (file_exists(filePath) == SUCCESS)
+		{
+			LOG("Reading %s...", filePath);
+
+			buffer = readFile(filePath, &bufferLen);
+			buffer[bufferLen]=0;
+
+			/*parse the file and get the DOM */
+			doc = xmlReadMemory(buffer + 0x40, bufferLen - 0x40, NULL, NULL, XML_PARSE_NONET);
+
+			if (!doc)
+			{
+				LOG("XML: could not parse file %s", filePath);
+				free(buffer);
+				continue;
+			}
+
+			/*Get the root element node */
+			root_element = xmlDocGetRootElement(doc);
+			value = _get_xml_node_value(root_element->children, BAD_CAST "title-name");
+
+			item = _createSaveEntry(SAVE_FLAG_PS3 | SAVE_FLAG_TROPHY, value);
+			item->type = FILE_TYPE_TROPHY;
+			asprintf(&item->path, "%s%s/", userPath, dir->d_name);
+
+			value = _get_xml_node_value(root_element->children, BAD_CAST "npcommid");
+			item->title_id = strdup(value);
+
+			/*free the document */
+			xmlFreeDoc(doc);
+			xmlCleanupParser();
+			free(buffer);
+				
+			LOG("[%s] F(%d) name '%s'", item->title_id, item->flags, item->name);
+			list_append(list, item);
+		}
+	}
+
+	closedir(d);
 
 	return list;
 }

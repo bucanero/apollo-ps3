@@ -8,6 +8,8 @@
 #include "libfont.h"
 #include "menu.h"
 
+#define JAR_COLUMNS 7
+
 /*
     From sprite2D source
     I'm not going to document them for that reason
@@ -102,6 +104,7 @@ void _drawListBackground(int off, int icon)
 		case cat_sav_png_index:
 		case cat_opt_png_index:
 		case cat_bup_png_index:
+		case cat_warning_png_index:
 			DrawTexture(&menu_textures[help_png_index], help_png_x, help_png_y, 0, help_png_w, help_png_h, 0xFFFFFF00 | 0xFF);
 			break;
 
@@ -331,12 +334,12 @@ void stop_loading_screen()
 
 void drawJar(uint8_t idx, int pos_x, int pos_y, const char* text, uint8_t alpha)
 {
-	uint8_t active = (menu_sel + jar_usb_png_index == idx);
+	uint8_t active = (menu_sel + jar_trophy_png_index == idx);
 	DrawTexture(&menu_textures[idx], pos_x, apollo_config.marginV + pos_y, 0, menu_textures[idx].texture.width * SCREEN_W_ADJ, menu_textures[idx].texture.height * SCREEN_H_ADJ, 0xffffff00 | alpha);
 
 	//Selected
 	if (active)
-		DrawTexture(&menu_textures[idx+6], pos_x, apollo_config.marginV + pos_y, 0, menu_textures[idx+6].texture.width * SCREEN_W_ADJ, menu_textures[idx+6].texture.height * SCREEN_H_ADJ, 0xffffff00 | alpha);
+		DrawTexture(&menu_textures[idx + JAR_COLUMNS], pos_x, apollo_config.marginV + pos_y, 0, menu_textures[idx + JAR_COLUMNS].texture.width * SCREEN_W_ADJ, menu_textures[idx + JAR_COLUMNS].texture.height * SCREEN_H_ADJ, 0xffffff00 | alpha);
 
 	SetFontColor(APP_FONT_MENU_COLOR | (alpha == 0xFF ? (active ? 0xFF : 32) : alpha), 0);
 	DrawStringMono(pos_x + (menu_textures[idx].texture.width * SCREEN_W_ADJ / 2), apollo_config.marginV + pos_y - 25, text);
@@ -367,8 +370,8 @@ void drawJars(uint8_t alpha)
 	SetFontSize(APP_FONT_SIZE_MENU);
 	SetCurrentFont(font_adonais_regular);
 
-	//Empty
-	drawJar(jar_empty_png_index, jar_empty_png_x, jar_empty_png_y, "", alpha);
+	//Trophies
+	drawJar(jar_trophy_png_index, jar_empty_png_x, jar_empty_png_y, (alpha == 0xFF ? "Trophies" : ""), alpha);
 
 	//USB save
 	drawJar(jar_usb_png_index, jar_usb_png_x, jar_usb_png_y, (alpha == 0xFF ? "USB Saves" : ""), alpha);

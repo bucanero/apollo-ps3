@@ -27,6 +27,7 @@
 enum menu_screen_ids
 {
 	MENU_MAIN_SCREEN,
+	MENU_TROPHIES,
 	MENU_USB_SAVES,
 	MENU_HDD_SAVES,
 	MENU_ONLINE_DB,
@@ -84,6 +85,7 @@ padData padB[MAX_PADS];
 
 void update_usb_path(char *p);
 void update_hdd_path(char *p);
+void update_trophy_path(char *p);
 
 app_config_t apollo_config = {
     .music = 1,
@@ -126,21 +128,24 @@ const char * menu_about_strings_project[] = { "User ID", user_id_str,
 
 /*
 * 0 - Main Menu
-* 1 - USB Menu (User List)
-* 2 - HDD Menu (User List)
-* 3 - Online Menu (Online List)
-* 4 - Options Menu
-* 5 - About Menu
-* 6 - Code Menu (Select Cheats)
-* 7 - Code Menu (View Cheat)
-* 8 - Code Menu (View Cheat Options)
+* 1 - Trophies
+* 2 - USB Menu (User List)
+* 3 - HDD Menu (User List)
+* 4 - Online Menu (Online List)
+* 5 - User Backup
+* 6 - Options Menu
+* 7 - About Menu
+* 8 - Code Menu (Select Cheats)
+* 9 - Code Menu (View Cheat)
+* 10 - Code Menu (View Cheat Options)
 */
 int menu_id = 0;												// Menu currently in
 int menu_sel = 0;												// Index of selected item (use varies per menu)
-int menu_old_sel[TOTAL_MENU_IDS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };		// Previous menu_sel for each menu
-int last_menu_id[TOTAL_MENU_IDS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };		// Last menu id called (for returning)
+int menu_old_sel[TOTAL_MENU_IDS] = { 0 };						// Previous menu_sel for each menu
+int last_menu_id[TOTAL_MENU_IDS] = { 0 };						// Last menu id called (for returning)
 
 const char * menu_pad_help[TOTAL_MENU_IDS] = { NULL,												//Main
+								"\x10 Select    \x13 Back    \x12 Details    \x11 Refresh",			//Trophy list
 								"\x10 Select    \x13 Back    \x12 Details    \x11 Refresh",			//USB list
 								"\x10 Select    \x13 Back    \x12 Details    \x11 Refresh",			//HDD list
 								"\x10 Select    \x13 Back    \x11 Refresh",							//Online list
@@ -177,6 +182,19 @@ save_list_t usb_saves = {
     .ReadList = &ReadUserList,
     .ReadCodes = &ReadCodes,
     .UpdatePath = &update_usb_path,
+};
+
+/*
+* Trophy list
+*/
+save_list_t trophies = {
+	.icon_id = cat_warning_png_index,
+	.title = "Trophies",
+    .list = NULL,
+    .path = "",
+    .ReadList = &ReadTrophyList,
+    .ReadCodes = &ReadTrophies,
+    .UpdatePath = &update_trophy_path,
 };
 
 /*
@@ -475,7 +493,8 @@ void LoadTextures_Menu()
 	load_menu_texture(jar_bup_hover, png);
 	load_menu_texture(jar_db, png);
 	load_menu_texture(jar_db_hover, png);
-	load_menu_texture(jar_empty, png);
+	load_menu_texture(jar_trophy, png);
+	load_menu_texture(jar_trophy_hover, png);
 	load_menu_texture(jar_hdd, png);
 	load_menu_texture(jar_hdd_hover, png);
 	load_menu_texture(jar_opt, png);
@@ -559,6 +578,11 @@ void update_hdd_path(char* path)
 	sprintf(path, USER_PATH_HDD, apollo_config.user_id);
 }
 
+void update_trophy_path(char* path)
+{
+	sprintf(path, TROPHY_PATH_HDD, apollo_config.user_id);
+}
+
 int ReloadUserSaves(save_list_t* save_list)
 {
     init_loading_screen("Loading save games...");
@@ -636,6 +660,7 @@ void SetMenu(int id)
 	switch (menu_id) //Leaving menu
 	{
 		case MENU_MAIN_SCREEN: //Main Menu
+		case MENU_TROPHIES:
 		case MENU_USB_SAVES: //USB Saves Menu
 		case MENU_HDD_SAVES: //HHD Saves Menu
 		case MENU_ONLINE_DB: //Cheats Online Menu
@@ -662,6 +687,14 @@ void SetMenu(int id)
 		case MENU_MAIN_SCREEN: //Main Menu
 			if (apollo_config.doAni || menu_id == MENU_MAIN_SCREEN) //if load animation
 				Draw_MainMenu_Ani();
+			break;
+
+		case MENU_TROPHIES: //Trophies Menu
+			if (!trophies.list && !ReloadUserSaves(&trophies))
+				return;
+
+			if (apollo_config.doAni)
+				Draw_UserCheatsMenu_Ani(&trophies);
 			break;
 
 		case MENU_USB_SAVES: //USB saves Menu
@@ -714,7 +747,7 @@ void SetMenu(int id)
 
 		case MENU_PATCHES: //Cheat Selection Menu
 			//if entering from game list, don't keep index, otherwise keep
-			if (menu_id == MENU_USB_SAVES || menu_id == MENU_HDD_SAVES || menu_id == MENU_ONLINE_DB)
+			if (menu_id == MENU_USB_SAVES || menu_id == MENU_HDD_SAVES || menu_id == MENU_ONLINE_DB || menu_id == MENU_TROPHIES)
 				menu_old_sel[MENU_PATCHES] = 0;
 
 			if (apollo_config.doAni && menu_id != MENU_PATCH_VIEW && menu_id != MENU_CODE_OPTIONS)
@@ -878,10 +911,10 @@ void doMainMenu()
 	if (readPad(0))
 	{
 		if(paddata[0].BTN_LEFT)
-			move_selection_back(6, 1);
+			move_selection_back(MENU_CREDITS, 1);
 
 		else if(paddata[0].BTN_RIGHT)
-			move_selection_fwd(6, 1);
+			move_selection_fwd(MENU_CREDITS, 1);
 
 		else if (paddata[0].BTN_CROSS)
 		    SetMenu(menu_sel+1);
@@ -1167,6 +1200,10 @@ void drawScene()
 	{
 		case MENU_MAIN_SCREEN:
 			doMainMenu();
+			break;
+
+		case MENU_TROPHIES: //Trophies Menu
+			doSaveMenu(&trophies);
 			break;
 
 		case MENU_USB_SAVES: //USB Saves Menu

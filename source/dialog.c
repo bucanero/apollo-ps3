@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdarg.h>
 #include <unistd.h>
 #include <sysutil/msg.h>
 
@@ -26,9 +28,15 @@ void msg_dialog_event(msgButton button, void *userdata)
     }
 }
 
-int show_dialog(int tdialog, const char * str)
+int show_dialog(int tdialog, const char * format, ...)
 {
     msg_dialog_action = 0;
+    char str[0x800];
+    va_list	opt;
+
+    va_start(opt, format);
+    vsprintf((void*) str, format, opt);
+    va_end(opt);
 
     msgType mtype = MSG_DIALOG_BKG_INVISIBLE | MSG_DIALOG_NORMAL;
     mtype |=  (tdialog ? (MSG_DIALOG_BTN_TYPE_YESNO  | MSG_DIALOG_DEFAULT_CURSOR_NO) : MSG_DIALOG_BTN_TYPE_OK);

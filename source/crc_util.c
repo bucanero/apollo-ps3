@@ -51,7 +51,7 @@ void generate_crc32_table(uint32_t poly, uint32_t* crc_table)
 }
 
 // "MC02" Electronic Arts hash table
-// https://ideone.com/cy2rM7
+// https://gist.github.com/Experiment5X/5025310 / https://ideone.com/cy2rM7
 // I have no clue how this works and understand absolutely none of the math behind it.
 // I just reversed it from Dead Space 3.
 uint32_t MC02_hash(const uint8_t *pb, uint32_t cb)

@@ -4,6 +4,7 @@
 #define LOG dbglogger_log
 
 #define APOLLO_PATH				"/dev_hdd0/game/NP0APOLLO/USRDIR/"
+#define APOLLO_TMP_PATH			"/dev_hdd0/tmp/apollo/"
 #define APOLLO_DATA_PATH		APOLLO_PATH "DATA/"
 #define APOLLO_LOCAL_CACHE		APOLLO_PATH "CACHE/"
 #define APOLLO_UPDATE_URL		"https://api.github.com/repos/bucanero/apollo-ps3/releases/latest"
@@ -60,6 +61,11 @@ enum cmd_code_enum
 {
     CMD_CODE_NULL,
 
+// Trophy commands
+    CMD_RESIGN_TROPHY,
+    CMD_EXP_TROPHY_USB,
+    CMD_IMP_TROPHY_USB,
+
 // Save commands
     CMD_DECRYPT_FILE,
     CMD_RESIGN_SAVE,
@@ -83,7 +89,6 @@ enum cmd_code_enum
 
 // Export commands
     CMD_EXP_EXDATA_USB,
-    CMD_EXP_TROPHY_USB,
     CMD_EXP_LICS_RAPS,
     CMD_EXP_FLASH2_USB,
     CMD_EXP_PS2_BINENC,
@@ -93,7 +98,6 @@ enum cmd_code_enum
 
 // Import commands
     CMD_IMP_EXDATA_USB,
-    CMD_IMP_TROPHY_USB,
     CMD_IMP_PS2ISO_USB,
     CMD_IMP_PS2VMC_USB,
 
@@ -112,9 +116,12 @@ enum cmd_code_enum
 #define SAVE_FLAG_PS2           16
 #define SAVE_FLAG_PSP           32
 #define SAVE_FLAG_PSV           64
+#define SAVE_FLAG_TROPHY        128
 
 enum save_type_enum
 {
+    FILE_TYPE_NULL,
+    FILE_TYPE_TROPHY,
     FILE_TYPE_PSV,
 
     // PS1 File Types
@@ -216,12 +223,14 @@ typedef struct
 list_t * ReadUserList(const char* userPath);
 list_t * ReadOnlineList(const char* urlPath);
 list_t * ReadBackupList(const char* userPath);
+list_t * ReadTrophyList(const char* userPath);
 void UnloadGameList(list_t * list);
 char * readFile(const char * path, long* size);
 int sortSaveList_Compare(const void* A, const void* B);
 int sortCodeList_Compare(const void* A, const void* B);
 long getFileSize(const char * path);
 int ReadCodes(save_entry_t * save);
+int ReadTrophies(save_entry_t * game);
 int ReadOnlineSaves(save_entry_t * game);
 int ReadBackupCodes(save_entry_t * bup);
 
@@ -232,11 +241,11 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 int extract_zip(const char* zip_file, const char* dest_path);
 int zip_directory(const char* basedir, const char* inputdir, const char* output_zipfile);
 
-int show_dialog(int dialog_type, const char * str);
+int show_dialog(int dialog_type, const char * format, ...);
 void init_progress_bar(const char* progress_bar_title, const char* msg);
 void update_progress_bar(uint64_t* progress, const uint64_t total_size, const char* msg);
 void end_progress_bar(void);
-#define show_message(msg)	show_dialog(0, msg)
+#define show_message(...)	show_dialog(0, __VA_ARGS__)
 
 int init_loading_screen(const char* msg);
 void stop_loading_screen();

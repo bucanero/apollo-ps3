@@ -15,14 +15,14 @@ void downloadSave(const char* file, const char* path)
 {
 	if (mkdirs(path) != SUCCESS)
 	{
-		show_message("Error! Export folder is not available");
+		show_message("Error! Export folder is not available:\n%s", path);
 		return;
 	}
 
 	if (http_download(ONLINE_URL "PS3/", file, APOLLO_LOCAL_CACHE "tmpsave.zip", 1))
 	{
 		if (extract_zip(APOLLO_LOCAL_CACHE "tmpsave.zip", path))
-			show_message("Save game successfully downloaded");
+			show_message("Save game successfully downloaded to:\n%s", path);
 		else
 			show_message("Error extracting save game!");
 
@@ -491,22 +491,16 @@ void exportPS2classics(const char* enc_path, const char* enc_file, uint8_t dst)
 
 void exportFolder(const char* src_path, const char* exp_path, const char* msg)
 {
-	char* save_path;
-
 	if (mkdirs(exp_path) != SUCCESS)
 	{
-		show_message("Error! Export folder is not available");
+		show_message("Error! Export folder is not available:\n%s", exp_path);
 		return;
 	}
 
 	init_loading_screen(msg);
 
-	asprintf(&save_path, src_path, apollo_config.user_id);
-
-    LOG("Copying <%s> to %s...", save_path, exp_path);
-	copy_directory(save_path, save_path, exp_path);
-
-	free(save_path);
+    LOG("Copying <%s> to %s...", src_path, exp_path);
+	copy_directory(src_path, src_path, exp_path);
 
 	stop_loading_screen();
 }
@@ -908,12 +902,12 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_EXP_TROPHY_USB:
-			exportFolder(TROPHY_PATH_HDD, codecmd[1] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0, "Copying trophies...");
+			exportFolder(selected_entry->path, codecmd[1] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0, "Copying trophies...");
 			code->activated = 0;
 			break;
 
 		case CMD_COPY_SAVES_USB:
-			exportFolder(SAVES_PATH_HDD, codecmd[1] ? SAVES_PATH_USB1 : SAVES_PATH_USB0, "Copying saves...");
+			exportFolder(selected_entry->path, codecmd[1] ? SAVES_PATH_USB1 : SAVES_PATH_USB0, "Copying saves...");
 			code->activated = 0;
 			break;
 
