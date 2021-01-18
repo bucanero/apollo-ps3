@@ -19,17 +19,18 @@ void downloadSave(const char* file, const char* path)
 		return;
 	}
 
-	if (http_download(ONLINE_URL "PS3/", file, APOLLO_LOCAL_CACHE "tmpsave.zip", 1))
+	if (!http_download(ONLINE_URL "PS3/", file, APOLLO_LOCAL_CACHE "tmpsave.zip", 1))
 	{
-		if (extract_zip(APOLLO_LOCAL_CACHE "tmpsave.zip", path))
-			show_message("Save game successfully downloaded to:\n%s", path);
-		else
-			show_message("Error extracting save game!");
-
-		unlink_secure(APOLLO_LOCAL_CACHE "tmpsave.zip");
-	}
-	else
 		show_message("Error downloading save game!");
+		return;
+	}
+
+	if (extract_zip(APOLLO_LOCAL_CACHE "tmpsave.zip", path))
+		show_message("Save game successfully downloaded to:\n%s", path);
+	else
+		show_message("Error extracting save game!");
+
+	unlink_secure(APOLLO_LOCAL_CACHE "tmpsave.zip");
 }
 
 void _saveOwnerData(const char* path)
@@ -64,7 +65,7 @@ void zipSave(const char* save_path, const char* exp_path)
 
 	if (mkdirs(exp_path) != SUCCESS)
 	{
-		show_message("Error! Export folder is not available");
+		show_message("Error! Export folder is not available:\n%s", exp_path);
 		return;
 	}
 
@@ -79,11 +80,11 @@ void zipSave(const char* save_path, const char* exp_path)
 
 	zip_directory(tmp, save_path, export_file);
 
-	sprintf(export_file, "%s" "saves.txt", exp_path);
+	sprintf(export_file, "%s%08d.txt", exp_path, fid);
 	FILE* f = fopen(export_file, "a");
 	if (f)
 	{
-		fprintf(f, "%08d.zip=[%s]%s\n", fid, selected_entry->title_id, selected_entry->name);
+		fprintf(f, "%08d.zip=[%s] %s\n", fid, selected_entry->title_id, selected_entry->name);
 		fclose(f);
 	}
 
@@ -106,7 +107,7 @@ void copySave(const char* save_path, const char* exp_path)
 
 	if (mkdirs(exp_path) != SUCCESS)
 	{
-		show_message("Error! Export folder is not available");
+		show_message("Error! Export folder is not available:\n%s", exp_path);
 		return;
 	}
 
@@ -138,7 +139,7 @@ void copySaveHDD(const char* save_path)
 
 	if (dir_exists(copy_path) == SUCCESS)
 	{
-		show_message("Error! Save-game folder already exists");
+		show_message("Error! Save-game folder already exists:\n%s", copy_path);
 		free(copy_path);
 		free(tmp);
 		return;
@@ -166,8 +167,7 @@ void copyAllSavesHDD(const char* path)
 
 	if (dir_exists(path) != SUCCESS)
 	{
-		LOG("Folder not available: %s", path);
-		show_message("Error! Folder is not available");
+		show_message("Error! Folder is not available:\n%s", path);
 		return;
 	}
 
@@ -199,7 +199,7 @@ void exportLicensesZip(const char* exp_path)
 
 	if (mkdirs(exp_path) != SUCCESS)
 	{
-		show_message("Error! Export folder is not available");
+		show_message("Error! Export folder is not available:\n%s", exp_path);
 		return;
 	}
 
@@ -232,7 +232,7 @@ void exportFlashZip(const char* exp_path)
 
 	if (mkdirs(exp_path) != SUCCESS)
 	{
-		show_message("Error! Export folder is not available");
+		show_message("Error! Export folder is not available:\n%s", exp_path);
 		return;
 	}
 
@@ -265,7 +265,7 @@ void copyDummyPSV(const char* psv_file, const char* out_path)
 
 	if (mkdirs(out_path) != SUCCESS)
 	{
-		show_message("Error! Export folder is not available");
+		show_message("Error! Export folder is not available:\n%s", out_path);
 		return;
 	}
 
@@ -284,7 +284,7 @@ void exportPSVfile(const char* in_file, const char* out_path)
 {
 	if (mkdirs(out_path) != SUCCESS)
 	{
-		show_message("Error! Export folder is not available");
+		show_message("Error! Export folder is not available:\n%s", out_path);
 		return;
 	}
 
@@ -302,7 +302,7 @@ void convertSavePSV(const char* save_path, const char* out_path, uint16_t type)
 {
 	if (mkdirs(out_path) != SUCCESS)
 	{
-		show_message("Error! Export folder is not available");
+		show_message("Error! Export folder is not available:\n%s", out_path);
 		return;
 	}
 
@@ -367,7 +367,7 @@ void decryptVMEfile(const char* vme_path, const char* vme_file, uint8_t dst)
 
 	if (mkdirs(path) != SUCCESS)
 	{
-		show_message("Error! Export folder is not available");
+		show_message("Error! Export folder is not available:\n%s", path);
 		return;
 	}
 
@@ -413,7 +413,7 @@ void exportVM2raw(const char* vm2_path, const char* vm2_file, const char* dst_pa
 
 	if (mkdirs(dst_path) != SUCCESS)
 	{
-		show_message("Error! Export folder is not available");
+		show_message("Error! Export folder is not available:\n%s", dst_path);
 		return;
 	}
 
@@ -438,7 +438,7 @@ void importPS2classics(const char* iso_path, const char* iso_file)
 
 	if (mkdirs(outfile) != SUCCESS)
 	{
-		show_message("Error! Export folder is not available");
+		show_message("Error! Export folder is not available:\n%s", outfile);
 		return;
 	}
 
@@ -479,7 +479,7 @@ void exportPS2classics(const char* enc_path, const char* enc_file, uint8_t dst)
 
 	if (mkdirs(outfile) != SUCCESS)
 	{
-		show_message("Error! Export folder is not available");
+		show_message("Error! Export folder is not available:\n%s", outfile);
 		return;
 	}
 
@@ -533,7 +533,7 @@ void exportLicensesRap(const char* fname, uint8_t dest)
 
 	if (mkdirs(exp_path) != SUCCESS)
 	{
-		show_message("Error! Export folder is not available");
+		show_message("Error! Export folder is not available:\n%s", exp_path);
 		return;
 	}
 
@@ -569,8 +569,7 @@ void importLicenses(const char* fname, const char* exdata_path)
 
 	if (dir_exists(exdata_path) != SUCCESS)
 	{
-		LOG("Folder not available: %s", exdata_path);
-		show_message("Error! Import folder is not available");
+		show_message("Error! Import folder is not available:\n%s", exdata_path);
 		return;
 	}
 
@@ -771,9 +770,9 @@ void resignSave(sfo_patch_t* patch)
     LOG("Resigning save '%s'...", selected_entry->name);
     if (!pfd_util_init((u8*) apollo_config.psid, apollo_config.user_id, selected_entry->title_id, selected_entry->path) ||
         (pfd_util_process(PFD_CMD_UPDATE, 0) != SUCCESS))
-        show_message("Error! Save file couldn't be resigned");
+        show_message("Error! Save %s couldn't be resigned", selected_entry->title_id);
     else
-        show_message("Save file successfully modified!");
+        show_message("Save %s successfully modified!", selected_entry->title_id);
 
     pfd_util_end();
 }
@@ -789,8 +788,7 @@ void resignAllSaves(const char* path)
 
 	if (dir_exists(path) != SUCCESS)
 	{
-		LOG("Folder not available: %s", path);
-		show_message("Error! Folder is not available");
+		show_message("Error! Folder is not available:\n%s", path);
 		return;
 	}
 
@@ -839,22 +837,41 @@ void resignAllSaves(const char* path)
 	stop_loading_screen();
 }
 
+void resignTrophy(sfo_patch_t* patch)
+{
+//    if (!apply_sfo_patches(patch))
+//        show_message("Error! Account changes couldn't be applied");
+
+    LOG("Resigning trophy '%s'...", selected_entry->name);
+    if (!pfd_util_init((u8*) apollo_config.psid, apollo_config.user_id, selected_entry->title_id, selected_entry->path) ||
+        (pfd_util_process(PFD_CMD_UPDATE, 0) != SUCCESS))
+        show_message("Error! Trophy %s couldn't be resigned", selected_entry->title_id);
+    else
+        show_message("Trophy %s successfully modified!", selected_entry->title_id);
+
+    pfd_util_end();
+}
+
 void decryptSaveFile(const char* filename)
 {
+	char path[256];
+
 	if (_is_decrypted(NULL, filename))
 	{
-		show_message("Save-game is not encrypted. No files decrypted");
+		show_message("Save-game %s is not encrypted. No files decrypted", selected_entry->title_id);
 		return;
 	}
 
 	u8* protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
+	snprintf(path, sizeof(path), APOLLO_TMP_PATH "%s/", selected_entry->title_id);
+	mkdirs(path);
 
-	LOG("Decrypt '%s' from '%s'...", filename, selected_entry->name);
+	LOG("Decrypt '%s%s' to '%s'...", selected_entry->path, filename, path);
 
-	if (decrypt_save_file(selected_entry->path, filename, "/dev_hdd0/tmp/", protected_file_id))
-		show_message("File successfully decrypted to /dev_hdd0/tmp/");
+	if (decrypt_save_file(selected_entry->path, filename, path, protected_file_id))
+		show_message("File successfully decrypted to:\n%s%s", path, filename);
 	else
-		show_message("Error! File couldn't be decrypted");
+		show_message("Error! File %s couldn't be decrypted", filename);
 }
 
 void execCodeCommand(code_entry_t* code, const char* codecmd)

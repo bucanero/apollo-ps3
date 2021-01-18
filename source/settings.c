@@ -113,7 +113,7 @@ void clearcache_callback(int sel)
 	LOG("Cleaning folder '%s'...", APOLLO_LOCAL_CACHE);
 	clean_directory(APOLLO_LOCAL_CACHE);
 
-	show_message("Local cache folder cleaned");
+	show_message("Local cache folder cleaned:\n" APOLLO_LOCAL_CACHE);
 }
 
 void unzip_app_data(const char* zip_file)
@@ -219,5 +219,5 @@ void owner_callback(int sel)
 void log_callback(int sel)
 {
 	dbglogger_init_mode(FILE_LOGGER, "/dev_hdd0/tmp/apollo.log", 0);
-	show_dialog(0, "Debug Logging Enabled!\n\n/dev_hdd0/tmp/apollo.log");
+	show_message("Debug Logging Enabled!\n\n/dev_hdd0/tmp/apollo.log");
 }
