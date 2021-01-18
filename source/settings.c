@@ -161,36 +161,37 @@ void update_callback(int sel)
 	if (!start)
 	{
 		LOG("no name found");
-		return;
+		goto end_update;
 	}
 
 	LOG("found name");
 	start += sizeof(find) - 1;
 
-	char* end = strstr(start, "\"");
+	char* end = strchr(start, '"');
 	if (!end)
 	{
 		LOG("no end of name found");
-		return;
+		goto end_update;
 	}
 	*end = 0;
 	LOG("latest version is %s", start);
 
-	if (stricmp(APOLLO_VERSION, start) == 0)
+	if (strcasecmp(APOLLO_VERSION, start) == 0)
 	{
-		return;
+		LOG("no need to update");
+		goto end_update;
 	}
 
 	start = strstr(end+1, "\"browser_download_url\":\"");
 	if (!start)
-		return;
+		goto end_update;
 
 	start += 24;
-	end = strstr(start, "\"");
+	end = strchr(start, '"');
 	if (!end)
 	{
 		LOG("no download URL found");
-		return;
+		goto end_update;
 	}
 
 	*end = 0;
@@ -204,6 +205,9 @@ void update_callback(int sel)
 			show_message("Download error!");
 	}
 
+end_update:
+	free(buffer);
+	return;
 }
 
 void owner_callback(int sel)
