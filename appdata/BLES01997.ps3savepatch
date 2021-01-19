@@ -1,12 +1,12 @@
 ; BLES01997
 ; Darkside Princess
 
+:DATA.BIN
+
 ;Fulfill 1 Request to obtain "Workaholic" and "Reliable Worker" trophies-
 [Fulfill all Daemon Requests]
 42000768 01010101
 40260004 00000000
-
-:DATA.BIN
 
 [Ability all max]
 42000024 FFC99A3B
