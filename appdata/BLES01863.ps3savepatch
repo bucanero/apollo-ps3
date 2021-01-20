@@ -8,5 +8,5 @@
 write at 0x00002A99:0x3B9AC9FF
 
 [Max LUMS]
-search "FB5A99A7":x1 times
+search 0xFB5A99A7:1
 write next (+56):0x7fffffff 

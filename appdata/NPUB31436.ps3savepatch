@@ -1,5 +1,5 @@
 ; NPUB31436
-; Middle-earth™: Shadow of Mordor™
+; Middle-earthï¿½: Shadow of Mordorï¿½
 
 ;from aldo tools
 
@@ -16,12 +16,12 @@
 ;:FILENAME.SAV
 
 [Max upgrades Pts]
-search "C8DAA7A504":x2 times
+search 0xC8DAA7A504:2
 write next (-6):0x0003e7
 
 
 [Max Mirian Money]
-search "ECFD4156":x2 times
+search 0xECFD4156:2
 write next (+1):0x0000270f
 
 
