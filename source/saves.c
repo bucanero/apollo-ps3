@@ -130,7 +130,7 @@ code_entry_t* _createCmdCode(uint8_t type, const char* name, char code)
 {
 	code_entry_t* entry = (code_entry_t *)calloc(1, sizeof(code_entry_t));
 	entry->type = type;
-	asprintf(&entry->name, name);
+	entry->name = strdup(name);
 	asprintf(&entry->codes, "%c", code);
 
 	return entry;
@@ -795,9 +795,8 @@ int ReadTrophies(save_entry_t * game)
 int ReadOnlineSaves(save_entry_t * game)
 {
 	code_entry_t* item;
-	char path[256], url[256];
+	char path[256];
 	snprintf(path, sizeof(path), APOLLO_LOCAL_CACHE "%s.txt", game->title_id);
-	snprintf(url, sizeof(url), ONLINE_URL "PS3/%s/", game->title_id);
 
 	if (file_exists(path) == SUCCESS)
 	{
@@ -805,11 +804,11 @@ int ReadOnlineSaves(save_entry_t * game)
 		stat(path, &stats);
 		// re-download if file is +1 day old
 		if ((stats.st_mtime + ONLINE_CACHE_TIMEOUT) < time(NULL))
-			http_download(url, "saves.txt", path, 0);
+			http_download(game->path, "saves.txt", path, 0);
 	}
 	else
 	{
-		if (!http_download(url, "saves.txt", path, 0))
+		if (!http_download(game->path, "saves.txt", path, 0))
 			return -1;
 	}
 
@@ -820,26 +819,9 @@ int ReadOnlineSaves(save_entry_t * game)
 	char *ptr = data;
 	char *end = data + fsize + 1;
 
-	int game_count = 0;
-
-	while (ptr < end && *ptr)
-	{
-		if (*ptr == '\n')
-		{
-			game_count++;
-		}
-		ptr++;
-	}
-	
-	if (!game_count)
-		return -1;
-
 	game->codes = list_alloc();
 
-	int cur_count = 0;
-	ptr = data;
-	
-	while (ptr < end && *ptr && cur_count < game_count)
+	while (ptr < end && *ptr)
 	{
 		const char* content = ptr;
 
@@ -849,22 +831,17 @@ int ReadOnlineSaves(save_entry_t * game)
 		}
 		*ptr++ = 0;
 
-        LOG("ReadOnlineSaves() :: Reading %s...", content);
 		if (content[12] == '=')
 		{
-			item = calloc(1, sizeof(code_entry_t));
-			item->type = PATCH_COMMAND;
-			asprintf(&item->codes, "%s/%.12s", game->title_id, content);
-
-			content += 13;
-			asprintf(&item->name, CHAR_ICON_ZIP " %s", content);
+			snprintf(path, sizeof(path), CHAR_ICON_ZIP " %s", content + 13);
+			item = _createCmdCode(PATCH_COMMAND, path, 0);
+			asprintf(&item->file, "%.12s", content);
 
 			item->options_count = 1;
 			item->options = _createOptions(2, "Download to USB", CMD_DOWNLOAD_USB);
 			list_append(game->codes, item);
 
-			LOG("%d - [%s] %s", cur_count, item->codes, item->name);
-			cur_count++;
+			LOG("[%s%s] %s", game->path, item->file, item->name + 1);
 		}
 
 		if (ptr < end && *ptr == '\r')
@@ -879,7 +856,7 @@ int ReadOnlineSaves(save_entry_t * game)
 
 	if (data) free(data);
 
-	return cur_count;
+	return (list_count(game->codes));
 }
 
 list_t * ReadBackupList(const char* userPath)
@@ -1616,7 +1593,7 @@ list_t * ReadOnlineList(const char* urlPath)
 
 	while (ptr < end && *ptr)
 	{
-		char* content = ptr;
+		char *tmp, *content = ptr;
 
 		while (ptr < end && *ptr != '\n' && *ptr != '\r')
 		{
@@ -1624,11 +1601,12 @@ list_t * ReadOnlineList(const char* urlPath)
 		}
 		*ptr++ = 0;
 
-//        LOG("ReadUserList() :: Reading %s...", content);
-		if (content[9] == '=')
+		if ((tmp = strchr(content, '=')) != NULL)
 		{
-			item = _createSaveEntry(SAVE_FLAG_PS3, content + 10);
-			asprintf(&item->title_id, "%.9s", content);
+			*tmp++ = 0;
+			item = _createSaveEntry(SAVE_FLAG_PS3, tmp);
+			item->title_id = strdup(content);
+			asprintf(&item->path, "%s%s/", urlPath, item->title_id);
 
 			LOG("+ [%s] %s", item->title_id, item->name);
 			list_append(list, item);
@@ -1672,7 +1650,7 @@ list_t * ReadTrophyList(const char* userPath)
 	item->codes = list_alloc();
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Backup Trophies to USB", 0);
 	cmd->options_count = 1;
-	cmd->options = _createOptions(2, "Save Trophies to USB", CMD_EXP_TROPHY_USB);
+	cmd->options = _createOptions(2, "Save Trophies to USB", CMD_COPY_TROPHIES_USB);
 	list_append(item->codes, cmd);
 	list_append(list, item);
 
@@ -1709,7 +1687,6 @@ list_t * ReadTrophyList(const char* userPath)
 			value = _get_xml_node_value(root_element->children, BAD_CAST "title-name");
 
 			item = _createSaveEntry(SAVE_FLAG_PS3 | SAVE_FLAG_TROPHY, value);
-			item->type = FILE_TYPE_TROPHY;
 			asprintf(&item->path, "%s%s/", userPath, dir->d_name);
 
 			value = _get_xml_node_value(root_element->children, BAD_CAST "npcommid");

@@ -64,6 +64,7 @@ enum cmd_code_enum
 // Trophy commands
     CMD_RESIGN_TROPHY,
     CMD_EXP_TROPHY_USB,
+    CMD_COPY_TROPHIES_USB,
     CMD_IMP_TROPHY_USB,
 
 // Save commands
@@ -81,6 +82,7 @@ enum cmd_code_enum
     CMD_ENCRYPT_PS2_VMC,
     CMD_CONVERT_TO_PSV,
     CMD_COPY_DUMMY_PSV,
+    CMD_IMPORT_DATA_FILE,
 
 // Bulk commands
     CMD_RESIGN_SAVES_USB,
@@ -121,7 +123,6 @@ enum cmd_code_enum
 enum save_type_enum
 {
     FILE_TYPE_NULL,
-    FILE_TYPE_TROPHY,
     FILE_TYPE_PSV,
 
     // PS1 File Types

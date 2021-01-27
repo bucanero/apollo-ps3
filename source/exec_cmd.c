@@ -19,7 +19,7 @@ void downloadSave(const char* file, const char* path)
 		return;
 	}
 
-	if (!http_download(ONLINE_URL "PS3/", file, APOLLO_LOCAL_CACHE "tmpsave.zip", 1))
+	if (!http_download(selected_entry->path, file, APOLLO_LOCAL_CACHE "tmpsave.zip", 1))
 	{
 		show_message("Error downloading save game!");
 		return;
@@ -57,7 +57,7 @@ uint32_t get_filename_id(const char* dir)
 	return tid;
 }
 
-void zipSave(const char* save_path, const char* exp_path)
+void zipSave(const char* exp_path)
 {
 	char* export_file;
 	char* tmp;
@@ -74,11 +74,11 @@ void zipSave(const char* save_path, const char* exp_path)
 	fid = get_filename_id(exp_path);
 	asprintf(&export_file, "%s%08d.zip", exp_path, fid);
 
-	asprintf(&tmp, save_path);
+	asprintf(&tmp, selected_entry->path);
 	*strrchr(tmp, '/') = 0;
 	*strrchr(tmp, '/') = 0;
 
-	zip_directory(tmp, save_path, export_file);
+	zip_directory(tmp, selected_entry->path, export_file);
 
 	sprintf(export_file, "%s%08d.txt", exp_path, fid);
 	FILE* f = fopen(export_file, "a");
@@ -111,7 +111,7 @@ void copySave(const char* save_path, const char* exp_path)
 		return;
 	}
 
-	init_loading_screen("Copying save game...");
+	init_loading_screen("Copying files...");
 
 	asprintf(&tmp, save_path);
 	*strrchr(tmp, '/') = 0;
@@ -768,7 +768,7 @@ void resignSave(sfo_patch_t* patch)
         show_message("Error! Cheat codes couldn't be applied");
 
     LOG("Resigning save '%s'...", selected_entry->name);
-    if (!pfd_util_init((u8*) apollo_config.psid, apollo_config.user_id, selected_entry->title_id, selected_entry->path) ||
+    if (!pfd_util_init((u8*) apollo_config.idps, apollo_config.user_id, selected_entry->title_id, selected_entry->path) ||
         (pfd_util_process(PFD_CMD_UPDATE, 0) != SUCCESS))
         show_message("Error! Save %s couldn't be resigned", selected_entry->title_id);
     else
@@ -824,7 +824,7 @@ void resignAllSaves(const char* path)
 				snprintf(message, sizeof(message), "Resigning %s...", dir->d_name);
 
 				LOG("Resigning save '%s'...", sfoPath);
-				if (!pfd_util_init((u8*) apollo_config.psid, apollo_config.user_id, titleid, sfoPath) ||
+				if (!pfd_util_init((u8*) apollo_config.idps, apollo_config.user_id, titleid, sfoPath) ||
 					(pfd_util_process(PFD_CMD_UPDATE, 0) != SUCCESS))
 					LOG("Error! Save file couldn't be resigned");
 
@@ -837,13 +837,11 @@ void resignAllSaves(const char* path)
 	stop_loading_screen();
 }
 
-void resignTrophy(sfo_patch_t* patch)
+void resignTrophy()
 {
-//    if (!apply_sfo_patches(patch))
-//        show_message("Error! Account changes couldn't be applied");
-
     LOG("Resigning trophy '%s'...", selected_entry->name);
-    if (!pfd_util_init((u8*) apollo_config.psid, apollo_config.user_id, selected_entry->title_id, selected_entry->path) ||
+
+    if (!pfd_util_init((u8*) apollo_config.idps, apollo_config.user_id, selected_entry->title_id, selected_entry->path) ||
         (pfd_util_process(PFD_CMD_UPDATE, 0) != SUCCESS))
         show_message("Error! Trophy %s couldn't be resigned", selected_entry->title_id);
     else
@@ -874,6 +872,27 @@ void decryptSaveFile(const char* filename)
 		show_message("Error! File %s couldn't be decrypted", filename);
 }
 
+void encryptSaveFile(const char* filename)
+{
+	char path[256];
+
+	if (_is_decrypted(NULL, filename))
+	{
+		show_message("Save-game %s is not encrypted. No files encrypted", selected_entry->title_id);
+		return;
+	}
+
+	u8* protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
+	snprintf(path, sizeof(path), APOLLO_TMP_PATH "%s/", selected_entry->title_id);
+
+	LOG("Encrypt '%s%s' to '%s'...", path, filename, selected_entry->path);
+
+	if (encrypt_save_file(path, filename, selected_entry->path, protected_file_id))
+		show_message("File successfully encrypted to:\n%s%s", selected_entry->path, filename);
+	else
+		show_message("Error! File %s couldn't be encrypted", filename);
+}
+
 void execCodeCommand(code_entry_t* code, const char* codecmd)
 {
 	switch (codecmd[0])
@@ -884,17 +903,17 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_DOWNLOAD_USB:
-			downloadSave(code->codes, codecmd[1] ? SAVES_PATH_USB1 : SAVES_PATH_USB0);
+			downloadSave(code->file, codecmd[1] ? SAVES_PATH_USB1 : SAVES_PATH_USB0);
 			code->activated = 0;
 			break;
 
 		case CMD_EXPORT_ZIP_USB:
-			zipSave(selected_entry->path, codecmd[1] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0);
+			zipSave(codecmd[1] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0);
 			code->activated = 0;
 			break;
 
 		case CMD_EXPORT_ZIP_HDD:
-			zipSave(selected_entry->path, "/dev_hdd0/tmp/");
+			zipSave(APOLLO_TMP_PATH);
 			code->activated = 0;
 			break;
 
@@ -919,6 +938,11 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_EXP_TROPHY_USB:
+			copySave(selected_entry->path, codecmd[1] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0);
+			code->activated = 0;
+			break;
+
+		case CMD_COPY_TROPHIES_USB:
 			exportFolder(selected_entry->path, codecmd[1] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0, "Copying trophies...");
 			code->activated = 0;
 			break;
@@ -1016,6 +1040,15 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_IMP_PS2VMC_USB:
 			importPS2VMC(selected_entry->path, code->file);
+			code->activated = 0;
+			break;
+
+		case CMD_IMPORT_DATA_FILE:
+			code->activated = 0;
+			break;
+
+		case CMD_RESIGN_TROPHY:
+			resignTrophy();
 			code->activated = 0;
 			break;
 

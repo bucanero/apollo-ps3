@@ -293,21 +293,22 @@ int pfd_util_process(pfd_cmd_t cmd, int partial_process) {
 	return ret;
 }
 
-long search_pfd_data(const char* data, size_t size, const char* search, int len)
+pfd_entry_t* _find_pfd_entry(const char* data, const char* search)
 {
-	long i;
+	pfd_entry_t *pfd_entry = (pfd_entry_t*)(data + 0x240);
 
-	for (i = 0; i < (size-len); i++)
-		if (memcmp(data + i, search, len) == 0)
-			return i;
+	for (int i = 0; i < 0x72; i++)
+		if (strncmp(pfd_entry[i].file_name, search, PFD_ENTRY_NAME_SIZE) == 0)
+			return &pfd_entry[i];
 
-    return -1;
+	return NULL;
 }
 
 int _get_aes_details_pfd(const char* path, const char* filename, const u8* secure_key, u64* file_size, u64* aligned_file_size, u8* entry_key)
 {
-	char *pfd_data, *ptr;
+	char *pfd_data;
 	char file_path[256];
+	pfd_entry_t *entry;
 	size_t dsize;
 	u8 iv_hash_key[PFD_KEY_SIZE];
 	aes_context aes;
@@ -317,25 +318,20 @@ int _get_aes_details_pfd(const char* path, const char* filename, const u8* secur
 	if (read_buffer(file_path, (uint8_t**) &pfd_data, &dsize) != 0)
 		return 0;
 
-	int pos = search_pfd_data(pfd_data, dsize, filename, strlen(filename));
+	entry = _find_pfd_entry(pfd_data, filename);
 	
-	if (pos < 0)
+	if (!entry)
 	{
 		LOG("Error: can't find '%s' in PARAM.PFD", filename);
 		free(pfd_data);
 		return 0;
 	}
 
-	ptr = pfd_data + pos + 72;
-	memcpy(entry_key, ptr, PFD_ENTRY_KEY_SIZE);
+	memcpy(entry_key, entry->key, PFD_ENTRY_KEY_SIZE);
+	*file_size = entry->file_size;
+	*aligned_file_size = align_to_pow2(entry->file_size, PFD_FILE_SIZE_ALIGNMENT);
 
-	ptr += PFD_ENTRY_KEY_SIZE + 120;
-	memcpy(file_size, ptr, 8);
-	*aligned_file_size = align_to_pow2(*file_size, PFD_FILE_SIZE_ALIGNMENT);
-	
-//	prn_buff(entry_key, 64, "entry key");
-	
-	LOG("(%s) fsize = %ld / aligned fs = %ld", filename, *file_size, *aligned_file_size);
+	LOG("(%s) fsize = %ld / aligned fs = %ld", entry->file_name, entry->file_size, *aligned_file_size);
 
 	free(pfd_data);
 
@@ -355,15 +351,10 @@ int _get_aes_details_pfd(const char* path, const char* filename, const u8* secur
 		}
 	}
 
-//	prn_buff(secure_key, 16, "game key");
-//	prn_buff(iv_hash_key, 16, "iv hash key");
-
 	memset(&aes, 0, sizeof(aes_context));
 
 	aes_setkey_dec(&aes, config.syscon_manager_key, 128);
 	aes_crypt_cbc(&aes, AES_DECRYPT, PFD_ENTRY_KEY_SIZE, iv_hash_key, entry_key, entry_key);
-
-//	prn_buff(entry_key, 64, "decrypted entry key");
 
 	return 1;
 }
@@ -372,34 +363,33 @@ int _update_details_pfd(const char* path, const char* filename)
 {
 	char *pfd_data;
 	char file_path[256];
+	pfd_entry_t *entry;
 	size_t dsize;
-	u64 file_size, *ptr;
+	u64 file_size;
 
 	snprintf(file_path, sizeof(file_path), "%s" "PARAM.PFD", path);
 	if (read_buffer(file_path, (uint8_t**) &pfd_data, &dsize) != 0)
 		return 0;
 
-	int pos = search_pfd_data(pfd_data, dsize, filename, strlen(filename));
+	entry = _find_pfd_entry(pfd_data, filename);
 	
-	if (pos < 0)
+	if (!entry)
 	{
 		LOG("Error: can't find '%s' in PARAM.PFD", filename);
 		free(pfd_data);
 		return 0;
 	}
 
-	ptr = (u64*)(pfd_data + pos + 72 + PFD_ENTRY_KEY_SIZE + 120);
-
 	snprintf(file_path, sizeof(file_path), "%s%s", path, filename);
 	file_size = getFileSize(file_path);
 
-	LOG("Check (%s) fsize = %ld / PFD fsize = %ld", filename, file_size, *ptr);
+	LOG("Check (%s) fsize = %ld / PFD fsize = %ld", entry->file_name, file_size, entry->file_size);
 
-	if (file_size != *ptr)
+	if (file_size != entry->file_size)
 	{
 		LOG("Updating PARAM.PFD...");
 
-		*ptr = file_size;
+		entry->file_size = file_size;
 		snprintf(file_path, sizeof(file_path), "%s" "PARAM.PFD", path);
 		write_buffer(file_path, (uint8_t*) pfd_data, dsize);
 	}

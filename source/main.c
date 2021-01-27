@@ -634,6 +634,19 @@ code_entry_t* LoadSaveDetails()
 		return centry;
 	}
 
+	if (selected_entry->flags & SAVE_FLAG_TROPHY)
+	{
+		char* account = (char*) sfo_get_param_value(sfo, "ACCOUNTID");
+		asprintf(&centry->codes, "%s\n\n"
+			"Title: %s\n"
+			"NP Comm ID: %s\n"
+			"Account ID: %.16s\n", selected_entry->path, selected_entry->name, selected_entry->title_id, account);
+		LOG(centry->codes);
+
+		sfo_free(sfo);
+		return(centry);
+	}
+
 	char* subtitle = (char*) sfo_get_param_value(sfo, "SUB_TITLE");
 	sfo_params_ids_t* param_ids = (sfo_params_ids_t*)(sfo_get_param_value(sfo, "PARAMS") + 0x1C);
 	param_ids->user_id = ES32(param_ids->user_id);
