@@ -110,16 +110,12 @@ void pfd_util_end(void) {
 }
 
 game_keys_t* find_game_keys(const char* game_id) {
-	list_node_t *node = list_head(games_keys);
+	list_node_t *node;
 	game_keys_t *game;
 
-	while (node) {
-		game = list_get(node);
+	for (node = list_head(games_keys); (game = list_get(node)); node = list_next(node))
 		if (strstr(game->game_ids, game_id) != NULL)
 			return game;
-
-		node = node->next;
-	}
 
 	return NULL;
 }
@@ -201,14 +197,9 @@ u8* get_secure_file_id(const char* game_id, const char* filename)
 	if (!game_key)
 		return NULL;
 
-	node = list_head(game_key->secure_file_ids);
-	while (node) {
-		secure_fid = list_get(node);
+	for (node = list_head(game_key->secure_file_ids); (secure_fid = list_get(node)); node = list_next(node))
 		if (secure_fid && (wildcard_match(filename, secure_fid->file_name) != 0))
 			return (secure_fid->secure_file_id);
-
-		node = node->next;
-	}
 
 	return NULL;
 }
@@ -223,7 +214,7 @@ char* get_game_title_ids(const char* game_id)
 	return (game_key->game_ids);
 }
 
-int pfd_util_init(const u8* psid, u32 user_id, const char* game_id, const char* database_path) {
+int pfd_util_init(const u8* idps, u32 user_id, const char* game_id, const char* database_path) {
 	u8 *disc_hash_key = NULL;
 	list_t *secure_file_ids = NULL;
 	game_keys_t *game_key = NULL;
@@ -231,12 +222,12 @@ int pfd_util_init(const u8* psid, u32 user_id, const char* game_id, const char* 
 
 	snprintf(uid, sizeof(uid), "%08d", user_id);
 	memcpy(config.user_id, uid, PFD_USER_ID_SIZE);
-	memcpy(config.console_id, psid, PFD_CONSOLE_ID_SIZE);
+	memcpy(config.console_id, idps, PFD_CONSOLE_ID_SIZE);
 
 	uint64_t* tmp = (uint64_t*)config.console_id;
 	LOG("pfdtool " PFDTOOL_VERSION " (c) 2012 by flatz");
-	LOG("user [%.8s] PSID (%016lX %016lX)", config.user_id, tmp[0], tmp[1]);
-	LOG("game [%s] db '%s'", game_id, database_path);
+	LOG("user_id [%.8s] console_id (%016lX %016lX)", config.user_id, tmp[0], tmp[1]);
+	LOG("game_id [%s] data_path '%s'", game_id, database_path);
 
 	game_key = find_game_keys(game_id);
 	if (game_key) {
