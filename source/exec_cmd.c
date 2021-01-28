@@ -710,7 +710,6 @@ int apply_cheat_patches()
 			if (!_is_decrypted(decrypted_files, filename))
 			{
 				LOG("Decrypting '%s'...", filename);
-
 				protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
 
 				if (decrypt_save_file(selected_entry->path, filename, NULL, protected_file_id))
@@ -737,15 +736,12 @@ int apply_cheat_patches()
 
 	for (node = list_head(decrypted_files); (filename = list_get(node)); node = list_next(node))
 	{
-		snprintf(tmpfile, sizeof(tmpfile), "%s%s", selected_entry->path, filename);
-
-		LOG("Encrypting '%s'...", tmpfile);
-
+		LOG("Encrypting '%s'...", filename);
 		protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
 		
 		if (!encrypt_save_file(selected_entry->path, filename, NULL, protected_file_id))
 		{
-			LOG("Error: failed to encrypt (%s)", tmpfile);
+			LOG("Error: failed to encrypt (%s)", filename);
 			ret = 0;
 		}
 
@@ -753,6 +749,7 @@ int apply_cheat_patches()
 	}
 
 	list_free(decrypted_files);
+	free_patch_var_list();
 	stop_loading_screen();
 
 	return ret;

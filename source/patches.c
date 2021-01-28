@@ -35,6 +35,7 @@ typedef struct
     uint8_t* data;
 } bsd_variable_t;
 
+list_t* var_list = NULL;
 
 void remove_char(char * str, int len, char seek)
 {
@@ -44,35 +45,31 @@ void remove_char(char * str, int len, char seek)
 			str[x] = '\n';
 }
 
-long search_data(const char* data, size_t size, const char* search, int len, int count)
+long search_data(const char* data, size_t size, int start, const char* search, int len, int count)
 {
 	long i;
 	int k = 1;
 
-	for (i = 0; i < (size-len); i++)
+	for (i = start; i < (size-len); i++)
 		if ((memcmp(data + i, search, len) == 0) && (k++ == count))
 			return i;
 
     return -1;
 }
 
-bsd_variable_t* _get_bsd_variable(list_t* list, const char* vname)
+bsd_variable_t* _get_bsd_variable(const char* vname)
 {
-	list_node_t *node = list_head(list);
+	list_node_t *node;
 	bsd_variable_t *var;
 
-	while (node) {
-		var = list_get(node);
+	for (node = list_head(var_list); (var = list_get(node)); node = list_next(node))
 		if (strcmp(var->name, vname) == 0)
 			return var;
-
-		node = list_next(node);
-	}
 
 	return NULL;
 }
 
-char* _decode_variable_data(const char* line, int *data_len, list_t* vlist)
+char* _decode_variable_data(const char* line, int *data_len)
 {
     int i, len = 0;
     char* output = NULL;
@@ -94,7 +91,7 @@ char* _decode_variable_data(const char* line, int *data_len, list_t* vlist)
 	    char* tmp = strchr(line, ']');
 	    *tmp = 0;
 	    
-	    bsd_variable_t* var = _get_bsd_variable(vlist, line);
+	    bsd_variable_t* var = _get_bsd_variable(line);
 	    
 	    line = tmp+1;
 	    *tmp = ']';
@@ -119,7 +116,7 @@ char* _decode_variable_data(const char* line, int *data_len, list_t* vlist)
 	return output;
 }
 
-int _parse_int_value(const char* line, const int ptrval, const int size, list_t* vlist)
+int _parse_int_value(const char* line, const int ptrval, const int size)
 {
     int ret = 0;
 
@@ -133,7 +130,7 @@ int _parse_int_value(const char* line, const int ptrval, const int size, list_t*
 	    line += strlen("pointer");
 	    skip_spaces(line);
 
-	    ret = ptrval + _parse_int_value(line, ptrval, size, vlist);
+	    ret = ptrval + _parse_int_value(line, ptrval, size);
 	}
 	else if (wildcard_match_icase(line, "eof*"))
 	{
@@ -141,7 +138,7 @@ int _parse_int_value(const char* line, const int ptrval, const int size, list_t*
 	    skip_spaces(line);
 
 //        sscanf(line, "%x", &ret);
-        ret += size - 1 + _parse_int_value(line, ptrval, size, vlist);
+        ret += size - 1 + _parse_int_value(line, ptrval, size);
 	}
 	else if (wildcard_match(line, "[*]*"))
 	{
@@ -150,7 +147,7 @@ int _parse_int_value(const char* line, const int ptrval, const int size, list_t*
 	    char* tmp = strchr(line, ']');
 	    *tmp = 0;
 	    
-	    bsd_variable_t* var = _get_bsd_variable(vlist, line);
+	    bsd_variable_t* var = _get_bsd_variable(line);
 	    
 	    line = tmp+1;
 	    *tmp = ']';
@@ -160,13 +157,13 @@ int _parse_int_value(const char* line, const int ptrval, const int size, list_t*
 	        switch (var->len)
 	        {
 	            case BSD_VAR_INT8:
-        	        ret = *((uint8_t*)var->data) + _parse_int_value(line, ptrval, size, vlist);
+        	        ret = *((uint8_t*)var->data) + _parse_int_value(line, ptrval, size);
         	        break;
 	            case BSD_VAR_INT16:
-        	        ret = *((uint16_t*)var->data) + _parse_int_value(line, ptrval, size, vlist);
+        	        ret = *((uint16_t*)var->data) + _parse_int_value(line, ptrval, size);
         	        break;
 	            case BSD_VAR_INT32:
-        	        ret = *((uint32_t*)var->data) + _parse_int_value(line, ptrval, size, vlist);
+        	        ret = *((uint32_t*)var->data) + _parse_int_value(line, ptrval, size);
         	        break;
 	        }
 	    }
@@ -179,22 +176,23 @@ int _parse_int_value(const char* line, const int ptrval, const int size, list_t*
 	return ret;
 }
 
-void _cleanup_var_list(list_t* list)
+void free_patch_var_list()
 {
 	list_node_t *node;
-	node = list_head(list);
-	while (node) {
-		if (node->value)
-		{
-			bsd_variable_t* bv = (bsd_variable_t*) node->value;
-			if (bv->data)
-				free(bv->data);
+	bsd_variable_t* bv;
 
-			free(node->value);
-		}
-		node = list_next(node);
+	for (node = list_head(var_list); (bv = list_get(node)); node = list_next(node))
+	{
+		if (bv->data)
+			free(bv->data);
+		if (bv->name)
+			free(bv->name);
+
+		free(bv);
 	}
-    list_free(list);
+
+	list_free(var_list);
+	var_list = NULL;
 }
 
 int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
@@ -208,11 +206,14 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 	custom_crc_t custom_crc = {0,0,0,0,0,0};
 	int codelen = strlen(code->codes);
     char *line = strtok(code->codes, "\n");
-    list_t* var_list = list_alloc();
 	
 	LOG("Applying [%s] to '%s'...", code->name, filepath);
 	if (read_buffer(filepath, (uint8_t**) &data, &dsize) != SUCCESS)
 		return 0;
+
+	range_end = dsize;
+	if (!var_list)
+		var_list = list_alloc();
 
     while (line)
     {
@@ -319,7 +320,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			else if (wildcard_match_icase(line, "[*]*"))
     			{
     			    LOG("Getting value for %s", line);
-    			    pointer = _parse_int_value(line, pointer, dsize, var_list);
+    			    pointer = _parse_int_value(line, pointer, dsize);
     			}
     			// set pointer:* (e.g. 0x00000000)
     			else
@@ -339,14 +340,14 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    tmp = strchr(line, ',');
 			    *tmp = 0;
 			    
-			    range_start = _parse_int_value(line, pointer, dsize, var_list);
+			    range_start = _parse_int_value(line, pointer, dsize);
 				if (range_start < 0)
 					range_start = 0;
 
 			    line = tmp+1;
 			    *tmp = ',';
 
-				range_end = _parse_int_value(line, pointer - eof, dsize, var_list) + 1;
+				range_end = _parse_int_value(line, pointer - eof, dsize) + 1;
 				if (range_end > dsize)
 					range_end = dsize;
 
@@ -407,7 +408,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    tmp = strchr(line, ']');
 			    *tmp = 0;
 			    
-        	    bsd_variable_t* var = _get_bsd_variable(var_list, line);
+        	    bsd_variable_t* var = _get_bsd_variable(line);
 
 			    if (!var)
 			    {
@@ -457,7 +458,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
         		    skip_spaces(line);
     
     			    int wlen;
-    			    char* xor_val = _decode_variable_data(line, &wlen, var_list);
+    			    char* xor_val = _decode_variable_data(line, &wlen);
     			    u8* old_ptr = (u8*)&old_val + (4 - var->len);
 
     			    if (var->len != wlen)
@@ -482,7 +483,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 					var->len = BSD_VAR_INT32;
 					var->data = (uint8_t*) &old_val;
 
-					uint32_t val = _parse_int_value(line, pointer, dsize, var_list);
+					uint32_t val = _parse_int_value(line, pointer, dsize);
 
 					var->data = malloc(var->len);
 					memcpy(var->data, (u8*) &val, var->len);
@@ -795,7 +796,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
 					LOG("HMAC Key=%s", line);
 
-					key = _decode_variable_data(line, &key_len, var_list);
+					key = _decode_variable_data(line, &key_len);
 					*tmp = ')';
 
 					var->len = BSD_VAR_SHA1;
@@ -844,14 +845,14 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    tmp = strchr(line, ',');
     			    *tmp = 0;
     			    
-    			    add_s = _parse_int_value(line, pointer, dsize, var_list);
+    			    add_s = _parse_int_value(line, pointer, dsize);
 
 			        line = tmp+1;
     			    *tmp = ',';
     			    tmp = strchr(line, ')');
     			    *tmp = 0;
 
-    			    add_e = _parse_int_value(line, pointer, dsize, var_list);
+    			    add_e = _parse_int_value(line, pointer, dsize);
 
     			    *tmp = ')';
     			    
@@ -882,14 +883,14 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    tmp = strchr(line, ',');
     			    *tmp = 0;
     			    
-    			    add_s = _parse_int_value(line, pointer, dsize, var_list);
+    			    add_s = _parse_int_value(line, pointer, dsize);
 
 			        line = tmp+1;
     			    *tmp = ',';
     			    tmp = strchr(line, ')');
     			    *tmp = 0;
 
-    			    add_e = _parse_int_value(line, pointer, dsize, var_list);
+    			    add_e = _parse_int_value(line, pointer, dsize);
 
     			    *tmp = ')';
     			    
@@ -925,14 +926,14 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    tmp = strchr(line, ',');
     			    *tmp = 0;
     			    
-    			    add_s = _parse_int_value(line, pointer, dsize, var_list);
+    			    add_s = _parse_int_value(line, pointer, dsize);
 
 			        line = tmp+1;
     			    *tmp = ',';
     			    tmp = strchr(line, ')');
     			    *tmp = 0;
 
-    			    add_e = _parse_int_value(line, pointer, dsize, var_list);
+    			    add_e = _parse_int_value(line, pointer, dsize);
 
     			    *tmp = ')';
     			    
@@ -971,14 +972,14 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    tmp = strchr(line, ',');
     			    *tmp = 0;
     			    
-    			    sub_s = _parse_int_value(line, pointer, dsize, var_list);
+    			    sub_s = _parse_int_value(line, pointer, dsize);
 
 			        line = tmp+1;
     			    *tmp = ',';
     			    tmp = strchr(line, ')');
     			    *tmp = 0;
 
-    			    sub_e = _parse_int_value(line, pointer, dsize, var_list);
+    			    sub_e = _parse_int_value(line, pointer, dsize);
 
     			    *tmp = ')';
     			    
@@ -1008,21 +1009,21 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    tmp = strchr(line, ',');
     			    *tmp = 0;
     			    
-    			    xor_s = _parse_int_value(line, pointer, dsize, var_list);
+    			    xor_s = _parse_int_value(line, pointer, dsize);
 
 			        line = tmp+1;
     			    *tmp = ',';
     			    tmp = strchr(line, ',');
     			    *tmp = 0;
 
-    			    xor_e = _parse_int_value(line, pointer, dsize, var_list);
+    			    xor_e = _parse_int_value(line, pointer, dsize);
 
 			        line = tmp+1;
     			    *tmp = ',';
     			    tmp = strchr(line, ')');
     			    *tmp = 0;
 
-    			    xor_i = _parse_int_value(line, pointer, dsize, var_list);
+    			    xor_i = _parse_int_value(line, pointer, dsize);
 
     			    *tmp = ')';
     			    char* read = data + xor_s;
@@ -1056,14 +1057,14 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 					tmp = strchr(line, ',');
 					*tmp = 0;
 					
-					read_s = _parse_int_value(line, pointer, dsize, var_list);
+					read_s = _parse_int_value(line, pointer, dsize);
 
 					line = tmp+1;
 					*tmp = ',';
 					tmp = strchr(line, ')');
 					*tmp = 0;
 
-					read_l = _parse_int_value(line, pointer, dsize, var_list);
+					read_l = _parse_int_value(line, pointer, dsize);
 
 					*tmp = ')';
 					char* read = data + read_s;
@@ -1201,7 +1202,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    line += strlen("xor:");
     		    skip_spaces(line);
 
-			    write_val = _decode_variable_data(line, &wlen, var_list);
+			    write_val = _decode_variable_data(line, &wlen);
 			    
 			    for (int i=0; i < wlen; i++)
 			        write_val[i] ^= data[off + i];
@@ -1220,14 +1221,14 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 				tmp = strchr(line, ',');
 				*tmp = 0;
 				
-				r_cnt = _parse_int_value(line, pointer, dsize, var_list);
+				r_cnt = _parse_int_value(line, pointer, dsize);
 
 				line = tmp+1;
 				*tmp = ',';
 				tmp = strchr(line, ')');
 				*tmp = 0;
 
-				r_val = _decode_variable_data(line, &wlen, var_list);
+				r_val = _decode_variable_data(line, &wlen);
 
 				*tmp = ')';
 				
@@ -1246,13 +1247,13 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			else if (wildcard_match(line, "[*]"))
 			{
 			    LOG("Getting value for %s", line);
-			    write_val = _decode_variable_data(line, &wlen, var_list);
+			    write_val = _decode_variable_data(line, &wlen);
 			}
 
 		    // write at/next *:* (e.g. 0x00000000)
 			else
 			{
-			    write_val = _decode_variable_data(line, &wlen, var_list);
+			    write_val = _decode_variable_data(line, &wlen);
 			}
 
 			if (!write_val)
@@ -1318,7 +1319,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
 			skip_spaces(line);
 
-			char* idata = _decode_variable_data(line, &ilen, var_list);
+			char* idata = _decode_variable_data(line, &ilen);
 			
 			if (!idata)
 			{
@@ -1394,7 +1395,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     		    skip_spaces(line);
 
 				int flen;
-			    char* find = _decode_variable_data(line, &flen, var_list);
+			    char* find = _decode_variable_data(line, &flen);
 			    
 			    if (!find)
 			    {
@@ -1402,12 +1403,12 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    	return 0;
 			    }
 			    
-			    dlen = search_data(data + off, dsize - off, find, flen, 1);
+			    dlen = search_data(data, dsize, off, find, flen, 1) - off;
 			    free(find);
 			}
 			else
 			{
-			    dlen = _parse_int_value(line, pointer, dsize, var_list);
+			    dlen = _parse_int_value(line, pointer, dsize);
 				if (dlen + off > dsize)
 					dlen = dsize - off;
 			}
@@ -1427,26 +1428,33 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			//
 			// search 646966666963756C7479:1
 			// ;":1" means repeat search 1 time (default). ":3" at the end would set the pointer to the 3rd occurrence of the searched text
+			//
+			// search next 0x010e
+			// ; Start search from current pointer
 
-			int cnt, len;
+			int cnt = 1, len, off = 0;
 			char* find;
 			char* tmp = NULL;
 
 			line += strlen("search");
+			skip_spaces(line);
+
+			if (wildcard_match(line, "next*"))
+			{
+				line += strlen("next");
+				off = pointer;
+			}
+
 			if (wildcard_match(line, "*:*"))
 			{
 			    tmp = strrchr(line, ':');
 			    sscanf(tmp+1, "%d", &cnt);
 			    *tmp = 0;
 			}
-			else
-			{
-			    cnt = 1;
-			}
 
 		    skip_spaces(line);
 
-			find = _decode_variable_data(line, &len, var_list);
+			find = _decode_variable_data(line, &len);
 
 			if (tmp)
 				*tmp = ':';
@@ -1459,7 +1467,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 		    }
 
 			LOG("Searching {%s} ...", line);
-			pointer = search_data(data, dsize, find, len, cnt);
+			pointer = search_data(data, dsize, off, find, len, cnt);
 			
 			if (pointer < 0)
 			{
@@ -1501,7 +1509,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
 				LOG("Encryption Key=%s", line);
 
-				key = _decode_variable_data(line, &key_len, var_list);
+				key = _decode_variable_data(line, &key_len);
 				*tmp = ')';
 
 				aes_ecb_decrypt(start, (range_end - range_start), (u8*) key, key_len);
@@ -1519,7 +1527,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
 				LOG("Encryption Key=%s", line);
 
-				key = _decode_variable_data(line, &key_len, var_list);
+				key = _decode_variable_data(line, &key_len);
 				*tmp = ')';
 
 				des_ecb_decrypt(start, (range_end - range_start), (u8*) key, key_len);
@@ -1537,7 +1545,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
 				LOG("Encryption Key=%s", line);
 
-				key = _decode_variable_data(line, &key_len, var_list);
+				key = _decode_variable_data(line, &key_len);
 				*tmp = ')';
 
 				blowfish_ecb_decrypt(start, (range_end - range_start), (u8*) key, key_len);
@@ -1568,7 +1576,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
 				LOG("Encryption Key=%s", line);
 
-				key = _decode_variable_data(line, &key_len, var_list);
+				key = _decode_variable_data(line, &key_len);
 				*tmp = ')';
 
 				aes_ecb_encrypt(start, (range_end - range_start), (u8*) key, key_len);
@@ -1586,7 +1594,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
 				LOG("Encryption Key=%s", line);
 
-				key = _decode_variable_data(line, &key_len, var_list);
+				key = _decode_variable_data(line, &key_len);
 				*tmp = ')';
 
 				des_ecb_encrypt(start, (range_end - range_start), (u8*) key, key_len);
@@ -1604,7 +1612,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
 				LOG("Encryption Key=%s", line);
 
-				key = _decode_variable_data(line, &key_len, var_list);
+				key = _decode_variable_data(line, &key_len);
 				*tmp = ')';
 
 				blowfish_ecb_encrypt(start, (range_end - range_start), (u8*) key, key_len);
@@ -1621,8 +1629,6 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
 	// remove 0x00 from previous strtok(...)
     remove_char(code->codes, codelen, '\0');
-
-    _cleanup_var_list(var_list);
 
 	return 1;
 }
@@ -2022,7 +2028,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 //				for (i=0; i < len; i++)
 //					LOG("%c", find[i]);
 
-				pointer = search_data(data, dsize, find, len, cnt);
+				pointer = search_data(data, dsize, 0, find, len, cnt);
 				
 				if (pointer < 0)
 				{

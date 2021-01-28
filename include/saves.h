@@ -251,6 +251,7 @@ void end_progress_bar(void);
 int init_loading_screen(const char* msg);
 void stop_loading_screen();
 
+void free_patch_var_list();
 int apply_cheat_patch_code(const char* fpath, const char* title_id, code_entry_t* code);
 void execCodeCommand(code_entry_t* code, const char* codecmd);
 
