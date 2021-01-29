@@ -166,7 +166,7 @@ save_entry_t* _createSaveEntry(uint16_t flag, const char* name)
 {
 	save_entry_t* entry = (save_entry_t *)calloc(1, sizeof(save_entry_t));
 	entry->flags = flag;
-	asprintf(&entry->name, name);
+	entry->name = strdup(name);
 
 	return entry;
 }
@@ -1562,11 +1562,12 @@ list_t * ReadUserList(const char* userPath)
  *	gmc:			Set as the number of games read
  * Return:			Pointer to array of game_entry, null if failed
  */
-list_t * ReadOnlineList(const char* urlPath)
+void _ReadOnlineListEx(const char* urlPath, uint16_t flag, list_t *list)
 {
-	list_t *list;
 	save_entry_t *item;
-	const char* path = APOLLO_LOCAL_CACHE "games.txt";
+	char path[256];
+
+	snprintf(path, sizeof(path), APOLLO_LOCAL_CACHE "%04X_games.txt", flag);
 
 	if (file_exists(path) == SUCCESS)
 	{
@@ -1579,7 +1580,7 @@ list_t * ReadOnlineList(const char* urlPath)
 	else
 	{
 		if (!http_download(urlPath, "games.txt", path, 0))
-			return NULL;
+			return;
 	}
 	
 	long fsize;
@@ -1588,8 +1589,6 @@ list_t * ReadOnlineList(const char* urlPath)
 	
 	char *ptr = data;
 	char *end = data + fsize + 1;
-
-	list = list_alloc();
 
 	while (ptr < end && *ptr)
 	{
@@ -1604,7 +1603,7 @@ list_t * ReadOnlineList(const char* urlPath)
 		if ((tmp = strchr(content, '=')) != NULL)
 		{
 			*tmp++ = 0;
-			item = _createSaveEntry(SAVE_FLAG_PS3, tmp);
+			item = _createSaveEntry(flag, tmp);
 			item->title_id = strdup(content);
 			asprintf(&item->path, "%s%s/", urlPath, item->title_id);
 
@@ -1623,6 +1622,30 @@ list_t * ReadOnlineList(const char* urlPath)
 	}
 
 	if (data) free(data);
+}
+
+list_t * ReadOnlineList(const char* urlPath)
+{
+	char url[256];
+	list_t *list = list_alloc();
+
+	// PS3 save-games (Zip folder)
+	snprintf(url, sizeof(url), "%s" "PS3/", urlPath);
+	_ReadOnlineListEx(url, SAVE_FLAG_PS3, list);
+
+	// PS2 save-games (Zip PSV)
+	snprintf(url, sizeof(url), "%s" "PS2/", urlPath);
+	_ReadOnlineListEx(url, SAVE_FLAG_PS2, list);
+
+	// PS1 save-games (Zip PSV)
+	//snprintf(url, sizeof(url), "%s" "PS1/", urlPath);
+	//_ReadOnlineListEx(url, SAVE_FLAG_PS1, list);
+
+	if (!list_count(list))
+	{
+		list_free(list);
+		return NULL;
+	}
 
 	return list;
 }
