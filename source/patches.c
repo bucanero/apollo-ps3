@@ -1399,7 +1399,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    
 			    if (!find)
 			    {
-			    	LOG("Error: no data to search");
+			    	LOG("Error: no data to search {%s}", line);
 			    	return 0;
 			    }
 			    
@@ -1442,6 +1442,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			if (wildcard_match(line, "next*"))
 			{
 				line += strlen("next");
+				skip_spaces(line);
 				off = pointer;
 			}
 
@@ -1452,8 +1453,6 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    *tmp = 0;
 			}
 
-		    skip_spaces(line);
-
 			find = _decode_variable_data(line, &len);
 
 			if (tmp)
@@ -1462,7 +1461,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 		    if (!find)
 		    {
 		        // error decoding
-				LOG("Error parsing search pattern!");
+				LOG("Error parsing search pattern! {%s}", line);
 		        return 0;
 		    }
 
@@ -1986,7 +1985,8 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 
     		case '8':
     			//	Search Type
-    			//	8ZZZXXXX YYYYYYYY
+    			//	8TZZXXXX YYYYYYYY
+    			//	T= Address/Offset type (0 = Normal / 8 = Offset From Pointer)
     			//	Z= Amount of times to find before Write
     			//	X= Amount of data to Match
     			//	Y= Seach For (note can be extended for more just continue it like YYYYYYYY YYYYYYYY under it)
@@ -1995,8 +1995,9 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     			int i, cnt, len;
     			uint32_t val;
     			char* find;
+    			char t = line[1];
 
-    			sprintf(tmp3, "%.3s", line+1);
+    			sprintf(tmp3, "%.2s", line+2);
     			sscanf(tmp3, "%x", &cnt);
 
     			sprintf(tmp4, "%.4s", line+4);
@@ -2006,6 +2007,7 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
     			sscanf(tmp8, "%x", &val);
 
     			find = malloc(len);
+    			if (!cnt) cnt = 1;
 
 				memcpy(find, (char*) &val, 4);
     			
@@ -2025,10 +2027,11 @@ int apply_ggenie_patch_code(const char* filepath, code_entry_t* code)
 						memcpy(find + i+4, (char*) &val, 4);
     			}
 
-//				for (i=0; i < len; i++)
-//					LOG("%c", find[i]);
+				LOG("Searching (len=%d count=%d) ...", len, cnt);
+				for (i=0; i < len; i++)
+					LOG("(%02d) %02X", i, find[i]);
 
-				pointer = search_data(data, dsize, 0, find, len, cnt);
+				pointer = search_data(data, dsize, (t == '8') ? pointer : 0, find, len, cnt);
 				
 				if (pointer < 0)
 				{
