@@ -171,13 +171,7 @@ save_entry_t* _createSaveEntry(uint16_t flag, const char* name)
 	return entry;
 }
 
-void _remove_char(char * str, int len, char seek)
-{
-	int x;
-	for (x = 0; x < len; x++)
-		if (str[x] == seek)
-			str[x] = '\n';
-}
+void remove_char(char * str, int len, char seek);
 
 // Expects buffer without CR's (\r)
 void get_patch_code(char* buffer, int code_id, code_entry_t* entry)
@@ -349,6 +343,11 @@ void _addBackupCommands(save_entry_t* item)
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Decrypt save game files", CMD_CODE_NULL);
 	cmd->options_count = 1;
 	cmd->options = _getFileOptions(item->path, "*", CMD_DECRYPT_FILE);
+	list_append(item->codes, cmd);
+
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Import decrypted save files", CMD_CODE_NULL);
+	cmd->options_count = 1;
+	cmd->options = _getFileOptions(item->path, "*", CMD_IMPORT_DATA_FILE);
 	list_append(item->codes, cmd);
 }
 
@@ -562,7 +561,7 @@ int ReadCodes(save_entry_t * save)
 	buffer = readFile(filePath, &bufferLen);
 	buffer[bufferLen]=0;
 
-	_remove_char(buffer, bufferLen, '\r');
+	remove_char(buffer, bufferLen, '\r');
 
 	code = _createCmdCode(PATCH_NULL, "----- " UTF8_CHAR_STAR " Cheats " UTF8_CHAR_STAR " -----", CMD_CODE_NULL);	
 	list_append(save->codes, code);
@@ -572,6 +571,7 @@ int ReadCodes(save_entry_t * save)
 		
 	while (line)
 	{
+		rtrim(line);
 		if (wildcard_match(line, ":*"))
 		{
 			char* tmp_mask;
@@ -666,7 +666,7 @@ int ReadCodes(save_entry_t * save)
 	{
 		code = list_get(node);
 		// remove 0x00 from previous strtok(...)
-		_remove_char(buffer, bufferLen, '\0');
+		remove_char(buffer, bufferLen, '\0');
 		get_patch_code(buffer, code_count++, code);
 
 		LOG("[%d] Name: %s\nFile: %s\nCode (%d): %s\n", code_count, code->name, code->file, code->type, code->codes);

@@ -224,9 +224,8 @@ int pfd_util_init(const u8* idps, u32 user_id, const char* game_id, const char* 
 	memcpy(config.user_id, uid, PFD_USER_ID_SIZE);
 	memcpy(config.console_id, idps, PFD_CONSOLE_ID_SIZE);
 
-	uint64_t* tmp = (uint64_t*)config.console_id;
 	LOG("pfdtool " PFDTOOL_VERSION " (c) 2012 by flatz");
-	LOG("user_id [%.8s] console_id (%016lX %016lX)", config.user_id, tmp[0], tmp[1]);
+	LOG("user_id [%.8s] console_id (%016lX %016lX)", config.user_id, ((uint64_t*)config.console_id)[0], ((uint64_t*)config.console_id)[1]);
 	LOG("game_id [%s] data_path '%s'", game_id, database_path);
 
 	game_key = find_game_keys(game_id);
@@ -463,7 +462,7 @@ int decrypt_save_file(const char* path, const char* fname, const char* outpath, 
 	return 1;
 }
 
-int encrypt_save_file(const char* path, const char* fname, const char* outpath, u8* secure_file_key)
+int encrypt_save_file(const char* path, const char* fname, u8* secure_file_key)
 {
 	u8 entry_key[PFD_ENTRY_KEY_SIZE];
 	u64 file_size, aligned_file_size;
@@ -528,9 +527,6 @@ int encrypt_save_file(const char* path, const char* fname, const char* outpath, 
 
 		aes_crypt_ecb(&aes2, AES_ENCRYPT, block_data, block_data);
 	}
-
-	if (outpath)
-		snprintf(file_path, sizeof(file_path), "%s%s", outpath, fname);
 
 	// save encrypted data
 	if (write_file(file_path, file_data, aligned_file_size) < 0) {

@@ -303,7 +303,7 @@ void exportPSVfile(const char* in_file, const char* out_path)
 		ps2_psv2psu(in_file, out_path);
 
 	stop_loading_screen();
-	show_message("File successfully saved to:\n%s%s", out_path);
+	show_message("File successfully saved to:\n%s", out_path);
 }
 
 void convertSavePSV(const char* save_path, const char* out_path, uint16_t type)
@@ -347,7 +347,7 @@ void convertSavePSV(const char* save_path, const char* out_path, uint16_t type)
 	}
 
 	stop_loading_screen();
-	show_message("File successfully saved to:\n%s%s", out_path);
+	show_message("File successfully saved to:\n%s", out_path);
 }
 
 void decryptVMEfile(const char* vme_path, const char* vme_file, uint8_t dst)
@@ -387,7 +387,7 @@ void decryptVMEfile(const char* vme_path, const char* vme_file, uint8_t dst)
 	ps2_crypt_vmc(0, vmefile, outfile, 0);
 	stop_loading_screen();
 
-	show_message("File successfully saved to:\n%s%s", outfile);
+	show_message("File successfully saved to:\n%s", outfile);
 }
 
 void encryptVM2file(const char* vme_path, const char* vme_file, const char* src_name)
@@ -402,7 +402,7 @@ void encryptVM2file(const char* vme_path, const char* vme_file, const char* src_
 	ps2_crypt_vmc(0, srcfile, vmefile, 1);
 	stop_loading_screen();
 
-	show_message("File successfully saved to:\n%s%s", vmefile);
+	show_message("File successfully saved to:\n%s", vmefile);
 }
 
 void importPS2VMC(const char* vmc_path, const char* vmc_file)
@@ -418,7 +418,7 @@ void importPS2VMC(const char* vmc_path, const char* vmc_file)
 	ps2_add_vmc_ecc(srcfile, vm2file);
 	stop_loading_screen();
 
-	show_message("File successfully saved to:\n%s%s", vm2file);
+	show_message("File successfully saved to:\n%s", vm2file);
 }
 
 void exportVM2raw(const char* vm2_path, const char* vm2_file, const char* dst_path)
@@ -463,7 +463,7 @@ void importPS2classics(const char* iso_path, const char* iso_file)
 	ps2_encrypt_image(0, ps2file, outfile, msg);
 	stop_loading_screen();
 
-	show_message("File successfully saved to:\n%s%s", outfile);
+	show_message("File successfully saved to:\n%s", outfile);
 }
 
 void exportPS2classics(const char* enc_path, const char* enc_file, uint8_t dst)
@@ -506,7 +506,7 @@ void exportPS2classics(const char* enc_path, const char* enc_file, uint8_t dst)
 	ps2_decrypt_image(0, ps2file, outfile, msg);
 	stop_loading_screen();
 
-	show_message("File successfully saved to:\n%s%s", outfile);
+	show_message("File successfully saved to:\n%s", outfile);
 }
 
 
@@ -763,7 +763,7 @@ int apply_cheat_patches()
 		LOG("Encrypting '%s'...", filename);
 		protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
 		
-		if (!encrypt_save_file(selected_entry->path, filename, NULL, protected_file_id))
+		if (!encrypt_save_file(selected_entry->path, filename, protected_file_id))
 		{
 			LOG("Error: failed to encrypt (%s)", filename);
 			ret = 0;
@@ -871,19 +871,31 @@ void resignTrophy()
     pfd_util_end();
 }
 
+int _copy_save_file(const char* src_path, const char* dst_path, const char* filename)
+{
+	char src[256], dst[256];
+
+	snprintf(src, sizeof(src), "%s%s", src_path, filename);
+	snprintf(dst, sizeof(dst), "%s%s", dst_path, filename);
+
+	return copy_file(src, dst);
+}
+
 void decryptSaveFile(const char* filename)
 {
 	char path[256];
 
+	snprintf(path, sizeof(path), APOLLO_TMP_PATH "%s/", selected_entry->title_id);
+	mkdirs(path);
+
 	if (_is_decrypted(NULL, filename))
 	{
-		show_message("Save-game %s is not encrypted. No files decrypted", selected_entry->title_id);
+		_copy_save_file(selected_entry->path, path, filename);
+		show_message("Save-game %s is not encrypted. File was not decrypted:\n%s%s", selected_entry->title_id, path, filename);
 		return;
 	}
 
 	u8* protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
-	snprintf(path, sizeof(path), APOLLO_TMP_PATH "%s/", selected_entry->title_id);
-	mkdirs(path);
 
 	LOG("Decrypt '%s%s' to '%s'...", selected_entry->path, filename, path);
 
@@ -897,18 +909,28 @@ void encryptSaveFile(const char* filename)
 {
 	char path[256];
 
+	snprintf(path, sizeof(path), APOLLO_TMP_PATH "%s/%s", selected_entry->title_id, filename);
+
+	if (file_exists(path) != SUCCESS)
+	{
+		show_message("Error! Can't find decrypted save-game file:\n%s", path);
+		return;
+	}
+	*(strrchr(path, '/')+1) = 0;
+
 	if (_is_decrypted(NULL, filename))
 	{
-		show_message("Save-game %s is not encrypted. No files encrypted", selected_entry->title_id);
+		_copy_save_file(path, selected_entry->path, filename);
+		show_message("Save-game %s is not encrypted.\nFile %s was not encrypted", selected_entry->title_id, filename);
 		return;
 	}
 
 	u8* protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
-	snprintf(path, sizeof(path), APOLLO_TMP_PATH "%s/", selected_entry->title_id);
 
 	LOG("Encrypt '%s%s' to '%s'...", path, filename, selected_entry->path);
+	_copy_save_file(path, selected_entry->path, filename);
 
-	if (encrypt_save_file(path, filename, selected_entry->path, protected_file_id))
+	if (encrypt_save_file(selected_entry->path, filename, protected_file_id))
 		show_message("File successfully encrypted to:\n%s%s", selected_entry->path, filename);
 	else
 		show_message("Error! File %s couldn't be encrypted", filename);
@@ -1069,6 +1091,7 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_IMPORT_DATA_FILE:
+			encryptSaveFile(code->options[0].name[code->options[0].sel]);
 			code->activated = 0;
 			break;
 
