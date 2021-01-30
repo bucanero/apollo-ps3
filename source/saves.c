@@ -739,6 +739,12 @@ int ReadTrophies(save_entry_t * game)
 	trophy->options = _createOptions(2, "Copy Trophy to USB", CMD_EXP_TROPHY_USB);
 	list_append(game->codes, trophy);
 
+	trophy = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " Export Trophy Set to Zip", CMD_CODE_NULL);
+	trophy->file = strdup(game->path);
+	trophy->options_count = 1;
+	trophy->options = _createOptions(2, "Save .Zip to USB", CMD_EXPORT_ZIP_USB);
+	list_append(game->codes, trophy);
+
 	trophy = _createCmdCode(PATCH_NULL, "----- " UTF8_CHAR_STAR " Trophies " UTF8_CHAR_STAR " -----", CMD_CODE_NULL);
 	list_append(game->codes, trophy);
 

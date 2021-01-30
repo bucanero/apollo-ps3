@@ -21,7 +21,7 @@ void downloadSave(const char* file, const char* path)
 
 	if (!http_download(selected_entry->path, file, APOLLO_LOCAL_CACHE "tmpsave.zip", 1))
 	{
-		show_message("Error downloading save game!");
+		show_message("Error downloading save game from:\n%s%s", selected_entry->path, file);
 		return;
 	}
 
@@ -95,6 +95,7 @@ void zipSave(const char* exp_path)
 	free(tmp);
 
 	stop_loading_screen();
+	show_message("Zip file successfully saved to:\n%s%08d.zip", exp_path, fid);
 }
 
 void copySave(const char* save_path, const char* exp_path)
@@ -124,15 +125,15 @@ void copySave(const char* save_path, const char* exp_path)
 	free(tmp);
 
 	stop_loading_screen();
+	show_message("Files successfully copied to:\n%s", exp_path);
 }
 
 void copySaveHDD(const char* save_path)
 {
 	char* copy_path;
-	char* tmp;
+	char* tmp = strdup(save_path);
 	const char* folder;
 
-	asprintf(&tmp, save_path);
 	*strrchr(tmp, '/') = 0;
 	folder = strrchr(tmp, '/')+1;
 	asprintf(&copy_path, SAVES_PATH_HDD "%s/", apollo_config.user_id, folder);
@@ -208,7 +209,7 @@ void exportLicensesZip(const char* exp_path)
 	asprintf(&export_file, "%s" "licenses_%08d.zip", exp_path, apollo_config.user_id);
 	asprintf(&lic_path, EXDATA_PATH_HDD, apollo_config.user_id);
 
-	asprintf(&tmp, lic_path);
+	tmp = strdup(lic_path);
 	*strrchr(tmp, '/') = 0;
 
 	zip_directory(tmp, lic_path, export_file);
@@ -224,6 +225,7 @@ void exportLicensesZip(const char* exp_path)
 	free(tmp);
 
 	stop_loading_screen();
+	show_message("Licenses successfully saved to:\n%slicenses_%08d.zip", exp_path, apollo_config.user_id);
 }
 
 void exportFlashZip(const char* exp_path)
@@ -250,6 +252,7 @@ void exportFlashZip(const char* exp_path)
 	free(export_file);
 
 	stop_loading_screen();
+	show_message("Files successfully saved to:\n%sdev_flash2.zip", exp_path);
 }
 
 void resignPSVfile(const char* psv_path)
@@ -257,6 +260,8 @@ void resignPSVfile(const char* psv_path)
 	init_loading_screen("Resigning PSV file...");
 	psv_resign(psv_path);
 	stop_loading_screen();
+
+	show_message("File successfully resigned!");
 }
 
 void copyDummyPSV(const char* psv_file, const char* out_path)
@@ -278,6 +283,8 @@ void copyDummyPSV(const char* psv_file, const char* out_path)
 
 	free(in);
 	free(out);
+
+	show_message("File successfully saved to:\n%s%s", out_path, psv_file);
 }
 
 void exportPSVfile(const char* in_file, const char* out_path)
@@ -296,6 +303,7 @@ void exportPSVfile(const char* in_file, const char* out_path)
 		ps2_psv2psu(in_file, out_path);
 
 	stop_loading_screen();
+	show_message("File successfully saved to:\n%s%s", out_path);
 }
 
 void convertSavePSV(const char* save_path, const char* out_path, uint16_t type)
@@ -339,6 +347,7 @@ void convertSavePSV(const char* save_path, const char* out_path, uint16_t type)
 	}
 
 	stop_loading_screen();
+	show_message("File successfully saved to:\n%s%s", out_path);
 }
 
 void decryptVMEfile(const char* vme_path, const char* vme_file, uint8_t dst)
@@ -377,6 +386,8 @@ void decryptVMEfile(const char* vme_path, const char* vme_file, uint8_t dst)
 	init_loading_screen("Decrypting VME card...");
 	ps2_crypt_vmc(0, vmefile, outfile, 0);
 	stop_loading_screen();
+
+	show_message("File successfully saved to:\n%s%s", outfile);
 }
 
 void encryptVM2file(const char* vme_path, const char* vme_file, const char* src_name)
@@ -390,6 +401,8 @@ void encryptVM2file(const char* vme_path, const char* vme_file, const char* src_
 	init_loading_screen("Encrypting VM2 card...");
 	ps2_crypt_vmc(0, srcfile, vmefile, 1);
 	stop_loading_screen();
+
+	show_message("File successfully saved to:\n%s%s", vmefile);
 }
 
 void importPS2VMC(const char* vmc_path, const char* vmc_file)
@@ -404,6 +417,8 @@ void importPS2VMC(const char* vmc_path, const char* vmc_file)
 	init_loading_screen("Importing PS2 memory card...");
 	ps2_add_vmc_ecc(srcfile, vm2file);
 	stop_loading_screen();
+
+	show_message("File successfully saved to:\n%s%s", vm2file);
 }
 
 void exportVM2raw(const char* vm2_path, const char* vm2_file, const char* dst_path)
@@ -423,6 +438,8 @@ void exportVM2raw(const char* vm2_path, const char* vm2_file, const char* dst_pa
 	init_loading_screen("Exporting PS2 .VM2 memory card...");
 	ps2_remove_vmc_ecc(vm2file, dstfile);
 	stop_loading_screen();
+
+	show_message("File successfully saved to:\n%s%s", dstfile);
 }
 
 void importPS2classics(const char* iso_path, const char* iso_file)
@@ -445,6 +462,8 @@ void importPS2classics(const char* iso_path, const char* iso_file)
 	init_loading_screen(msg);
 	ps2_encrypt_image(0, ps2file, outfile, msg);
 	stop_loading_screen();
+
+	show_message("File successfully saved to:\n%s%s", outfile);
 }
 
 void exportPS2classics(const char* enc_path, const char* enc_file, uint8_t dst)
@@ -486,6 +505,8 @@ void exportPS2classics(const char* enc_path, const char* enc_file, uint8_t dst)
 	init_loading_screen(msg);
 	ps2_decrypt_image(0, ps2file, outfile, msg);
 	stop_loading_screen();
+
+	show_message("File successfully saved to:\n%s%s", outfile);
 }
 
 
@@ -503,6 +524,7 @@ void exportFolder(const char* src_path, const char* exp_path, const char* msg)
 	copy_directory(src_path, src_path, exp_path);
 
 	stop_loading_screen();
+	show_message("Files successfully copied to:\n%s", exp_path);
 }
 
 void exportLicensesRap(const char* fname, uint8_t dest)
@@ -559,6 +581,7 @@ void exportLicensesRap(const char* fname, uint8_t dest)
 	closedir(d);
 
     stop_loading_screen();
+	show_message("Files successfully copied to:\n%s", exp_path);
 }
 
 void importLicenses(const char* fname, const char* exdata_path)
@@ -594,6 +617,7 @@ void importLicenses(const char* fname, const char* exdata_path)
 	closedir(d);
 
     stop_loading_screen();
+	show_message("Files successfully copied to:\n%s", lic_path);
 }
 
 int apply_sfo_patches(sfo_patch_t* patch)
@@ -939,12 +963,12 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_EXP_TROPHY_USB:
-			copySave(selected_entry->path, codecmd[1] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0);
+			copySave(selected_entry->path, codecmd[1] ? TROPHY_PATH_USB1 : TROPHY_PATH_USB0);
 			code->activated = 0;
 			break;
 
 		case CMD_COPY_TROPHIES_USB:
-			exportFolder(selected_entry->path, codecmd[1] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0, "Copying trophies...");
+			exportFolder(selected_entry->path, codecmd[1] ? TROPHY_PATH_USB1 : TROPHY_PATH_USB0, "Copying trophies...");
 			code->activated = 0;
 			break;
 
