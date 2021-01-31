@@ -656,7 +656,7 @@ code_entry_t* LoadSaveDetails()
         "Sub-Title: %s\n"
         "Lock: %s\n\n"
         "User ID: %08d\n"
-        "Account ID: %s (%s)\n"
+        "Account ID: %.16s (%s)\n"
         "PSID: %016lX %016lX\n", selected_entry->path, selected_entry->name, subtitle, 
         (selected_entry->flags & SAVE_FLAG_LOCKED ? "Copying Prohibited" : "Unlocked"),
         param_ids->user_id, param_ids->account_id, 

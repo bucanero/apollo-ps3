@@ -430,7 +430,7 @@ void drawSplashLogo(int mode)
 		u8 logo_a = (u8)logo_a_t;
 		
 		//App description
-		DrawTextureCentered(&menu_textures[buk_scr_png_index], 424, 256, 0, 177, 177, 0xFFFFFF00 | logo_a);
+		DrawTextureCentered(&menu_textures[buk_scr_png_index], 424, 256, 0, 323, 242, 0xFFFFFF00 | logo_a);
 
 		tiny3d_Flip();
 	}
