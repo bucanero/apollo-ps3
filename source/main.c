@@ -892,7 +892,7 @@ void doSaveMenu(save_list_t * save_list)
 
     		if (!selected_entry->codes && !save_list->ReadCodes(selected_entry))
     		{
-    			show_message("No data found");
+    			show_message("No data found in folder:\n%s", selected_entry->path);
     			return;
     		}
 
