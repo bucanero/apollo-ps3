@@ -411,8 +411,9 @@ int decrypt_save_file(const char* path, const char* fname, const char* outpath, 
 
 	if (!_get_aes_details_pfd(path, fname, secure_file_key, &file_size, &aligned_file_size, entry_key))
 	{
+		// The requested file is not listed in PARAM.PFD, so we assume is not encrypted
 		LOG("Error getting AES keys");
-		return 0;
+		return 1;
 	}
 
 	// read & decrypt file
@@ -484,8 +485,9 @@ int encrypt_save_file(const char* path, const char* fname, u8* secure_file_key)
 
 	if (!_update_details_pfd(path, fname))
 	{
+		// The requested file is not listed in PARAM.PFD, so we assume is not encrypted
 		LOG("Error updating PARAM.PFD details");
-		return 0;
+		return 1;
 	}
 
 	if (!_get_aes_details_pfd(path, fname, secure_file_key, &file_size, &aligned_file_size, entry_key))
