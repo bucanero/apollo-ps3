@@ -4,6 +4,26 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.5.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.5.0) - 2021-01-31
+
+### Added
+
+* Added Trophy Set management
+  * List trophies
+  * Resign trophy sets
+  * Backup trophies to Zip
+* Added custom encryption support (DmC, GTA5, Diablo 3, NFS Rivals)
+  * Algorithms: Blowfish, AES, DES
+* Added PS2/PS1 `.PSV` saves to the Online Database
+* Improved user messages
+* Added BSD global variable support
+* Added BSD `search next` command support
+* Added GameGenie code type `88` relative search 
+
+### Fixed
+
+* Fixed `.RAP` uppercase issue
+
 ## [v1.4.6](https://github.com/bucanero/apollo-ps3/releases/tag/v1.4.6) - 2020-12-23
 
 ### Added
