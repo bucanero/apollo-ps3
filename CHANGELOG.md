@@ -14,6 +14,7 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
   * Backup trophies to Zip
 * Added custom encryption support (DmC, GTA5, Diablo 3, NFS Rivals)
   * Algorithms: Blowfish, AES, DES
+* Added "Import decrypted save file" option
 * Added PS2/PS1 `.PSV` saves to the Online Database
 * Improved user messages
 * Added BSD global variable support
