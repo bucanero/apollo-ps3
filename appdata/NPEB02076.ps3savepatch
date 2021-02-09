@@ -5,6 +5,10 @@
 
 :DATA0.DAT
 
+[Decrypt DATA0.DAT (Required)]
+set range:0x000000,eof+1
+DECRYPT blowfish_ecb("SBmdYgEamc=#sA0)Mhs9#>/4iiXbMPxW")
+
 Group: Slot 1
 
 [Have all weapons in chest (SAVESLOT 1) codes by h0rr0r0]
@@ -325,24 +329,18 @@ Group: Slot 8
 41077E9A 0000270F
 42580008 00000000
 
-[Update SHA1 for DATA0.DAT (Required)]
-;set range:0x000040,0x06FA9F
-set pointer:eof+1
-set range:0x000040,pointer
-set [hash]:SHA1
-write at 0x00000C:[hash]
 
 ;Select Difficulty Code:
-03= Super Easy
-00= Easy
-01= Normal
-02= Hard
+;03= Super Easy
+;00= Easy
+;01= Normal
+;02= Hard
 
 ;Select a Value Code:
-0000= 0
-270F= 9999
-7FFF= 32767
-FFFF= 65535
+;0000= 0
+;270F= 9999
+;7FFF= 32767
+;FFFF= 65535
 
 
 Group: SAVESLOT 1
@@ -975,6 +973,15 @@ write at 0x0000E022:0x270F0000
 write at 0x0000E027:0xFF000000
 write at 0x0000E02B:0xFF000001
 
-Group
+Group:\
 
+[Update SHA1 for DATA0.DAT (Required)]
+;set range:0x000040,0x06FA9F
+set pointer:eof+1
+set range:0x000040,pointer
+set [hash]:SHA1
+write at 0x00000C:[hash]
 
+[Encrypt DATA0.DAT (Required)]
+set range:0x000000,eof+1
+ENCRYPT blowfish_ecb("SBmdYgEamc=#sA0)Mhs9#>/4iiXbMPxW")
