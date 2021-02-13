@@ -616,6 +616,11 @@ int ReadCodes(save_entry_t * save)
 				line[1] = CHAR_TAG_WARNING;
 				line[2] = ' ';
 			}
+			else if (wildcard_match_icase(line, "*GROUP:\\*"))
+			{
+				group = 0;
+				line = strrchr(line, '\\')+1;
+			}
 			else if (wildcard_match_icase(line, "[GROUP:*"))
 			{
 				line += 6;

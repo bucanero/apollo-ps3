@@ -79,6 +79,17 @@ uint32_t MC02_hash(const uint8_t *pb, uint32_t cb)
 	return ~seedValue;
 }
 
+// http://www.cse.yorku.ca/~oz/hash.html#sdbm
+uint32_t sdbm_hash(const uint8_t* data, uint32_t len, uint32_t init)
+{
+    uint32_t crc = init;
+    
+    while (len--)
+        crc = (crc * 0x1003f) + *data++;
+
+    return (crc);
+}
+
 uint64_t reflect(uint64_t data, uint8_t nBits)
 {
     uint64_t reflection = 0;

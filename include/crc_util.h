@@ -81,6 +81,13 @@ uint32_t crc32_hash(const uint8_t* message, uint32_t nBytes, custom_crc_t* cfg);
 uint32_t MC02_hash(const uint8_t *pb, uint32_t cb);
 
 /**
+ * This function makes a SDBM hash calculation on Length data bytes
+ *
+ * RETURN VALUE: 32 bit result of CRC calculation
+ */
+uint32_t sdbm_hash(const uint8_t* data, uint32_t len, uint32_t init);
+
+/**
  * This function makes a CRC64 calculation on Length data bytes
  *
  * RETURN VALUE: 64 bit result of CRC calculation

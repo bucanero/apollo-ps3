@@ -823,6 +823,28 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    LOG("len %d EA/MC02 HASH = %X", len, hash);
 			    }
 
+				// set [*]:sdbm*
+				else if (wildcard_match_icase(line, "sdbm*"))
+				{
+					uint32_t hash, init_val = 0;
+					u8* start = (u8*)data + range_start;
+					len = range_end - range_start;
+
+					tmp = strchr(line, ':');
+					if (tmp)
+					{
+						init_val = _parse_int_value(tmp+1, pointer, dsize);
+					}
+
+					hash = sdbm_hash(start, len, init_val);
+
+					var->len = BSD_VAR_INT32;
+					var->data = malloc(var->len);
+					memcpy(var->data, (u8*) &hash, var->len);
+
+					LOG("len %d SDBM HASH = %X", len, hash);
+				}
+
 			    // set [*]:qwadd(*,*)*
 			    else if (wildcard_match_icase(line, "qwadd(*,*)*"))
 			    {
