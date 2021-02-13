@@ -70,3 +70,35 @@
 [No Evolved Infected Killed]
 200037B4 00000000
 
+[Group: Checksum]
+
+:ICON0.PNG
+; dependency: CRC.BIN
+
+[Init Custom CRC32 for CRC.BIN (Required)]
+set crc_bandwidth:32
+set crc_polynomial:0x04C11DB7
+set crc_initial_value:0xFFFFFFFF
+set crc_output_xor:0
+set crc_reflection_input:0
+set crc_reflection_output:0
+set range:0x0000,eof+1
+set [crc_init]:crc
+
+:USERDATA.BIN
+; dependency: CRC.BIN
+
+[Calculate Custom CRC32 for CRC.BIN (Required)]
+set crc_bandwidth:32
+set crc_polynomial:0x04C11DB7
+set crc_initial_value:[crc_init]
+set crc_output_xor:0
+set crc_reflection_input:0
+set crc_reflection_output:0
+set range:0x0000,eof+1
+set [hash]:crc
+
+:CRC.BIN
+
+[Update Custom CRC32 for CRC.BIN (Required)]
+write at 0x0:[hash]
