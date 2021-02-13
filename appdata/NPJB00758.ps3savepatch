@@ -1,0 +1,21 @@
+; NPJB00758
+; Kamen Rider Battride War Sousei/Genesis
+
+:SAVEDATA.DAT
+
+[Shop Points 9999999]
+20000124 0098967F
+
+[Rider Souls 9999999]
+20000128 0098967F
+
+[Update CRC32Big for SAVEDATA.DAT (Required)]
+; Checksum offset is located within the checksum range.
+; Initializing checksum with null bytes
+write at 0x000004:00000000
+;----------------------------
+;set range:0x000004,0x22EC67
+set pointer:eof+1
+set range:0x000004,pointer
+set [hash]:CRC32Big
+write at 0x000004:[hash]

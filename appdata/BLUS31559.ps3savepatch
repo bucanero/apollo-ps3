@@ -1,0 +1,16 @@
+; Saint Seiya Soldiers' Soul v1.0
+;BLUS31559
+;From izuna
+
+:SAVEDATA.DAT
+
+[Max And Infinite Money On Buy]
+002BE1F8 60000000
+002BE200 60000000
+
+[Infinite And Instant Charge Max Cosmos]
+000463B8 D023004C
+00046500 D043004C
+
+[Instant Charge Max SS]
+000463E8 D0430054

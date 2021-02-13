@@ -1,0 +1,27 @@
+; Rainbow Skies
+; NPUB31360
+
+:DATA.DAT
+
+[Rainbow Coins]
+20000924 05F5E0FF
+
+[Potions Slots 99]
+000205FB 00000063
+
+[Misc. Items Slots 99]
+000205FF 00000063
+
+[Food Slots 99]
+00020603 00000063
+
+[Small Health Tonic Food]
+200125F6 000001DE
+10012600 0000270F
+10012602 0000270F
+10012604 0000270F
+10012606 0000270F
+20012608 0098967F
+2001260C 0000270F
+; This code will replace the first food in your list with a Tonic that will permanently 
+; increase your HP +9,999,999, MP +9,999, STR +9,999, DEF +9,999, AGL +9,999 and LUK +9,999.
