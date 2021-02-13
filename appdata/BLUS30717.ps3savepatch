@@ -1819,3 +1819,22 @@
 28000018 72BC9767
 2800001C 54524542
 28000020 314D4152
+
+[Group:Checksum]
+
+:HED-DATA
+[Init SDBM for HED-DATA (Required)]
+set [usr_size]:read(0x6C, 4)
+write at 0x04:0x00000000
+set range:0x0000,eof+1
+set [hash_init]:sdbm
+
+:USR-DATA
+[Calculate SDBM for USR-DATA (Required)]
+set [usr_size]:[usr_size]-1
+set range:0x0000,[usr_size]
+set [hash]:sdbm:[hash_init]
+
+:HED-DATA
+[Update SDBM for HED-DATA (Required)]
+write at 0x04:[hash]

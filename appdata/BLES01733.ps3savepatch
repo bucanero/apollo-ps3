@@ -77,3 +77,22 @@ BEEFBEEF EAC15A55
 [Easy Records Trophies:Do 1 more time of each action gain particular trophy]
 search 0x31CC877D413D0C17484C4143304E554F31CC877D5205218F
 write next (-320):000003E8000003E8000003E8000003E8000003E8000003E8000003E8000003E8000003E8000003E8000003E8000003E8000003E8000003E8
+
+[Group:Checksum]
+
+:HED-DATA
+[Init SDBM for HED-DATA (Required)]
+set [usr_size]:read(0x4C, 4)
+write at 0x08:0x00000000
+set range:0x0000,eof+1
+set [hash_init]:sdbm
+
+:USR-DATA
+[Calculate SDBM for USR-DATA (Required)]
+set [usr_size]:[usr_size]-1
+set range:0x0000,[usr_size]
+set [hash]:sdbm:[hash_init]
+
+:HED-DATA
+[Update SDBM for HED-DATA (Required)]
+write at 0x08:[hash]
