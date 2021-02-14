@@ -3,7 +3,8 @@
 
 ;chaoszage 
 
-
+[Decompress Save (Required)]
+Decompress SAVE.DAT
 
 ;Steps to mod(Only for the 1st char):
 ;1.Turn on Compression Check(located near bottom right near patch creator)
@@ -48,3 +49,5 @@ write next 5:0x01
 search 0xFFFFAA07
 write next C:0x709e9cb7
 
+[Compress Save (Required)]
+Compress SAVE.DAT,-w 15
