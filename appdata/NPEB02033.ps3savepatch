@@ -1,6 +1,11 @@
 ; NPEB02033
 ; GRID Autosport
 
+[Decompress Save (Required)]
+Decompress PROGRESS.DAT
+
+[Compress Save (Required)]
+Compress PROGRESS.DAT,-w -15
 
 :SECUINFO.BIN
 

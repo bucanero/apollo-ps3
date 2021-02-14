@@ -2,6 +2,13 @@
 ;The Bureau: XCOM Declassified
 
 :BLUS30780-XPROFILE\PAYLOAD
+
+[Decompress Save (Required)]
+Decompress PAYLOAD
+
+[Compress Save (Required)]
+Compress PAYLOAD,-w 15
+
 [Update SHA1 (Required)]
 set range:0x000014,0x031243
 set [hash]:SHA1
@@ -11,7 +18,8 @@ write at 0x000000:[hash]
 
 [Update CRC32Big for PAYLOAD (Required)]
 ; Checksum offset is located within the checksum range.
-write at 0x000004:00000000   ;Initializing checksum with null bytes
+; Initializing checksum with null bytes
+write at 0x000004:00000000
 ;----------------------------
 ;set range:0x0,0x13CFEF
 set pointer:eof+1
