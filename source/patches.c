@@ -376,7 +376,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    else if (wildcard_match_icase(line, "initial_value:*"))
 			    {
     			    line += strlen("initial_value:");
-    			    sscanf(line, "%lx", &custom_crc.initial_value);
+    			    custom_crc.initial_value = _parse_int_value(line, pointer, dsize);
 			    }
 
 			    else if (wildcard_match_icase(line, "output_xor:*"))
