@@ -5,6 +5,12 @@
 
 :DATA0.DAT
 
+[Decompress Save (Required)]
+Decompress DATA0.DAT
+
+[Compress Save (Required)]
+Compress DATA0.DAT,-w 15
+
 [Update CRC32 for DATA0.DAT (Required)]
 set [end]:read(0x8,4)
 set [end]:[end]+1F

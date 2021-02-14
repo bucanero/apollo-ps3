@@ -3,6 +3,12 @@
 
 :PAYLOAD
 
+[Decompress Save (Required)]
+Decompress PAYLOAD
+
+[Compress Save (Required)]
+Compress PAYLOAD,-w 15
+
 [Update SHA1 (Required)]
 ;set range:0x000014,0x000252
 set pointer:eof+1
