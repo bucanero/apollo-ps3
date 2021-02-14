@@ -848,11 +848,40 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    // set [*]:qwadd(*,*)*
 			    else if (wildcard_match_icase(line, "qwadd(*,*)*"))
 			    {
-			        //low priority
-			        // qwadd(<start>,<endrange>)
-			        // 64-bit	0xFFFFFFFFFFFFFFFF
-					LOG("Error: command not implemented");
-					return 0;
+					//low priority
+					// qwadd(<start>,<endrange>)
+					// 64-bit	0xFFFFFFFFFFFFFFFF
+					int add_s, add_e;
+					uint32_t add = 0;
+
+					line += strlen("qwadd(");
+					tmp = strchr(line, ',');
+					*tmp = 0;
+					
+					add_s = _parse_int_value(line, pointer, dsize);
+
+					line = tmp+1;
+					*tmp = ',';
+					tmp = strchr(line, ')');
+					*tmp = 0;
+
+					add_e = _parse_int_value(line, pointer, dsize);
+
+					*tmp = ')';
+					
+					char* read = data + add_s + BSD_VAR_INT32;
+					
+					while (read < data + add_e)
+					{
+						add += (*(uint32_t*)read);
+						read += BSD_VAR_INT64;
+					}
+
+					var->len = BSD_VAR_INT32;
+					var->data = malloc(var->len);
+					memcpy(var->data, (u8*) &add, var->len);
+					
+					LOG("[%s]:qwadd(0x%X , 0x%X) = %X", var->name, add_s, add_e, add);
 			    }
 
 			    // set [*]:dwadd(*,*)*
