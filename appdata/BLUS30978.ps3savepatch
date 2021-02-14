@@ -6,6 +6,10 @@
 ;From Game Genie For PS3
 
 :BLUS30978-SAVE*\PAYLOAD
+
+[Decompress Save (Required)]
+Decompress PAYLOAD
+
 [Level Up (Not Working)]
 90000000 0000001C
 93000000 00000028
@@ -36,3 +40,5 @@
 48000000 00000001
 40500001 00000000
 
+[Compress Save (Required)]
+Compress PAYLOAD,-w 15

@@ -3,6 +3,10 @@
 ;GameGenie EU Codes
 
 :PAYLOAD
+
+[Decompress Save (Required)]
+Decompress PAYLOAD
+
 [Level Up (Not Working)]
 80010009 52426174
 6172616E 67000000
@@ -47,3 +51,6 @@
 94000000 0000005C
 4A000000 00000001
 40140004 00000000
+
+[Compress Save (Required)]
+Compress PAYLOAD,-w 15
