@@ -3,6 +3,12 @@
 
 :SAVE
 
+[Decompress Save (Required)]
+Decompress SAVE
+
+[Compress Save (Required)]
+Compress SAVE,-w 15
+
 [Update CRC-16 CCITT for SAVE (Required)]
 set crc_bandwidth:16
 set crc_polynomial:0x1021

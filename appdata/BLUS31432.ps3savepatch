@@ -3,18 +3,10 @@
 
 ; BSD cheat version by chaoszage
 
+[Decompress Save (Required)]
+Decompress SAVEGAME.SAV
 
-
-[read me]
-[Open BSD and turn on "Compression Check"]
-[Double click on savegame.sav and a window will pop up]
-[Right click on 00000008.gar and Click "Apply Cheats"]
-[Apply any cheats you want.]
-[Close the extracted window and type -w -15 to recompress the save.]
-[wait a while then update partial -> encrypt -> verify pfd as usual. ]
-
-
-:~extracted\00000008.gar
+:~extracted\00000008.dat
 
 [Max Melee]
 search "Player":2
@@ -73,6 +65,5 @@ write next EA:0x77359400
 search "Player":2
 write next F9:0x64
 
-
-
-
+[Compress Save (Required)]
+Compress SAVEGAME.SAV,-w -15
