@@ -1,5 +1,5 @@
 ; The Last of Us
-; BLUS30476
+; BCUS98174
 ; From Bokosuka Game & Game Genie
 
 :USR-DATA
@@ -134,6 +134,269 @@ DECRYPT blowfish_ecb("(SH[@2>r62%5+QKpy|g6")
 28000098 000C000C
 80020004 6CC50261
 28000098 000C000C
+
+[Cleared Difficulty Change (Template)]
+000009E3 000000xx
+000009DB 000000yy
+42000C28 000000yy
+42420014 00000000
+;xx=00(Normal Mode)/01(+)
+;yy=01(Easy)/02(Normal)/03(Hard)/04(Survival)
+
+[Cleared Difficulty Survival+]
+000009E3 00000001
+000009DB 00000004
+42000C28 00000004
+42420014 00000000
+
+[Assault Rifle Ammo 65535]
+;code by horroro
+search 0x6CC50261:1
+write next (124):0xFFFF
+search 0x6CC50261:2
+write next (124):0xFFFF
+search 0x6CC50261:3
+write next (360):0xFFFF
+
+Group: Weapon upgrades
+;codes below by horroro
+[9mm Pistol fully upgraded]
+search 0xFC346332:1
+write next (8):0x03030400
+search 0xFC346332:2
+write next (8):0x03030400
+search 0xFC346332:3
+write next (8):0x03030400
+search 0xFC346332:4
+write next (8):0x03030400
+search 0xFC346332:5
+write next (8):0x03030400
+search 0xFC346332:6
+write next (8):0x03030400
+search 0xFC346332:7
+write next (8):0x03030400
+search 0xFC346332:8
+write next (8):0x03030400
+search 0xFC346332:9
+write next (8):0x03030400
+search 0xFC346332:10
+write next (8):0x03030400
+search 0xFC346332:11
+write next (8):0x03030400
+search 0xFC346332:12
+write next (8):0x03030400
+search 0xFC346332:13
+write next (8):0x03030400
+search 0xFC346332:14
+write next (8):0x03030400
+search 0xFC346332:15
+write next (8):0x03030400
+search 0xFC346332:16
+write next (8):0x03030400
+search 0xFC346332:17
+write next (8):0x03030400
+search 0xFC346332:18
+write next (8):0x03030400
+search 0xFC346332:19
+write next (8):0x03030400
+search 0xFC346332:20
+write next (8):0x03030400
+search 0xFC346332:21
+write next (8):0x03030400
+search 0xFC346332:22
+write next (8):0x03030400
+search 0xFC346332:23
+write next (8):0x03030400
+
+[Revolver fully upgraded]
+search 0xA9AC2D27:1
+write next (8):0x03030000
+search 0xA9AC2D27:2
+write next (8):0x03030000
+search 0xA9AC2D27:3
+write next (8):0x03030000
+search 0xA9AC2D27:4
+write next (8):0x03030000
+search 0xA9AC2D27:5
+write next (8):0x03030000
+search 0xA9AC2D27:6
+write next (8):0x03030000
+search 0xA9AC2D27:7
+write next (8):0x03030000
+search 0xA9AC2D27:8
+write next (8):0x03030000
+search 0xA9AC2D27:9
+write next (8):0x03030000
+search 0xA9AC2D27:10
+write next (8):0x03030000
+search 0xA9AC2D27:12
+write next (8):0x03030000
+search 0xA9AC2D27:13
+write next (8):0x03030000
+search 0xA9AC2D27:14
+write next (8):0x03030000
+search 0xA9AC2D27:15
+write next (8):0x03030000
+search 0xA9AC2D27:16
+write next (8):0x03030000
+search 0xA9AC2D27:17
+write next (8):0x03030000
+
+[Hunting Rifle fully upgraded]
+search 0xB7BFAC29:1
+write next (8):0x020202000002020001
+search 0xB7BFAC29:2
+write next (8):0x020202000002020001
+search 0xB7BFAC29:3
+write next (8):0x020202000002020001
+search 0xB7BFAC29:4
+write next (8):0x020202000002020001
+search 0xB7BFAC29:5
+write next (8):0x020202000002020001
+search 0xB7BFAC29:6
+write next (8):0x020202000002020001
+search 0xB7BFAC29:7
+write next (8):0x020202000002020001
+search 0xB7BFAC29:8
+write next (8):0x020202000002020001
+search 0xB7BFAC29:9
+write next (8):0x020202000002020001
+search 0xB7BFAC29:10
+write next (8):0x020202000002020001
+search 0xB7BFAC29:11
+write next (8):0x020202000002020001
+search 0xB7BFAC29:12
+write next (8):0x020202000002020001
+search 0xB7BFAC29:13
+write next (8):0x020202000002020001
+search 0xB7BFAC29:14
+write next (8):0x020202000002020001
+search 0xB7BFAC29:15
+write next (8):0x020202000002020001
+search 0xB7BFAC29:16
+write next (8):0x020202000002020001
+search 0xB7BFAC29:17
+write next (8):0x020202000002020001
+search 0xB7BFAC29:18
+write next (8):0x020202000002020001
+search 0xB7BFAC29:19
+write next (8):0x020202000002020001
+
+[Shotgun fully upgraded]
+search 0x2BE27D25:1
+write next (8):0x0303040200000002
+search 0x2BE27D25:2
+write next (8):0x0303040200000002
+search 0x2BE27D25:3
+write next (8):0x0303040200000002
+search 0x2BE27D25:4
+write next (8):0x0303040200000002
+search 0x2BE27D25:5
+write next (8):0x0303040200000002
+search 0x2BE27D25:6
+write next (8):0x0303040200000002
+search 0x2BE27D25:7
+write next (8):0x0303040200000002
+search 0x2BE27D25:8
+write next (8):0x0303040200000002
+search 0x2BE27D25:9
+write next (8):0x0303040200000002
+search 0x2BE27D25:10
+write next (8):0x0303040200000002
+
+[Bow fully upgraded]
+search 0x6C1EC28E:1
+write next (8):0x01000000000000030003
+search 0x6C1EC28E:2
+write next (8):0x01000000000000030003
+search 0x6C1EC28E:3
+write next (8):0x01000000000000030003
+search 0x6C1EC28E:4
+write next (8):0x01000000000000030003
+search 0x6C1EC28E:5
+write next (8):0x01000000000000030003
+search 0x6C1EC28E:6
+write next (8):0x01000000000000030003
+search 0x6C1EC28E:7
+write next (8):0x01000000000000030003
+search 0x6C1EC28E:8
+write next (8):0x01000000000000030003
+search 0x6C1EC28E:9
+write next (8):0x01000000000000030003
+search 0x6C1EC28E:10
+write next (8):0x01000000000000030003
+search 0x6C1EC28E:11
+write next (8):0x01000000000000030003
+search 0x6C1EC28E:12
+write next (8):0x01000000000000030003
+
+[Shorty fully upgraded]
+search 0x12550857:1
+write next (8):0x0203040204
+search 0x12550857:2
+write next (8):0x0203040204
+search 0x12550857:3
+write next (8):0x0203040204
+search 0x12550857:4
+write next (8):0x0203040204
+search 0x12550857:5
+write next (8):0x0203040204
+search 0x12550857:6
+write next (8):0x0203040204
+search 0x12550857:7
+write next (8):0x0203040204
+search 0x12550857:8
+write next (8):0x0203040204
+search 0x12550857:9
+write next (8):0x0203040204
+search 0x12550857:10
+write next (8):0x0203040204
+
+[El Diablo fully upgraded]
+search 0xB46B5641:1
+write next (8):0x02030200000002
+search 0xB46B5641:2
+write next (8):0x02030200000002
+search 0xB46B5641:3
+write next (8):0x02030200000002
+search 0xB46B5641:4
+write next (8):0x02030200000002
+search 0xB46B5641:5
+write next (8):0x02030200000002
+search 0xB46B5641:6
+write next (8):0x02030200000002
+search 0xB46B5641:7
+write next (8):0x02030200000002
+search 0xB46B5641:8
+write next (8):0x02030200000002
+search 0xB46B5641:9
+write next (8):0x02030200000002
+search 0xB46B5641:10
+write next (8):0x02030200000002
+
+[Flamethrower fully upgraded]
+search 0xD5078EFE:1
+write next (8):0x020000000000000101
+search 0xD5078EFE:2
+write next (8):0x020000000000000101
+search 0xD5078EFE:3
+write next (8):0x020000000000000101
+search 0xD5078EFE:4
+write next (8):0x020000000000000101
+search 0xD5078EFE:5
+write next (8):0x020000000000000101
+search 0xD5078EFE:6
+write next (8):0x020000000000000101
+search 0xD5078EFE:7
+write next (8):0x020000000000000101
+search 0xD5078EFE:8
+write next (8):0x020000000000000101
+search 0xD5078EFE:9
+write next (8):0x020000000000000101
+search 0xD5078EFE:10
+write next (8):0x020000000000000101
+Group:\
+;end of codes by horroro
 
 :USR-DATA
 [Update CRC32 checksum for USR-DATA (Required)]
