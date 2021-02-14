@@ -2,6 +2,9 @@
 ;BioShock Infinite
 ;From zeick
 
+[Decompress Save (Required)]
+Decompress PAYLOAD
+
 :BLES01705*\~extracted\
 
 [Money $9999]
@@ -37,3 +40,6 @@ write next 34: 000003E7
 [Infinity Health (Normal Mode) *Uses for Extracted Files List 1]
 search C12581B2
 write next 97: 7FFFFF7FFFFF
+
+[Compress Save (Required)]
+Compress PAYLOAD,-w 15
