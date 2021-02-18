@@ -1,0 +1,20 @@
+; BlazBlue: Chronophantasma Extend (PSN)
+; NPUB31634
+;by bucanero
+
+:SYSTEM.DAT
+
+[999999P$]
+20007F70 000F423F
+
+[Unlock All Gallery]
+420001A0 02020202
+40B00004 00000000
+
+[Update WADD for SYSTEM.DAT (Required)]
+set [csum]:0
+carry(2)
+set pointer:eof+1
+set [csum]:wadd(0x000004,pointer)
+set [csum]:xor:FFFF
+write at 0x000000:[csum]
