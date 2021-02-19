@@ -90,6 +90,24 @@ uint32_t sdbm_hash(const uint8_t* data, uint32_t len, uint32_t init)
     return (crc);
 }
 
+uint16_t adler16(unsigned char *data, size_t len)
+/* 
+    where data is the location of the data in physical memory and 
+    len is the length of the data in bytes 
+*/
+{
+    uint32_t a = 1, b = 0;
+
+    // Process each byte of the data in order
+    while (len--)
+    {
+        a = (a + *data++) % MOD_ADLER_16;
+        b = (b + a) % MOD_ADLER_16;
+    }
+
+    return ((b << 8) | a);
+}
+
 uint64_t reflect(uint64_t data, uint8_t nBits)
 {
     uint64_t reflection = 0;

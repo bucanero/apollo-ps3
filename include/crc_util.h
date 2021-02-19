@@ -33,6 +33,9 @@ typedef struct
     uint8_t reflection_output;
 } custom_crc_t;
 
+#define MOD_ADLER_16                        251
+#define MOD_ADLER_32                        65521
+
 /* ---------- Defines for 16-bit CRC/XMODEM calculation (Not reflected) --------------------------------------------------------- */
 #define CRC_16_RESULT_WIDTH                 16u
 #define CRC_16_POLYNOMIAL                   0x1021u
@@ -74,6 +77,13 @@ uint16_t crc16_hash(const uint8_t* message, uint32_t nBytes, custom_crc_t* cfg);
 uint32_t crc32_hash(const uint8_t* message, uint32_t nBytes, custom_crc_t* cfg);
 
 /**
+ * This function makes a CRC64 calculation on Length data bytes
+ *
+ * RETURN VALUE: 64 bit result of CRC calculation
+ */
+uint64_t crc64_hash(const uint8_t *data, uint32_t len, custom_crc_t* cfg);
+
+/**
  * This function makes a "MC02" Electronic Arts hash calculation on Length data bytes
  *
  * RETURN VALUE: 32 bit result of CRC calculation
@@ -88,11 +98,11 @@ uint32_t MC02_hash(const uint8_t *pb, uint32_t cb);
 uint32_t sdbm_hash(const uint8_t* data, uint32_t len, uint32_t init);
 
 /**
- * This function makes a CRC64 calculation on Length data bytes
+ * This function makes Adler16 hash calculation on Length data bytes
  *
- * RETURN VALUE: 64 bit result of CRC calculation
+ * RETURN VALUE: 16 bit result of CRC calculation
  */
-uint64_t crc64_hash(const uint8_t *data, uint32_t len, custom_crc_t* cfg);
+uint16_t adler16(unsigned char *data, size_t len);
 
 
 #ifdef __cplusplus
