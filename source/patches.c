@@ -373,11 +373,17 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    sscanf(line, "%lx", &custom_crc.polynomial);
 			    }
 
-			    else if (wildcard_match_icase(line, "initial_value:*"))
+			    else if (wildcard_match_icase(line, "initial_value:[*]*"))
 			    {
     			    line += strlen("initial_value:");
     			    custom_crc.initial_value = _parse_int_value(line, pointer, dsize);
 			    }
+
+				else if (wildcard_match_icase(line, "initial_value:*"))
+				{
+					line += strlen("initial_value:");
+					sscanf(line, "%lx", &custom_crc.initial_value);
+				}
 
 			    else if (wildcard_match_icase(line, "output_xor:*"))
 			    {
@@ -601,7 +607,8 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    u8* start = (u8*)data + range_start;
     			    len = range_end - range_start;
 
-                    LOG("ref.in %d ref.out %d", custom_crc.reflection_input, custom_crc.reflection_output);
+                    LOG("CRC %d Poly %lX Init %lX", custom_crc.bandwidth, custom_crc.polynomial, custom_crc.initial_value);
+                    LOG("Xor %lX RefIn %d RefOut %d", custom_crc.output_xor, custom_crc.reflection_input, custom_crc.reflection_output);
 
 			        if (custom_crc.bandwidth == CRC_16_RESULT_WIDTH)
 			        {
