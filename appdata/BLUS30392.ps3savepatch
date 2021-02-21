@@ -3,6 +3,11 @@
 
 :SYSTEM.DAT
 
+;by bucanero
+[Unlock All Gallery]
+41000160 00000101
+40510002 00000000
+
 [Update WADD for SYSTEM.DAT (Required)]
 set [csum]:0
 carry(2)
