@@ -804,7 +804,7 @@ void resignAllSaves(const char* path)
 	struct dirent *dir;
 	char sfoPath[256];
 	char titleid[10];
-	char acct_id[17];
+	char acct_id[17] = {0};
 	char message[128] = "Resigning all saves...";
 
 	if (dir_exists(path) != SUCCESS)
@@ -819,7 +819,9 @@ void resignAllSaves(const char* path)
 
     init_loading_screen(message);
 
-	snprintf(acct_id, sizeof(acct_id), "%016lx", apollo_config.account_id);
+	if (apollo_config.account_id)
+		snprintf(acct_id, sizeof(acct_id), "%016lx", apollo_config.account_id);
+
 	sfo_patch_t patch = {
 		.flags = SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION,
 		.user_id = apollo_config.user_id,
@@ -1018,6 +1020,8 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 					.directory = NULL,
 				};
 				asprintf(&patch.account_id, "%016lx", apollo_config.account_id);
+				if (!apollo_config.account_id)
+					memset(patch.account_id, 0, SFO_ACCOUNT_ID_SIZE);
 
 				resignSave(&patch);
 				free(patch.account_id);

@@ -398,10 +398,10 @@ void _addSfoCommands(save_entry_t* save)
 	cmd = _createCmdCode(PATCH_SFO, CHAR_ICON_USER " Change Account ID", SFO_CHANGE_ACCOUNT_ID);
 	cmd->options_count = 1;
 	cmd->options = _initOptions(2);
-	cmd->options->name[0] = strdup("Remove ID/Blank");
+	cmd->options->name[0] = strdup("Remove ID/Offline");
 	cmd->options->value[0] = calloc(1, SFO_ACCOUNT_ID_SIZE);
 	cmd->options->name[1] = strdup("Fake Owner/Rebug");
-	cmd->options->value[1] = strdup("FFFFFFFFFFFFFFFF");
+	cmd->options->value[1] = strdup("ffffffffffffffff");
 	list_append(save->codes, cmd);
 
 	cmd = _createCmdCode(PATCH_SFO, CHAR_ICON_USER " Remove Console ID", SFO_REMOVE_PSID);
@@ -735,7 +735,7 @@ int ReadTrophies(save_entry_t * game)
 
 	game->codes = list_alloc();
 
-	trophy = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN "Resign Trophy Set", CMD_RESIGN_TROPHY);
+	trophy = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Resign Trophy Set", CMD_RESIGN_TROPHY);
 	list_append(game->codes, trophy);
 
 	trophy = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Backup Trophy Set to USB", CMD_CODE_NULL);
@@ -1526,7 +1526,7 @@ list_t * ReadUserList(const char* userPath)
 	}
 	else
 	{
-		asprintf(&item->path, "%s", userPath);
+		asprintf(&item->path, "%s" PS3_SAVES_PATH_USB, userPath);
 
 		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Resign & Unlock all Saves", CMD_RESIGN_SAVES_USB);
 		list_append(item->codes, cmd);
