@@ -11,6 +11,7 @@
 
 #define USB0_PATH               "/dev_usb000/"
 #define USB1_PATH               "/dev_usb001/"
+#define USB6_PATH               "/dev_usb006/"
 #define USER_PATH_HDD			"/dev_hdd0/home/%08d/"
 
 #define PS3_SAVES_PATH_USB      "PS3/SAVEDATA/"

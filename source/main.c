@@ -569,6 +569,8 @@ void update_usb_path(char* path)
 		strcpy(path, USB0_PATH);
 	else if (dir_exists(USB1_PATH) == SUCCESS)
 		strcpy(path, USB1_PATH);
+	else if (dir_exists(USB6_PATH) == SUCCESS)
+		strcpy(path, USB6_PATH);
 	else
 		strcpy(path, "");
 }
