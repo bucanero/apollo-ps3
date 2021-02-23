@@ -44,6 +44,16 @@
 201006E0 FFFFFFFF
 201006E4 FFFFFFFF
 
+[Group: Slot 1 - Size of attache case for Leon/Ada (choose one)]
+[Small attache]
+10003ab0 0000007c
+[Medium attache]
+10003ab0 0000007d
+[Large attache]
+10003ab0 0000007e
+[XLarge attache]
+10003ab0 0000007f
+
 [Group:Save Slot 1]
 
 [Clear Save Slot 1]

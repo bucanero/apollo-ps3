@@ -466,8 +466,6 @@ void LoadTextures_Menu()
 
 	load_menu_texture(footer_ico_circle, png);
 	load_menu_texture(footer_ico_cross, png);
-	load_menu_texture(footer_ico_lt, png);
-	load_menu_texture(footer_ico_rt, png);
 	load_menu_texture(footer_ico_square, png);
 	load_menu_texture(footer_ico_triangle, png);
 	load_menu_texture(header_dot, png);
