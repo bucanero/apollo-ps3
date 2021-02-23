@@ -89,7 +89,7 @@ enum cmd_code_enum
     CMD_IMPORT_DATA_FILE,
 
 // Bulk commands
-    CMD_RESIGN_SAVES_USB,
+    CMD_RESIGN_ALL_SAVES,
     CMD_COPY_SAVES_USB,
     CMD_COPY_SAVES_HDD,
 

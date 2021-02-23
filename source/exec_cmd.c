@@ -1029,7 +1029,7 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			code->activated = 0;
 			break;
 
-		case CMD_RESIGN_SAVES_USB:
+		case CMD_RESIGN_ALL_SAVES:
 			resignAllSaves(selected_entry->path);
 			code->activated = 0;
 			break;

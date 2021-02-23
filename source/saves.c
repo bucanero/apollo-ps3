@@ -1353,7 +1353,7 @@ void read_savegames(const char* userPath, list_t *list, uint32_t flag)
 
 				sprintf(sfoPath, "%016lx", apollo_config.account_id);
 				sfo_data = (char*) sfo_get_param_value(sfo, "ACCOUNT_ID");
-				if (strncmp(sfo_data, sfoPath, 16) == 0)
+				if (strncmp(sfo_data, sfoPath, SFO_ACCOUNT_ID_SIZE) == 0)
 					item->flags |=	SAVE_FLAG_OWNER;
 			}
 
@@ -1538,6 +1538,9 @@ list_t * ReadUserList(const char* userPath)
 	{
 		asprintf(&item->path, SAVES_PATH_HDD, apollo_config.user_id);
 
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Resign & Unlock all Saves", CMD_RESIGN_ALL_SAVES);
+		list_append(item->codes, cmd);
+
 		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy all Saves to USB", CMD_CODE_NULL);
 		cmd->options_count = 1;
 		cmd->options = _createOptions(2, "Copy Saves to USB", CMD_COPY_SAVES_USB);
@@ -1551,7 +1554,7 @@ list_t * ReadUserList(const char* userPath)
 	{
 		asprintf(&item->path, "%s" PS3_SAVES_PATH_USB, userPath);
 
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Resign & Unlock all Saves", CMD_RESIGN_SAVES_USB);
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Resign & Unlock all Saves", CMD_RESIGN_ALL_SAVES);
 		list_append(item->codes, cmd);
 
 		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy all Saves to HDD", CMD_COPY_SAVES_HDD);
