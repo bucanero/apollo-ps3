@@ -446,7 +446,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    if (var->data)
     			    {
     			        free(var->data);
-    			        var->data = NULL;
+    			        var->data = (u8*) &old_val + (4 - var->len);
     			    }
 
     			    LOG("Old value 0x%X", old_val);
@@ -465,7 +465,6 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     
     			    int wlen;
     			    char* xor_val = _decode_variable_data(line, &wlen);
-    			    u8* old_ptr = (u8*)&old_val + (4 - var->len);
 
     			    if (var->len != wlen)
     			    {
@@ -475,10 +474,9 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    }
     			    
     			    for (int i=0; i < wlen; i++)
-    			        old_ptr[i] ^= xor_val[i];
+    			        xor_val[i] ^= var->data[i];
 
                     var->data = (u8*) xor_val;
-                    memcpy(var->data, old_ptr, var->len);
 
     			    LOG("Var [%s]:XOR:%s = %X", var->name, line, old_val);
     			}
@@ -486,9 +484,6 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 				// set [*]:[*]*
 				else if (wildcard_match_icase(line, "[*]*"))
 				{
-					var->len = BSD_VAR_INT32;
-					var->data = (uint8_t*) &old_val;
-
 					uint32_t val = _parse_int_value(line, pointer, dsize);
 
 					var->data = malloc(var->len);
@@ -863,7 +858,6 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    // set [*]:qwadd(*,*)*
 			    else if (wildcard_match_icase(line, "qwadd(*,*)*"))
 			    {
-					//low priority
 					// qwadd(<start>,<endrange>)
 					// 64-bit	0xFFFFFFFFFFFFFFFF
 					int add_s, add_e;
@@ -968,7 +962,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    	read += BSD_VAR_INT16;
     			    }
     			    
-    			    if ((carry > 0) && (add > 0xFFFF))
+    			    while ((carry > 0) && (add > 0xFFFF))
     			    {
     			    	add = (add & 0x0000FFFF) + ((add & 0xFFFF0000) >> 8*carry);
     			    }
@@ -1011,7 +1005,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    	read += BSD_VAR_INT8;
     			    }
 
-    			    if ((carry > 0) && (add > 0xFFFF))
+    			    while ((carry > 0) && (add > 0xFFFF))
     			    {
     			    	add = (add & 0x0000FFFF) + ((add & 0xFFFF0000) >> 8*carry);
     			    }
@@ -1157,17 +1151,57 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			    // set [*]:right(*,*)*
 			    else if (wildcard_match_icase(line, "right(*,*)*"))
 			    {
-			        //low priority
-					LOG("Error: command not implemented");
-					return 0;
+					// right(<value>,<len>)
+					int rvalue, rlen;
+
+					line += strlen("right(");
+					tmp = strchr(line, ',');
+					*tmp = 0;
+
+					rvalue = _parse_int_value(line, pointer, dsize);
+
+					line = tmp+1;
+					*tmp = ',';
+					tmp = strchr(line, ')');
+					*tmp = 0;
+
+					rlen = _parse_int_value(line, pointer, dsize);
+
+					*tmp = ')';
+
+					var->len = rlen;
+					var->data = malloc(var->len);
+					memcpy(var->data, (u8*) &rvalue + (4 - rlen), var->len);
+
+					LOG("[%s]:right(0x%X , %d)", var->name, rvalue, rlen);
 			    }
 
 			    // set [*]:left(*)*
-			    else if (wildcard_match_icase(line, "left(*)*"))
+			    else if (wildcard_match_icase(line, "left(*,*)*"))
 			    {
-			        //low priority - UNUSED
-					LOG("Error: command not implemented");
-					return 0;
+					// left(<value>,<len>)
+					int rvalue, rlen;
+
+					line += strlen("left(");
+					tmp = strchr(line, ',');
+					*tmp = 0;
+
+					rvalue = _parse_int_value(line, pointer, dsize);
+
+					line = tmp+1;
+					*tmp = ',';
+					tmp = strchr(line, ')');
+					*tmp = 0;
+
+					rlen = _parse_int_value(line, pointer, dsize);
+
+					*tmp = ')';
+
+					var->len = rlen;
+					var->data = malloc(var->len);
+					memcpy(var->data, (u8*) &rvalue, var->len);
+
+					LOG("[%s]:left(0x%X , %d)", var->name, rvalue, rlen);
 			    }
 
 			    // set [*]:mid(*)*
