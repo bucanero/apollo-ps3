@@ -172,6 +172,10 @@ enum char_flag_enum
     CHAR_BTN_S,
     CHAR_BTN_T,
     CHAR_BTN_O,
+    CHAR_TRP_BRONZE,
+    CHAR_TRP_SILVER,
+    CHAR_TRP_GOLD,
+    CHAR_TRP_PLATINUM,
 };
 
 enum code_type_enum

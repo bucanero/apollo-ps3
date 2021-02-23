@@ -13,7 +13,7 @@
 
 // max number of special characters
 
-#define MAX_SPECIAL_CHARS	20
+#define MAX_SPECIAL_CHARS	0x20
 
 // initialize all datas. After you call it you don't have any font to use
 
@@ -120,5 +120,7 @@ float DrawString(float x, float y, const char *str);
 // function to draw with fomat string similar to printf. It return X incremented
 
 float DrawFormatString(float x, float y, char *format, ...);
+
+int LoadImageFontEntry(const uint8_t* rawData, uint16_t unicodeId, pngData* texture);
 
 #endif

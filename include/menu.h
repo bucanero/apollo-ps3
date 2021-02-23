@@ -64,6 +64,12 @@ enum texture_index
 	opt_off_png_index,
 	opt_on_png_index,
 
+//Imagefont.bin assets
+	trp_bronze_img_index,
+	trp_silver_img_index,
+	trp_gold_img_index,
+	trp_platinum_img_index,
+
 //Artemis assets
 	help_png_index,
 	edit_shadow_png_index,

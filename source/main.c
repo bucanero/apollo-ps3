@@ -408,10 +408,8 @@ int readPad(int port)
 	return 1;
 }
 
-void LoadTexture(int cnt)
+void copyTexture(int cnt)
 {
-	pngLoadFromBuffer(menu_textures[cnt].buffer, menu_textures[cnt].size, &menu_textures[cnt].texture);
-
 	// copy texture datas from PNG to the RSX memory allocated for textures
 	if (menu_textures[cnt].texture.bmp_out)
 	{
@@ -420,6 +418,18 @@ void LoadTexture(int cnt)
 		menu_textures[cnt].texture_off = tiny3d_TextureOffset(free_mem);      // get the offset (RSX use offset instead address)
 		free_mem += ((menu_textures[cnt].texture.pitch * menu_textures[cnt].texture.height + 15) & ~15) / 4; // aligned to 16 bytes (it is u32) and update the pointer
 	}
+}
+
+void LoadTexture(int idx)
+{
+	pngLoadFromBuffer(menu_textures[idx].buffer, menu_textures[idx].size, &menu_textures[idx].texture);
+	copyTexture(idx);
+}
+
+void LoadImageFontTexture(const u8* rawData, uint16_t unicode, int idx)
+{
+	menu_textures[idx].size = LoadImageFontEntry(rawData, unicode, &menu_textures[idx].texture);
+	copyTexture(idx);
 }
 
 // Used only in initialization. Allocates 64 mb for textures and loads the font
@@ -515,6 +525,17 @@ void LoadTextures_Menu()
 	load_menu_texture(tag_zip, png);
 	load_menu_texture(tag_apply, png);
 	load_menu_texture(tag_transfer, png);
+
+	u8* imagefont;
+	if (read_buffer("/dev_flash/vsh/resource/imagefont.bin", &imagefont, NULL) == SUCCESS)
+	{
+		LoadImageFontTexture(imagefont, 0xF8AC, trp_bronze_img_index);
+		LoadImageFontTexture(imagefont, 0xF8AD, trp_silver_img_index);
+		LoadImageFontTexture(imagefont, 0xF8AE, trp_gold_img_index);
+		LoadImageFontTexture(imagefont, 0xF8AF, trp_platinum_img_index);
+
+		free(imagefont);
+	}
 
 	u32 tBytes = free_mem - texture_mem;
 	LOG("LoadTextures_Menu() :: Allocated %db (%.02fkb, %.02fmb) for textures", tBytes, tBytes / (float)1024, tBytes / (float)(1024 * 1024));
@@ -1290,6 +1311,12 @@ void registerSpecialChars()
 	RegisterSpecialCharacter(CHAR_BTN_S, 0, 1.2, &menu_textures[footer_ico_square_png_index]);
 	RegisterSpecialCharacter(CHAR_BTN_T, 0, 1.2, &menu_textures[footer_ico_triangle_png_index]);
 	RegisterSpecialCharacter(CHAR_BTN_O, 0, 1.2, &menu_textures[footer_ico_circle_png_index]);
+
+	// Register trophy icons
+	RegisterSpecialCharacter(CHAR_TRP_BRONZE, 2, 1.0, &menu_textures[trp_bronze_img_index]);
+	RegisterSpecialCharacter(CHAR_TRP_SILVER, 2, 1.0, &menu_textures[trp_silver_img_index]);
+	RegisterSpecialCharacter(CHAR_TRP_GOLD, 2, 1.0, &menu_textures[trp_gold_img_index]);
+	RegisterSpecialCharacter(CHAR_TRP_PLATINUM, 0, 1.2, &menu_textures[trp_platinum_img_index]);
 }
 
 /*

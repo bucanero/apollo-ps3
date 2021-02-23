@@ -7,10 +7,12 @@
 #include <string.h>
 #include <stdarg.h>
 #include <pngdec/pngdec.h>
+#include <zlib.h>
 
 #include "libfont.h"
 #include "menu.h"
 #include "ttf_render.h"
+#include "imagefont.h"
 
 struct t_font_description
 {
@@ -645,4 +647,77 @@ float DrawFormatString(float x, float y, char *format, ...)
 	va_end(opt);
 
     return DrawString(x, y, buff);
+}
+
+indexEntry_t* getImageFontEntry(const uint8_t* imagefontRawData, uint16_t unicodeId)
+{
+    imagefontHeader_t* imgHeader = (imagefontHeader_t*) imagefontRawData;
+
+    if (imgHeader->bitOrder != 0x0100)
+        return(NULL);
+
+    indexEntry_t* index = (indexEntry_t*)(imagefontRawData + imgHeader->indexStart);
+
+    for (int i = 0; i < imgHeader->nbrEntries; i++)
+    {
+        if (index[i].unicodeId == unicodeId)
+            return &index[i];
+    }
+
+    return NULL;
+}
+
+int LoadImageFontEntry(const u8* imagefontRawData, uint16_t unicodeId, pngData* texture)
+{
+    size_t len;
+    indexEntry_t* entry;
+    paletteHeader_t* palette;
+    frameInfo_t* frame;
+
+    texture->bmp_out = NULL;
+    entry = getImageFontEntry(imagefontRawData, unicodeId);
+
+    if (!entry)
+        return(0);
+
+    len = entry->paletteDecompSize;
+    u8* paletteRawData = malloc(len);
+
+    if (uncompress(paletteRawData, &len, imagefontRawData + entry->paletteStart, entry->paletteCompSize) != Z_OK)
+    {
+        free(paletteRawData);
+        return(0);
+    }
+
+    palette = (paletteHeader_t*) paletteRawData;		
+    frame = (frameInfo_t*)(paletteRawData + sizeof(paletteHeader_t)); // palette->framesCount * sizeof(frameInfo_t)
+
+    len = entry->imageWidth * entry->imageHeight * (palette->colorsCount / 256);
+    u8* frameRawData = malloc(len);
+    
+    if (uncompress(frameRawData, &len, imagefontRawData + frame->frameDataOffset, frame->frameDataLength) != Z_OK)
+    {
+        free(frameRawData);
+        free(paletteRawData);
+        return(0);
+    }
+
+    u32* pal = (u32*)(paletteRawData + sizeof(paletteHeader_t) + sizeof(frameInfo_t));
+    u32* rawImage = malloc(len * palette->colorChannel);
+
+    while (len--)
+    {
+        rawImage[len] = pal[frameRawData[len]];
+        rawImage[len] = (rawImage[len] << 24) | (rawImage[len] >> 8);
+    }
+
+    texture->pitch = entry->imageWidth * palette->colorChannel;
+    texture->width = entry->imageWidth;
+    texture->height = entry->imageHeight;
+    texture->bmp_out = rawImage;
+
+    free(frameRawData);
+    free(paletteRawData);
+
+    return(texture->pitch * texture->height);
 }

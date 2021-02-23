@@ -764,13 +764,36 @@ int ReadTrophies(save_entry_t * game)
 		if (xmlStrcasecmp(cur_node->name, BAD_CAST "trophy") == 0)
 		{
 			value = _get_xml_node_value(cur_node->children, BAD_CAST "name");
-			trophy = _createCmdCode(PATCH_NULL, value, CMD_CODE_NULL);
+			snprintf(filePath, sizeof(filePath), "  %s", value);
+			trophy = _createCmdCode(PATCH_NULL, filePath, CMD_CODE_NULL);
 
 			value = _get_xml_node_value(cur_node->children, BAD_CAST "detail");
 			trophy->codes = strdup(value);
 
 			value = (char*) xmlGetProp(cur_node, BAD_CAST "ttype");
 			trophy->type = value[0];
+
+			switch (trophy->type)
+			{
+			case 'B':
+				trophy->name[0] = CHAR_TRP_BRONZE;
+				break;
+
+			case 'S':
+				trophy->name[0] = CHAR_TRP_SILVER;
+				break;
+
+			case 'G':
+				trophy->name[0] = CHAR_TRP_GOLD;
+				break;
+
+			case 'P':
+				trophy->name[0] = CHAR_TRP_PLATINUM;
+				break;
+
+			default:
+				break;
+			}
 
 			value = (char*) xmlGetProp(cur_node, BAD_CAST "id");
 			if (value)
