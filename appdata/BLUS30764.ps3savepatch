@@ -6,7 +6,7 @@
 
 :BLUS30764-DMC1\DATA
 
-[INFO: For Modifier values - http://ps3cheating.net/devil-may-cry-hd-collection-blus30764/#comment-449
+[INFO: For Modifier values - http://ps3cheating.net/devil-may-cry-hd-collection-blus30764/#comment-449]
 
 [1st Slot 255 Vital Stars]
 20000270 020A00FF
@@ -376,6 +376,133 @@
 
 [DMC3 - 1 - Max Yellow Orbs]
 000003C6 00000063
+
+;by eighthdayregret
+[Group:Devil May Cry 3\File 1\Weapon Codes\Devil Arms Codes]
+[Unlock Cerberus]
+000003D7 00000001
+
+[Unlock Agni & Rudra]
+000003D8 00000001
+
+[Unlock Nevan]
+000003DA 00000001
+
+[Unlock Beowulf]
+000003DB 00000001
+
+[Unlock All Devil Arms]
+100003D7 00000101
+100003DA 00000101
+
+[Unlock All Actions]
+200004A0 FFFF7FFF
+200004A4 FFFFAFFF
+200004A8 AFFFFFF3
+200004AC CFFFFFFF
+200004B0 FBFBFFFE
+200004B4 FFFFEFFD
+200004B8 FFFFFEFF
+200004BC FFFFFFFF
+
+;by eighthdayregret
+[Group:Devil May Cry 3\File 1\Weapon Codes\Guns Codes\Unlock Codes]
+[Unlock Shotgun]
+000003DD 00000001
+
+[Unlock Artemis]
+000003DE 00000001
+
+[Unlock Spiral]
+000003DF 00000001
+
+[Unlock Kalina Ann]
+000003E1 00000001
+
+[Unlock All Guns]
+000003DD 00000001
+100003DE 00000101
+000003E1 00000001
+
+[Group:Devil May Cry 3\File 1\Weapon Codes\Guns Codes\Level Codes]
+[Ebony & Ivory Level 3]
+00000433 000000002
+
+[Shotgun Level 3]
+00000437 00000002
+
+[Artemis Level 3]
+0000043B 00000002
+
+[Spiral Level 3]
+0000043F 00000001
+
+[Kalina Ann Level 3]
+00000443 00000002
+
+[All Guns Level 3]
+40000433 00000002
+40050004 00000000
+
+[Group:Devil May Cry 3\File 1\Styles Codes\Unlock Styles]
+;by eighthdayregret
+[Unlock Quicksilver]
+000003E2 00000001
+
+[Unlock Doppelganger]
+000003E3 00000001
+
+[Group:Devil May Cry 3\File 1\Item Codes]
+;by eighthdayregret
+[Max Vital Star S]
+000003D1 00000063
+
+[Max Vital Star L]
+000003D0 00000063
+
+[Max Devil Star]
+000003D2 00000063
+
+[Max Holy Water]
+000003D4 00000063
+
+[Group:Devil May Cry 3\File 1\Secret Mission Codes]
+;by eighthdayregret
+[Secret Mission 1 Completed]
+000004D8 00000001
+
+[Secret Mission 2 Completed]
+000004D9 00000001
+
+[Secret Mission 3 Completed]
+000004DA 00000001
+
+[Secret Mission 4 Completed]
+000004DB 00000001
+
+[Secret Mission 5 Completed]
+000004DC 00000001
+
+[Secret Mission 6 Completed]
+000004DD 00000001
+
+[Secret Mission 7 Completed]
+000004DE 00000001
+
+[Secret Mission 8 Completed]
+000004DF 00000001
+
+[Secret Mission 9 Completed]
+000004E0 00000001
+
+[Secret Mission 10 Completed]
+000004E1 00000001
+
+[Secret Mission 11 Completed]
+000004E2 00000001
+
+[Secret Mission 12 Completed]
+000004E3 00000001
 
 [Group:Devil May Cry 3\File 2]
 
