@@ -1,0 +1,228 @@
+; NPJB00726
+; RESIDENT EVIL™ 0 HD / Biohazard Zero
+
+; By bucanero
+
+:DATA0.DAT
+
+[Decrypt DATA0.DAT (Required)]
+set range:0x000000,eof+1
+DECRYPT blowfish_ecb("SBmdYgEamc=#sA0)Mhs9#>/4iiXbMPxW")
+
+[Group:Save Slot 1]
+
+[Save Count 0 Times]
+0001C90D 00000000
+0001C923 00000000
+
+[Play Time 00:00:00]
+2001C924 00000000
+
+[Max HP Rebecca]
+0001DA17 000000FF
+
+[Max HP Billy]
+0001DB2B 000000FF
+
+; http://web.save-editor.com/cache/bbs_savedata_ps3/11947.html
+[Rebecca physical strength maximum (easy)]
+0001DB87 00000096
+
+[Rebecca physical strength maximum (normal)]
+0001DA17 00000096
+
+[Rebecca physical strength maximum (hard)]
+0001D95F 00000096
+
+; http://emu.web-g-p.com/info/system/save_ps3_system_title_decrypt_biohazard_0.html
+[Rebecca item 1: Custom handgun]
+00039097 00000013
+1003909A 0000000F
+
+[Rebecca item 2: Magnum]
+0003909F 0000000A
+100390A2 0000000F
+
+[Rebecca item 3: Rocket launcher (infinite)]
+000390A7 00000017
+100390AA 0000FFFF
+
+[Rebecca item 4: 9999 First aid spray]
+000390AF 00000035
+100390B2 0000270F
+
+[Rebecca item 5: 9999 mixed herbs (full recovery + detoxification)]
+000390B7 00000033
+100390BA 0000270F
+
+[Rebecca item 6: 9999 ink ribbons]
+000390BF 00000037
+100390C2 0000270F
+
+[Billy Maximum Health (Easy)]
+0001DC9B 000000FA
+
+[Billy Maximum Health (Normal)]
+0001DB2B 000000FA
+
+[Billy Maximum Health (Hard)]
+0001DA73 000000FA
+
+[Billy's item 1: Custom handgun]
+000390D3 00000011
+100390D6 0000000F
+
+[Billy's item 2: Magnum]
+000390DB 0000000A
+100390DE 0000000F
+
+[Billy's item 3: Rocket launcher (infinite)]
+000390E3 00000017
+100390E6 0000000F
+
+[Billy's item 4: 9999 First aid spray]
+000390EB 00000035
+100390EE 0000270F
+
+[Billy's item 5: 9999 mixed herbs (full recovery + detoxification)]
+000390F3 00000033
+100390F6 0000270F
+
+[Billy's item 6: 9999 ink ribbons]
+000390FB 00000037
+100390FE 0000270F
+
+[Group:Save Slot 2]
+; Slot 1 address +0xE4300
+
+[Play Time 00:00:00]
+20100C24 00000000
+
+[Group:Save Slot 20]
+; Slot 1 address +0x8E9E0
+
+[Play Time 00:00:00]
+200AB304 00000000
+
+
+;Item (weapon) code (1 byte)
+;02= Knife
+;03= Hand gun (15 bullets) (Billy)
+;04= Hand gun (15 bullets) (Rebecca)
+;05= Hunting gun (2 bullets)(* 2 blocks required)
+;06= Shotgun (7 bullets) (* 2 blocks required)
+;07= Grenade Launcher (255 bullets) ( Grenade Launcher ) (* 2 blocks required)
+;08= Grenade Launcher (255 bullets) (incendiary) (* 2 blocks required)
+;09= Grenade launcher (255 bullets) (sulfuric acid bullets) (* 2 blocks required)
+;0A= Magnum (8 bullets)
+;0B= Submachine gun (300 bullets)
+;0E= Flame bin
+;11= Custom handgun (15 bullets) (Billy)
+;13= Custom handgun (15 bullets) (Rebecca)
+;16= Magnum Revolver (5 bullets)
+;17= Rocket launcher (infinite number of bullets)
+;20= Bullet (handgun bullet)
+;21= Bullet (shotgun bullet)
+;22= Bullet (magnum bullet)
+;28= Bullet (submachine gun bullet)
+;23= Grenade
+;24= Sulfate
+;25= Ingot
+;2B= Green Herb (Small Recovery)
+;2C= Blue Herb (Detoxification)
+;2D= Red Herb (For Formulation)
+;2E= Formulated Herb (G + G) (Medium Recovery)
+;2F= Formulated Herb (G + G + G) (Full recovery)
+;30= Formulated herb (G + R) (Full recovery)
+;31= Formulated herb (G + B) (Small recovery + detoxification)
+;32= Formulated herb (G + G + B) (Medium recovery + detoxification)
+;33= Formulated herb (G + R + B) (full recovery + detoxification)
+;35= First aid spray (full recovery)
+;37= Ink ribbon (save)
+;39= Gold Ring
+;3A= Silver Ring
+;3B= Carkeeper's Bag
+;3C= Carkeeper's Bag (With gold ring)
+;3D= incendiary bag (with silver ring)
+;3E= Carkeeper's bag (with gold ring and silver ring)
+;3F= Lighter oil
+;41= Train / driver's room key
+;42= Breeding room key
+;43= Elevator activation key
+;44= Training center / fire key
+;46= Training center / water key
+;47= Blue hill object
+;48= Green Hill Object
+;49= Factory Key (UP)
+;4A= Factory Key (DUN)
+;4B= Blue Card Key
+;4C= Card Key
+;4D= Magnetic Card
+;4E= Locker Key
+;4F= Loyalty Relief
+;50= Obedience Relief
+;51= Discipline Relief
+;52= Panel Opener
+;53= All-powered handle
+;56= Crank handle
+;57= Valve handle
+;58= GOOD book
+;59= EVIL book
+;5A= Blue hill object (for reach hunter)
+;5B= Green hill object (for reach hunter)
+;5C= Input adjustment coil
+;5D= Output adjustment coil
+;5E= Battery
+;5F= High power battery
+;60= Sterilizer
+;61= Computer base
+;63= Microfilm A
+;64= Microfilm B
+;66= Pilot pit key (L)
+;67= Train key (dining car)
+;68= Hook shot *
+;69= Writer (without oil)
+;6A= Writer (with oil)
+;6B= Command room key
+;6C= Fire key
+;6E= Water key
+;6F= UP key
+;70= DOWN key
+;71= Dining car key
+;72= Small Key
+;75= Blue Hill Capsule
+;76= Dial
+;77= Duralmin Case
+;78= EVIL Statue
+;79= GOOD Statue
+;7A= Jewel Box
+;7B= Formulation Tool
+;7C= MO Disc
+;7D= Ice Pick
+;7E= Ironwork Needle
+;7F= Pilot Pit Key (R)
+;80= Industrial Water
+;81= High Power Battery (no liquid)
+;82= White wings
+;83= Black wings
+;84= White image
+;85= Black image
+;86= Red chemical
+;87= Blue chemical
+;88= Green chemical
+;89= Release agent
+;8A= Purple release agent
+;8B= Sulfate
+;8C= Battery fluid
+;8D= Closet key
+
+
+[Update SHA1 for DATA0.DAT (Required)]
+set pointer:eof+1
+set range:0x000040,pointer
+set [hash]:SHA1
+write at 0x00000C:[hash]
+
+[Encrypt DATA0.DAT (Required)]
+set range:0x000000,eof+1
+ENCRYPT blowfish_ecb("SBmdYgEamc=#sA0)Mhs9#>/4iiXbMPxW")
