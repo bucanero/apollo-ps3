@@ -20,3 +20,15 @@ void aes_ecb_encrypt(uint8_t* data, uint32_t len, uint8_t* key, uint32_t key_len
 // DES ECB save data encryption
 void des_ecb_decrypt(uint8_t* data, uint32_t len, uint8_t* key, uint32_t key_len);
 void des_ecb_encrypt(uint8_t* data, uint32_t len, uint8_t* key, uint32_t key_len);
+
+// 3-DES CBC save data encryption
+void des3_cbc_decrypt(uint8_t* data, uint32_t len, const uint8_t* key, uint32_t key_len, uint8_t* iv, uint32_t iv_len);
+void des3_cbc_encrypt(uint8_t* data, uint32_t len, const uint8_t* key, uint32_t key_len, uint8_t* iv, uint32_t iv_len);
+
+// NFS Undercover save data encryption
+void nfsu_decrypt_data(uint8_t* data, uint32_t size);
+void nfsu_encrypt_data(uint8_t* data, uint32_t size);
+
+// Silent Hill 3 save data encryption
+void sh3_decrypt_data(uint8_t* data, uint32_t size);
+void sh3_encrypt_data(uint8_t* data, uint32_t size);

@@ -29,7 +29,7 @@
 #include <zlib.h>
 #include <dirent.h>
 
-#include "packzip.h"
+#include "unpack.h"
 
 #include <dbglogger.h>
 #define LOG dbglogger_log

@@ -10,7 +10,7 @@
 #include "util.h"
 #include "crc_util.h"
 #include "list.h"
-#include "packzip.h"
+#include "unpack.h"
 #include "common.h"
 
 #define skip_spaces(str)        while (*str == ' ') str++;
@@ -1613,6 +1613,20 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 				LOG("Decrypt Diablo 3 data");
 				diablo_decrypt_data((u8*) data, dsize);
 			}
+			else if (wildcard_match_icase(line, "silent_hill3*"))
+			{
+				u8* start = (u8*)data + range_start;
+
+				LOG("Decrypt Silent Hill 3 data");
+				sh3_decrypt_data(start, (range_end - range_start));
+			}
+			else if (wildcard_match_icase(line, "nfs_undercover*"))
+			{
+				u8* start = (u8*)data + range_start;
+
+				LOG("Decrypt NFS Undercover data");
+				nfsu_decrypt_data(start, (range_end - range_start));
+			}
 			else if (wildcard_match_icase(line, "aes_ecb(*)*"))
 			{
 				int key_len;
@@ -1649,6 +1663,34 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 				des_ecb_decrypt(start, (range_end - range_start), (u8*) key, key_len);
 				free(key);
 			}
+			else if (wildcard_match_icase(line, "des3_cbc(*,*)*"))
+			{
+				int key_len, iv_len;
+				char *key, *iv, *tmp;
+				u8* start = (u8*)data + range_start;
+
+				line += strlen("des3_cbc(");
+				tmp = strrchr(line, ',');
+				*tmp = 0;
+
+				LOG("Encryption Key=%s", line);
+
+				key = _decode_variable_data(line, &key_len);
+				*tmp = ',';
+
+				line = tmp + 1;
+				tmp = strrchr(line, ')');
+				*tmp = 0;
+
+				LOG("Encryption IV=%s", line);
+
+				iv = _decode_variable_data(line, &iv_len);
+				*tmp = ')';
+
+				des3_cbc_decrypt(start, (range_end - range_start), (u8*) key, key_len, (u8*) iv, iv_len);
+				free(key);
+				free(iv);
+			}
 			else if (wildcard_match_icase(line, "blowfish_ecb(*)*"))
 			{
 				int key_len;
@@ -1679,6 +1721,20 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			{
 				LOG("Encrypt Diablo 3 data");
 				diablo_encrypt_data((u8*) data, dsize);
+			}
+			else if (wildcard_match_icase(line, "silent_hill3*"))
+			{
+				u8* start = (u8*)data + range_start;
+
+				LOG("Encrypt Silent Hill 3 data");
+				sh3_encrypt_data(start, (range_end - range_start));
+			}
+			else if (wildcard_match_icase(line, "nfs_undercover*"))
+			{
+				u8* start = (u8*)data + range_start;
+
+				LOG("Encrypt NFS Undercover data");
+				nfsu_encrypt_data(start, (range_end - range_start));
 			}
 			else if (wildcard_match_icase(line, "aes_ecb(*)*"))
 			{
@@ -1715,6 +1771,34 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
 				des_ecb_encrypt(start, (range_end - range_start), (u8*) key, key_len);
 				free(key);
+			}
+			else if (wildcard_match_icase(line, "des3_cbc(*,*)*"))
+			{
+				int key_len, iv_len;
+				char *key, *iv, *tmp;
+				u8* start = (u8*)data + range_start;
+
+				line += strlen("des3_cbc(");
+				tmp = strrchr(line, ',');
+				*tmp = 0;
+
+				LOG("Encryption Key=%s", line);
+
+				key = _decode_variable_data(line, &key_len);
+				*tmp = ',';
+
+				line = tmp + 1;
+				tmp = strrchr(line, ')');
+				*tmp = 0;
+
+				LOG("Encryption IV=%s", line);
+
+				iv = _decode_variable_data(line, &iv_len);
+				*tmp = ')';
+
+				des3_cbc_encrypt(start, (range_end - range_start), (u8*) key, key_len, (u8*) iv, iv_len);
+				free(key);
+				free(iv);
 			}
 			else if (wildcard_match_icase(line, "blowfish_ecb(*)*"))
 			{
