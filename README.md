@@ -158,7 +158,7 @@ You need to have installed:
 - [PS3 toolchain](https://github.com/bucanero/ps3toolchain)
 - [PSL1GHT](https://github.com/ps3dev/PSL1GHT) SDK
 - [Tiny3D](https://github.com/wargio/Tiny3D) library
-- [polarSSL](https://github.com/ps3dev/ps3libraries/blob/master/scripts/015-polarssl.sh) library
+- [polarSSL](https://github.com/bucanero/ps3libraries/blob/master/scripts/015-polarssl-1.3.9.sh) library
 - [dbglogger](https://github.com/bucanero/psl1ght-libs/tree/master/dbglogger) library (only required for debug logging)
 
 Run `make` to create a release build. After that, run `make pkg` to create a `.pkg` install file. 
