@@ -43,7 +43,7 @@ typedef struct
 #define CRC_16_XOR_VALUE                    0x0000u
 
 // 16-bit CCITT
-//#define CRC_16_INIT_VALUE                   0xFFFFu
+#define CRC_16_INIT_CCITT                   0xFFFFu
 
 /* ---------- Defines for 32-bit CRC/CCITT calculation (Reflected) -------------------------------------------------------------- */
 #define CRC_32_RESULT_WIDTH                 32u
@@ -104,6 +104,12 @@ uint32_t sdbm_hash(const uint8_t* data, uint32_t len, uint32_t init);
  */
 uint16_t adler16(unsigned char *data, size_t len);
 
+/**
+ * This function makes Final Fantasy X hash calculation on Length data bytes
+ *
+ * RETURN VALUE: 16 bit result of CRC calculation
+ */
+uint16_t ffx_hash(const uint8_t* data, uint32_t len);
 
 #ifdef __cplusplus
 }

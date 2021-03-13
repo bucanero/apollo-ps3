@@ -37,6 +37,19 @@
         return (crc ^ (UINT)cfg->output_xor); \
     }
 
+void generate_crc16_table(uint16_t poly, uint16_t* crc_table)
+{
+    for (int i = 0; i < 256; ++i)
+    {
+        uint16_t r = i << 8;
+        
+        for (int j = 0; j < 8; ++j)
+            r = (r & 0x8000) ? (r << 1) ^ poly : (r << 1);
+        
+        crc_table[i] = r;
+    }
+}
+
 void generate_crc32_table(uint32_t poly, uint32_t* crc_table)
 {
     for (int i = 0; i < 256; ++i)
@@ -88,6 +101,21 @@ uint32_t sdbm_hash(const uint8_t* data, uint32_t len, uint32_t init)
         crc = (crc * 0x1003f) + *data++;
 
     return (crc);
+}
+
+uint16_t ffx_hash(const uint8_t* data, uint32_t len)
+{
+    uint16_t crc16_table[0x100];
+    uint16_t crc = CRC_16_INIT_CCITT;
+
+    // FFX-2 & FFX (or PS2 Bug?) - Table Last Entry Should be 0x1EF0, but is 0x0000
+    generate_crc16_table(CRC_16_POLYNOMIAL, crc16_table);
+    crc16_table[0xFF] = 0;
+
+    while (len--)
+        crc = (crc << 8) ^ crc16_table[((crc >> 8) ^ *data++) & 0xFF];
+
+    return (~crc);
 }
 
 uint16_t adler16(unsigned char *data, size_t len)

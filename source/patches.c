@@ -833,6 +833,23 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    LOG("len %d EA/MC02 HASH = %X", len, hash);
 			    }
 
+				// set [*]:ffx_checksum*
+				else if (wildcard_match_icase(line, "ffx_checksum*"))
+				{
+					uint16_t hash;
+					u8* start = (u8*)data + range_start;
+					len = range_end - range_start;
+
+					// FFX hash is stored in little-endian
+					hash = ES16(ffx_hash(start, len));
+
+					var->len = BSD_VAR_INT16;
+					var->data = malloc(var->len);
+					memcpy(var->data, (u8*) &hash, var->len);
+
+					LOG("len %d FFX HASH = %X", len, hash);
+				}
+
 				// set [*]:sdbm*
 				else if (wildcard_match_icase(line, "sdbm*"))
 				{
