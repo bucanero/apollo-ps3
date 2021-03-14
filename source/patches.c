@@ -121,6 +121,8 @@ int _parse_int_value(const char* line, const int ptrval, const int size)
     int ret = 0;
 
     skip_spaces(line);
+	if (line[0] == '+') line++;
+
     if (strlen(line) == 0)
     {
         return 0;

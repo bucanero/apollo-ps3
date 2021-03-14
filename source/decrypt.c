@@ -275,7 +275,7 @@ void sh3_decrypt_data(u8* data, u32 size)
 	while (size--)
 	{
 		input = *(u32*) data;
-		out = (u32) (((input ^ key2) - SH3_KEY1) & 0xFFFFFFFF);
+		out = (u32)((input ^ (u64)(key2 - SH3_KEY1)) & 0xFFFFFFFF);
 		memcpy(data, &out, sizeof(u32));
 
 		key2 = (input << 5 | input >> 27) + (u64)SH3_KEY2;
@@ -297,7 +297,7 @@ void sh3_encrypt_data(u8* data, u32 size)
 	while (size--)
 	{
 		input = *(u32*) data;
-		out = (u32) (((input ^ key2) - SH3_KEY1) & 0xFFFFFFFF);
+		out = (u32)((input ^ (u64)(key2 - SH3_KEY1)) & 0xFFFFFFFF);
 		memcpy(data, &out, sizeof(u32));
 
 		key2 = (u64)(out << 5 | out >> 27) + (u64)SH3_KEY2;
