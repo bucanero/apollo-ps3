@@ -850,44 +850,19 @@
 
 [Group:\]
 
-[Group:Update Checksums Method 1 (Not Working)]
-[Update Checksums Final Fantasy X (Not Working)]
-set [MEMO]:read(0x64F4, 0x4)
-write at 0x64F4:00000000
-set crc_bandwidth:16
-set crc_polynomial:0x1021
-set crc_initial_value:0xFFFF
-set crc_output_xor:0
-set crc_reflection_input:0
-set crc_reflection_output:0
+[Group:Update Checksums]
+[Update Checksums Final Fantasy X (Required)]
+write at 0x64F4:0000
 set range:0x40,0x64F7
-set [hash]:crc
+set [hash]:ffx_checksum
 write at 0x00001A:[hash]
 write at 0x64F4:[hash]
 
-[Update Checksums Final Fantasy X-2 (Not Working)]
-set [MEMO]:read(0x16268, 0x4)
-write at 0x16268:00000000
-set crc_bandwidth:16
-set crc_polynomial:0x1021
-set crc_initial_value:0xFFFF
-set crc_output_xor:0
-set crc_reflection_input:0
-set crc_reflection_output:0
+[Update Checksums Final Fantasy X-2 (Required)]
+write at 0x16268:0000
 set range:0x40,0x1626B
-set [hash]:crc
+set [hash]:ffx_checksum
 write at 0x00001A:[hash]
 write at 0x16268:[hash]
-
-[Group:Update Checksums Method 2 (Working)]
-[INFO: For XXXX Values Please follow the mini guide - http://ps3cheating.net/forum/?mingleforumaction=viewtopic&t=1070.1]
-[Update Checksums Final Fantasy X (Working)]
-1000001A 0000XXXX
-100064F4 0000XXXX
-
-[INFO: For XXXX Values Please follow the mini guide - http://ps3cheating.net/forum/?mingleforumaction=viewtopic&t=1070.1]
-[Update Checksums Final Fantasy X-2 (Working)]
-1000001A 0000XXXX
-10016268 0000XXXX 
 
 

@@ -1,0 +1,23 @@
+; BLES01717
+; Call of Duty® Black Ops II
+; by bucanero
+
+:GPAD0_CM.PRF
+
+[Decrypt GPAD0_CM.PRF (Required)]
+set range:0x000000,eof+1
+DECRYPT des3_cbc("Md8ea20lPcftYwsl496q63x9", "0Peyx825")
+
+[Encrypt GPAD0_CM.PRF (Required)]
+set range:0x000000,eof+1
+ENCRYPT des3_cbc("Md8ea20lPcftYwsl496q63x9", "0Peyx825")
+
+:GPAD0_SP.PRF
+
+[Decrypt GPAD0_SP.PRF (Required)]
+set range:0x000000,eof+1
+DECRYPT des3_cbc("Md8ea20lPcftYwsl496q63x9", "0Peyx825")
+
+[Encrypt GPAD0_SP.PRF (Required)]
+set range:0x000000,eof+1
+ENCRYPT des3_cbc("Md8ea20lPcftYwsl496q63x9", "0Peyx825")

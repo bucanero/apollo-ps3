@@ -146,6 +146,11 @@
 
 :BLUS30810_SH3*\SAVEDATA.DAT
 
+[Decrypt SAVEDATA.DAT (Required)]
+set pointer:read(0xC, 4)
+set range:0x000040,pointer+0x3F
+DECRYPT silent_hill3
+
 [Max Ampoules]
 10001516 000003E7
 700014E1 00000010
@@ -160,7 +165,7 @@
 
 [Group:Silent Hill 3\Have Weapons & Ammo]
 
-:SAVE.DAT
+:SAVEDATA.DAT
 
 [Beam Saber]
 700014E3 00000020
@@ -203,3 +208,17 @@
 [Max Submachine Gun Bullets]
 10001510 000003E7
 700014E1 00000002
+
+[Group:Silent Hill 3 Checksum]
+
+[Update DWADD for SAVEDATA.DAT (Required)]
+write at 0x000010:00000000
+set pointer:read(0xC, 4)
+set [csum]:dwadd(0x000000,pointer+0x3F)
+set [csum]:[csum]+[csum]+0x1
+write at 0x000010:[csum]
+
+[Encrypt SAVEDATA.DAT (Required)]
+set pointer:read(0xC, 4)
+set range:0x000040,pointer+0x3F
+ENCRYPT silent_hill3

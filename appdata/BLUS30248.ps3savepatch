@@ -1,0 +1,17 @@
+; BLUS30248
+; Need for Speed™ Undercover
+; by bucanero
+
+:USR-DATA
+
+[Decrypt USR-DATA (Required)]
+set pointer:read(0x64, 4)
+set range:0x000070,pointer+0x5B
+DECRYPT nfs_undercover
+
+; cheats should go here
+
+[Encrypt USR-DATA (Required)]
+set pointer:read(0x64, 4)
+set range:0x000070,pointer+0x5B
+ENCRYPT nfs_undercover
