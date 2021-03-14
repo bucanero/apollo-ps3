@@ -1153,6 +1153,9 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 					case BSD_VAR_INT8:
 					case BSD_VAR_INT16:
 					case BSD_VAR_INT32:
+					case BSD_VAR_INT64:
+					case BSD_VAR_MD5:
+					case BSD_VAR_SHA256:
 						var->len = read_l;
 						break;
 
@@ -1629,6 +1632,31 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 				LOG("Decrypt NFS Undercover data");
 				nfsu_decrypt_data(start, (range_end - range_start));
 			}
+			else if (wildcard_match_icase(line, "ffxiii(*,*)*"))
+			{
+				int key_len, mode;
+				char *key, *tmp;
+				u8* start = (u8*)data + range_start;
+
+				line += strlen("ffxiii(");
+				tmp = strrchr(line, ',');
+				*tmp = 0;
+
+				mode = _parse_int_value(line, pointer, dsize);
+				*tmp = ',';
+
+				line = tmp + 1;
+				tmp = strrchr(line, ')');
+				*tmp = 0;
+
+				LOG("FFXIII Type=%d Encryption Key=%s", mode, line);
+
+				key = _decode_variable_data(line, &key_len);
+				*tmp = ')';
+
+				ff13_decrypt(mode, start, (range_end - range_start), (u8*) key, key_len);
+				free(key);
+			}
 			else if (wildcard_match_icase(line, "aes_ecb(*)*"))
 			{
 				int key_len;
@@ -1737,6 +1765,31 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
 				LOG("Encrypt NFS Undercover data");
 				nfsu_encrypt_data(start, (range_end - range_start));
+			}
+			else if (wildcard_match_icase(line, "ffxiii(*,*)*"))
+			{
+				int key_len, mode;
+				char *key, *tmp;
+				u8* start = (u8*)data + range_start;
+
+				line += strlen("ffxiii(");
+				tmp = strrchr(line, ',');
+				*tmp = 0;
+
+				mode = _parse_int_value(line, pointer, dsize);
+				*tmp = ',';
+
+				line = tmp + 1;
+				tmp = strrchr(line, ')');
+				*tmp = 0;
+
+				LOG("FFXIII Type=%d Encryption Key=%s", mode, line);
+
+				key = _decode_variable_data(line, &key_len);
+				*tmp = ')';
+
+				ff13_encrypt(mode, start, (range_end - range_start), (u8*) key, key_len);
+				free(key);
 			}
 			else if (wildcard_match_icase(line, "aes_ecb(*)*"))
 			{

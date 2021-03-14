@@ -20,6 +20,14 @@
 #define DIABLO3_KEY1    0x305f92d8
 #define DIABLO3_KEY2    0x2ec9a01b
 
+// Final Fantasy XIII
+#define FFXIII_KEY          0x1317fb09b9b42080L
+#define FFXIII_2_KEY        0x9B1F01011A6438B0L
+#define FFXIII_3_KEY        0x36545e6ceb9a705fL
+#define FFXIII_MASK_1       0xFFFFFFFFFFFFFC00
+#define FFXIII_MASK_2       0xFFFFFFFF00000000
+#define FFXIII_CONST        0xA1652347
+
 #define DES_BLOCK_SIZE  8
 #define AES_BLOCK_SIZE  16
 #define XOR_BLOCK_SIZE  16
