@@ -4,6 +4,64 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+### Added
+
+* Added BSD `qwadd`, `right`, `left` commands support
+* Added `adler16`, `sdbm` hash methods
+* Added `dev_usb006` scan for USB saves
+* Added custom encryption support
+  * Final Fantasy XIII
+  * Final Fantasy XIII-2
+  * Lightning Returns: Final Fantasy XIII
+  * Resident Evil 0 (Zero) (Blowfish)
+  * Resident Evil HD Remaster (Blowfish)
+  * Resident Evil Revelations 2 (Blowfish)
+  * Need for Speed: Undercover
+  * Call of Duty: Black Ops (3-DES CBC)
+  * Call of Duty: Black Ops II (3-DES CBC)
+  * Silent Hill 3 HD
+* New save-game cheats
+  * Persona 5
+  * Resident Evil: Revelations 2
+  * Yakuza 0
+  * 99 Vidas
+  * Lost Dimension
+  * RAGE
+  * The Last of Us
+  * BlazBlue
+  * BlazBlue: Chronophantasma EXTEND
+  * BlazBlue: Central Fiction
+  * Resident Evil 0 (Zero)
+  * Resident Evil 4 HD
+  * Resident Evil 5
+  * Resident Evil 6
+  * The Elder Scrolls V: Skyrim
+  * The Legend of Heroes: Sen no Kiseki
+  * Devil May Cry 3 HD
+  * Guilty Gear Xrd - Rev. 2 -
+  * Dynasty Warriors 8: Empires
+  * Saint Seiya Soldiers' Soul
+  * Star Ocean 5: Integrity and Faithlessness
+  * Kamen Rider Battride War Sousei/Genesis
+  * Rainbow Skies
+* Added custom checksum support
+  * Dead Space 2
+  * Dead Space 3
+  * Final Fantasy X HD
+  * Final Fantasy X-2 HD
+  * Final Fantasy XIII
+  * Final Fantasy XIII-2
+  * Lightning Returns: Final Fantasy XIII
+  * Prototype
+  * Prototype 2
+* Added simple icons for trophies
+* Improved custom CRC32 method
+
+### Fixed
+
+* Fixed bulk resign and bulk copy
+* Fixed Fake owner account (`ffffffffffffffff`)
+
 ## [v1.5.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.5.0) - 2021-01-31
 
 ### Added
