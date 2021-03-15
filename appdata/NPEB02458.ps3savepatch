@@ -1,0 +1,309 @@
+; "99Vidas"
+; NPEB02458
+; by bucanero
+
+; https://eighthsregrets.blogspot.com/2018/05/npub31842-99vidas-usa-ps3-save-editing.html
+
+:SAVGAME.DAT
+
+[Unlock game Mode 99 Vidas]
+search "gameMode99VidasUnlocked"
+write next (26):"1"
+
+[Unlock New Game Plus]
+search "isNewGamePlus"
+write next (16):" true"
+
+[99 Remaining Lives]
+search "remainingLives"
+write next (16):"99"
+
+[99 Remaining Continues]
+search "remainingContinues"
+write next (20):"99"
+
+[Group:King]
+;[Unlock Character]
+;search 0x724944223A20312C
+;search next "isUnlocked"
+;write next (13):" true"
+
+[Max combo Punch]
+search 0x724944223A20312C
+search next "comboPunch"
+write next (13):"3"
+
+[Max combo Kick]
+search 0x724944223A20312C
+search next "comboKick"
+write next (12):"3"
+
+[Max blitz Punch]
+search 0x724944223A20312C
+search next "blitzPunch"
+write next (13):"3"
+
+[Max blitz Kick]
+search 0x724944223A20312C
+search next "blitzKick"
+write next (12):"3"
+
+[Group:Izzy]
+;[Unlock Character]
+;search 0x724944223A20322C
+;search next "isUnlocked"
+;write next (13):" true"
+
+[Max combo Punch]
+search 0x724944223A20322C
+search next "comboPunch"
+write next (13):"3"
+
+[Max combo Kick]
+search 0x724944223A20322C
+search next "comboKick"
+write next (12):"3"
+
+[Max blitz Punch]
+search 0x724944223A20322C
+search next "blitzPunch"
+write next (13):"3"
+
+[Max blitz Kick]
+search 0x724944223A20322C
+search next "blitzKick"
+write next (12):"3"
+
+[Group:Oak!]
+;[Unlock Character]
+;search 0x724944223A20332C
+;search next "isUnlocked"
+;write next (13):" true"
+
+[Max combo Punch]
+search 0x724944223A20332C
+search next "comboPunch"
+write next (13):"3"
+
+[Max combo Kick]
+search 0x724944223A20332C
+search next "comboKick"
+write next (12):"3"
+
+[Max blitz Punch]
+search 0x724944223A20332C
+search next "blitzPunch"
+write next (13):"3"
+
+[Max blitz Kick]
+search 0x724944223A20332C
+search next "blitzKick"
+write next (12):"3"
+
+[Group:Fries]
+;[Unlock Character]
+;search 0x724944223A20342C
+;search next "isUnlocked"
+;write next (13):" true"
+
+[Max combo Punch]
+search 0x724944223A20342C
+search next "comboPunch"
+write next (13):"3"
+
+[Max combo Kick]
+search 0x724944223A20342C
+search next "comboKick"
+write next (12):"3"
+
+[Max blitz Punch]
+search 0x724944223A20342C
+search next "blitzPunch"
+write next (13):"3"
+
+[Max blitz Kick]
+search 0x724944223A20342C
+search next "blitzKick"
+write next (12):"3"
+
+[Group:Sadiv66]
+[Unlock Character]
+search 0x724944223A20352C
+search next "isUnlocked"
+write next (13):" true"
+
+[Max combo Punch]
+search 0x724944223A20352C
+search next "comboPunch"
+write next (13):"3"
+
+[Max combo Kick]
+search 0x724944223A20352C
+search next "comboKick"
+write next (12):"3"
+
+[Max blitz Punch]
+search 0x724944223A20352C
+search next "blitzPunch"
+write next (13):"3"
+
+[Max blitz Kick]
+search 0x724944223A20352C
+search next "blitzKick"
+write next (12):"3"
+
+[Group:Hannah]
+;[Unlock Character]
+;search 0x724944223A20362C
+;search next "isUnlocked"
+;write next (13):" true"
+
+[Max combo Punch]
+search 0x724944223A20362C
+search next "comboPunch"
+write next (13):"3"
+
+[Max combo Kick]
+search 0x724944223A20362C
+search next "comboKick"
+write next (12):"3"
+
+[Max blitz Punch]
+search 0x724944223A20362C
+search next "blitzPunch"
+write next (13):"3"
+
+[Max blitz Kick]
+search 0x724944223A20362C
+search next "blitzKick"
+write next (12):"3"
+
+[Group:Trish]
+;[Unlock Character]
+;search 0x724944223A20372C
+;search next "isUnlocked"
+;write next (13):" true"
+
+[Max combo Punch]
+search 0x724944223A20372C
+search next "comboPunch"
+write next (13):"3"
+
+[Max combo Kick]
+search 0x724944223A20372C
+search next "comboKick"
+write next (12):"3"
+
+[Max blitz Punch]
+search 0x724944223A20372C
+search next "blitzPunch"
+write next (13):"3"
+
+[Max blitz Kick]
+search 0x724944223A20372C
+search next "blitzKick"
+write next (12):"3"
+
+[Group:Rey]
+[Unlock Character]
+search 0x724944223A20382C
+search next "isUnlocked"
+write next (13):" true"
+
+[Max combo Punch]
+search 0x724944223A20382C
+search next "comboPunch"
+write next (13):"3"
+
+[Max combo Kick]
+search 0x724944223A20382C
+search next "comboKick"
+write next (12):"3"
+
+[Max blitz Punch]
+search 0x724944223A20382C
+search next "blitzPunch"
+write next (13):"3"
+
+[Max blitz Kick]
+search 0x724944223A20382C
+search next "blitzKick"
+write next (12):"3"
+
+[Group:Deedee]
+[Unlock Character]
+search 0x724944223A20392C
+search next "isUnlocked"
+write next (13):" true"
+
+[Max combo Punch]
+search 0x724944223A20392C
+search next "comboPunch"
+write next (13):"3"
+
+[Max combo Kick]
+search 0x724944223A20392C
+search next "comboKick"
+write next (12):"3"
+
+[Max blitz Punch]
+search 0x724944223A20392C
+search next "blitzPunch"
+write next (13):"3"
+
+[Max blitz Kick]
+search 0x724944223A20392C
+search next "blitzKick"
+write next (12):"3"
+
+[Group:Dan]
+[Unlock Character]
+search 0x724944223A203130
+search next "isUnlocked"
+write next (13):" true"
+
+[Max combo Punch]
+search 0x724944223A203130
+search next "comboPunch"
+write next (13):"3"
+
+[Max combo Kick]
+search 0x724944223A203130
+search next "comboKick"
+write next (12):"3"
+
+[Max blitz Punch]
+search 0x724944223A203130
+search next "blitzPunch"
+write next (13):"3"
+
+[Max blitz Kick]
+search 0x724944223A203130
+search next "blitzKick"
+write next (12):"3"
+
+[Group:Mike]
+[Unlock Character]
+search 0x724944223A203131
+search next "isUnlocked"
+write next (13):" true"
+
+[Max combo Punch]
+search 0x724944223A203131
+search next "comboPunch"
+write next (13):"3"
+
+[Max combo Kick]
+search 0x724944223A203131
+search next "comboKick"
+write next (12):"3"
+
+[Max blitz Punch]
+search 0x724944223A203131
+search next "blitzPunch"
+write next (13):"3"
+
+[Max blitz Kick]
+search 0x724944223A203131
+search next "blitzKick"
+write next (12):"3"

@@ -1,0 +1,54 @@
+; Dynasty Warriors: 8 Empires
+; NPUB31656
+; by Krustytoe
+
+:APP.BIN
+
+[Max Materials 999999]
+42005BF4 905F0100
+402800E4 00000000
+
+[Max Money 999999]
+42005BF8 9F860100
+402800E4 00000000
+
+[Max Unit 999999]
+42005BFC 905F0100
+402800E4 00000000
+
+[All Characters Max Stats (Except Speed)]
+4203F63A 9F860100
+43A6005C 00000000
+4203F64E E803E803
+43A6005C 00000000
+4203F652 E803E803
+43A6005C 00000000
+
+[All Characters - Max Aptitudes]
+4203F65A 64646464
+43A6005C 00000000
+
+[Max Matterials 90000]
+20005F84 905F0100
+
+[Max Money 99999(Might be able to go Higher)]
+20005F88 9F860100
+
+[Max Unit 9999(Might be able to go Higher)]
+20005F8C 0F270000
+
+[Group:Xu Shu Codes]
+[Health 9999(Might be able to go Higher)]
+10040DAA 0000E703
+
+[Attack 9999(Might be able to go Higher)]
+10040DAC 0000E703
+
+[Defense 9999(Might be able to go Higher)]
+10040DAE 0000E703
+
+[Leadership 9999(Might be able to go Higher)]
+10040DB0 0000E703
+
+[Merits 99999(Might be able to go Higher)]
+20040D96 9F860100
