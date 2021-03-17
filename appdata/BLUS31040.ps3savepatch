@@ -5,8 +5,9 @@
 :GAMESAVE
 
 [Max Money]
-write at 0x3740:0x0098967F
-write at 0x3A78:0x0098967F
+search "Default":8
+write next 0x2EC:0x0098967F
+write next 0x624:0x0098967F
 
 ; The custom CRC64 hash in Fuse requires these steps:
 ; 1. Calculate the CRC64 of the data, and then

@@ -170,16 +170,16 @@ F5907182 37557717
 000024FA 000000C9
 000024FB 000000C9
 
-Sora 4 Armor Slots]
+[Sora 4 Armor Slots]
 00002500 00000004
 
-Sora 4 Accessory Armor Slots]
+[Sora 4 Accessory Armor Slots]
 00002501 00000004
 
-Sora 8 Item Slots]
+[Sora 8 Item Slots]
 00002502 00000008
 
-Goofy Codes Stat Codes - HP/MP/AP/STR/MAG/DEF]
+[Goofy Codes Stat Codes - HP/MP/AP/STR/MAG/DEF]
 1000271C 00009696
 1000271E 00009696
 00002720 00000082
@@ -187,16 +187,16 @@ Goofy Codes Stat Codes - HP/MP/AP/STR/MAG/DEF]
 00002722 000000C9
 00002723 000000C9
 
-Goofy 4 Armor Slots]
+[Goofy 4 Armor Slots]
 00002728 00000004
 
-Goofy 4 Accessory Slots]
+[Goofy 4 Accessory Slots]
 00002729 00000004
 
-Goofy 8 Item Slots]
+[Goofy 8 Item Slots]
 0000272A 00000008
 
-Donald Codes Stat Codes - HP/MP/AP/STR/MAG/DEF]
+[Donald Codes Stat Codes - HP/MP/AP/STR/MAG/DEF]
 10002608 00009696
 1000260A 00009696
 0000260C 00000082
@@ -204,13 +204,13 @@ Donald Codes Stat Codes - HP/MP/AP/STR/MAG/DEF]
 0000260E 000000C9
 0000260F 000000C9
 
-Donald 4 Armor Slots]
+[Donald 4 Armor Slots]
 00002614 00000004
 
-Donald 4 Accessory Slots]
+[Donald 4 Accessory Slots]
 00002615 00000004
 
-Donald 8 Item Slots]
+[Donald 8 Item Slots]
 00002616 00000008
 
 [All World Characters Stats +150]
@@ -414,7 +414,7 @@ Donald 8 Item Slots]
 [Auto Counter]
 00010EEE 00000001
 
-Cost Converter]
+[Cost Converter]
 00010EEF 00000002
 
 [Active Formation]
@@ -449,7 +449,7 @@ Cost Converter]
 000035CF 00000003 ;Magneaga
 000035D0 00000003 ;Reflega
 
-; --- Kingdom Hearts 2 HD\Individual Growth Abilities Codes]
+; --- Kingdom Hearts 2 HD\Individual Growth Abilities Codes ---
 
 [Have All Growth Abilities]
 100025DA 00006080
@@ -472,6 +472,13 @@ Cost Converter]
 
 [Glide LV 3]
 100025E2 00006C80
+
+; --- Kingdom Hearts 2 HD\Checksum ---
+
+[Update Custom Checksum (Required)]
+set range:0x0,eof+1
+set [hash]:kh25_checksum
+write at 0x08:[hash]
 
 :SAVEDATA.DAT
 
@@ -762,3 +769,10 @@ Cost Converter]
 40040004 00000001
 00003382 0000002D
 00003386 0000002E
+
+; --- KH Birth by Sleep\Checksum ---
+
+[Update SAVEDATA.DAT Checksum (Required)]
+set pointer:eof+1
+set [csum]:dwadd_le(0x000010,pointer)
+write at 0x0C:[csum]
