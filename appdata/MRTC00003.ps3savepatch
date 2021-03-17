@@ -1,17 +1,12 @@
-[red:INFO: Instructions]
-[red:INFO: Step 1 - Load Save into BSD]
-[red:INFO: Step 2 - Download FFXIII Encryptor from http://ps3cheating.net/external-save-editors/]
-[red:INFO: Step 3 - Press DIRECTORY to load your Save data]
-[red:INFO: Step 4 - Press Decrypt]
-[red:INFO: Step 5 - Copy "~files_decrypted_by_pfdtool.txt" file into the Save Data's root folder]
-[red:INFO: Step 6 - Hit "Refresh" button in BSD. Apply Cheats.]
-[red:INFO: Step 7 - Go back to FFXIII Multi Encryptor and Press Encrypt]
-[red:INFO: Step 8 - Delete "~files_decrypted_by_pfdtool.txt" file from your save folder]
 ; Final Fantasy XIII
 ; MRTC00003
 ;From Game Genie For PS3
 
 :MRTC00003-*\APP.DAT
+
+[Decrypt APP.DAT (Required)]
+set range:0x000000,eof+1
+DECRYPT FFXIII(1, 0x00)
 
 [Max Money]
 200046B4 3B9AC9FF
@@ -256,3 +251,15 @@ write at 0x0002B2C9:D4
 write at 0x0002B2D5:00
 write at 0x0002B2B5:00
 write at 0x0002B2B9:08
+
+[Group:Encryption]
+
+[Update APP.DAT Checksum (Required)]
+set pointer:eof-0x7
+set range:0x0,pointer
+set [hash]:ff13_checksum
+write next (4):[hash]
+
+[Encrypt APP.DAT (Required)]
+set range:0x000000,eof+1
+ENCRYPT FFXIII(1, 0x00)

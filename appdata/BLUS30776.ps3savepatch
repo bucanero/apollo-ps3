@@ -1,22 +1,15 @@
 ; BLUS30776
 ; FINAL FANTASY® XIII-2
-
-[red:INFO: Instructions]
-[red:INFO: Step 1 - Load Save into BSD]
-[red:INFO: Step 2 - Download FFXIII Multi Encryptor from http://ps3cheating.net/external-save-editors/]
-[red:INFO: Step 3 - Press DIRECTORY to load your Save data]
-[red:INFO: Step 4 - Press Decrypt]
-[red:INFO: Step 5 - Copy "~files_decrypted_by_pfdtool.txt" file into the Save Data's root folder]
-[red:INFO: Step 6 - Hit "Refresh" button in BSD. Apply Cheats.]
-[red:INFO: Step 7 - Go back to FFXIII Multi Encryptor and Press Encrypt]
-[red:INFO: Step 8 - Delete "~files_decrypted_by_pfdtool.txt" file from your save folder]
-; Final Fantasy XIII-2
-; BCAS20224
 ;From Game Genie For PS3
 
 :BLUS30776-*\KEY.DAT
+[Read Encryption KEY.DAT (Required)]
+set [key]:read(0x0, 0x10)
 
 :BLUS30776-*\APP.DAT
+[Decrypt APP.DAT (Required)]
+set range:0x000000,eof+1
+DECRYPT FFXIII(2, [key])
 
 [Max Gil]
 20002316 05F5E0FF
@@ -3629,3 +3622,14 @@
 [Slot 226 Max ATB]
 00088A8F 0000003C
 
+[Group:Encryption]
+
+[Update APP.DAT Checksum (Required)]
+set pointer:eof-0x7
+set range:0x0,pointer
+set [hash]:ff13_checksum
+write next (4):[hash]
+
+[Encrypt APP.DAT (Required)]
+set range:0x000000,eof+1
+ENCRYPT FFXIII(2, [key])
