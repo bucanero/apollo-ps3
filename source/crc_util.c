@@ -63,6 +63,39 @@ void generate_crc32_table(uint32_t poly, uint32_t* crc_table)
     }
 }
 
+// Custom CRC table for Kingdom Hearts 2.5
+void kh25_crc32_table(uint32_t poly, uint32_t* crc_table)
+{
+    for (int x = 0; x < 0x100; x++)
+    {
+        int r = x << 24;
+        for (int j = 0; j < 0xff; j++)
+            r = (r << 1) ^ (r < 0 ? poly : 0);
+
+        crc_table[x] = r;
+    }
+}
+
+uint32_t kh25_hash(const uint8_t* data, uint32_t len)
+{
+    uint32_t crc32_table[256];
+    uint32_t crc = CRC_32_INIT_VALUE;
+
+    kh25_crc32_table(CRC_32_POLYNOMIAL, crc32_table);
+
+    for (int i = 0; i < 8; i++, len--)
+        crc = (crc << 8) ^ crc32_table[((crc >> 24) ^ *data++) & 0xFF];
+
+    // skip crc bytes (0x8..0xB)
+    len -= 4;
+    data += 4;
+
+    while (len--)
+        crc = (crc << 8) ^ crc32_table[((crc >> 24) ^ *data++) & 0xFF];
+
+    return (~crc);
+}
+
 // "MC02" Electronic Arts hash table
 // https://gist.github.com/Experiment5X/5025310 / https://ideone.com/cy2rM7
 // I have no clue how this works and understand absolutely none of the math behind it.

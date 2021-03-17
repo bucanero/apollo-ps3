@@ -111,6 +111,13 @@ uint16_t adler16(unsigned char *data, size_t len);
  */
 uint16_t ffx_hash(const uint8_t* data, uint32_t len);
 
+/**
+ * This function makes Kingdom Hearts 2.5 hash calculation on Length data bytes
+ *
+ * RETURN VALUE: 32 bit result of CRC calculation
+ */
+uint32_t kh25_hash(const uint8_t* data, uint32_t len);
+
 #ifdef __cplusplus
 }
 #endif

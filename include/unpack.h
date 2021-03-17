@@ -34,5 +34,6 @@ void sh3_decrypt_data(uint8_t* data, uint32_t size);
 void sh3_encrypt_data(uint8_t* data, uint32_t size);
 
 // Final Fantasy XIII (1/2/3) save data encryption
-void ff13_decrypt(uint32_t game, uint8_t* data, uint32_t len, const uint8_t* key, uint32_t key_len);
-void ff13_encrypt(uint32_t game, uint8_t* data, uint32_t len, const uint8_t* key, uint32_t key_len);
+void ff13_decrypt_data(uint32_t game, uint8_t* data, uint32_t len, const uint8_t* key, uint32_t key_len);
+void ff13_encrypt_data(uint32_t game, uint8_t* data, uint32_t len, const uint8_t* key, uint32_t key_len);
+uint32_t ff13_checksum(uint8_t* bytes, uint32_t len);

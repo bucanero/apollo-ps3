@@ -852,6 +852,40 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 					LOG("len %d FFX HASH = %X", len, hash);
 				}
 
+				// set [*]:ff13_checksum*
+				else if (wildcard_match_icase(line, "ff13_checksum*"))
+				{
+					uint32_t hash;
+					u8* start = (u8*)data + range_start;
+					len = range_end - range_start;
+
+					// FFXIII hash is stored in little-endian
+					hash = ES32(ff13_checksum(start, len));
+
+					var->len = BSD_VAR_INT32;
+					var->data = malloc(var->len);
+					memcpy(var->data, (u8*) &hash, var->len);
+
+					LOG("len %d FFXIII HASH = %X", len, hash);
+				}
+
+				// set [*]:kh25_checksum*
+				else if (wildcard_match_icase(line, "kh25_checksum*"))
+				{
+					uint32_t hash;
+					u8* start = (u8*)data + range_start;
+					len = range_end - range_start;
+
+					// Kingdom Hearts 2.5 hash is stored in little-endian
+					hash = ES32(kh25_hash(start, len));
+
+					var->len = BSD_VAR_INT32;
+					var->data = malloc(var->len);
+					memcpy(var->data, (u8*) &hash, var->len);
+
+					LOG("len %d KH 2.5 HASH = %X", len, hash);
+				}
+
 				// set [*]:sdbm*
 				else if (wildcard_match_icase(line, "sdbm*"))
 				{
@@ -949,6 +983,47 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    
     			    LOG("[%s]:dwadd(0x%X , 0x%X) = %X", var->name, add_s, add_e, add);
 			    }
+
+				// set [*]:dwadd_le(*,*)*
+				else if (wildcard_match_icase(line, "dwadd_le(*,*)*"))
+				{
+					// little-endian
+					// dwadd_le(<start>,<endrange>)
+					// 32-bit	0xFFFFFFFF
+					int add_s, add_e;
+					uint32_t add = 0;
+
+					line += strlen("dwadd_le(");
+					tmp = strchr(line, ',');
+					*tmp = 0;
+					
+					add_s = _parse_int_value(line, pointer, dsize);
+
+					line = tmp+1;
+					*tmp = ',';
+					tmp = strchr(line, ')');
+					*tmp = 0;
+
+					add_e = _parse_int_value(line, pointer, dsize);
+
+					*tmp = ')';
+					
+					char* read = data + add_s;
+					
+					while (read < data + add_e)
+					{
+						add += ES32(*(uint32_t*)read);
+						read += BSD_VAR_INT32;
+					}
+
+					// stored in little-endian
+					add = ES32(add);
+					var->len = BSD_VAR_INT32;
+					var->data = malloc(var->len);
+					memcpy(var->data, (u8*) &add, var->len);
+					
+					LOG("[%s]:dwadd_le(0x%X , 0x%X) = %X", var->name, add_s, add_e, add);
+				}
 
 			    // set [*]:wadd(*,*)*
 			    else if (wildcard_match_icase(line, "wadd(*,*)*"))
@@ -1654,7 +1729,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 				key = _decode_variable_data(line, &key_len);
 				*tmp = ')';
 
-				ff13_decrypt(mode, start, (range_end - range_start), (u8*) key, key_len);
+				ff13_decrypt_data(mode, start, (range_end - range_start), (u8*) key, key_len);
 				free(key);
 			}
 			else if (wildcard_match_icase(line, "aes_ecb(*)*"))
@@ -1788,7 +1863,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 				key = _decode_variable_data(line, &key_len);
 				*tmp = ')';
 
-				ff13_encrypt(mode, start, (range_end - range_start), (u8*) key, key_len);
+				ff13_encrypt_data(mode, start, (range_end - range_start), (u8*) key, key_len);
 				free(key);
 			}
 			else if (wildcard_match_icase(line, "aes_ecb(*)*"))

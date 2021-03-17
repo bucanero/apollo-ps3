@@ -358,7 +358,7 @@ void ff13_init_key(u8* key_table, u32 ff_game, const u64* kdata)
 	}
 }
 
-u32 ff_xiii_checksum(u8* bytes, u32 len)
+u32 ff13_checksum(u8* bytes, u32 len)
 {
 	u32 ff_csum = 0;
 	len /= 8;
@@ -369,22 +369,31 @@ u32 ff_xiii_checksum(u8* bytes, u32 len)
 		bytes += 8;
 	}
 
-	return ES32(ff_csum);
+	return (ff_csum);
 }
 
-void ff_decrypt_data(const u8* key_table, u8* data, int len)
+void ff13_decrypt_data(u32 type, u8* data, u32 size, const u8* key, u32 key_len)
 {
+	u8 key_table[272];
 	u8 sub_table[256];
-	u64 block[3] = {0};
-	u64 tmp;
+	u64 block[3], tmp;
 	u32 ff_pos = 0;
-	
-	len /= 8;
-	
+	u32 *csum, ff_csum;
+
+	if (type != 1 && key_len != 16)
+		return;
+
+	LOG("[*] Total Decrypted Size Is 0x%X (%d bytes)", size, size);
+
+	memset(key_table, 0, sizeof(key_table));
+	ff13_init_key(key_table, type, (u64*) key);
+
+	// init sub table
 	for (int i = 0; i < 256; i++)
 		sub_table[i] = (0x78 + i) & 0xFF;
 
-	for (int i = 0; i < len; i++)
+	size /= 8;
+	for (int i = 0; i < size; i++)
 	{
 		ff_pos = i << 3;
 		block[0] = (u64)((shift_bits(32, 29, ff_pos) & 0xFF) ^ 0x45);
@@ -416,21 +425,39 @@ void ff_decrypt_data(const u8* key_table, u8* data, int len)
 		tmp = ((block[1] >> 32 & 0xFFFFFFFF) | (shift_bits(64, 32, block[1]) & FFXIII_MASK_2));
 		memcpy(data + ff_pos, &tmp, sizeof(uint64_t));
 	}
+
+	ff_csum = ES32(ff13_checksum(data, ff_pos));
+	csum = (u32*)(data + ff_pos + 4);
+
+	if (*csum == ff_csum)
+		LOG("[*] Decrypted File Successfully!");
+	else
+		LOG("[!] Decrypted data did not pass file integrity check. (Expected: %08X Got: %08X)", *csum, ff_csum);
+
+	return;
 }
 
-void ff_encrypt_data(const u8* key_table, u8* data, int len)
+void ff13_encrypt_data(u32 type, u8* data, u32 size, const u8* key, u32 key_len)
 {
+	u8 key_table[272];
 	u8 add_table[256];
-	u64 block[3] = {0};
-	u64 tmp = 0;
+	u64 block[3], tmp;
 	u32 ff_pos = 0;
-	
-	len /= 8;
 
+	if (type != 1 && key_len != 16)
+		return;
+
+	LOG("[*] Total Encrypted Size Is 0x%X (%d bytes)", size, size);
+
+	memset(key_table, 0, sizeof(key_table));
+	ff13_init_key(key_table, type, (u64*) key);
+
+	// init add table
 	for (int i = 0; i < 256; i++)
 		add_table[i] = (0x88 + i) & 0xFF;
 
-	for (int i = 0; i < len; i++)
+	size /= 8;
+	for (int i = 0; i < size; i++)
 	{
 		ff_pos = (i << 3);
 
@@ -459,49 +486,6 @@ void ff_encrypt_data(const u8* key_table, u8* data, int len)
 			data[ff_pos + j] = (u8)block[0];
 		}
 	}
-}
-
-void ff13_decrypt(u32 type, u8* data, u32 size, const u8* key, u32 key_len)
-{
-	u8 key_table[272];
-	u32 *csum, ff_csum;
-
-	if (type != 1 && key_len != 16)
-		return;
-
-	LOG("[*] Total Decrypted Size Is 0x%X (%d bytes)", size, size);
-
-	memset(key_table, 0, sizeof(key_table));
-	ff13_init_key(key_table, type, (u64*) key);
-	ff_decrypt_data(key_table, data, size);
-
-	ff_csum = ff_xiii_checksum(data, size - 8);
-
-	csum = (u32*)(data + size - 4);
-	if (*csum == ff_csum)
-		LOG("[*] Decrypted File Successfully!");
-	else
-		LOG("[!] Decrypted data did not pass file integrity check. (Expected: %08X Got: %08X)", *csum, ff_csum);
-
-	return;
-}
-
-void ff13_encrypt(u32 type, u8* data, u32 size, const u8* key, u32 key_len)
-{
-	u8 key_table[272];
-	u32 csum;
-
-	if (type != 1 && key_len != 16)
-		return;
-
-	LOG("[*] Total Encrypted Size Is 0x%X (%d bytes)", size, size);
-
-	csum = ff_xiii_checksum(data, size - 8);
-	memcpy(data + size - 4, &csum, 4);
-
-	memset(key_table, 0, sizeof(key_table));
-	ff13_init_key(key_table, type, (u64*) key);
-	ff_encrypt_data(key_table, data, size);
 
 	LOG("[*] Encrypted File Successfully!");
 	return;
