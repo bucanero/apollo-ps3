@@ -4,12 +4,14 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.5.5](https://github.com/bucanero/apollo-ps3/releases/tag/v1.5.5) - 2021-03-17
+
 ### Added
 
 * Added BSD `qwadd`, `right`, `left` commands support
-* Added `adler16`, `sdbm` hash methods
+* Added `adler16`, `sdbm`, `dwadd_le` hash methods
 * Added `dev_usb006` scan for USB saves
-* Added custom encryption support
+* Added custom decryption support
   * Final Fantasy XIII
   * Final Fantasy XIII-2
   * Lightning Returns: Final Fantasy XIII
@@ -52,6 +54,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
   * Final Fantasy XIII
   * Final Fantasy XIII-2
   * Lightning Returns: Final Fantasy XIII
+  * Kingdom Hearts 2.5 HD
+  * Kingdom Hearts Birth by Sleep
   * Prototype
   * Prototype 2
 * Added simple icons for trophies

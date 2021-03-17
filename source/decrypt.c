@@ -309,11 +309,11 @@ void sh3_encrypt_data(u8* data, u32 size)
 	return;
 }
 
-void ff13_init_key_value(u64 ulong_0, u64 ulong_1, u64* ulong_2, u64 ulong_3, u64* ulong_4, u8* byte_0, u64 ulong_5)
+void ff13_init_key_value(u8* byte_0, u64 ulong_1, u64* ulong_2, u64* ulong_4, u64 ulong_5)
 {
-	ulong_3 = ((((ulong_1 + 0xD4) ^ ulong_5) & 0xFF) ^ 0x45);
+	u64 ulong_3 = ((((ulong_1 + 0xD4) ^ ulong_5) & 0xFF) ^ 0x45);
 	*byte_0 = (u8)ulong_3;
-	*ulong_2 = ulong_0 + ulong_3;
+	*ulong_2 = byte_0[1] + ulong_3;
 	*ulong_4 = (shift_bits(32, 2, ulong_3) & 0x3FC);
 }
 
@@ -340,12 +340,12 @@ void ff13_init_key(u8* key_table, u32 ff_game, const u64* kdata)
 	memcpy(key_table, &init[2], sizeof(uint64_t));
 
 	key_table[0] += 69;
-	ff13_init_key_value(key_table[2], key_table[0] + key_table[1], &init[3], init[0], &init[0], &key_table[1], shift_bits(64, 2, (u64)key_table[0]));
-	ff13_init_key_value(key_table[3], init[3], &init[3], init[0], &init[0], &key_table[2], init[0]);
-	ff13_init_key_value(key_table[4], init[3], &init[2], init[0], &tmp, &key_table[3], init[0]);
-	ff13_init_key_value(key_table[5], init[2], &tmp, init[0], &init[1], &key_table[4], tmp);
-	ff13_init_key_value(key_table[6], tmp, &tmp, init[0], &init[3], &key_table[5], init[1]);
-	ff13_init_key_value(key_table[7], tmp, &init[2], tmp, &tmp, &key_table[6], init[3]);
+	ff13_init_key_value(&key_table[1], key_table[0] + key_table[1], &init[3], &init[0], shift_bits(64, 2, (u64)key_table[0]));
+	ff13_init_key_value(&key_table[2], init[3], &init[3], &init[0], init[0]);
+	ff13_init_key_value(&key_table[3], init[3], &init[2], &tmp, init[0]);
+	ff13_init_key_value(&key_table[4], init[2], &tmp, &init[1], tmp);
+	ff13_init_key_value(&key_table[5], tmp, &tmp, &init[3], init[1]);
+	ff13_init_key_value(&key_table[6], tmp, &init[2], &tmp, init[3]);
 	key_table[7] = (u8)((((init[2] + 0xD4) ^ tmp) & 0xFF) ^ 0x45);
 
 	for (int j = 0; j < 31; j++)

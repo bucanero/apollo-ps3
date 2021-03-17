@@ -1160,6 +1160,12 @@ void doPatchMenu()
 		else if (paddata[0].BTN_RIGHT)
 			move_selection_fwd(list_count(selected_entry->codes), 5);
 
+		else if (paddata[0].BTN_L1)
+			move_selection_back(list_count(selected_entry->codes), 25);
+
+		else if (paddata[0].BTN_R1)
+			move_selection_fwd(list_count(selected_entry->codes), 25);
+
 		else if (paddata[0].BTN_CIRCLE)
 		{
 			SetMenu(last_menu_id[MENU_PATCHES]);
