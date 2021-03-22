@@ -102,7 +102,7 @@ uint32_t sdbm_hash(const uint8_t* data, uint32_t len, uint32_t init);
  *
  * RETURN VALUE: 16 bit result of CRC calculation
  */
-uint16_t adler16(unsigned char *data, size_t len);
+uint16_t adler16(const uint8_t *data, size_t len);
 
 /**
  * This function makes Final Fantasy X hash calculation on Length data bytes
@@ -117,6 +117,13 @@ uint16_t ffx_hash(const uint8_t* data, uint32_t len);
  * RETURN VALUE: 32 bit result of CRC calculation
  */
 uint32_t kh25_hash(const uint8_t* data, uint32_t len);
+
+/**
+ * This function makes Kingdom Hearts Chain of Memories hash calculation on Length data bytes
+ *
+ * RETURN VALUE: 32 bit result of CRC calculation
+ */
+uint32_t kh_com_hash(const uint8_t* data, uint32_t len);
 
 #ifdef __cplusplus
 }

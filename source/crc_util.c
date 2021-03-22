@@ -96,6 +96,19 @@ uint32_t kh25_hash(const uint8_t* data, uint32_t len)
     return (~crc);
 }
 
+uint32_t kh_com_hash(const uint8_t* data, uint32_t len)
+{
+    int csum = CRC_32_INIT_VALUE;
+
+    while (len--)
+    {
+        csum ^= (*data++ << 31);
+        csum = (csum << 1) ^ (csum < 0 ? CRC_32_POLYNOMIAL : 0);
+    }
+
+    return (~csum);
+}
+
 // "MC02" Electronic Arts hash table
 // https://gist.github.com/Experiment5X/5025310 / https://ideone.com/cy2rM7
 // I have no clue how this works and understand absolutely none of the math behind it.
@@ -151,7 +164,7 @@ uint16_t ffx_hash(const uint8_t* data, uint32_t len)
     return (~crc);
 }
 
-uint16_t adler16(unsigned char *data, size_t len)
+uint16_t adler16(const uint8_t *data, size_t len)
 /* 
     where data is the location of the data in physical memory and 
     len is the length of the data in bytes 
