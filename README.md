@@ -173,7 +173,14 @@ UDP multicast address `239.255.0.100:30000`. To receive them you can use [socat]
 
 # License
 
-`apollo-ps3` is released under the [MIT License](LICENSE).
+[Apollo Save Tool](https://github.com/bucanero/apollo-ps3/) PS3
+
+Copyright (C) 2020-2021  Damian Parrino
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the [GNU General Public License](LICENSE) as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
 [socat]: http://www.dest-unreach.org/socat/
 [app_downloads]: https://github.com/bucanero/apollo-ps3/releases
