@@ -190,6 +190,9 @@ char* get_game_title_ids(const char* game_id);
 int decrypt_save_file(const char* path, const char* fname, const char* outpath, u8* secure_file_key);
 int encrypt_save_file(const char* path, const char* fname, u8* secure_file_key);
 
+int decrypt_trophy_trns(const char* path);
+int encrypt_trophy_trns(const char* path);
+
 #ifdef __cplusplus
 }
 #endif

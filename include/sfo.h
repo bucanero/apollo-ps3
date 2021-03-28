@@ -47,6 +47,8 @@ u8* sfo_get_param_value(sfo_context_t *in, const char* param);
 int patch_sfo(const char *in_file_path, sfo_patch_t* patches);
 int build_sfo(const char *in_file_path, const char *out_file_path, const char *tpl_file_path, int num_keys, const sfo_key_pair_t *keys);
 
+int patch_sfo_trophy(const char *in_file_path, const char* account);
+
 #ifdef __cplusplus
 }
 #endif

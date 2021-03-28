@@ -65,6 +65,7 @@ enum texture_index
 	opt_on_png_index,
 
 //Imagefont.bin assets
+	trp_sync_img_index,
 	trp_bronze_img_index,
 	trp_silver_img_index,
 	trp_gold_img_index,

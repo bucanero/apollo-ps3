@@ -128,6 +128,7 @@ enum save_type_enum
 {
     FILE_TYPE_NULL,
     FILE_TYPE_PSV,
+    FILE_TYPE_TRP,
 
     // PS1 File Types
     FILE_TYPE_PSX,
@@ -176,6 +177,7 @@ enum char_flag_enum
     CHAR_TRP_SILVER,
     CHAR_TRP_GOLD,
     CHAR_TRP_PLATINUM,
+    CHAR_TRP_SYNC,
 };
 
 enum code_type_enum
@@ -185,6 +187,8 @@ enum code_type_enum
     PATCH_SFO,
     PATCH_GAMEGENIE,
     PATCH_BSD,
+    PATCH_TROP_UNLOCK,
+    PATCH_TROP_LOCK,
 };
 
 typedef struct option_entry
@@ -262,6 +266,9 @@ void stop_loading_screen();
 void free_patch_var_list();
 int apply_cheat_patch_code(const char* fpath, const char* title_id, code_entry_t* code);
 void execCodeCommand(code_entry_t* code, const char* codecmd);
+
+int patch_trophy_account(const char* trp_path, const char* account_id);
+int apply_trophy_patch(const char* trp_path, uint32_t trophy_id, int unlock);
 
 int rif2rap(const uint8_t* idps_key, const char* lic_path, const char* rifFile, const char* rap_path);
 int rap2rif(const uint8_t* idps_key, const char* exdata_path, const char* rap_file, const char *rif_path);

@@ -395,7 +395,6 @@ u8* sfo_get_param_value(sfo_context_t *in, const char* param) {
 
 int patch_sfo(const char *in_file_path, sfo_patch_t* patches) {
 	sfo_context_t *sfo;
-	const char *out_file_path = in_file_path;
 
 	sfo = sfo_alloc();
 	if (sfo_read(sfo, in_file_path) < 0) {
@@ -409,8 +408,8 @@ int patch_sfo(const char *in_file_path, sfo_patch_t* patches) {
 	sfo_patch_psid(sfo, patches->psid);
 	sfo_patch_directory(sfo, patches->directory);
 
-	if (sfo_write(sfo, out_file_path) < 0) {
-		LOG("Unable to write to '%s'", out_file_path);
+	if (sfo_write(sfo, in_file_path) < 0) {
+		LOG("Unable to write to '%s'", in_file_path);
 		return -1;
 	}
 
@@ -449,5 +448,35 @@ int build_sfo(const char *in_file_path, const char *out_file_path, const char *t
 		sfo_free(sfo2);
 
 	LOG("PARAM.SFO was built successfully");
+	return 0;
+}
+
+int patch_sfo_trophy(const char *in_file_path, const char* account) {
+	sfo_context_t *sfo;
+	sfo_context_param_t *p;
+
+	if (!account)
+		return 0;
+
+	sfo = sfo_alloc();
+	if (sfo_read(sfo, in_file_path) < 0) {
+		LOG("Unable to read from '%s'", in_file_path);
+		return -1;
+	}
+
+	p = sfo_context_get_param(sfo, "ACCOUNTID");
+	if (p != NULL && p->actual_length == SFO_ACCOUNT_ID_SIZE) {
+		memcpy(p->value, account, SFO_ACCOUNT_ID_SIZE);
+	}
+
+	if (sfo_write(sfo, in_file_path) < 0) {
+		LOG("Unable to write to '%s'", in_file_path);
+		return -1;
+	}
+
+	if (sfo)
+		sfo_free(sfo);
+
+	LOG("PARAM.SFO was patched successfully");
 	return 0;
 }

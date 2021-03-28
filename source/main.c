@@ -527,6 +527,9 @@ void LoadTextures_Menu()
 	u8* imagefont;
 	if (read_buffer("/dev_flash/vsh/resource/imagefont.bin", &imagefont, NULL) == SUCCESS)
 	{
+		LoadImageFontTexture(imagefont, 0xF888, footer_ico_lt_png_index);
+		LoadImageFontTexture(imagefont, 0xF88B, footer_ico_rt_png_index);
+		LoadImageFontTexture(imagefont, 0xF6AD, trp_sync_img_index);
 		LoadImageFontTexture(imagefont, 0xF8AC, trp_bronze_img_index);
 		LoadImageFontTexture(imagefont, 0xF8AD, trp_silver_img_index);
 		LoadImageFontTexture(imagefont, 0xF8AE, trp_gold_img_index);
@@ -1222,7 +1225,8 @@ void doPatchMenu()
 		{
 			selected_centry = list_get_item(selected_entry->codes, menu_sel);
 
-			if (selected_centry->type == PATCH_GAMEGENIE || selected_centry->type == PATCH_BSD)
+			if (selected_centry->type == PATCH_GAMEGENIE || selected_centry->type == PATCH_BSD ||
+				(selected_entry->type == FILE_TYPE_TRP && selected_entry->flags & SAVE_FLAG_TROPHY))
 			{
 				SetMenu(MENU_PATCH_VIEW);
 				return;
@@ -1321,6 +1325,7 @@ void registerSpecialChars()
 	RegisterSpecialCharacter(CHAR_TRP_SILVER, 2, 1.0, &menu_textures[trp_silver_img_index]);
 	RegisterSpecialCharacter(CHAR_TRP_GOLD, 2, 1.0, &menu_textures[trp_gold_img_index]);
 	RegisterSpecialCharacter(CHAR_TRP_PLATINUM, 0, 1.2, &menu_textures[trp_platinum_img_index]);
+	RegisterSpecialCharacter(CHAR_TRP_SYNC, 0, 1.2, &menu_textures[trp_sync_img_index]);
 }
 
 /*

@@ -309,64 +309,51 @@ void sh3_encrypt_data(u8* data, u32 size)
 	return;
 }
 
-void ff13_init_key_value(u8* byte_0, u64 ulong_1, u64* ulong_2, u64* ulong_4, u64 ulong_5)
-{
-	u64 ulong_3 = ((((ulong_1 + 0xD4) ^ ulong_5) & 0xFF) ^ 0x45);
-	*byte_0 = (u8)ulong_3;
-	*ulong_2 = byte_0[1] + ulong_3;
-	*ulong_4 = (shift_bits(32, 2, ulong_3) & 0x3FC);
-}
-
 void ff13_init_key(u8* key_table, u32 ff_game, const u64* kdata)
 {
-	u64 init[4] = {0};
-	u64 tmp;
+	u32 init[2];
 	u64 ff_key = FFXIII_KEY;
 
 	if (ff_game > 1)
 	{
 		ff_key = (ff_game == 2) ? FFXIII_2_KEY : FFXIII_3_KEY;
-		ff_key ^= ES64(ES64(kdata[0]) ^ ES64(kdata[1])) | 1L;
+		ff_key ^= (kdata[0] ^ kdata[1]) | 1L;
 	}
 
-	init[2] = ES32((ff_key >> 32) & 0xFFFFFFFF);
-	init[3] = ES32(ff_key & 0xFFFFFFFF);
-	init[1] = ((init[2] & 0xFFFFFFFF) | (shift_bits(64, 32, init[3]) & FFXIII_MASK_2));
-	init[2] = (u64)((shift_bits(64, 24, (init[1] << 8 & 0xFFFFFFFF)) & FFXIII_MASK_2) | (init[1] & 0xFF000000));
-	init[3] = (u64)(shift_bits(64, 16, init[1]) & 0xFFFF);
-	init[0] = (u64)((shift_bits(64, 8, init[2]) & 0xFFFFFFFFFFFFFF00) | init[3] | ((shift_bits(64, 32, init[1]) & 0xFFFFFFFF) << 16 & 0xFFFFFFFF));
-	init[2] = (u64)((ES64(init[0] >> 32) >> 32 & 0xFFFFFFFF) | (shift_bits(64, 32, ES64(init[0] & 0xFFFFFFFF) >> 32) & FFXIII_MASK_2));
+	ff_key = ((ff_key & 0xFF00000000000000) >> 16) | ((ff_key & 0x0000FF0000000000) << 16) | (ff_key & 0x00FF00FFFFFFFFFF);
+	ff_key = ((ff_key & 0x00000000FF00FF00) >>  8) | ((ff_key & 0x0000000000FF00FF) <<  8) | (ff_key & 0xFFFFFFFF00000000);
+	ff_key = ES64(ff_key);
 
-	memcpy(key_table, &init[2], sizeof(uint64_t));
+	memcpy(key_table, &ff_key, sizeof(uint64_t));
 
-	key_table[0] += 69;
-	ff13_init_key_value(&key_table[1], key_table[0] + key_table[1], &init[3], &init[0], shift_bits(64, 2, (u64)key_table[0]));
-	ff13_init_key_value(&key_table[2], init[3], &init[3], &init[0], init[0]);
-	ff13_init_key_value(&key_table[3], init[3], &init[2], &tmp, init[0]);
-	ff13_init_key_value(&key_table[4], init[2], &tmp, &init[1], tmp);
-	ff13_init_key_value(&key_table[5], tmp, &tmp, &init[3], init[1]);
-	ff13_init_key_value(&key_table[6], tmp, &init[2], &tmp, init[3]);
-	key_table[7] = (u8)((((init[2] + 0xD4) ^ tmp) & 0xFF) ^ 0x45);
+	key_table[0] += 0x45;
+	
+	for (int j = 1; j < 8; j++)
+	{
+		init[0] = key_table[j-1] + key_table[j];
+		init[1] = ((key_table[j-1] << 2) & 0x3FC);
+		key_table[j] = ((((init[0] + 0xD4) ^ init[1]) & 0xFF) ^ 0x45);
+	}
 
 	for (int j = 0; j < 31; j++)
 	{
-		init[2] = ES64(*(u64*)(key_table + j*8));
-		init[2] = init[2] + (u64)(shift_bits(64, 2, init[2]) & 0xFFFFFFFFFFFFFFFC);
-		tmp = (u64)((ES64(init[2] >> 32) >> 32 & 0xFFFFFFFF) | (shift_bits(64, 32, ES64(init[2] & 0xFFFFFFFF) >> 32) & FFXIII_MASK_2));
+		ff_key = ES64(*(u64*)(key_table + j*8));
+		ff_key = ff_key + (u64)((ff_key << 2) & 0xFFFFFFFFFFFFFFFC);
+		ff_key = ES64(ff_key);
 
-		memcpy(key_table + (j+1)*8, &tmp, sizeof(uint64_t));
+		memcpy(key_table + (j+1)*8, &ff_key, sizeof(uint64_t));
 	}
 }
 
 u32 ff13_checksum(u8* bytes, u32 len)
 {
 	u32 ff_csum = 0;
-	len /= 8;
+	len /= 4;
 
 	while (len--)
 	{
-		ff_csum += (u32)bytes[4] + bytes[0];
-		bytes += 8;
+		ff_csum += bytes[0];
+		bytes += 4;
 	}
 
 	return (ff_csum);

@@ -17,6 +17,7 @@
 #include "settings.h"
 #include "util.h"
 #include "pfd.h"
+#include "trophy.h"
 
 #define UTF8_CHAR_GROUP		"\xe2\x97\x86"
 #define UTF8_CHAR_ITEM		"\xe2\x94\x97"
@@ -715,6 +716,8 @@ int ReadTrophies(save_entry_t * game)
 	xmlNode *root_element = NULL;
 	xmlNode *cur_node = NULL;
 	char *value;
+	u8* usr_data;
+	tropTimeInfo_t* tti;
 
 	snprintf(filePath, sizeof(filePath), "%s" "TROPCONF.SFM", game->path);
 	if (file_exists(filePath) != SUCCESS)
@@ -733,9 +736,25 @@ int ReadTrophies(save_entry_t * game)
 		return 0;
 	}
 
+	snprintf(filePath, sizeof(filePath), "%s" "TROPUSR.DAT", game->path);
+	if (read_buffer(filePath, &usr_data, NULL) != SUCCESS)
+	{
+		LOG("Cannot open %s.", filePath);
+		free(buffer);
+		return 0;
+	}
+
+	if ((tti = getTrophyTimeInfo(usr_data)) == NULL)
+	{
+		LOG("Cannot parse %s.", filePath);
+		free(usr_data);
+		free(buffer);
+		return 0;
+	}
+
 	game->codes = list_alloc();
 
-	trophy = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Resign Trophy Set", CMD_RESIGN_TROPHY);
+	trophy = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Apply Changes & Resign Trophy Set", CMD_RESIGN_TROPHY);
 	list_append(game->codes, trophy);
 
 	trophy = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Backup Trophy Set to USB", CMD_CODE_NULL);
@@ -764,16 +783,15 @@ int ReadTrophies(save_entry_t * game)
 		if (xmlStrcasecmp(cur_node->name, BAD_CAST "trophy") == 0)
 		{
 			value = _get_xml_node_value(cur_node->children, BAD_CAST "name");
-			snprintf(filePath, sizeof(filePath), "  %s", value);
+			snprintf(filePath, sizeof(filePath), "   %s", value);
 			trophy = _createCmdCode(PATCH_NULL, filePath, CMD_CODE_NULL);
 
 			value = _get_xml_node_value(cur_node->children, BAD_CAST "detail");
-			trophy->codes = strdup(value);
+			asprintf(&trophy->codes, "%s\n", value);
 
 			value = (char*) xmlGetProp(cur_node, BAD_CAST "ttype");
-			trophy->type = value[0];
 
-			switch (trophy->type)
+			switch (value[0])
 			{
 			case 'B':
 				trophy->name[0] = CHAR_TRP_BRONZE;
@@ -801,8 +819,17 @@ int ReadTrophies(save_entry_t * game)
 				sscanf(value, "%d", &trop_count);
 				trophy->file = malloc(sizeof(trop_count));
 				memcpy(trophy->file, &trop_count, sizeof(trop_count));
+
+				if (!tti[trop_count].unlocked)
+					trophy->name[1] = CHAR_TAG_LOCKED;
+
+				// if trophy has been synced, we can't allow changes
+				if (tti[trop_count].syncState == TROP_STATE_SYNCED)
+					trophy->name[1] = CHAR_TRP_SYNC;
+				else
+					trophy->type = (tti[trop_count].unlocked) ? PATCH_TROP_LOCK : PATCH_TROP_UNLOCK;
 			}
-			LOG("Trophy=%d [%c] '%s' (%s)", trop_count, trophy->type, trophy->name, trophy->codes);
+			LOG("Trophy=%d [%d] '%s' (%s)", trop_count, trophy->type, trophy->name, trophy->codes);
 
 			list_append(game->codes, trophy);
 		}
@@ -812,6 +839,7 @@ int ReadTrophies(save_entry_t * game)
 	xmlFreeDoc(doc);
 	xmlCleanupParser();
 	free(buffer);
+	free(usr_data);
 
 	return list_count(game->codes);
 }
@@ -1751,6 +1779,7 @@ list_t * ReadTrophyList(const char* userPath)
 
 			value = _get_xml_node_value(root_element->children, BAD_CAST "npcommid");
 			item->title_id = strdup(value);
+			item->type = FILE_TYPE_TRP;
 
 			/*free the document */
 			xmlFreeDoc(doc);

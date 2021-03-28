@@ -341,6 +341,10 @@ int _get_aes_details_pfd(const char* path, const char* filename, const u8* secur
 		}
 	}
 
+	// Override iv for TROPTRNS.DAT
+	if (memcmp(secure_key, config.troptrns_dat_key, PFD_KEY_SIZE) == 0)
+		memcpy(iv_hash_key, secure_key, PFD_KEY_SIZE);
+
 	memset(&aes, 0, sizeof(aes_context));
 
 	aes_setkey_dec(&aes, config.syscon_manager_key, 128);
@@ -539,4 +543,14 @@ int encrypt_save_file(const char* path, const char* fname, u8* secure_file_key)
 	free(file_data);
 
 	return 1;
+}
+
+int decrypt_trophy_trns(const char* path)
+{
+	return decrypt_save_file(path, "TROPTRNS.DAT", NULL, config.troptrns_dat_key);
+}
+
+int encrypt_trophy_trns(const char* path)
+{
+	return encrypt_save_file(path, "TROPTRNS.DAT", config.troptrns_dat_key);
 }

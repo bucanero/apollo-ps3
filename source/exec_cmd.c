@@ -860,8 +860,88 @@ void resignAllSaves(const char* path)
 	stop_loading_screen();
 }
 
+int apply_trophy_account()
+{
+	char sfoPath[256];
+	char account_id[SFO_ACCOUNT_ID_SIZE+1];
+
+	snprintf(account_id, sizeof(account_id), "%016lx", apollo_config.account_id);
+	if (!apollo_config.account_id)
+		memset(account_id, 0, SFO_ACCOUNT_ID_SIZE);
+
+	snprintf(sfoPath, sizeof(sfoPath), "%s" "PARAM.SFO", selected_entry->path);
+
+	patch_sfo_trophy(sfoPath, account_id);
+	patch_trophy_account(selected_entry->path, account_id);
+
+	return 1;
+}
+
+int apply_trophy_patches()
+{
+	int ret = 1;
+	uint32_t trophy_id;
+	code_entry_t* code;
+	list_node_t* node;
+
+	init_loading_screen("Applying changes...");
+
+	for (node = list_head(selected_entry->codes); (code = list_get(node)); node = list_next(node))
+	{
+		if (!code->activated || (code->type != PATCH_TROP_UNLOCK && code->type != PATCH_TROP_LOCK))
+			continue;
+
+		trophy_id = *(uint32_t*)(code->file);
+    	LOG("Active code: [%d] '%s'", trophy_id, code->name);
+
+		if (!apply_trophy_patch(selected_entry->path, trophy_id, (code->type == PATCH_TROP_UNLOCK)))
+		{
+			LOG("Error: failed to apply (%s)", code->name);
+			ret = 0;
+		}
+
+		if (code->type == PATCH_TROP_UNLOCK)
+		{
+			code->type = PATCH_TROP_LOCK;
+			code->name[1] = ' ';
+		}
+		else
+		{
+			code->type = PATCH_TROP_UNLOCK;
+			code->name[1] = CHAR_TAG_LOCKED;
+		}
+
+		code->activated = 0;
+	}
+
+	stop_loading_screen();
+
+	return ret;
+}
+
 void resignTrophy()
 {
+	LOG("Decrypting TROPTRNS.DAT ...");
+	if (!decrypt_trophy_trns(selected_entry->path))
+	{
+		LOG("Error: failed to decrypt TROPTRNS.DAT");
+		return;
+	}
+
+    if (!apply_trophy_account())
+        show_message("Error! Account changes couldn't be applied");
+
+    LOG("Applying trophy changes to '%s'...", selected_entry->name);
+    if (!apply_trophy_patches())
+        show_message("Error! Trophy changes couldn't be applied");
+
+	LOG("Encrypting TROPTRNS.DAT ...");
+	if (!encrypt_trophy_trns(selected_entry->path))
+	{
+		LOG("Error: failed to encrypt TROPTRNS.DAT");
+		return;
+	}
+
     LOG("Resigning trophy '%s'...", selected_entry->name);
 
     if (!pfd_util_init((u8*) apollo_config.idps, apollo_config.user_id, selected_entry->title_id, selected_entry->path) ||
