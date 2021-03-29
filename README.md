@@ -150,6 +150,7 @@ Currently, the list of available games and files is limited, but the project aim
 * [flatz](https://twitter.com/flat_z): [SFO/PFD tools](https://github.com/bucanero/pfd_sfo_tools/)
 * [aldostools](https://aldostools.org/): [Bruteforce Save Data](https://bruteforcesavedata.forumms.net/)
 * [aluigi](http://aluigi.org): [offzip/packzip](http://aluigi.altervista.org/mytoolz.htm)
+* [darkautism](https://darkautism.blogspot.com/): [PS3TrophyIsGood](https://github.com/darkautism/PS3TrophyIsGood)
 
 # Building
 
@@ -164,7 +165,7 @@ You need to have installed:
 Run `make` to create a release build. After that, run `make pkg` to create a `.pkg` install file. 
 
 You can also set the `PS3LOAD` environment variable to the PS3 IP address: `export PS3LOAD=tcp:x.x.x.x`.
-This will allow you to use `make run` and send `apollo-ps3.self` directly to the PS3Load listener.
+This will allow you to use `make run` and send `apollo-ps3.self` directly to the [PS3Load listener](https://github.com/bucanero/ps3loadx).
 
 To enable debug logging, build Apollo Save Tool with `make DEBUGLOG=1`. The application will send debug messages to
 UDP multicast address `239.255.0.100:30000`. To receive them you can use [socat][] on your computer:
@@ -173,9 +174,7 @@ UDP multicast address `239.255.0.100:30000`. To receive them you can use [socat]
 
 # License
 
-[Apollo Save Tool](https://github.com/bucanero/apollo-ps3/) PS3
-
-Copyright (C) 2020-2021  Damian Parrino
+[Apollo Save Tool](https://github.com/bucanero/apollo-ps3/) (PS3) - Copyright (C) 2020-2021  Damian Parrino
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the [GNU General Public License](LICENSE) as published by
