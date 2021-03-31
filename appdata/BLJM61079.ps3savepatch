@@ -1,6 +1,8 @@
 ; BLJM61079
 ; Hatsune Miku Project Diva F2nd
 
+:SECURE.BIN
+
 [9999999 DIVA point]
 20037AC0 0098967F
 
@@ -22,7 +24,7 @@
 402803DC 00000000
 4000FA1B 00000001
 402803DC 00000000
-? songs in open play once
+;? songs in open play once
 
 [Music all difficulty playable all]
 4000F78F 00000003
@@ -45,12 +47,12 @@
 402803DC 00000000
 
 
-DIVA Room related ---------------------
+;DIVA Room related ---------------------
 
 [Intimacy MAX front of everyone]
 41000162 00000463
 400601F8 00000000
-? It becomes the maximum is raised once
+;? It becomes the maximum is raised once
 
 [Event Collection 100%]
 1000F266 0000FFC0
