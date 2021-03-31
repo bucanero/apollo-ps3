@@ -11,7 +11,7 @@
 
 #define FS_S_IFMT 0170000
 
-#define TMP_BUFF_SIZE 64*1024
+#define TMP_BUFF_SIZE 0x20000
 
 //----------------------------------------
 //String Utils
@@ -100,29 +100,37 @@ int mkdirs(const char* dir)
 
 int copy_file(const char* input, const char* output)
 {
-    size_t read;
+    u64 read, written;
+    s32 fd, fd2;
 
     mkdirs(output);
-    FILE* in = fopen(input, "rb");
-    FILE* out = fopen(output, "wb");
+
+    if(sysLv2FsOpen(input, 0, &fd, S_IRWXU | S_IRWXG | S_IRWXO, NULL, 0) != SUCCESS)
+        return FAILED;
+
+    if(sysLv2FsOpen(output, SYS_O_WRONLY | SYS_O_CREAT | SYS_O_TRUNC, &fd2, 0777, NULL, 0) != SUCCESS)
+    {
+        sysLv2FsClose(fd);
+        return FAILED;
+    }
+
     char* buffer = malloc(TMP_BUFF_SIZE);
-    
-    if (!in || !out || !buffer)
+
+    if (!buffer)
         return FAILED;
 
     do
     {
-        read = fread(buffer, 1, TMP_BUFF_SIZE, in);
-        if (fwrite(buffer, read, 1, out) == 0)
-            break;
+        sysLv2FsRead(fd, buffer, TMP_BUFF_SIZE, &read);
+        sysLv2FsWrite(fd2, buffer, read, &written);
     }
-    while (read == TMP_BUFF_SIZE);
+    while ((read == written) && (read == TMP_BUFF_SIZE));
 
     free(buffer);
-    fclose(out);
-    fclose(in);
+    sysLv2FsClose(fd);
+    sysLv2FsClose(fd2);
 
-    return SUCCESS;
+    return (read - written);
 }
 
 uint32_t file_crc32(const char* input)

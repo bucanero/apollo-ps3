@@ -375,7 +375,7 @@ int _update_details_pfd(const char* path, const char* filename)
 	}
 
 	snprintf(file_path, sizeof(file_path), "%s%s", path, filename);
-	file_size = getFileSize(file_path);
+	get_file_size(file_path, &file_size);
 
 	LOG("Check (%s) fsize = %ld / PFD fsize = %ld", entry->file_name, file_size, entry->file_size);
 

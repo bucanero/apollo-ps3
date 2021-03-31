@@ -29,28 +29,6 @@
 #define CHAR_ICON_USER		"\x07"
 #define CHAR_ICON_LOCK		"\x08"
 
-/*
- * Function:		getFileSize()
- * File:			saves.c
- * Project:			Apollo PS3
- * Description:		Removes the extension from a filename
- * Arguments:
- *	path:			Path to file
- * Return:			Size of file as long (== 0 if failed)
- */
-long getFileSize(const char * path)
-{
-	FILE *f = fopen(path, "rb");
-	if (f == NULL)
-		return 0;
-	fseek(f, 0, SEEK_END);
-	long fsize = ftell(f);
-	fseek(f, 0, SEEK_SET);
-	
-	fclose(f);
-	
-	return fsize;
-}
 
 /*
  * Function:		endsWith()
