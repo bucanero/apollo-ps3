@@ -804,7 +804,7 @@ void resignAllSaves(const char* path)
 	struct dirent *dir;
 	char sfoPath[256];
 	char titleid[10];
-	char acct_id[17] = {0};
+	char acct_id[SFO_ACCOUNT_ID_SIZE+1] = {0};
 	char message[128] = "Resigning all saves...";
 
 	if (dir_exists(path) != SUCCESS)
@@ -820,7 +820,7 @@ void resignAllSaves(const char* path)
     init_loading_screen(message);
 
 	if (apollo_config.account_id)
-		snprintf(acct_id, sizeof(acct_id), "%016lx", apollo_config.account_id);
+		snprintf(acct_id, sizeof(acct_id), "%*lx", SFO_ACCOUNT_ID_SIZE, apollo_config.account_id);
 
 	sfo_patch_t patch = {
 		.flags = SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION,
@@ -865,7 +865,7 @@ int apply_trophy_account()
 	char sfoPath[256];
 	char account_id[SFO_ACCOUNT_ID_SIZE+1];
 
-	snprintf(account_id, sizeof(account_id), "%016lx", apollo_config.account_id);
+	snprintf(account_id, sizeof(account_id), "%*lx", SFO_ACCOUNT_ID_SIZE, apollo_config.account_id);
 	if (!apollo_config.account_id)
 		memset(account_id, 0, SFO_ACCOUNT_ID_SIZE);
 
@@ -1099,7 +1099,7 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 					.psid = (u8*) apollo_config.psid,
 					.directory = NULL,
 				};
-				asprintf(&patch.account_id, "%016lx", apollo_config.account_id);
+				asprintf(&patch.account_id, "%*lx", SFO_ACCOUNT_ID_SIZE, apollo_config.account_id);
 				if (!apollo_config.account_id)
 					memset(patch.account_id, 0, SFO_ACCOUNT_ID_SIZE);
 

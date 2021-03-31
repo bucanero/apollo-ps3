@@ -1379,7 +1379,7 @@ void read_savegames(const char* userPath, list_t *list, uint32_t flag)
 				sfo_data = (char*) sfo_get_param_value(sfo, "ATTRIBUTE");
 				item->flags |=	(sfo_data[0] ? SAVE_FLAG_LOCKED : 0);
 
-				sprintf(sfoPath, "%016lx", apollo_config.account_id);
+				snprintf(sfoPath, sizeof(sfoPath), "%*lx", SFO_ACCOUNT_ID_SIZE, apollo_config.account_id);
 				sfo_data = (char*) sfo_get_param_value(sfo, "ACCOUNT_ID");
 				if (strncmp(sfo_data, sfoPath, SFO_ACCOUNT_ID_SIZE) == 0)
 					item->flags |=	SAVE_FLAG_OWNER;
