@@ -1740,6 +1740,10 @@ list_t * ReadTrophyList(const char* userPath)
 	cmd->options_count = 1;
 	cmd->options = _createOptions(2, "Save Trophies to USB", CMD_COPY_TROPHIES_USB);
 	list_append(item->codes, cmd);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " Export Trophies to .Zip", CMD_CODE_NULL);
+	cmd->options_count = 1;
+	cmd->options = _createOptions(2, "Save .Zip to USB", CMD_ZIP_TROPHY_USB);
+	list_append(item->codes, cmd);
 	list_append(list, item);
 
 	d = opendir(userPath);

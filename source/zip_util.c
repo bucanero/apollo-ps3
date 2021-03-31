@@ -79,6 +79,7 @@ int zip_directory(const char* basedir, const char* inputdir, const char* output_
 int extract_zip(const char* zip_file, const char* dest_path)
 {
 	char path[256];
+	uint8_t* buffer;
 	struct zip* archive = zip_open(zip_file, ZIP_CHECKCONS, NULL);
 	int files = zip_get_num_files(archive);
 
@@ -86,6 +87,10 @@ int extract_zip(const char* zip_file, const char* dest_path)
 		LOG("Empty ZIP file.");
 		return 0;
 	}
+
+	buffer = malloc(0x10000);
+	if (!buffer)
+		return 0;
 
 	uint64_t progress = 0;
 	init_progress_bar("Extracting files...", " ");
@@ -123,6 +128,7 @@ int extract_zip(const char* zip_file, const char* dest_path)
 
 		FILE* tfd = fopen(path, "wb");
 		if(!tfd) {
+			free(buffer);
 			zip_fclose(zfd);
             zip_close(archive);
 			end_progress_bar();
@@ -131,9 +137,8 @@ int extract_zip(const char* zip_file, const char* dest_path)
 		}
 
 		uint64_t pos = 0, count;
-		uint8_t* buffer = malloc(0x1000);
 		while (pos < st.size) {
-			count = min64(0x1000, st.size - pos);
+			count = min64(0x10000, st.size - pos);
 			if (zip_fread(zfd, buffer, count) != count) {
 				free(buffer);
                 fclose(tfd);
@@ -147,7 +152,6 @@ int extract_zip(const char* zip_file, const char* dest_path)
 			fwrite(buffer, count, 1, tfd);
 			pos += count;
 		}
-		free(buffer);
 
 		zip_fclose(zfd);
 		fclose(tfd);
@@ -159,6 +163,7 @@ int extract_zip(const char* zip_file, const char* dest_path)
 	}
 
 	end_progress_bar();
+	free(buffer);
 
 	return 1;
 }

@@ -11,6 +11,7 @@
 #include "util.h"
 #include "trophy.h"
 
+#ifdef APOLLO_ENABLE_LOGGING
 void log_tropRecord(const tropRecord_t* t)
 {
     LOG("tropRecord\n Id=%d\n Offset=0x%X\n Size=%d\n Used=%d\n", t->id, t->offset, t->size, t->usedTimes);
@@ -47,6 +48,7 @@ void log_tropUnkType7(const tropUnkType7_t* t)
 {
     LOG("tropUnkType7\n Count=%d\n Synced=%d\n", t->getTrophyCount, t->syncTrophyCount);
 }
+#endif
 
 // Trophies store a date-time as: ticks/10
 // 621355968000000000 = epoch ticks

@@ -255,6 +255,39 @@ void exportFlashZip(const char* exp_path)
 	show_message("Files successfully saved to:\n%sdev_flash2.zip", exp_path);
 }
 
+void exportTrophiesZip(const char* exp_path)
+{
+	char* export_file;
+	char* trp_path;
+	char* tmp;
+
+	if (mkdirs(exp_path) != SUCCESS)
+	{
+		show_message("Error! Export folder is not available:\n%s", exp_path);
+		return;
+	}
+
+	init_loading_screen("Exporting Trophies ...");
+
+	asprintf(&export_file, "%s" "trophies_%08d.zip", exp_path, apollo_config.user_id);
+	asprintf(&trp_path, TROPHY_PATH_HDD, apollo_config.user_id);
+
+	tmp = strdup(trp_path);
+	*strrchr(tmp, '/') = 0;
+
+	zip_directory(tmp, trp_path, export_file);
+
+	sprintf(export_file, "%s" OWNER_XML_FILE, exp_path);
+	_saveOwnerData(export_file);
+
+	free(export_file);
+	free(trp_path);
+	free(tmp);
+
+	stop_loading_screen();
+	show_message("Trophies successfully saved to:\n%strophies_%08d.zip", exp_path, apollo_config.user_id);
+}
+
 void resignPSVfile(const char* psv_path)
 {
 	init_loading_screen("Resigning PSV file...");
@@ -1068,6 +1101,11 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_EXP_TROPHY_USB:
 			copySave(selected_entry->path, codecmd[1] ? TROPHY_PATH_USB1 : TROPHY_PATH_USB0);
+			code->activated = 0;
+			break;
+
+		case CMD_ZIP_TROPHY_USB:
+			exportTrophiesZip(codecmd[1] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0);
 			code->activated = 0;
 			break;
 
