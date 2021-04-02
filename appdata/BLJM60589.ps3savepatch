@@ -115,13 +115,11 @@
 
 :SYS-01
 
-:SYS-00
-
-;Cheksum By Dark Nacho
-[Update MD5 for SYS-01 (Required)]
-set range:0x000100,0x000035
-set [hash]:MD5
-write at 0x000034:[hash]
+;Custom Checksum
+[Update Checksum for SYS-01 (Required)]
+set range:0x0010,eof+1
+set [hash]:khcom_checksum
+write at 0x00004:[hash]
 
 
 
