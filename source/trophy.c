@@ -358,7 +358,7 @@ int usr_LockTrophy(uint8_t* usr_data, int id)
 
     tropTimeInfo_t* tti = &tropusr.trophyTimeInfoTable[id];
 
-    if (tti->syncState == TROP_STATE_SYNCED)
+    if (tti->syncState & TROP_STATE_SYNCED)
     {
         LOG("Can't lock a synced trophy!");
         return 0;

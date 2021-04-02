@@ -5,7 +5,7 @@
 *
 */
 
-#define TROP_STATE_SYNCED       0x011000
+#define TROP_STATE_SYNCED       0x010000
 #define TROP_STATE_UNSYNC       0x001000
 #define TROP_ACCOUNT_ID_SIZE    16
 

@@ -802,7 +802,7 @@ int ReadTrophies(save_entry_t * game)
 					trophy->name[1] = CHAR_TAG_LOCKED;
 
 				// if trophy has been synced, we can't allow changes
-				if (tti[trop_count].syncState == TROP_STATE_SYNCED)
+				if (tti[trop_count].syncState & TROP_STATE_SYNCED)
 					trophy->name[1] = CHAR_TRP_SYNC;
 				else
 					trophy->type = (tti[trop_count].unlocked) ? PATCH_TROP_LOCK : PATCH_TROP_UNLOCK;
