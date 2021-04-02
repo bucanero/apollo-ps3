@@ -94,8 +94,6 @@ int trns_parseTrophy(const uint8_t* data, trnsTrophy_t* trns_trophy)
 
             trns_trophy->allGetTrophysCount = (uint32_t*)(data + typeRecordTable[i].offset + sizeof(tropBlockHeader_t) + 20);
             trns_trophy->allSyncPSNTrophyCount = (uint32_t*)(data + typeRecordTable[i].offset + sizeof(tropBlockHeader_t) + 24);
-
-            int u1 = *(uint32_t*)(data + typeRecordTable[i].offset + sizeof(tropBlockHeader_t) + 16); // always 00000090
             break;
 
         case 4:
@@ -430,6 +428,7 @@ int apply_trophy_patch(const char* trp_path, uint32_t trophy_id, int unlock)
     size_t len;
 
     snprintf(filepath, sizeof(filepath), "%s" "TROPUSR.DAT", trp_path);
+    LOG("Patching %s ...", filepath);
 
     if (read_buffer(filepath, &data, &len) != 0)
     {
@@ -450,6 +449,7 @@ int apply_trophy_patch(const char* trp_path, uint32_t trophy_id, int unlock)
     free(data);
 
     snprintf(filepath, sizeof(filepath), "%s" "TROPTRNS.DAT", trp_path);
+    LOG("Patching %s ...", filepath);
 
     if (read_buffer(filepath, &data, &len) != 0)
     {

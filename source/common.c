@@ -9,8 +9,6 @@
 
 #include "common.h"
 
-#define FS_S_IFMT 0170000
-
 #define TMP_BUFF_SIZE 0x20000
 
 //----------------------------------------
@@ -57,7 +55,7 @@ int unlink_secure(const char *path)
 {   
     if(file_exists(path)==SUCCESS)
     {
-        sysLv2FsChmod(path, FS_S_IFMT | 0777);
+        sysLv2FsChmod(path, S_IFMT | 0777);
         return sysLv2FsUnlink(path);
 		//return remove(path);
     }
@@ -86,8 +84,12 @@ int mkdirs(const char* dir)
         *ptr = 0;
 
         if (dir_exists(path) == FAILED)
+        {
             if (mkdir(path, 0777) < 0)
                 return FAILED;
+            else
+                sysLv2FsChmod(path, S_IFDIR | 0777);
+        }
         
         *ptr++ = last;
         if (last == 0)
@@ -103,9 +105,10 @@ int copy_file(const char* input, const char* output)
     u64 read, written;
     s32 fd, fd2;
 
-    mkdirs(output);
+    if (mkdirs(output) != SUCCESS)
+        return FAILED;
 
-    if(sysLv2FsOpen(input, 0, &fd, S_IRWXU | S_IRWXG | S_IRWXO, NULL, 0) != SUCCESS)
+    if(sysLv2FsOpen(input, 0, &fd, SYS_O_RDONLY, NULL, 0) != SUCCESS)
         return FAILED;
 
     if(sysLv2FsOpen(output, SYS_O_WRONLY | SYS_O_CREAT | SYS_O_TRUNC, &fd2, 0777, NULL, 0) != SUCCESS)
@@ -129,6 +132,7 @@ int copy_file(const char* input, const char* output)
     free(buffer);
     sysLv2FsClose(fd);
     sysLv2FsClose(fd2);
+    sysLv2FsChmod(output, S_IFMT | 0777);
 
     return (read - written);
 }
