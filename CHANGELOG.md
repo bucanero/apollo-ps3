@@ -4,6 +4,22 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.5.8](https://github.com/bucanero/apollo-ps3/releases/tag/v1.5.8) - 2021-04-03
+
+### Added
+
+* Added Trophy edit support
+  * Unlock trophies
+  * Lock trophies (if not synced)
+* Added bulk trophy export to `.Zip`
+* Added custom checksum support
+  * Kingdom Hearts Chain of Memories
+* Improved file copy to USB
+
+### Fixed
+
+* Fixed `account_id` update (special case)
+
 ## [v1.5.5](https://github.com/bucanero/apollo-ps3/releases/tag/v1.5.5) - 2021-03-17
 
 ### Added
