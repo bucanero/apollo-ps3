@@ -2,9 +2,9 @@
 
 [![Downloads][img_downloads]][app_downloads] [![Release][img_latest]][app_latest] [![License][img_license]][app_license]
 
-**Apollo Save Tool** is an application to manage save-game files on the PlayStation 3.
+**Apollo Save Tool** is an application to manage save-game files, trophies, and licenses on the PlayStation 3.
 
-The `apollo-ps3` homebrew app allows to download, unlock, patch and resign save-game files directly on your PS3.
+The `apollo-ps3` homebrew app allows to download, unlock, patch and resign save-game files directly on your PS3. It can also unlock and resign trophies, backup/restore licenses, and create PS2 Classic images.
 
 ![image](./docs/screenshots/screenshot_main.png)
 
@@ -25,6 +25,12 @@ The `apollo-ps3` homebrew app allows to download, unlock, patch and resign save-
 * **Save PFD resigning:** allows the user to resign save files made by other users and consoles.
 * **Save downloading:** easy access to an Online Database of save-game files to download straight to your PlayStation.
 * **Save file conversion:** converts and resigns PS1 and PS2 save-game formats to PS3 `.PSV` format.
+
+## Trophy Management
+
+* **Trophy Set resigning:** resign trophy sets for the current user and console.
+* **Trophy Set exporting:** easy backup of trophy sets to `.zip` and raw formats.
+* **Trophy unlocking:** allows to unlock individual trophies for the current user.
 
 ## Backup Management
 
