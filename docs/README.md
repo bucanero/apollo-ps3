@@ -2,9 +2,9 @@
 
 [![Downloads][img_downloads]][app_downloads] [![Release][img_latest]][app_latest] [![License][img_license]][app_license]
 
-**Apollo Save Tool** is an application to manage save-game files on the PlayStation 3.
+**Apollo Save Tool** is an application to manage save-game files, trophies, and licenses on the PlayStation 3.
 
-The `apollo-ps3` homebrew app allows to download, unlock, patch and resign save-game files directly on your PS3.
+The `apollo-ps3` homebrew app allows to download, unlock, patch and resign save-game files directly on your PS3. It can also unlock and resign trophies, backup/restore licenses, and create PS2 Classic images.
 
 ![image](./screenshots/screenshot_main.png)
 
@@ -25,6 +25,12 @@ The `apollo-ps3` homebrew app allows to download, unlock, patch and resign save-
 * **Save PFD resigning:** allows the user to resign save files made by other users and consoles.
 * **Save downloading:** easy access to an Online Database of save-game files to download straight to your PlayStation.
 * **Save file conversion:** converts and resigns PS1 and PS2 save-game formats to PS3 `.PSV` format.
+
+## Trophy Management
+
+* **Trophy Set resigning:** resign trophy sets for the current user and console.
+* **Trophy Set exporting:** easy backup of trophy sets to `.zip` and raw formats.
+* **Trophy unlocking:** allows to unlock individual trophies for the current user.
 
 ## Backup Management
 
@@ -164,6 +170,7 @@ Currently, the list of available games and files is limited, but the project aim
 * [flatz](https://twitter.com/flat_z): [SFO/PFD tools](https://github.com/bucanero/pfd_sfo_tools/)
 * [aldostools](https://aldostools.org/): [Bruteforce Save Data](https://bruteforcesavedata.forumms.net/)
 * [aluigi](http://aluigi.org): [offzip/packzip](http://aluigi.altervista.org/mytoolz.htm)
+* [darkautism](https://darkautism.blogspot.com/): [PS3TrophyIsGood](https://github.com/darkautism/PS3TrophyIsGood)
 
 # Building
 
@@ -172,13 +179,13 @@ You need to have installed:
 - [PS3 toolchain](https://github.com/bucanero/ps3toolchain)
 - [PSL1GHT](https://github.com/ps3dev/PSL1GHT) SDK
 - [Tiny3D](https://github.com/wargio/Tiny3D) library
-- [polarSSL](https://github.com/ps3dev/ps3libraries/blob/master/scripts/015-polarssl.sh) library
+- [polarSSL](https://github.com/bucanero/ps3libraries/blob/master/scripts/015-polarssl-1.3.9.sh) library
 - [dbglogger](https://github.com/bucanero/psl1ght-libs/tree/master/dbglogger) library (only required for debug logging)
 
 Run `make` to create a release build. After that, run `make pkg` to create a `.pkg` install file. 
 
 You can also set the `PS3LOAD` environment variable to the PS3 IP address: `export PS3LOAD=tcp:x.x.x.x`.
-This will allow you to use `make run` and send `apollo-ps3.self` directly to the PS3Load listener.
+This will allow you to use `make run` and send `apollo-ps3.self` directly to the [PS3Load listener](https://github.com/bucanero/ps3loadx).
 
 To enable debug logging, build Apollo Save Tool with `make DEBUGLOG=1`. The application will send debug messages to
 UDP multicast address `239.255.0.100:30000`. To receive them you can use [socat][] on your computer:
@@ -187,7 +194,12 @@ UDP multicast address `239.255.0.100:30000`. To receive them you can use [socat]
 
 # License
 
-`apollo-ps3` is released under the [MIT License](LICENSE).
+[Apollo Save Tool](https://github.com/bucanero/apollo-ps3/) (PS3) - Copyright (C) 2020-2021  Damian Parrino
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the [GNU General Public License](../LICENSE) as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
 [socat]: http://www.dest-unreach.org/socat/
 [app_downloads]: https://github.com/bucanero/apollo-ps3/releases
