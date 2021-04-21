@@ -48,9 +48,13 @@ The `apollo-ps3` homebrew app allows to download, unlock, patch and resign save-
 
 Get the [latest version here][app_latest].
 
-### Changelog
+## Changelog
 
 See the [latest changes here](CHANGELOG.md).
+
+# Donations
+
+My GitHub projects are open to a [sponsor program](https://patreon.com/dparrino). If you feel that my tools helped you in some way or you would like to support it, you can consider a [PayPal donation](https://www.paypal.me/bucanerodev).
 
 # Setup instructions
 
