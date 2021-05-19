@@ -984,6 +984,12 @@ void resignTrophy()
         show_message("Trophy %s successfully modified!", selected_entry->title_id);
 
     pfd_util_end();
+
+	if ((file_exists("/dev_hdd0/mms/db.err") != SUCCESS) && show_dialog(1, "Schedule Database rebuild on next boot?"))
+	{
+		LOG("Creating db.err file for database rebuild...");
+		write_buffer("/dev_hdd0/mms/db.err", (u8*) "\x00\x00\x03\xE9", 4);
+	}
 }
 
 int _copy_save_file(const char* src_path, const char* dst_path, const char* filename)

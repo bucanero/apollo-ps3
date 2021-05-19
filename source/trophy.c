@@ -110,15 +110,6 @@ int trns_parseTrophy(const uint8_t* data, trnsTrophy_t* trns_trophy)
 
     LOG("Total Unlocked: %d (Synced: %d)", *trns_trophy->allGetTrophysCount, *trns_trophy->allSyncPSNTrophyCount);
 
-/*
-    tropRecord_t* TrophyInfoRecord = &typeRecordTable[3];
-    trnsTrophyInfo_t* trophyInfoTable = (trnsTrophyInfo_t*) (data + TrophyInfoRecord->offset + sizeof(trnsInitTime_t));
-    for (int i = 0; i < (*(trns_trophy->allGetTrophysCount) - 1); i++)
-    {
-        log_trnsTrophyInfo(&trophyInfoTable[i]);
-    }
-*/
-
     return (trns_trophy->trophyInitTime && trns_trophy->trophyInfoTable);
 }
 
@@ -126,8 +117,6 @@ int usr_parseTrophy(const uint8_t* data, usrTrophy_t* usr_trophy)
 {
     tropHeader_t* trnsHeader;
     tropRecord_t* typeRecordTable;
-//    uint32_t all_trophy_number;
-//    uint32_t AchievementRate[4];
 
     memset(usr_trophy, 0, sizeof(usrTrophy_t));
     trnsHeader = (tropHeader_t*) data;
@@ -152,21 +141,9 @@ int usr_parseTrophy(const uint8_t* data, usrTrophy_t* usr_trophy)
             break;
         case 3:
             usr_trophy->npcomm_id = (char*) data + typeRecordTable[i].offset + sizeof(tropBlockHeader_t);
-/*
-            blockdata = data + typeRecordTable[i].offset + sizeof(tropBlockHeader_t);
-            memcpy(trophy_id, blockdata, 16);
-            trophy_id[16]=0;
-            short u1 = BitConverter.ToInt16(blockdata, 16);
-            short u2 = BitConverter.ToInt16(blockdata, 18);
-            short u3 = BitConverter.ToInt16(blockdata, 20);
-            short u4 = BitConverter.ToInt16(blockdata, 22);
-            int u5 = BitConverter.ToInt32(blockdata, 28).ChangeEndian();
-            all_trophy_number = *(uint32_t*)(blockdata + 24);
-            AchievementRate[0] = *(uint32_t*)(blockdata + 64);
-            AchievementRate[1] = *(uint32_t*)(blockdata + 68);
-            AchievementRate[2] = *(uint32_t*)(blockdata + 72);
-            AchievementRate[3] = *(uint32_t*)(blockdata + 76);
-*/
+
+            usr_trophy->allTrophyNumber = (uint32_t*)(data + typeRecordTable[i].offset + sizeof(tropBlockHeader_t) + 24);
+            usr_trophy->achievementRate = (uint32_t*)(data + typeRecordTable[i].offset + sizeof(tropBlockHeader_t) + 64);
             break;
         case 4:
             usr_trophy->trophyTypeTable = (tropType_t*)(data + typeRecordTable[i].offset);

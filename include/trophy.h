@@ -36,7 +36,7 @@ typedef struct {
 
     uint32_t sequenceNumber;
     uint32_t type;
-    char unknow[16];
+    char unknown[16];
     char padding[56];
 } tropType_t;
 
@@ -68,7 +68,7 @@ typedef struct {
     uint32_t sequenceNumber;
     uint32_t unlocked;
     uint32_t syncState;
-    uint32_t unknow2;
+    uint32_t unknown2;
     tropDateTime_t unlockTime;
     char padding[64];
 } tropTimeInfo_t;
@@ -116,6 +116,8 @@ typedef struct {
 typedef struct {
     char* account_id;
     char* npcomm_id;
+    uint32_t* allTrophyNumber;
+    uint32_t* achievementRate;
     tropType_t* trophyTypeTable;
     tropListInfo_t* trophyListInfo;
     tropTimeInfo_t* trophyTimeInfoTable;
