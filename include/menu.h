@@ -63,6 +63,7 @@ enum texture_index
 	footer_ico_rt_png_index,
 	opt_off_png_index,
 	opt_on_png_index,
+	icon_png_file_index,
 
 //Imagefont.bin assets
 	trp_sync_img_index,

@@ -1646,7 +1646,7 @@ void _ReadOnlineListEx(const char* urlPath, uint16_t flag, list_t *list)
 		if ((tmp = strchr(content, '=')) != NULL)
 		{
 			*tmp++ = 0;
-			item = _createSaveEntry(flag, tmp);
+			item = _createSaveEntry(flag | SAVE_FLAG_ONLINE, tmp);
 			item->title_id = strdup(content);
 			asprintf(&item->path, "%s%s/", urlPath, item->title_id);
 

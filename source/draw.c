@@ -101,11 +101,20 @@ void _drawListBackground(int off, int icon)
 		case cat_db_png_index:
 		case cat_usb_png_index:
 		case cat_hdd_png_index:
-		case cat_sav_png_index:
 		case cat_opt_png_index:
 		case cat_bup_png_index:
 		case cat_warning_png_index:
 			DrawTexture(&menu_textures[help_png_index], help_png_x, help_png_y, 0, help_png_w, help_png_h, 0xFFFFFF00 | 0xFF);
+			break;
+
+		case cat_sav_png_index:
+			DrawTexture(&menu_textures[help_png_index], help_png_x, help_png_y, 0, help_png_w, help_png_h, 0xFFFFFF00 | 0xFF);
+
+			if (menu_textures[icon_png_file_index].size)
+			{
+				DrawTexture(&menu_textures[help_png_index], 624, help_png_y + 4, 0, 168, 98, 0xFFFFFF00 | 0xFF);
+				DrawTexture(&menu_textures[icon_png_file_index], 628, help_png_y + 8, 0, 160, 88, 0xFFFFFF00 | 0xFF);
+			}
 			break;
 
 		case cat_cheats_png_index:

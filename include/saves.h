@@ -123,6 +123,7 @@ enum cmd_code_enum
 #define SAVE_FLAG_PSP           32
 #define SAVE_FLAG_PSV           64
 #define SAVE_FLAG_TROPHY        128
+#define SAVE_FLAG_ONLINE        256
 
 enum save_type_enum
 {
@@ -241,7 +242,6 @@ void UnloadGameList(list_t * list);
 char * readFile(const char * path, long* size);
 int sortSaveList_Compare(const void* A, const void* B);
 int sortCodeList_Compare(const void* A, const void* B);
-long getFileSize(const char * path);
 int ReadCodes(save_entry_t * save);
 int ReadTrophies(save_entry_t * game);
 int ReadOnlineSaves(save_entry_t * game);

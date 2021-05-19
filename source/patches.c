@@ -893,8 +893,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 					u8* start = (u8*)data + range_start;
 					len = range_end - range_start;
 
-					// KH Chain of Memories hash is stored in little-endian
-					hash = ES32(kh_com_hash(start, len));
+					hash = kh_com_hash(start, len);
 
 					var->len = BSD_VAR_INT32;
 					var->data = malloc(var->len);

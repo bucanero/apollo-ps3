@@ -432,6 +432,18 @@ void LoadImageFontTexture(const u8* rawData, uint16_t unicode, int idx)
 	copyTexture(idx);
 }
 
+void LoadFileTexture(const char* fname, int idx)
+{
+	if (!menu_textures[idx].buffer)
+		menu_textures[idx].buffer = free_mem;
+
+	pngLoadFromFile(fname, &menu_textures[idx].texture);
+	copyTexture(idx);
+
+	menu_textures[idx].size = 1;
+	free_mem = (u32*) menu_textures[idx].buffer;
+}
+
 // Used only in initialization. Allocates 64 mb for textures and loads the font
 void LoadTextures_Menu()
 {
@@ -537,6 +549,9 @@ void LoadTextures_Menu()
 
 		free(imagefont);
 	}
+
+	menu_textures[icon_png_file_index].buffer = NULL;
+	LoadFileTexture(APOLLO_PATH "../ICON0.PNG", icon_png_file_index);
 
 	u32 tBytes = free_mem - texture_mem;
 	LOG("LoadTextures_Menu() :: Allocated %db (%.02fkb, %.02fmb) for textures", tBytes, tBytes / (float)1024, tBytes / (float)(1024 * 1024));
@@ -702,6 +717,9 @@ void SetMenu(int id)
 		case MENU_HDD_SAVES: //HHD Saves Menu
 		case MENU_ONLINE_DB: //Cheats Online Menu
 		case MENU_USER_BACKUP: //Backup Menu
+			menu_textures[icon_png_file_index].size = 0;
+			break;
+
 		case MENU_SETTINGS: //Options Menu
 		case MENU_CREDITS: //About Menu
 		case MENU_PATCHES: //Cheat Selection Menu
@@ -786,6 +804,22 @@ void SetMenu(int id)
 			//if entering from game list, don't keep index, otherwise keep
 			if (menu_id == MENU_USB_SAVES || menu_id == MENU_HDD_SAVES || menu_id == MENU_ONLINE_DB || menu_id == MENU_TROPHIES)
 				menu_old_sel[MENU_PATCHES] = 0;
+
+			char iconfile[256];
+			snprintf(iconfile, sizeof(iconfile), "%s" "ICON0.PNG", selected_entry->path);
+
+			if (selected_entry->flags & SAVE_FLAG_ONLINE)
+			{
+				snprintf(iconfile, sizeof(iconfile), APOLLO_TMP_PATH "%s.PNG", selected_entry->title_id);
+
+				if (file_exists(iconfile) != SUCCESS)
+					http_download(selected_entry->path, "ICON0.PNG", iconfile, 0);
+			}
+
+			if (file_exists(iconfile) == SUCCESS)
+				LoadFileTexture(iconfile, icon_png_file_index);
+			else
+				menu_textures[icon_png_file_index].size = 0;
 
 			if (apollo_config.doAni && menu_id != MENU_PATCH_VIEW && menu_id != MENU_CODE_OPTIONS)
 				Draw_CheatsMenu_Selection_Ani();
