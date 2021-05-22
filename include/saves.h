@@ -104,7 +104,8 @@ enum cmd_code_enum
 
 // Import commands
     CMD_IMP_EXDATA_USB,
-    CMD_IMP_PS2ISO_USB,
+    CMD_IMP_PS2_ISO,
+    CMD_IMP_PS2_CONFIG,
     CMD_IMP_PS2VMC_USB,
 
 // SFO patches

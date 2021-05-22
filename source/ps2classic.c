@@ -24,6 +24,7 @@
 #define PS2_DATA_SEGMENT_START      2
 #define PS2_DEFAULT_SEGMENT_SIZE    0x4000
 #define PS2_META_ENTRY_SIZE         0x20
+#define PS2_CONFIG_NAME             "CONFIG"
 #define PS2_REAL_OUT_NAME           "ISO.BIN.ENC"
 #define PS2_PLACEHOLDER_CID         "2P0001-PS2U10000_00-0000111122223333"
 #define PS2_REACTPSN_CID            "UP0001-RPS200000_00-0000000000000000"
@@ -40,7 +41,6 @@
 
 #define be32(x)                     *(u32*)(x)
 #define be64(x)                     *(u64*)(x)
-#define set_ps2_iv(x)               memset(x, 0, 0x10)
 
 typedef struct
 {
@@ -563,15 +563,15 @@ void ps2_decrypt_image(u8 dex_mode, const char* image_name, const char* data_fil
 	meta_buffer = malloc(segment_size);
 
 	//generate keys
+	memset(iv, 0, 0x10);
+
 	if(dex_mode)
 	{
 		LOG("[* DEX] PS2 Classic:\n");
-		set_ps2_iv(iv);
 		aes128cbc_enc(ps2_key_dex_data, iv, klicensee, 0x10, ps2_data_key);
 		aes128cbc_enc(ps2_key_dex_meta, iv, klicensee, 0x10, ps2_meta_key);
 	}else{
 		LOG("[* CEX] PS2 Classic:\n");
-		set_ps2_iv(iv);
 		aes128cbc_enc(ps2_key_cex_data, iv, klicensee, 0x10, ps2_data_key);
 		aes128cbc_enc(ps2_key_cex_meta, iv, klicensee, 0x10, ps2_meta_key);
 	}
@@ -619,7 +619,7 @@ int64_t get_fsize(const char* fname)
 	return st.st_size;
 }
 
-void ps2_encrypt_image(u8 dex_mode, const char* image_name, const char* data_file, char* msg_update)
+void ps2_encrypt_image(u8 cfg_mode, const char* image_name, const char* data_file, char* msg_update)
 {
 	FILE * in;
 	FILE * data_out;
@@ -659,14 +659,15 @@ void ps2_encrypt_image(u8 dex_mode, const char* image_name, const char* data_fil
 	flush_size = total_size / 100;
 
 	/* limg section */
-	ps2_build_limg(image_name, data_size);
+	if (!cfg_mode)
+		ps2_build_limg(image_name, data_size);
 	
 	// Get new file info -- FIX FAKE SIZE VALUE on PS2 HEADER
 	data_size = get_fsize(image_name);
 
 	in = fopen(image_name, "rb");
 
-	LOG("segment size: %x\ndata_size: %lx\nfile name: %s\nContent_id: %s\niso %s\nout file: %s\n", segment_size, data_size, PS2_REAL_OUT_NAME, PS2_PLACEHOLDER_CID, image_name, data_file);
+	LOG("segment size: %x\ndata_size: %lx\nfile name: %s\nContent_id: %s\niso %s\nout file: %s\n", segment_size, data_size, cfg_mode ? PS2_CONFIG_NAME : PS2_REAL_OUT_NAME, PS2_PLACEHOLDER_CID, image_name, data_file);
 
 	//prepare buffers
 	data_buffer = malloc(segment_size * 0x200);
@@ -675,21 +676,13 @@ void ps2_encrypt_image(u8 dex_mode, const char* image_name, const char* data_fil
 	memset(ps2_header, 0, segment_size);
 
 	//generate keys
-	if(dex_mode)
-	{
-		LOG("[* DEX] PS2 Classic:\n");
-		set_ps2_iv(iv);
-		aes128cbc_enc(ps2_key_dex_data, iv, ps2_placeholder_klic, 0x10, ps2_data_key);
-		aes128cbc_enc(ps2_key_dex_meta, iv, ps2_placeholder_klic, 0x10, ps2_meta_key);
-	}else{
-		LOG("[* CEX] PS2 Classic:\n");
-		set_ps2_iv(iv);
-		aes128cbc_enc(ps2_key_cex_data, iv, ps2_placeholder_klic, 0x10, ps2_data_key);
-		aes128cbc_enc(ps2_key_cex_meta, iv, ps2_placeholder_klic, 0x10, ps2_meta_key);
-	}
+	LOG("[* CEX] PS2 Classic:\n");
+	memset(iv, 0, 0x10);
+	aes128cbc_enc(ps2_key_cex_data, iv, ps2_placeholder_klic, 0x10, ps2_data_key);
+	aes128cbc_enc(ps2_key_cex_meta, iv, ps2_placeholder_klic, 0x10, ps2_meta_key);
 
 	//write incomplete ps2 header
-	build_ps2_header(ps2_header, 2, PS2_PLACEHOLDER_CID, PS2_REAL_OUT_NAME, data_size);
+	build_ps2_header(ps2_header, 2, PS2_PLACEHOLDER_CID, cfg_mode ? PS2_CONFIG_NAME : PS2_REAL_OUT_NAME, data_size);
 	fwrite(ps2_header, segment_size, 1, data_out);
 
 	//write encrypted image
@@ -773,7 +766,7 @@ void ps2_crypt_vmc(u8 dex_mode, const char* vmc_path, const char* vmc_out, int c
 		memcpy(ps2_vmc_key, ps2_key_cex_vmc, 0x10);
 	}
 	
-	set_ps2_iv(iv);
+	memset(iv, 0, 0x10);
 
 	while((read = fread(data_buffer, 1, PS2_DEFAULT_SEGMENT_SIZE, in)))
 	{
@@ -781,11 +774,9 @@ void ps2_crypt_vmc(u8 dex_mode, const char* vmc_path, const char* vmc_out, int c
 		if(crypt_mode == PS2_VMC_DECRYPT)
 			aes128cbc(ps2_vmc_key, iv, data_buffer, read, data_buffer);
 		else
-		{
-            aes128cbc_enc(ps2_vmc_key, iv, data_buffer, read, data_buffer);
-        }
-		fwrite(data_buffer, read, 1, data_out);
+			aes128cbc_enc(ps2_vmc_key, iv, data_buffer, read, data_buffer);
 
+		fwrite(data_buffer, read, 1, data_out);
 	}
 
 	long sz = ftell(data_out);

@@ -981,11 +981,11 @@ int get_iso_files(save_entry_t * item)
 	{
 		while ((dir = readdir(d)) != NULL)
 		{
-			if (dir->d_type == DT_REG && (endsWith(dir->d_name, ".BIN") || endsWith(dir->d_name, ".ISO")))
+			if (dir->d_type == DT_REG && (endsWith(dir->d_name, ".BIN") || endsWith(dir->d_name, ".ISO") || endsWith(dir->d_name, ".CONFIG")))
 			{
 				snprintf(name, sizeof(name), "Encode %s", dir->d_name);
 
-				cmd = _createCmdCode(PATCH_COMMAND, name, CMD_IMP_PS2ISO_USB);
+				cmd = _createCmdCode(PATCH_COMMAND, name, endsWith(dir->d_name, "CONFIG") ? CMD_IMP_PS2_CONFIG : CMD_IMP_PS2_ISO);
 				asprintf(&cmd->file, dir->d_name);
 				list_append(item->codes, cmd);
 

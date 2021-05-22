@@ -475,6 +475,23 @@ void exportVM2raw(const char* vm2_path, const char* vm2_file, const char* dst_pa
 	show_message("File successfully saved to:\n%s%s", dstfile);
 }
 
+void importPS2classicsCfg(const char* cfg_path, const char* cfg_file)
+{
+	char ps2file[256];
+	char outfile[256];
+
+	snprintf(ps2file, sizeof(ps2file), "%s%s", cfg_path, cfg_file);
+	snprintf(outfile, sizeof(outfile), IMPORT_PS2_PATH_HDD "%s", cfg_file);
+	*strrchr(outfile, '.') = 0;
+	strcat(outfile, ".ENC");
+
+	init_loading_screen("Encrypting PS2 CONFIG...");
+	ps2_encrypt_image(1, ps2file, outfile, NULL);
+	stop_loading_screen();
+
+	show_message("File successfully saved to:\n%s", outfile);
+}
+
 void importPS2classics(const char* iso_path, const char* iso_file)
 {
 	char ps2file[256];
@@ -484,13 +501,7 @@ void importPS2classics(const char* iso_path, const char* iso_file)
 	snprintf(ps2file, sizeof(ps2file), "%s%s", iso_path, iso_file);
 	snprintf(outfile, sizeof(outfile), IMPORT_PS2_PATH_HDD "%s", iso_file);
 	*strrchr(outfile, '.') = 0;
-	strcat(outfile, "/ISO.BIN.ENC");
-
-	if (mkdirs(outfile) != SUCCESS)
-	{
-		show_message("Error! Export folder is not available:\n%s", outfile);
-		return;
-	}
+	strcat(outfile, ".BIN.ENC");
 
 	init_loading_screen(msg);
 	ps2_encrypt_image(0, ps2file, outfile, msg);
@@ -1178,8 +1189,13 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			code->activated = 0;
 			break;
 
-		case CMD_IMP_PS2ISO_USB:
+		case CMD_IMP_PS2_ISO:
 			importPS2classics(selected_entry->path, code->file);
+			code->activated = 0;
+			break;
+
+		case CMD_IMP_PS2_CONFIG:
+			importPS2classicsCfg(selected_entry->path, code->file);
 			code->activated = 0;
 			break;
 
