@@ -598,7 +598,8 @@ int ReadCodes(save_entry_t * save)
 			else if (wildcard_match_icase(line, "*GROUP:\\*"))
 			{
 				group = 0;
-				line = strrchr(line, '\\')+1;
+				line = strrchr(line, '\\');
+				line[0] = ' ';
 			}
 			else if (wildcard_match_icase(line, "[GROUP:*"))
 			{

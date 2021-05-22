@@ -490,11 +490,11 @@ DECRYPT FFXIII(3, [key])
 10025D4E 00000064
 
 [Puchinero Omega]
-( 100 animals already punitive )
+;( 100 animals already punitive )
 10025D59 00000064
 
 [Apanda Omega]
-( 30 animals punitive already )
+;( 30 animals punitive already )
 10025D64 0000001E
 
 [Goblin Omega]
@@ -517,7 +517,7 @@ DECRYPT FFXIII(3, [key])
 
 [Gurangatch Omega]
 10025DC7 0000001E
-? Grand Gutch battle after the victory against the conditional main quest ( dead Dune ) 4-2 in " Thieves volunteer "
+; Grand Gutch battle after the victory against the conditional main quest ( dead Dune ) 4-2 in " Thieves volunteer "
 
 [Cactuar Omega]
 10025DD2 0000001E
@@ -526,27 +526,27 @@ DECRYPT FFXIII(3, [key])
 10025E14 00000078
 
 [Megappuru Omega]
-( 80 animals punitive already )
+;( 80 animals punitive already )
 10025E35 00000050
 
 [Masurao Omega]
-( 100 animals already punitive )
+;( 100 animals already punitive )
 10025E4B 00000064
 
 [Sugriva Omega]
 10025E6C 0000001E
-? room after the events of The first test of the third
+; room after the events of The first test of the third
 
 [Gaunt Omega]
 10025EB9 0000003C
 
 [Dryad Omega]
 10025EC4 00000064
-? x6 round after winning conditional Dryad ( Wilderness ) in " for a little peace " sub- quest
+; x6 round after winning conditional Dryad ( Wilderness ) in " for a little peace " sub- quest
 
 [Arcangeli Omega]
 10025ECF 0000001E
-? room after the events of The first test of the second
+; room after the events of The first test of the second
 
 [Skeleton Omega]
 10025EDA 0000003C
@@ -560,14 +560,14 @@ DECRYPT FFXIII(3, [key])
 
 [Chocobo Eater Omega]
 10025F27 0000001E
-? Chocobo Eater game after winning conditional ( Wilderness ) in " what you eat nest in chaos " sub- quest
+; Chocobo Eater game after winning conditional ( Wilderness ) in " what you eat nest in chaos " sub- quest
 
 [Earth Eater Omega]
 10025F32 0000001E
 
 [Chimera Omega]
 10025F3D 0000000F
-? room after the events of third test of the first
+; room after the events of third test of the first
 
 [Cyclops Omega]
 ( 30 animals punitive already )
