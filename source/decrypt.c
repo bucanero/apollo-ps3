@@ -14,8 +14,6 @@
 #include "keys.h"
 #include "types.h"
 
-#define shift_bits(base, bits, value)			((u64)(value) << bits | (u64)(value) >> (base - bits))
-
 
 void blowfish_ecb_decrypt(u8* data, u32 len, u8* key, u32 key_len)
 {
@@ -359,12 +357,9 @@ u32 ff13_checksum(u8* bytes, u32 len)
 	return (ff_csum);
 }
 
-void ff13_decrypt_data(u32 type, u8* data, u32 size, const u8* key, u32 key_len)
+void ff13_decrypt_data(u32 type, u8* MemBlock, u32 size, const u8* key, u32 key_len)
 {
-	u8 key_table[272];
-	u8 sub_table[256];
-	u64 block[3], tmp;
-	u32 ff_pos = 0;
+	u8 KeyBlocksArray[32][8];
 	u32 *csum, ff_csum;
 
 	if (type != 1 && key_len != 16)
@@ -372,49 +367,86 @@ void ff13_decrypt_data(u32 type, u8* data, u32 size, const u8* key, u32 key_len)
 
 	LOG("[*] Total Decrypted Size Is 0x%X (%d bytes)", size, size);
 
-	memset(key_table, 0, sizeof(key_table));
-	ff13_init_key(key_table, type, (u64*) key);
+	memset(KeyBlocksArray, 0, sizeof(KeyBlocksArray));
+	ff13_init_key(&KeyBlocksArray[0][0], type, (u64*) key);
 
-	// init sub table
-	for (int i = 0; i < 256; i++)
-		sub_table[i] = (0x78 + i) & 0xFF;
+	///DECODING THE ENCODED INFORMATION NOW IN MemBlock
+	uint32_t ByteCounter = 0, BlockCounter = 0, KeyBlockCtr = 0;
+	uint32_t Gear1 = 0, Gear2 = 0;
+	uint32_t TBlockA = 0, TBlockB = 0, KBlockA = 0, KBlockB = 0;
+	uint8_t CarryFlag1 = 0, CarryFlag2 = 0;
+	uint8_t IntermediateCarrier = 0, OldMemblockValue = 0;
 
-	size /= 8;
-	for (int i = 0; i < size; i++)
+	union u {
+		uint64_t Cog64B;
+		uint32_t Cog32BArray[2];
+	} o;
+
+	///OUTERMOST LOOP OF THE DECODER
+	for (; ByteCounter < size; BlockCounter++, KeyBlockCtr++, ByteCounter += 8)
 	{
-		ff_pos = i << 3;
-		block[0] = (u64)((shift_bits(32, 29, ff_pos) & 0xFF) ^ 0x45);
+		if(KeyBlockCtr > 31)
+			KeyBlockCtr = 0;
 
-		for (int j = 0; j < 8; j++)
+		o.Cog64B = (uint64_t)ByteCounter << 0x14;
+		Gear1 = o.Cog32BArray[1] | (ByteCounter << 0x0A) | ByteCounter; ///Will this work badly when Gear1 becomes higher than 7FFFFFFF?
+
+		CarryFlag1 = (Gear1 > ~FFXIII_CONST) ? 1 : 0;
+
+		Gear1 = Gear1 + FFXIII_CONST;
+		Gear2 = (BlockCounter*2 | o.Cog32BArray[0]) + CarryFlag1;
+
+		///THE INNER LOOP OF THE DECODER
+		for(int i = 0, BlockwiseByteCounter = 0; BlockwiseByteCounter < 8;)
 		{
-			tmp = (block[0] & 0xFF);
-			block[0] = data[ff_pos + j];
-			block[2] = sub_table[(block[0] ^ tmp) & 0xFF] - key_table[(0xF8 & ff_pos)];
-			block[1] = sub_table[block[2] & 0xFF] - key_table[(0xF8 & ff_pos) + 1];
-			tmp = sub_table[block[1] & 0xFF] - key_table[(0xF8 & ff_pos) + 2];
-			block[1] = sub_table[tmp & 0xFF] - key_table[(0xF8 & ff_pos) + 3];
-			tmp = sub_table[block[1] & 0xFF] - key_table[(0xF8 & ff_pos) + 4];
-			block[1] = sub_table[tmp & 0xFF] - key_table[(0xF8 & ff_pos) + 5];
-			tmp = sub_table[block[1] & 0xFF] - key_table[(0xF8 & ff_pos) + 6];
-			data[ff_pos + j] = sub_table[tmp & 0xFF] - key_table[(0xF8 & ff_pos) + 7];
+			if(i == 0 && BlockwiseByteCounter == 0)
+			{
+				OldMemblockValue = MemBlock[ByteCounter];
+				MemBlock[ByteCounter] = 0x45 ^ BlockCounter ^ MemBlock[ByteCounter];
+				i++;
+			}
+			else if(i == 0 && BlockwiseByteCounter < 8)
+			{
+				IntermediateCarrier = MemBlock[ByteCounter] ^ OldMemblockValue;
+				OldMemblockValue = MemBlock[ByteCounter];
+				MemBlock[ByteCounter] = IntermediateCarrier;
+				i++;
+			}
+			else if(i < 9 && BlockwiseByteCounter < 8)
+			{
+				MemBlock[ByteCounter] = 0x78 + MemBlock[ByteCounter] - KeyBlocksArray[KeyBlockCtr][i-1];
+				i++;
+			}
+			else if(i == 9)
+			{
+				i = 0;
+				ByteCounter++;
+				BlockwiseByteCounter++;
+			}
 		}
+		///EXITING THE INNER LOOP OF THE DECOER
 
-		block[0] = (u64)((shift_bits(64, 10, shift_bits(64, 10, ff_pos) | ff_pos) & FFXIII_MASK_1) | ff_pos);
-		tmp = (u64)(((shift_bits(64, 10, block[0]) & FFXIII_MASK_1) | ff_pos) + FFXIII_CONST);
+		///RESUMING THE OUTER LOOP
+		ByteCounter -=8;
 
-		block[2] = *(u64*)(&key_table[0xF8 & ff_pos]);
-		block[0] = ES64(ES64(*(u64*)(data + ff_pos)) - ES64(block[2]));
-		block[1] = ES32(tmp & 0xFFFFFFFF);
-		tmp = ES32((tmp >> 32) & 0xFFFFFFFF);
+		TBlockA = ES32(*(u32*) &MemBlock[ByteCounter]);
+		TBlockB = ES32(*(u32*) &MemBlock[ByteCounter+4]);
 
-		block[1] = (u64)(block[2] ^ (block[0] ^ ((tmp & 0xFFFFFFFF) | (shift_bits(64, 32, block[1]) & FFXIII_MASK_2))));
-		
-		tmp = ((block[1] >> 32 & 0xFFFFFFFF) | (shift_bits(64, 32, block[1]) & FFXIII_MASK_2));
-		memcpy(data + ff_pos, &tmp, sizeof(uint64_t));
+		KBlockA = ES32(*(u32*) &KeyBlocksArray[KeyBlockCtr][0]);
+		KBlockB = ES32(*(u32*) &KeyBlocksArray[KeyBlockCtr][4]);
+
+		CarryFlag2 = (TBlockA < KBlockA) ? 1 : 0;
+
+		TBlockA = ES32(KBlockA ^ Gear1 ^ (TBlockA - KBlockA));
+		TBlockB = ES32(KBlockB ^ Gear2 ^ (TBlockB - KBlockB - CarryFlag2));
+
+		memcpy(&MemBlock[ByteCounter],   &TBlockB, sizeof(uint32_t));
+		memcpy(&MemBlock[ByteCounter+4], &TBlockA, sizeof(uint32_t));
 	}
+	///EXITING THE OUTER LOOP. FILE HAS NOW BEEN FULLY DECODED.
 
-	ff_csum = ES32(ff13_checksum(data, ff_pos));
-	csum = (u32*)(data + ff_pos + 4);
+	ff_csum = ES32(ff13_checksum(MemBlock, ByteCounter - 8));
+	csum = (u32*)(MemBlock + ByteCounter - 4);
 
 	if (*csum == ff_csum)
 		LOG("[*] Decrypted File Successfully!");
@@ -424,55 +456,89 @@ void ff13_decrypt_data(u32 type, u8* data, u32 size, const u8* key, u32 key_len)
 	return;
 }
 
-void ff13_encrypt_data(u32 type, u8* data, u32 size, const u8* key, u32 key_len)
+void ff13_encrypt_data(u32 type, u8* MemBlock, u32 size, const u8* key, u32 key_len)
 {
-	u8 key_table[272];
-	u8 add_table[256];
-	u64 block[3], tmp;
-	u32 ff_pos = 0;
+	u8 KeyBlocksArray[32][8];
 
 	if (type != 1 && key_len != 16)
 		return;
 
 	LOG("[*] Total Encrypted Size Is 0x%X (%d bytes)", size, size);
 
-	memset(key_table, 0, sizeof(key_table));
-	ff13_init_key(key_table, type, (u64*) key);
+	memset(KeyBlocksArray, 0, sizeof(KeyBlocksArray));
+	ff13_init_key(&KeyBlocksArray[0][0], type, (u64*) key);
 
-	// init add table
-	for (int i = 0; i < 256; i++)
-		add_table[i] = (0x88 + i) & 0xFF;
+	///ENCODE the file, now that all the changes have been made and the checksum has been updated.
+	uint32_t ByteCounter = 0, BlockCounter = 0, KeyBlockCtr = 0;
+	uint32_t Gear1 = 0, Gear2 = 0;
+	uint32_t TBlockA = 0, TBlockB = 0, KBlockA = 0, KBlockB = 0;
+	uint8_t CarryFlag1 = 0, CarryFlag2 = 0;
+	uint8_t OldMemblockValue = 0;
 
-	size /= 8;
-	for (int i = 0; i < size; i++)
+	union u {
+		uint64_t Cog64B;
+		uint32_t Cog32BArray[2];
+	} o;
+
+	///OUTERMOST LOOP OF THE ENCODER
+	for (; ByteCounter < size; BlockCounter++, KeyBlockCtr++)
 	{
-		ff_pos = (i << 3);
+		if(KeyBlockCtr > 31)
+			KeyBlockCtr = 0;
 
-		tmp = *(u64*)(data + ff_pos);
-		block[1] = (u64)((shift_bits(64, 10, shift_bits(64, 10, ff_pos) | ff_pos) & FFXIII_MASK_1) | ff_pos);
-		block[2] = (u64)(FFXIII_CONST + ((shift_bits(64, 10, block[1]) & FFXIII_MASK_1) | ff_pos));
-		block[0] = ES32((block[2] >> 32) & 0xFFFFFFFF);
-		block[1] = ES32(block[2] & 0xFFFFFFFF);
-		block[2] = *(u64*)(&key_table[0xF8 & ff_pos]);
+		o.Cog64B = (uint64_t)ByteCounter << 0x14;
 
-		tmp = (((block[0] & 0xFFFFFFFF) | (shift_bits(64, 32, block[1]) & FFXIII_MASK_2)) ^ block[2] ^ ((shift_bits(64, 32, tmp) & 0xFFFFFFFF) | (shift_bits(64, 32, tmp) & FFXIII_MASK_2)));
+		Gear1 = o.Cog32BArray[1] | (ByteCounter << 0x0A) | ByteCounter; ///Will this work badly when Gear1 becomes higher than 7FFFFFFF?
 
-		tmp = ES64(ES64(tmp) + ES64(block[2]));
-		memcpy(data + ff_pos, &tmp, sizeof(uint64_t));
+		CarryFlag1 = (Gear1 > ~FFXIII_CONST) ? 1 : 0;
 
-		block[0] = (u64)((shift_bits(32, 29, ff_pos) & 0xFF) ^ 0x45);
+		Gear1 = Gear1 + FFXIII_CONST;
+		Gear2 = (BlockCounter*2 | o.Cog32BArray[0]) + CarryFlag1;
 
-		for (int j = 0; j < 8; j++)
+		KBlockA = ES32(*(u32*) &KeyBlocksArray[KeyBlockCtr][0]);
+		KBlockB = ES32(*(u32*) &KeyBlocksArray[KeyBlockCtr][4]);
+
+		TBlockB = KBlockB ^ Gear2 ^ ES32(*(u32*) &MemBlock[ByteCounter]);
+		TBlockA = KBlockA ^ Gear1 ^ ES32(*(u32*) &MemBlock[ByteCounter+4]);
+
+		///Reverse of TBlockA < KBlockA from the Decoder.
+		CarryFlag2 = (TBlockA > ~KBlockA) ? 1 : 0;
+
+		TBlockB = ES32(TBlockB + KBlockB + CarryFlag2);       ///Reversed from subtraction to addition.
+		TBlockA = ES32(TBlockA + KBlockA);                    ///Reversed from subtraction to addition.
+
+		memcpy(&MemBlock[ByteCounter],   &TBlockA, sizeof(uint32_t));
+		memcpy(&MemBlock[ByteCounter+4], &TBlockB, sizeof(uint32_t));
+
+		///INNER LOOP OF ENCODER
+		for(int i = 8, BlockwiseByteCounter = 0; BlockwiseByteCounter < 8;)
 		{
-			tmp = (block[0] & 0xFF);
-			block[0] = (u64)((u64)key_table[(0xF8 & ff_pos)] + (u64)data[ff_pos + j]);
-			for (int k = 1; k < 8; k++)
-				block[0] = add_table[(block[0] & 0xFF)] + key_table[(0xF8 & ff_pos) + k];
-
-			block[0] = (add_table[(block[0] & 0xFF)] ^ tmp);
-			data[ff_pos + j] = (u8)block[0];
+			if(i != 0 && BlockwiseByteCounter < 8)
+			{
+				MemBlock[ByteCounter] = MemBlock[ByteCounter] + KeyBlocksArray[KeyBlockCtr][i-1] - 0x78;
+				i--;
+			}
+			else if(i == 0 && BlockwiseByteCounter==0)
+			{
+				MemBlock[ByteCounter] = 0x45 ^ BlockCounter ^ MemBlock[ByteCounter];
+				OldMemblockValue = MemBlock[ByteCounter];
+				BlockwiseByteCounter++;
+				ByteCounter++;
+				i = 8;
+			}
+			else if(i == 0 && BlockwiseByteCounter < 8)
+			{
+				MemBlock[ByteCounter] = MemBlock[ByteCounter] ^ OldMemblockValue;
+				OldMemblockValue = MemBlock[ByteCounter];
+				i = 8;
+				BlockwiseByteCounter++;
+				ByteCounter++;
+			}
 		}
+		///EXITING INNER LOOP OF ENCODER
 	}
+	///EXITING OUTER LOOP
+	///ENCODING FINISHED
 
 	LOG("[*] Encrypted File Successfully!");
 	return;
