@@ -4,6 +4,19 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.6.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.6.0) - 2021-05-22
+
+### Added
+
+* Display save-games and trophy-set icons
+* Added Database rebuild dialog (trophies)
+* Added PS2 Classics `CONFIG` encryption support
+* Improved USB scanning for "User Backup" tools
+
+### Fixed
+
+* Fixed `.ps3savepatch` file parsing
+
 ## [v1.5.8](https://github.com/bucanero/apollo-ps3/releases/tag/v1.5.8) - 2021-04-03
 
 ### Added
