@@ -602,14 +602,15 @@ void LoadSounds()
 
 void update_usb_path(char* path)
 {
-	if (dir_exists(USB0_PATH) == SUCCESS)
-		strcpy(path, USB0_PATH);
-	else if (dir_exists(USB1_PATH) == SUCCESS)
-		strcpy(path, USB1_PATH);
-	else if (dir_exists(USB6_PATH) == SUCCESS)
-		strcpy(path, USB6_PATH);
-	else
-		strcpy(path, "");
+	for (int i = 0; i <= MAX_USB_DEVICES; i++)
+	{
+		sprintf(path, USB_PATH, i);
+
+		if (dir_exists(path) == SUCCESS)
+			return;
+	}
+
+	strcpy(path, "");
 }
 
 void update_hdd_path(char* path)

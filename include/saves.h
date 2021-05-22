@@ -9,9 +9,10 @@
 #define APOLLO_LOCAL_CACHE		APOLLO_PATH "CACHE/"
 #define APOLLO_UPDATE_URL		"https://api.github.com/repos/bucanero/apollo-ps3/releases/latest"
 
+#define MAX_USB_DEVICES         6
 #define USB0_PATH               "/dev_usb000/"
 #define USB1_PATH               "/dev_usb001/"
-#define USB6_PATH               "/dev_usb006/"
+#define USB_PATH                "/dev_usb%03d/"
 #define USER_PATH_HDD			"/dev_hdd0/home/%08d/"
 
 #define PS3_SAVES_PATH_USB      "PS3/SAVEDATA/"
@@ -20,6 +21,7 @@
 #define PSV_SAVES_PATH_USB      "PS3/EXPORT/PSV/"
 #define TROPHIES_PATH_USB       "PS3/EXPORT/TROPHY/"
 
+#define PS3_LICENSE_PATH        "exdata/"
 #define PS3_SAVES_PATH_HDD      "savedata/"
 #define PS2_SAVES_PATH_HDD      "ps2emu2_savedata/"
 #define PSP_SAVES_PATH_HDD      "minis_savedata/"
@@ -34,13 +36,12 @@
 #define TROPHY_PATH_USB0        USB0_PATH TROPHIES_PATH_USB
 #define TROPHY_PATH_USB1        USB1_PATH TROPHIES_PATH_USB
 #define TROPHY_PATH_HDD			USER_PATH_HDD "trophy/"
-#define EXDATA_PATH_HDD			USER_PATH_HDD "exdata/"
+#define EXDATA_PATH_HDD			USER_PATH_HDD PS3_LICENSE_PATH
 
 #define EXPORT_PATH_USB0        USB0_PATH "PS3/EXPORT/"
 #define EXPORT_PATH_USB1        USB1_PATH "PS3/EXPORT/"
-#define EXPORT_RAP_PATH_USB0    USB0_PATH "exdata/"
-#define EXPORT_RAP_PATH_USB1    USB1_PATH "exdata/"
-#define EXPORT_RAP_PATH_HDD     "/dev_hdd0/exdata/"
+#define EXPORT_RAP_PATH_USB     USB_PATH PS3_LICENSE_PATH
+#define EXPORT_RAP_PATH_HDD     "/dev_hdd0/" PS3_LICENSE_PATH
 
 #define EXP_PSV_PATH_USB0       USB0_PATH PSV_SAVES_PATH_USB
 #define EXP_PSV_PATH_USB1       USB1_PATH PSV_SAVES_PATH_USB
@@ -49,12 +50,11 @@
 #define EXP_PS2_PATH_USB1       USB1_PATH "PS2/VMC/"
 #define EXP_PS2_PATH_HDD        "/dev_hdd0/savedata/vmc/"
 
-#define IMPORT_RAP_PATH_USB0    USB0_PATH "exdata/"
-#define IMPORT_RAP_PATH_USB1    USB1_PATH "exdata/"
+#define IMP_PS2VMC_PATH_USB     USB_PATH "PS2/VMC/"
+#define IMPORT_RAP_PATH_USB     USB_PATH PS3_LICENSE_PATH
 
-#define IMPORT_PS2_PATH_USB0    USB0_PATH "PS2ISO/"
-#define IMPORT_PS2_PATH_USB1    USB1_PATH "PS2ISO/"
-#define IMPORT_PS2_PATH_HDD     "/dev_hdd0/PS2ISO/"
+#define PS2ISO_PATH_USB         USB_PATH "PS2ISO/"
+#define PS2ISO_PATH_HDD         "/dev_hdd0/PS2ISO/"
 
 #define ONLINE_URL				"http://apollo-db.psdev.tk/"
 #define ONLINE_CACHE_TIMEOUT    24*3600     // 1-day local cache

@@ -481,7 +481,7 @@ void importPS2classicsCfg(const char* cfg_path, const char* cfg_file)
 	char outfile[256];
 
 	snprintf(ps2file, sizeof(ps2file), "%s%s", cfg_path, cfg_file);
-	snprintf(outfile, sizeof(outfile), IMPORT_PS2_PATH_HDD "%s", cfg_file);
+	snprintf(outfile, sizeof(outfile), PS2ISO_PATH_HDD "%s", cfg_file);
 	*strrchr(outfile, '.') = 0;
 	strcat(outfile, ".ENC");
 
@@ -499,7 +499,7 @@ void importPS2classics(const char* iso_path, const char* iso_file)
 	char msg[128] = "Encrypting PS2 ISO...";
 
 	snprintf(ps2file, sizeof(ps2file), "%s%s", iso_path, iso_file);
-	snprintf(outfile, sizeof(outfile), IMPORT_PS2_PATH_HDD "%s", iso_file);
+	snprintf(outfile, sizeof(outfile), PS2ISO_PATH_HDD "%s", iso_file);
 	*strrchr(outfile, '.') = 0;
 	strcat(outfile, ".BIN.ENC");
 
@@ -512,28 +512,15 @@ void importPS2classics(const char* iso_path, const char* iso_file)
 
 void exportPS2classics(const char* enc_path, const char* enc_file, uint8_t dst)
 {
+	char path[256];
 	char ps2file[256];
 	char outfile[256];
 	char msg[128] = "Decrypting PS2 BIN.ENC...";
-	const char *path;
 
-	switch (dst)
-	{
-	case 0:
-		path = IMPORT_PS2_PATH_USB0;
-		break;
-
-	case 1:
-		path = IMPORT_PS2_PATH_USB1;
-		break;
-
-	case 2:
-		path = IMPORT_PS2_PATH_HDD;
-		break;
-
-	default:
-		return;
-	}
+	if (dst <= MAX_USB_DEVICES)
+		snprintf(path, sizeof(path), PS2ISO_PATH_USB, dst);
+	else
+		snprintf(path, sizeof(path), PS2ISO_PATH_HDD);
 
 	snprintf(ps2file, sizeof(ps2file), "%s%s", enc_path, enc_file);
 	snprintf(outfile, sizeof(outfile), "%s%s", path, enc_file);
@@ -576,26 +563,13 @@ void exportLicensesRap(const char* fname, uint8_t dest)
 	DIR *d;
 	struct dirent *dir;
 	char lic_path[256];
+	char exp_path[256];
 	char msg[128] = "Exporting user licenses...";
-	const char* exp_path;
 
-	switch (dest)
-	{
-	case 0:
-		exp_path = EXPORT_RAP_PATH_USB0;
-		break;
-	
-	case 1:
-		exp_path = EXPORT_RAP_PATH_USB1;
-		break;
-
-	case 2:
-		exp_path = EXPORT_RAP_PATH_HDD;
-		break;
-
-	default:
-		return;
-	}
+	if (dest <= MAX_USB_DEVICES)
+		snprintf(exp_path, sizeof(exp_path), EXPORT_RAP_PATH_USB, dest);
+	else
+		snprintf(exp_path, sizeof(exp_path), EXPORT_RAP_PATH_HDD);
 
 	if (mkdirs(exp_path) != SUCCESS)
 	{

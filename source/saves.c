@@ -901,6 +901,7 @@ int ReadOnlineSaves(save_entry_t * game)
 
 list_t * ReadBackupList(const char* userPath)
 {
+	char tmp[128];
 	save_entry_t * item;
 	code_entry_t * cmd;
 	list_t *list = list_alloc();
@@ -910,33 +911,39 @@ list_t * ReadBackupList(const char* userPath)
 	item->type = FILE_TYPE_RIF;
 	list_append(list, item);
 
-	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " Import Licenses (USB 0)");
-	asprintf(&item->path, IMPORT_RAP_PATH_USB0);
-	item->type = FILE_TYPE_RAP;
-	list_append(list, item);
+	for (int i = 0; i <= MAX_USB_DEVICES; i++)
+	{
+		snprintf(tmp, sizeof(tmp), USB_PATH, i);
 
-	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " Import Licenses (USB 1)");
-	asprintf(&item->path, IMPORT_RAP_PATH_USB1);
-	item->type = FILE_TYPE_RAP;
-	list_append(list, item);
+		if (dir_exists(tmp) != SUCCESS)
+			continue;
 
-	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " PS2 Classics: Import & Encrypt ISOs (USB 0)");
-	asprintf(&item->path, IMPORT_PS2_PATH_USB0);
-	item->type = FILE_TYPE_ISO;
-	list_append(list, item);
+		snprintf(tmp, sizeof(tmp), CHAR_ICON_COPY " Import Licenses (USB %d)", i);
+		item = _createSaveEntry(SAVE_FLAG_PS3, tmp);
+		asprintf(&item->path, IMPORT_RAP_PATH_USB, i);
+		item->type = FILE_TYPE_RAP;
+		list_append(list, item);
 
-	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " PS2 Classics: Import & Encrypt ISOs (USB 1)");
-	asprintf(&item->path, IMPORT_PS2_PATH_USB1);
-	item->type = FILE_TYPE_ISO;
-	list_append(list, item);
+		snprintf(tmp, sizeof(tmp), CHAR_ICON_COPY " PS2 Classics: Import & Encrypt ISOs (USB %d)", i);
+		item = _createSaveEntry(SAVE_FLAG_PS2, tmp);
+		asprintf(&item->path, PS2ISO_PATH_USB, i);
+		item->type = FILE_TYPE_ISO;
+		list_append(list, item);
+
+		snprintf(tmp, sizeof(tmp), CHAR_ICON_COPY " Import PS2 raw memory cards (USB %d)", i);
+		item = _createSaveEntry(SAVE_FLAG_PS2, tmp);
+		asprintf(&item->path, IMP_PS2VMC_PATH_USB, i);
+		item->type = FILE_TYPE_PS2RAW;
+		list_append(list, item);
+	}
 
 	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " PS2 Classics: Import & Encrypt ISOs (HDD)");
-	asprintf(&item->path, IMPORT_PS2_PATH_HDD);
+	asprintf(&item->path, PS2ISO_PATH_HDD);
 	item->type = FILE_TYPE_ISO;
 	list_append(list, item);
 
 	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " PS2 Classics: Export & Decrypt BIN.ENC images");
-	asprintf(&item->path, IMPORT_PS2_PATH_HDD);
+	asprintf(&item->path, PS2ISO_PATH_HDD);
 	item->type = FILE_TYPE_BINENC;
 	list_append(list, item);
 
@@ -952,16 +959,6 @@ list_t * ReadBackupList(const char* userPath)
 	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " Export PS2 .VM2 memory cards to USB");
 	asprintf(&item->path, EXP_PS2_PATH_HDD);
 	item->type = FILE_TYPE_VM2;
-	list_append(list, item);
-
-	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " Import PS2 raw memory cards (USB 0)");
-	asprintf(&item->path, EXP_PS2_PATH_USB0);
-	item->type = FILE_TYPE_PS2RAW;
-	list_append(list, item);
-
-	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " Import PS2 raw memory cards (USB 1)");
-	asprintf(&item->path, EXP_PS2_PATH_USB1);
-	item->type = FILE_TYPE_PS2RAW;
 	list_append(list, item);
 
 	return list;
@@ -1028,7 +1025,7 @@ int get_binenc_files(save_entry_t * item)
 				cmd->options_count = 1;
 				cmd->options = _createOptions(3, "Save .ISO to USB", CMD_EXP_PS2_BINENC);
 				asprintf(&cmd->options->name[2], "Save .ISO to HDD");
-				asprintf(&cmd->options->value[2], "%c%c", CMD_EXP_PS2_BINENC, 2);
+				asprintf(&cmd->options->value[2], "%c%c", CMD_EXP_PS2_BINENC, 0x10);
 				list_append(item->codes, cmd);
 
 				LOG("Adding File '%s'", cmd->file);
@@ -1171,7 +1168,7 @@ int ReadBackupCodes(save_entry_t * bup)
 		cmd->options_count = 1;
 		cmd->options = _createOptions(3, "Save .RAPs to USB", CMD_EXP_LICS_RAPS);
 		asprintf(&cmd->options->name[2], "Save .RAPs to HDD");
-		asprintf(&cmd->options->value[2], "%c%c", CMD_EXP_LICS_RAPS, 2);
+		asprintf(&cmd->options->value[2], "%c%c", CMD_EXP_LICS_RAPS, 0x10);
 		list_append(bup->codes, cmd);
 	}
 
@@ -1200,7 +1197,7 @@ int ReadBackupCodes(save_entry_t * bup)
 					cmd->options_count = 1;
 					cmd->options = _createOptions(3, "Save .RAP to USB", CMD_EXP_LICS_RAPS);
 					asprintf(&cmd->options->name[2], "Save .RAP to HDD");
-					asprintf(&cmd->options->value[2], "%c%c", CMD_EXP_LICS_RAPS, 2);
+					asprintf(&cmd->options->value[2], "%c%c", CMD_EXP_LICS_RAPS, 0x10);
 				}
 				else if (bup->type == FILE_TYPE_RAP)
 				{
