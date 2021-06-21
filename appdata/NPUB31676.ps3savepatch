@@ -1,0 +1,49 @@
+; NPUB31676
+; One Piece Pirate Warriors 3
+; From savedata.jp and made by JorgeFFC
+
+:DATA.BIN
+
+; --- Basic or Miscelaneous Codes ---
+
+[Max Beli]
+2000C074 3B9AC9FF
+2000C078 0292753C
+
+[Rare Medals-Get Some of the Gold]
+41006CB0 00000101
+40B10030 00000000
+
+[99 of All Standart Medals]
+41005BA0 00006363
+40410030 00000000
+
+[Max Exp All Chars]
+420000F0 0098967F
+402F01F0 00000000
+
+; --- Character Related Codes ---
+
+[Max HP All Chars-Resets to Normal on Level Up]
+410000F4 00002710
+402F01F0 00000000
+
+[Max Attack All Chars-Resets to Normal on Level Up]
+410000F6 000003E8
+402F01F0 00000000
+
+[Max Def All Chars-Resets to Normal on Level Up]
+410000F8 000003E8
+402F01F0 00000000
+
+[Max Special Bars All Chars-Resets to Normal on Level up]
+400000FA 00000004
+402F01F0 00000000
+
+[All Characters Lv. 100-Non changes on their stats]
+400000FB 00000063
+402F01F0 00000000
+
+[All Chars 6 Skill Slots Opened]
+400000FC 00000006
+402F01F0 00000000

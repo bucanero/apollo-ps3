@@ -1,15 +1,18 @@
 ; NPEJ00345
 ; Dragon Age™: Inquisition
 
-; From gold972
+; by bucanero
 
 
 :USR-DATA
 
-[Update Small CRC32 for USR-DATA (Required)]
-;set range:0x20,0x02ABFA
-set pointer:eof -20
-set range:0x20,pointer
-set [hash]: Small CRC32
-write at 0x1C:[hash]
-
+[Update Custom CRC32 for USR-DATA (Required)]
+set crc_bandwidth:32
+set crc_polynomial:0x4C11DB7
+set crc_initial_value:0xE195D3B7
+set crc_output_xor:0xFFFFFFFF
+set crc_reflection_input:1
+set crc_reflection_output:1
+set range:0x00004,eof+1
+set [hash]:crc
+write at 0x0:[hash]
