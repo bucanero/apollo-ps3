@@ -915,6 +915,11 @@ list_t * ReadBackupList(const char* userPath)
 	item->type = FILE_TYPE_RIF;
 	list_append(list, item);
 
+	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_USER " Activate PS3 Account");
+	asprintf(&item->path, EXDATA_PATH_HDD, apollo_config.user_id);
+	item->type = FILE_TYPE_ACT;
+	list_append(list, item);
+
 	for (int i = 0; i <= MAX_USB_DEVICES; i++)
 	{
 		snprintf(tmp, sizeof(tmp), USB_PATH, i);
@@ -1153,13 +1158,19 @@ int ReadBackupCodes(save_entry_t * bup)
 		sprintf(fext, ".rap");
 		break;
 
+	case FILE_TYPE_ACT:
+		bup->codes = list_alloc();
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " Activate PS3 Account (act.dat)", CMD_CREATE_ACT_DAT);
+		list_append(bup->codes, cmd);
+		return list_count(bup->codes);
+
 	default:
 		return 0;
 	}
 
 	bup->codes = list_alloc();
 
-	LOG("Loading backup files from '%s'...", bup->path);
+	LOG("Loading %s files from '%s'...", fext, bup->path);
 
 	if (bup->type == FILE_TYPE_RIF)
 	{

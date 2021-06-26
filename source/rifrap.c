@@ -60,31 +60,7 @@ u8 ec_Q_nm[40] = {
 };
 
 
-struct rif
-{
-    u32 version;
-    u32 licenseType;
-    u64 accountid;
-    char titleid[0x30]; //Content ID
-    u8 padding[0xC]; //Padding for randomness
-    u32 actDatIndex; //Key index on act.dat between 0x00 and 0x7F
-    u8 key[0x10]; //encrypted klicensee
-    u64 timestamp; //timestamp??
-    u64 expiration; //Always 0
-    u8 r[0x14];
-    u8 s[0x14];
-} __attribute__ ((packed));
-
-struct actdat
-{
-    u32 version;
-    u32 licenseType;
-    u64 accountId;
-    u8 keyTable[0x800]; //Key Table
-    u8 unk2[0x800];
-    u8 signature[0x28];
-} __attribute__ ((packed));
-
+long search_data(const char* data, size_t size, int start, const char* search, int len, int count);
 
 void aesecb128_encrypt(const u8 *key, const u8 *in, u8 *out)
 {
@@ -339,6 +315,133 @@ int rif2rap(const u8* idps_key, const char* exdata_path, const char* rif_file, c
 	LOG("Saving RAP to '%s'...", path);
 	if (write_file(path, rap, sizeof(rap)) < 0) {
 		LOG("Error: unable to create rap file");
+		return 0;
+	}
+
+	return 1;
+}
+
+int find_xReg_data(const char* data, const char* value, const char* id)
+{
+	long i;
+	uint16_t offset;
+
+	// Get offset
+	if ((i = search_data(data, 0x10000, 0, value, strlen(value), 1)) < 0)
+		return (-1);
+	
+	// Found offset
+	offset = i - 0x15;
+
+	// Search value from value table
+	for(i = 0x10000; i < 0x15000; i++)
+	{
+		// Found value
+		if (memcmp(data + i, &offset, 2) == 0 && data[i+4] == 0x00 && data[i+5] == id[0] && data[i+6] == id[1])
+			return (i+7);
+	}
+
+	return (-1);
+}
+
+u64 create_fake_account(u32 user_id)
+{
+	int pos;
+	char data[256];
+	char *buffer;
+	size_t len;
+
+	LOG("Updating %s...", XREGISTRY_FILE);
+	if (read_buffer(XREGISTRY_FILE, (u8**) &buffer, &len) != 0)
+		return 0;
+
+	snprintf(data, sizeof(data), XREG_SETTING_ACCOUNTID, user_id);
+	if ((pos = find_xReg_data(buffer, data, "\x11\x02")) < 0)
+	{
+		LOG("Error: unable to find offset '%s'", data);
+		free(buffer);
+		return 0;
+	}
+
+	// Check if there is no accountID
+	memset(data, 0, 0x10);
+	if(memcmp(buffer + pos, data, 0x10) != 0)
+	{
+		LOG("Error: Account ID is not empty!");
+		free(buffer);
+		return 0;
+	}
+
+	// Set/Overwrite with fake accountID
+	sprintf(buffer + pos, "%016lx", FAKE_ACCOUNT_ID(user_id));
+	LOG("Setting AccountID (%s)...", buffer + pos);
+
+	snprintf(data, sizeof(data), XREG_SETTING_AUTOSIGN, user_id);
+	if ((pos = find_xReg_data(buffer, data, "\x04\x01")) < 0)
+	{
+		LOG("Error: unable to find offset '%s'", data);
+		free(buffer);
+		return 0;
+	}
+
+	// Disable auto sign in PSN with empty email/password
+	memset(data, 0, 4);
+	memcpy(buffer + pos, data, 4);
+
+	if (write_file(XREGISTRY_FILE, (u8*) buffer, len) < 0)
+	{
+		LOG("Error: unable to update xRegistry.sys file");
+		free(buffer);
+		return 0;
+	}
+
+	free(buffer);
+	return FAKE_ACCOUNT_ID(user_id);
+}
+
+int create_actdat(const char* exdata_path, u64 account_id)
+{
+	char path[256];
+	actdat_t act_dat;
+	u8 R[0x15];
+	u8 S[0x15];
+
+	LOG("Creating act.dat...");
+	if (read_file("/dev_hdd0/game/NP0APOLLO/ICON0.PNG", (u8*) &act_dat, sizeof(actdat_t)) < 0)
+	{
+		LOG("Error: unable to load dummy file");
+		return 0;
+	}
+
+	act_dat.version = 0x00010001;
+	act_dat.licenseType = 0x00000002;
+	act_dat.accountId = ES64(account_id);
+	memset((u8*)&act_dat + 0x860, 0, 0x20);
+	memcpy((u8*)&act_dat + 0x872, "\x01\x2F\x3F\xFF", 4); // time data
+
+	sha1((u8*) &act_dat, sizeof(actdat_t) - 0x28, act_dat.sig_r);
+
+	ecdsa_set_curve(0);
+	ecdsa_set_pub(ec_Q_nm);
+	ecdsa_set_priv(ec_k_nm);
+	ecdsa_sign(act_dat.sig_r, R, S);
+
+	memcpy(act_dat.sig_r, R+1, sizeof(act_dat.sig_r));
+	memcpy(act_dat.sig_s, S+1, sizeof(act_dat.sig_s));
+
+	snprintf(path, sizeof(path), "%s" "act.dat", exdata_path);
+	LOG("Saving act.dat to '%s'...", path);
+
+	if (write_file(path, (u8*) &act_dat, sizeof(actdat_t)) < 0) {
+		LOG("Error: unable to create act.dat file");
+		return 0;
+	}
+
+	snprintf(path, sizeof(path), "%s" "act.bak", exdata_path);
+	LOG("Saving backup to '%s'...", path);
+
+	if (write_file(path, (u8*) &act_dat, sizeof(actdat_t)) < 0) {
+		LOG("Error: unable to create act.bak file");
 		return 0;
 	}
 

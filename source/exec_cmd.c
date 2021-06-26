@@ -297,6 +297,56 @@ void resignPSVfile(const char* psv_path)
 	show_message("File successfully resigned!");
 }
 
+void activateAccount(const char* ex_path)
+{
+	int ret;
+	char path[256];
+
+	snprintf(path, sizeof(path), "%s" "act.dat", ex_path);
+	if (file_exists(path) == SUCCESS)
+	{
+		show_message("Error! The account already has an act.dat");
+		return;
+	}
+
+	if (mkdirs(ex_path) != SUCCESS)
+	{
+		show_message("Error! Folder is not available:\n%s", ex_path);
+		return;
+	}
+
+	if (!apollo_config.account_id && (apollo_config.account_id = create_fake_account(apollo_config.user_id)) == 0)
+	{
+		show_message("Error! Fake Account could not be assigned to xRegistry.sys");
+		return;
+	}
+
+	init_loading_screen("Activating PS3...");
+	ret = create_actdat(ex_path, apollo_config.account_id);
+	stop_loading_screen();
+
+	if (!ret)
+	{
+		show_message("Error! Account could not be activated!");
+		return;
+	}
+
+	save_app_settings(&apollo_config);
+
+	// wMM workaround to restore offline act.dat on HEN start
+	if (is_ps3hen())
+	{
+		FILE* f = fopen("/dev_hdd0/boot_init.txt", "a");
+		if (f)
+		{
+			fprintf(f, "\ncopy %s" "act.bak=%s" "act.dat\n", ex_path, ex_path);
+			fclose(f);
+		}
+	}
+
+	show_message("Account successfully activated!\nA system reboot might be required");
+}
+
 void copyDummyPSV(const char* psv_file, const char* out_path)
 {
 	char *in, *out;
@@ -1087,6 +1137,11 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_EXP_LICS_RAPS:
 			exportLicensesRap(code->file, codecmd[1]);
+			code->activated = 0;
+			break;
+
+		case CMD_CREATE_ACT_DAT:
+			activateAccount(selected_entry->path);
 			code->activated = 0;
 			break;
 

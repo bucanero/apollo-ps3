@@ -108,6 +108,7 @@ enum cmd_code_enum
     CMD_IMP_PS2_ISO,
     CMD_IMP_PS2_CONFIG,
     CMD_IMP_PS2VMC_USB,
+    CMD_CREATE_ACT_DAT,
 
 // SFO patches
     SFO_UNLOCK_COPY,
@@ -148,6 +149,7 @@ enum save_type_enum
     // License Files
     FILE_TYPE_RIF,
     FILE_TYPE_RAP,
+    FILE_TYPE_ACT,
 
     // ISO Files
     FILE_TYPE_ISO,
@@ -275,6 +277,8 @@ int apply_trophy_patch(const char* trp_path, uint32_t trophy_id, int unlock);
 int rif2rap(const uint8_t* idps_key, const char* lic_path, const char* rifFile, const char* rap_path);
 int rap2rif(const uint8_t* idps_key, const char* exdata_path, const char* rap_file, const char *rif_path);
 int rif2klicensee(const u8* idps_key, const char* exdata_path, const char* rif_file, u8* klic);
+int create_actdat(const char* exdata_path, uint64_t account_id);
+uint64_t create_fake_account(uint32_t user_id);
 
 int create_savegame_folder(const char* folder);
 

@@ -243,6 +243,7 @@ int sys_reboot()
 #define SYS_SS_GET_OPEN_PSID                           872
 #define AIM_GET_DEVICE_ID                              0x19003
 #define AIM_GET_OPEN_PSID                              0x19005
+#define SYSCALL8_OPCODE_IS_HEN                         0x1337
 
 int sys_ss_get_open_psid(uint64_t psid[2])
 {
@@ -264,4 +265,15 @@ int ss_aim_get_device_id(uint8_t *idps)
 int ss_aim_get_open_psid(uint8_t *psid)
 {
 	return sys_ss_appliance_info_manager(AIM_GET_OPEN_PSID, (uint64_t)psid);
+}
+
+int sys8_get_hen(void)
+{
+    lv2syscall1(8, SYSCALL8_OPCODE_IS_HEN);
+    return_to_user_prog(int);
+}
+
+int is_ps3hen(void)
+{
+    return (sys8_get_hen() == 0x1337);
 }
