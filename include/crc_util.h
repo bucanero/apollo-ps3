@@ -88,7 +88,7 @@ uint64_t crc64_hash(const uint8_t *data, uint32_t len, custom_crc_t* cfg);
  *
  * RETURN VALUE: 32 bit result of CRC calculation
  */
-uint32_t MC02_hash(const uint8_t *pb, uint32_t cb);
+uint32_t MC02_hash(const uint8_t *data, uint32_t len);
 
 /**
  * This function makes a SDBM hash calculation on Length data bytes
@@ -96,6 +96,20 @@ uint32_t MC02_hash(const uint8_t *pb, uint32_t cb);
  * RETURN VALUE: 32 bit result of CRC calculation
  */
 uint32_t sdbm_hash(const uint8_t* data, uint32_t len, uint32_t init);
+
+/**
+ * This function makes a FNV-1 hash calculation on Length data bytes
+ *
+ * RETURN VALUE: 32 bit result of CRC calculation
+ */
+int fnv1_hash(const uint8_t* data, uint32_t len, int init);
+
+/**
+ * This function makes a Checksum32 calculation on Length data bytes
+ *
+ * RETURN VALUE: 32 bit result of CRC calculation
+ */
+int Checksum32_hash(const uint8_t* data, uint32_t len);
 
 /**
  * This function makes Adler16 hash calculation on Length data bytes

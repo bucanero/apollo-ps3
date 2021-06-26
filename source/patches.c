@@ -197,6 +197,24 @@ void free_patch_var_list()
 	var_list = NULL;
 }
 
+void _parse_start_end(char* line, int pointer, int dsize, int *start_val, int *end_val)
+{
+	char *tmp;
+
+	tmp = strchr(line, ',');
+	*tmp = 0;
+	
+	*start_val = _parse_int_value(line, pointer, dsize);
+
+	line = tmp+1;
+	*tmp = ',';
+	tmp = strchr(line, ')');
+	*tmp = 0;
+
+	*end_val = _parse_int_value(line, pointer, dsize);
+	*tmp = ')';
+}
+
 int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 {
     char *data;
@@ -902,6 +920,22 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 					LOG("len %d KH CoM HASH = %X", len, hash);
 				}
 
+				// set [*]:checksum32*
+				else if (wildcard_match_icase(line, "checksum32*"))
+				{
+					uint32_t hash;
+					u8* start = (u8*)data + range_start;
+					len = range_end - range_start;
+
+					hash = Checksum32_hash(start, len);
+
+					var->len = BSD_VAR_INT32;
+					var->data = malloc(var->len);
+					memcpy(var->data, (u8*) &hash, var->len);
+
+					LOG("len %d Checksum32 = %X", len, hash);
+				}
+
 				// set [*]:sdbm*
 				else if (wildcard_match_icase(line, "sdbm*"))
 				{
@@ -924,6 +958,28 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 					LOG("len %d SDBM HASH = %X", len, hash);
 				}
 
+				// set [*]:fnv1*
+				else if (wildcard_match_icase(line, "fnv1*"))
+				{
+					uint32_t hash, init_val = 0x811c9dc5;
+					u8* start = (u8*)data + range_start;
+					len = range_end - range_start;
+
+					tmp = strchr(line, ':');
+					if (tmp)
+					{
+						init_val = _parse_int_value(tmp+1, pointer, dsize);
+					}
+
+					hash = fnv1_hash(start, len, init_val);
+
+					var->len = BSD_VAR_INT32;
+					var->data = malloc(var->len);
+					memcpy(var->data, (u8*) &hash, var->len);
+
+					LOG("len %d FNV-1 HASH = %X", len, hash);
+				}
+
 			    // set [*]:qwadd(*,*)*
 			    else if (wildcard_match_icase(line, "qwadd(*,*)*"))
 			    {
@@ -933,20 +989,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 					uint32_t add = 0;
 
 					line += strlen("qwadd(");
-					tmp = strchr(line, ',');
-					*tmp = 0;
-					
-					add_s = _parse_int_value(line, pointer, dsize);
-
-					line = tmp+1;
-					*tmp = ',';
-					tmp = strchr(line, ')');
-					*tmp = 0;
-
-					add_e = _parse_int_value(line, pointer, dsize);
-
-					*tmp = ')';
-					
+					_parse_start_end(line, pointer, dsize, &add_s, &add_e);
 					char* read = data + add_s + BSD_VAR_INT32;
 					
 					while (read < data + add_e)
@@ -971,20 +1014,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			        uint32_t add = 0;
 
 			        line += strlen("dwadd(");
-    			    tmp = strchr(line, ',');
-    			    *tmp = 0;
-    			    
-    			    add_s = _parse_int_value(line, pointer, dsize);
-
-			        line = tmp+1;
-    			    *tmp = ',';
-    			    tmp = strchr(line, ')');
-    			    *tmp = 0;
-
-    			    add_e = _parse_int_value(line, pointer, dsize);
-
-    			    *tmp = ')';
-    			    
+					_parse_start_end(line, pointer, dsize, &add_s, &add_e);
     			    char* read = data + add_s;
     			    
     			    while (read < data + add_e)
@@ -1010,20 +1040,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 					uint32_t add = 0;
 
 					line += strlen("dwadd_le(");
-					tmp = strchr(line, ',');
-					*tmp = 0;
-					
-					add_s = _parse_int_value(line, pointer, dsize);
-
-					line = tmp+1;
-					*tmp = ',';
-					tmp = strchr(line, ')');
-					*tmp = 0;
-
-					add_e = _parse_int_value(line, pointer, dsize);
-
-					*tmp = ')';
-					
+					_parse_start_end(line, pointer, dsize, &add_s, &add_e);
 					char* read = data + add_s;
 					
 					while (read < data + add_e)
@@ -1050,20 +1067,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			        uint32_t add = 0;
 
 			        line += strlen("wadd(");
-    			    tmp = strchr(line, ',');
-    			    *tmp = 0;
-    			    
-    			    add_s = _parse_int_value(line, pointer, dsize);
-
-			        line = tmp+1;
-    			    *tmp = ',';
-    			    tmp = strchr(line, ')');
-    			    *tmp = 0;
-
-    			    add_e = _parse_int_value(line, pointer, dsize);
-
-    			    *tmp = ')';
-    			    
+			        _parse_start_end(line, pointer, dsize, &add_s, &add_e);
     			    char* read = data + add_s;
     			    
     			    while (read < data + add_e)
@@ -1093,20 +1097,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			        uint32_t add = 0;
 
 			        line += strlen("add(");
-    			    tmp = strchr(line, ',');
-    			    *tmp = 0;
-    			    
-    			    add_s = _parse_int_value(line, pointer, dsize);
-
-			        line = tmp+1;
-    			    *tmp = ',';
-    			    tmp = strchr(line, ')');
-    			    *tmp = 0;
-
-    			    add_e = _parse_int_value(line, pointer, dsize);
-
-    			    *tmp = ')';
-    			    
+					_parse_start_end(line, pointer, dsize, &add_s, &add_e);
     			    char* read = data + add_s;
     			    
     			    while (read <= data + add_e)
@@ -1139,20 +1130,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			        uint32_t sub = 0;
 
 			        line += strlen("wsub(");
-    			    tmp = strchr(line, ',');
-    			    *tmp = 0;
-    			    
-    			    sub_s = _parse_int_value(line, pointer, dsize);
-
-			        line = tmp+1;
-    			    *tmp = ',';
-    			    tmp = strchr(line, ')');
-    			    *tmp = 0;
-
-    			    sub_e = _parse_int_value(line, pointer, dsize);
-
-    			    *tmp = ')';
-    			    
+			        _parse_start_end(line, pointer, dsize, &sub_s, &sub_e);
     			    char* read = data + sub_s;
     			    
     			    while (read < data + sub_e)
@@ -1224,19 +1202,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 					int read_s, read_l;
 
 					line += strlen("read(");
-					tmp = strchr(line, ',');
-					*tmp = 0;
-					
-					read_s = _parse_int_value(line, pointer, dsize);
-
-					line = tmp+1;
-					*tmp = ',';
-					tmp = strchr(line, ')');
-					*tmp = 0;
-
-					read_l = _parse_int_value(line, pointer, dsize);
-
-					*tmp = ')';
+					_parse_start_end(line, pointer, dsize, &read_s, &read_l);
 					char* read = data + read_s;
 
 					switch (read_l)
@@ -1268,19 +1234,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 					int rvalue, rlen;
 
 					line += strlen("right(");
-					tmp = strchr(line, ',');
-					*tmp = 0;
-
-					rvalue = _parse_int_value(line, pointer, dsize);
-
-					line = tmp+1;
-					*tmp = ',';
-					tmp = strchr(line, ')');
-					*tmp = 0;
-
-					rlen = _parse_int_value(line, pointer, dsize);
-
-					*tmp = ')';
+					_parse_start_end(line, pointer, dsize, &rvalue, &rlen);
 
 					var->len = rlen;
 					var->data = malloc(var->len);
@@ -1296,19 +1250,7 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 					int rvalue, rlen;
 
 					line += strlen("left(");
-					tmp = strchr(line, ',');
-					*tmp = 0;
-
-					rvalue = _parse_int_value(line, pointer, dsize);
-
-					line = tmp+1;
-					*tmp = ',';
-					tmp = strchr(line, ')');
-					*tmp = 0;
-
-					rlen = _parse_int_value(line, pointer, dsize);
-
-					*tmp = ')';
+					_parse_start_end(line, pointer, dsize, &rvalue, &rlen);
 
 					var->len = rlen;
 					var->data = malloc(var->len);

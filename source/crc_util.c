@@ -149,6 +149,27 @@ uint32_t sdbm_hash(const uint8_t* data, uint32_t len, uint32_t init)
     return (crc);
 }
 
+// https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
+int fnv1_hash(const uint8_t* data, uint32_t size, int init)
+{
+    int sum = init;
+
+    while (size--)
+        sum = (sum * 0x1000193) ^ *data++;
+
+    return (sum);
+}
+
+int Checksum32_hash(const uint8_t* data, uint32_t size)
+{
+    int sum = 0;
+
+    while (size--)
+        sum += (signed char) *data++;
+
+    return sum;
+}
+
 uint16_t ffx_hash(const uint8_t* data, uint32_t len)
 {
     uint16_t crc16_table[0x100];
