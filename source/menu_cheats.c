@@ -187,67 +187,62 @@ int DrawCodes(code_entry_t* code, u8 alpha, int y_inc, int xOff, int selIndex)
         return 0;
     
     int numOfLines = 0, c = 0, yOff = 80, cIndex = 0;
-    
     int maxPerPage = (512 - (yOff * 2)) / y_inc;
     int startDrawX = selIndex - (maxPerPage / 2);
     int max = maxPerPage + startDrawX;
-    
-    if (code->codes)
+    int len = strlen(code->codes);
+
+    for (c = 0; c < len; c++) { if (code->codes[c] == '\n') { numOfLines++; } }
+
+    if (!len || !numOfLines)
+        return 0;
+
+    //Splits the codes by line into an array
+    char * splitCodes = (char *)malloc(len + 1);
+    memcpy(splitCodes, code->codes, len);
+    splitCodes[len] = 0;
+    char * * lines = (char **)malloc(sizeof(char *) * numOfLines);
+    memset(lines, 0, sizeof(char *) * numOfLines);
+    lines[0] = (char*)(&splitCodes[0]);
+
+    for (c = 1; c < numOfLines; c++)
     {
-        int len = strlen(code->codes);
-        if (len > 0)
-        {
-            for (c = 0; c < len; c++) { if (code->codes[c] == '\n') { numOfLines++; } }
-            
-            if (numOfLines > 0)
-            {               
-                //Splits the codes by line into an array
-                char * splitCodes = (char *)malloc(len + 1);
-                memcpy(splitCodes, code->codes, len);
-                splitCodes[len] = 0;
-                char * * lines = (char **)malloc(sizeof(char *) * numOfLines);
-                memset(lines, 0, sizeof(char *) * numOfLines);
-                lines[0] = (char*)(&splitCodes[0]);
-                for (c = 1; c < numOfLines; c++)
-                {
-                    while (splitCodes[cIndex] != '\n' && cIndex < len)
-                        cIndex++;
-                    
-                    if (cIndex >= len)
-                        break;
-                    
-                    splitCodes[cIndex] = 0;
-                    lines[c] = (char*)(&splitCodes[cIndex + 1]);
-                }
-                
-                SetFontSize(y_inc-6, y_inc-4);
-//                SetCurrentFont(font_comfortaa_regular);
-                //SetExtraSpace(0);
-                for (c = startDrawX; c < max; c++)
-                {
-                    if (c >= 0 && c < numOfLines)
-                    {
-                        SetFontColor(APP_FONT_COLOR | ((alpha * CalculateAlphaList(c, selIndex, maxPerPage)) / 0xFF), 0);
-                        
-                        //Draw line
-						DrawString(xOff + MENU_ICON_OFF + 20, yOff, lines[c]);
-                        
-                        //Selector
-                        if (c == selIndex)
-                        {
-                            int i = 0;
-                            for (i = 0; i < 848; i++)
-								DrawTexture(&menu_textures[mark_line_png_index], xOff + i, yOff, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
-                        }
-                    }
-                    yOff += y_inc;
-                }
-                
-                free (lines);
-                free (splitCodes);
-            }
-        }
+        while (splitCodes[cIndex] != '\n' && cIndex < len)
+            cIndex++;
+        
+        if (cIndex >= len)
+            break;
+        
+        splitCodes[cIndex] = 0;
+        lines[c] = (char*)(&splitCodes[cIndex + 1]);
     }
+    
+    SetFontSize(y_inc-6, y_inc-4);
+    //SetCurrentFont(font_comfortaa_regular);
+    //SetExtraSpace(0);
+
+    if (code->file)
+        DrawFormatString(xOff + MENU_ICON_OFF + 20, 434, "Target File: %s", code->file);
+
+    for (c = startDrawX; c < max; c++)
+    {
+        if (c >= 0 && c < numOfLines)
+        {
+            SetFontColor(APP_FONT_COLOR | ((alpha * CalculateAlphaList(c, selIndex, maxPerPage)) / 0xFF), 0);
+            
+            //Draw line
+            DrawString(xOff + MENU_ICON_OFF + 20, yOff, lines[c]);
+            
+            //Selector
+            if (c == selIndex)
+                for (int i = 0; i < 848; i++)
+                    DrawTexture(&menu_textures[mark_line_png_index], xOff + i, yOff, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
+        }
+        yOff += y_inc;
+    }
+    
+    free (lines);
+    free (splitCodes);
     
     SetMonoSpace(0);
     SetCurrentFont(0);
@@ -312,7 +307,6 @@ void Draw_CheatsMenu_View_Ani(const char* title)
 		left = 848 - (ani * div * 3);
 		if (left < MENU_SPLIT_OFF)
 			left = MENU_SPLIT_OFF;
-
 
 		u8 rgbVal = 0xFF;
 		rgbVal -= (u8)((848 - left) / div);

@@ -651,12 +651,26 @@ int ReloadUserSaves(save_list_t* save_list)
 	return list_count(save_list->list);
 }
 
+code_entry_t* LoadRawPatch()
+{
+	size_t len;
+	char patchPath[256];
+	code_entry_t* centry = calloc(1, sizeof(code_entry_t));
+
+	centry->name = strdup(selected_entry->title_id);
+	snprintf(patchPath, sizeof(patchPath), APOLLO_DATA_PATH "%s.ps3savepatch", selected_entry->title_id);
+	read_buffer(patchPath, (u8**) &centry->codes, &len);
+	centry->codes[len] = 0;
+
+	return centry;
+}
+
 code_entry_t* LoadSaveDetails()
 {
 	char sfoPath[256];
 	code_entry_t* centry = calloc(1, sizeof(code_entry_t));
 
-	asprintf(&centry->name, selected_entry->title_id);
+	centry->name = strdup(selected_entry->title_id);
 
 	if (!(selected_entry->flags & SAVE_FLAG_PS3))
 	{
@@ -833,7 +847,6 @@ void SetMenu(int id)
 			break;
 
 		case MENU_SAVE_DETAILS: //Save Detail View Menu
-    	    selected_centry = LoadSaveDetails();
 			if (apollo_config.doAni)
 				Draw_CheatsMenu_View_Ani(selected_entry->name);
 			break;
@@ -965,6 +978,7 @@ void doSaveMenu(save_list_t * save_list)
     	else if (paddata[0].BTN_TRIANGLE && save_list->UpdatePath)
     	{
 			selected_entry = list_get_item(save_list->list, menu_sel);
+			selected_centry = LoadSaveDetails();
     		SetMenu(MENU_SAVE_DETAILS);
     		return;
     	}
@@ -1244,6 +1258,14 @@ void doPatchMenu()
 				{
 					option_index = 0;
 					SetMenu(MENU_CODE_OPTIONS);
+					return;
+				}
+
+				if (selected_centry->codes[0] == CMD_VIEW_RAW_PATCH)
+				{
+					selected_centry->activated = 0;
+					selected_centry = LoadRawPatch();
+					SetMenu(MENU_SAVE_DETAILS);
 					return;
 				}
 

@@ -545,6 +545,9 @@ int ReadCodes(save_entry_t * save)
 	code = _createCmdCode(PATCH_NULL, "----- " UTF8_CHAR_STAR " Cheats " UTF8_CHAR_STAR " -----", CMD_CODE_NULL);	
 	list_append(save->codes, code);
 
+	code = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " View Raw Patch File", CMD_VIEW_RAW_PATCH);
+	list_append(save->codes, code);
+
 	list_node_t* node = list_tail(save->codes);
 	char *line = strtok(buffer, "\n");
 		
