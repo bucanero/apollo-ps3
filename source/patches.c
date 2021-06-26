@@ -1030,6 +1030,32 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    LOG("[%s]:dwadd(0x%X , 0x%X) = %X", var->name, add_s, add_e, add);
 			    }
 
+				// set [*]:wadd_le(*,*)*
+				else if (wildcard_match_icase(line, "wadd_le(*,*)*"))
+				{
+					// little-endian
+					// wadd_le(<start>,<endrange>)
+					// 32-bit	0xFFFFFFFF
+					int add_s, add_e;
+					uint32_t add = 0;
+
+					line += strlen("wadd_le(");
+					_parse_start_end(line, pointer, dsize, &add_s, &add_e);
+					char* read = data + add_s;
+					
+					while (read < data + add_e)
+					{
+						add += ES16(*(uint16_t*)read);
+						read += BSD_VAR_INT16;
+					}
+
+					var->len = BSD_VAR_INT32;
+					var->data = malloc(var->len);
+					memcpy(var->data, (u8*) &add, var->len);
+
+					LOG("[%s]:wadd_le(0x%X , 0x%X) = %X", var->name, add_s, add_e, add);
+				}
+
 				// set [*]:dwadd_le(*,*)*
 				else if (wildcard_match_icase(line, "dwadd_le(*,*)*"))
 				{
