@@ -498,13 +498,13 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
                     var->data = (u8*) xor_val;
 
-    			    LOG("Var [%s]:XOR:%s = %X", var->name, line, old_val);
+    			    LOG("Var [%s]:XOR = %s ^ %X", var->name, line, old_val);
     			}
 
 				// set [*]:endian_swap*
 				else if (wildcard_match_icase(line, "endian_swap*"))
 				{
-					if (var->len != BSD_VAR_INT16 || var->len != BSD_VAR_INT32)
+					if (var->len != BSD_VAR_INT16 && var->len != BSD_VAR_INT32)
 					{
 						// variable has different length
 						LOG("[%s]:endian_swap error! unsupported var length (%d)", var->name, var->len);
@@ -923,6 +923,22 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 					LOG("len %d FFXIII HASH = %X", len, hash);
 				}
 
+				// set [*]:ducktales_checksum*
+				else if (wildcard_match_icase(line, "ducktales_checksum*"))
+				{
+					uint64_t hash;
+					u8* start = (u8*)data + range_start;
+					len = range_end - range_start;
+
+					hash = duckTales_hash(start, len);
+
+					var->len = BSD_VAR_INT64;
+					var->data = malloc(var->len);
+					memcpy(var->data, (u8*) &hash, var->len);
+
+					LOG("len %d DuckTales HASH = %016llX", len, hash);
+				}
+
 				// set [*]:kh25_checksum*
 				else if (wildcard_match_icase(line, "kh25_checksum*"))
 				{
@@ -1111,8 +1127,6 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 						read += BSD_VAR_INT32;
 					}
 
-					// stored in little-endian
-					add = ES32(add);
 					var->len = BSD_VAR_INT32;
 					var->data = malloc(var->len);
 					memcpy(var->data, (u8*) &add, var->len);

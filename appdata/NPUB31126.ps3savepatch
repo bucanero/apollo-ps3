@@ -7,4 +7,8 @@
 [Max Cash]
 200000D0 05F5E0FF
 
-;Missing Checksum Info
+[Update Checksum for SAVE.DAT (Required)]
+set pointer:eof+1
+set range:0x10,pointer
+set [hash]:ducktales_checksum
+write at 0x0000:[hash]

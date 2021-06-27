@@ -117,7 +117,7 @@ F5907182 37557717
 ; --- Kingdom Hearts 2 HD ---
 
 [Max Munny]
-20002440 3F420F00
+20002440 3F420F00
 
 [Have High Score In All Minigames]
 20003E28 0F000000
@@ -776,4 +776,5 @@ write at 0x08:[hash]
 [Update SAVEDATA.DAT Checksum (Required)]
 set pointer:eof+1
 set [csum]:dwadd_le(0x000010,pointer)
+set [csum]:endian_swap
 write at 0x0C:[csum]
