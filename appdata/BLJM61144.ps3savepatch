@@ -123,3 +123,19 @@
 ;26   Paladin
 ;27   Stimulus
 
+[Update Checksum for DATA.BIN (Required)]
+write at 0x00004:0x00000000
+write at 0x000A8:0x00000000
+write at 0x00C16:0x00000000
+write at 0x58292:0x00000000
+set pointer:eof+1
+set range:0x0000,pointer
+set [hash]:sw4_checksum
+set [crc1]:mid([hash],0x00,4)
+set [crc2]:mid([hash],0x04,4)
+set [crc3]:mid([hash],0x08,4)
+set [crc4]:mid([hash],0x0C,4)
+write at 0x00004:[crc1]
+write at 0x000A8:[crc2]
+write at 0x00C16:[crc3]
+write at 0x58292:[crc4]

@@ -972,6 +972,22 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 					LOG("len %d KH CoM HASH = %X", len, hash);
 				}
 
+				// set [*]:sw4_checksum*
+				else if (wildcard_match_icase(line, "sw4_checksum*"))
+				{
+					uint32_t hash[4];
+					u8* start = (u8*)data + range_start;
+					len = range_end - range_start;
+
+					sw4_hash(start, len, hash);
+
+					var->len = BSD_VAR_MD5;
+					var->data = malloc(var->len);
+					memcpy(var->data, (u8*) &hash, var->len);
+
+					LOG("len %d SW4 HASH = %X %X %X %X", len, hash[0], hash[1], hash[2], hash[3]);
+				}
+
 				// set [*]:checksum32*
 				else if (wildcard_match_icase(line, "checksum32*"))
 				{
@@ -1335,12 +1351,40 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 					LOG("[%s]:left(0x%X , %d)", var->name, rvalue, rlen);
 			    }
 
-			    // set [*]:mid(*)*
-			    else if (wildcard_match_icase(line, "mid(*)*"))
-			    {
-			        //low priority
-					LOG("Error: command not implemented");
-					return 0;
+				// set [*]:mid(*,*,*)*
+				else if (wildcard_match_icase(line, "mid(*,*,*)*"))
+				{
+					// mid(<value>,<start>,<len>)
+					int mid_s, mid_c, mlen;
+
+					line += strlen("mid(");
+					tmp = strchr(line, ',');
+					*tmp = 0;
+
+					char* mid_val = _decode_variable_data(line, &mlen);
+
+					line = tmp+1;
+					*tmp = ',';
+					tmp = strchr(line, ',');
+					*tmp = 0;
+
+					mid_s = _parse_int_value(line, pointer, dsize);
+
+					line = tmp+1;
+					*tmp = ',';
+					tmp = strchr(line, ')');
+					*tmp = 0;
+
+					mid_c = _parse_int_value(line, pointer, dsize);
+
+					*tmp = ')';
+
+					var->len = mid_c;
+					var->data = malloc(var->len);
+					memcpy(var->data, (u8*)mid_val + mid_s, var->len);
+					free(mid_val);
+
+					LOG("[%s]:mid(..%d.., %X, %d)", var->name, mlen, mid_s, mid_c);
 			    }
 
 			    // set [*]:* (e.g. 0x00000000)

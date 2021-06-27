@@ -18,6 +18,11 @@
 #include <stdio.h>
 #include "crc_util.h"
 
+#define SW4_OFF_1      0x00004
+#define SW4_OFF_2      0x000A8
+#define SW4_OFF_3      0x00C16
+#define SW4_OFF_JP     0x58298
+
 #define CREATE_CRC_FUNCTION(UINT, CRC_WIDTH) \
     UINT crc##CRC_WIDTH##_hash (const uint8_t* data, uint32_t len, custom_crc_t* cfg) \
     { \
@@ -61,6 +66,16 @@ void generate_crc32_table(uint32_t poly, uint32_t* crc_table)
         
         crc_table[i] = r;
     }
+}
+
+uint32_t add_csum(const uint8_t* data, uint32_t len)
+{
+    uint32_t checksum = 0;
+
+    while (len--)
+        checksum += *data++;
+
+    return checksum;
 }
 
 // Custom CRC table for Kingdom Hearts 2.5
@@ -231,6 +246,37 @@ uint64_t duckTales_hash(const uint8_t* data, uint32_t size)
     x0 = r5;
 
     return ((uint64_t) x1 << 32) | x0;
+}
+
+int sw4_hash(const uint8_t* data, uint32_t size, uint32_t* crcs)
+{
+	uint32_t num1, num2, num3, num4, num5, num6;
+	uint8_t is_jp = (*(uint32_t*)(data + SW4_OFF_JP) != 0);
+
+	num2 = add_csum(data + SW4_OFF_1 + 4, SW4_OFF_2 - (SW4_OFF_1 + 4));
+	num3 = add_csum(data + SW4_OFF_2 + 4, 2284 - (SW4_OFF_2 + 4));
+
+	if (is_jp)
+	{
+		num1 = add_csum(data + SW4_OFF_3 + 4, 30294 - (SW4_OFF_3 + 4));
+		num4 = add_csum(data + 33630, 361106 - 33630);
+		num5 = add_csum(data + 30294, 33631 - 30294);
+		num6 = add_csum(data + SW4_OFF_1 + 4, 30294 - (SW4_OFF_1 + 4));
+	}
+	else
+	{
+		num1 = add_csum(data + SW4_OFF_3 + 4, 30934 - (SW4_OFF_3 + 4));
+		num4 = add_csum(data + 34270, 361778 - 34270);
+		num5 = add_csum(data + 30934, 34271 - 30934);
+		num6 = add_csum(data + SW4_OFF_1 + 4, 30934 - (SW4_OFF_1 + 4));
+	}
+
+	crcs[0] = 0x7FFFFFFF & (num5 + (num1 + num2) * num3);
+	crcs[1] = 0x7FFFFFFF & (num2 * (num1 + num3 + num4));
+    crcs[2] = num6;
+	crcs[3] = 0x7FFFFFFF & (crcs[0] + crcs[1] + num6);
+
+    return is_jp;
 }
 
 uint16_t adler16(const uint8_t *data, size_t len)

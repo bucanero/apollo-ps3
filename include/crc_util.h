@@ -140,11 +140,18 @@ uint32_t kh25_hash(const uint8_t* data, uint32_t len);
 uint32_t kh_com_hash(const uint8_t* data, uint32_t len);
 
 /**
- * This function makes Kingdom Hearts Chain of Memories hash calculation on Length data bytes
+ * This function makes DuckTales hash calculation on Length data bytes
  *
  * RETURN VALUE: 32 bit result of CRC calculation
  */
 uint64_t duckTales_hash(const uint8_t* data, uint32_t len);
+
+/**
+ * This function makes Samurai Warriors 4 hash calculation on Length data bytes
+ *
+ * RETURN VALUE: 32 bit result array of CRC calculation
+ */
+int sw4_hash(const uint8_t* data, uint32_t size, uint32_t* crcs);
 
 #ifdef __cplusplus
 }

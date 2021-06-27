@@ -8,7 +8,6 @@
 set pointer:eof+1
 set [csum]:0
 set [csum]:wadd_le(0x0008,pointer)
-set [crc1]:left([csum],3)
-set [crc2]:right([csum],1)
-write at 0x0001:[crc1]
-write at 0x0007:[crc2]
+write at 0x0004:[csum]
+write at 0x0001:[csum]
+write at 0x0004:0x000000
