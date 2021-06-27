@@ -501,6 +501,26 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
     			    LOG("Var [%s]:XOR:%s = %X", var->name, line, old_val);
     			}
 
+				// set [*]:endian_swap*
+				else if (wildcard_match_icase(line, "endian_swap*"))
+				{
+					if (var->len != BSD_VAR_INT16 || var->len != BSD_VAR_INT32)
+					{
+						// variable has different length
+						LOG("[%s]:endian_swap error! unsupported var length (%d)", var->name, var->len);
+						return 0;
+					}
+
+					u8* le_val = malloc(var->len);
+					
+					for (int i=0; i < var->len; i++)
+						le_val[i] = var->data[var->len - i - 1];
+
+					var->data = le_val;
+
+					LOG("Var [%s]:endian_swap( %X )", var->name, old_val);
+				}
+
 				// set [*]:[*]*
 				else if (wildcard_match_icase(line, "[*]*"))
 				{
@@ -722,6 +742,22 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
                     md(md_info_from_type(POLARSSL_MD_MD4), start, len, var->data);
 
     			    LOG("len %d MD4 HASH = %llx%llx", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1]);
+				}
+
+				// set [*]:sha1_xor64*
+				else if (wildcard_match_icase(line, "sha1_xor64*"))
+				{
+					u64 sha[3] = {0, 0, 0};
+					u8* start = (u8*)data + range_start;
+					len = range_end - range_start;
+
+					sha1(start, len, (u8*) sha);
+
+					var->len = BSD_VAR_INT64;
+					var->data = malloc(var->len);
+					*(u64*) var->data = (sha[0] ^ sha[1] ^ sha[2]);
+
+					LOG("len %d SHA1_XOR64 HASH = %llX", len, ((uint64_t*)var->data)[0]);
 				}
 
 			    // set [*]:sha1*
