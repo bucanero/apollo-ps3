@@ -10,6 +10,6 @@ write next 0x10A:0x7FFFFFFF
 ; Checksum offset is located within the checksum range.
 ; Initializing checksum with null bytes
 write at 0x14:0x00000000
-set range:0x0,0x185E
+set range:0x0,0x185D
 set [num]:Checksum32
 write at 0x14:[num]

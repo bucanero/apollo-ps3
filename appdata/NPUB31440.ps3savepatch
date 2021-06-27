@@ -1,0 +1,23 @@
+; Alien: Isolation
+; NPUB31440
+; by bucanero
+
+:STHEFILE
+
+[Update SHA1 XOR64 for STHEFILE (Required)]
+set [off1]:read(0x18, 4)
+set [off2]:read(0x1C, 4)
+set pointer:[off1]+[off2]-1
+set range:0x20,pointer
+set [csum]:sha1_xor64
+write at 0x08:[csum]
+
+:OTHEFILE
+
+[Update SHA1 XOR64 for OTHEFILE (Required)]
+set [off1]:read(0x18, 4)
+set [off2]:read(0x1C, 4)
+set pointer:[off1]+[off2]-1
+set range:0x20,pointer
+set [csum]:sha1_xor64
+write at 0x08:[csum]
