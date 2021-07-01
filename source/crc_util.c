@@ -26,20 +26,20 @@
 #define CREATE_CRC_FUNCTION(UINT, CRC_WIDTH) \
     UINT crc##CRC_WIDTH##_hash (const uint8_t* data, uint32_t len, custom_crc_t* cfg) \
     { \
-        UINT crc = (UINT)cfg->initial_value; \
+        UINT crc = (UINT)cfg->init; \
         /* Perform modulo-2 division, a byte at a time. */ \
         while (len--) { \
             /* Bring the next byte into the remainder. */ \
-            crc ^= ((UINT)(cfg->reflection_input ? (uint8_t)reflect(*data++, 8) : *data++) << (CRC_WIDTH - 8)); \
+            crc ^= ((UINT)(cfg->refIn ? (uint8_t)reflect(*data++, 8) : *data++) << (CRC_WIDTH - 8)); \
             /* Perform modulo-2 division, a bit at a time. */ \
             for (uint8_t bit = 8; bit > 0; --bit) \
                 /* Try to divide the current data bit. */ \
-                crc = (crc & ((UINT)1 << (CRC_WIDTH - 1))) ? (crc << 1) ^ (UINT)cfg->polynomial : (crc << 1); \
+                crc = (crc & ((UINT)1 << (CRC_WIDTH - 1))) ? (crc << 1) ^ (UINT)cfg->poly : (crc << 1); \
         } \
         /* The final remainder is the CRC result. */ \
-        if (cfg->reflection_output) \
+        if (cfg->refOut) \
             crc = (UINT)reflect(crc, CRC_WIDTH); \
-        return (crc ^ (UINT)cfg->output_xor); \
+        return (crc ^ (UINT)cfg->xor); \
     }
 
 void generate_crc16_table(uint16_t poly, uint16_t* crc_table)
@@ -277,6 +277,20 @@ int sw4_hash(const uint8_t* data, uint32_t size, uint32_t* crcs)
 	crcs[3] = 0x7FFFFFFF & (crcs[0] + crcs[1] + num6);
 
     return is_jp;
+}
+
+uint32_t tiara2_hash(const uint8_t* data, uint32_t len)
+{
+	uint32_t crc = 1;
+	uint32_t add = 0x3428;
+
+	while (len--)
+	{
+		add += *data++;
+		crc = (crc * add) + add;
+	}
+
+	return (crc);
 }
 
 uint16_t adler16(const uint8_t *data, size_t len)

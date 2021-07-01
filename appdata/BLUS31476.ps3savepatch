@@ -3,14 +3,6 @@
 
 :GAMEDATA.DAT
 
-
-[UPDATE Checksum(Required)]
-set [initial]:0x3428
-set [hash]:add(0x8,0x342F)
-set [hash]:[hash]+[initial]
-write at 0x00:[hash]
-
-
 ; --- Misc Codes ---
 
 [Max MP All Characters]
@@ -598,3 +590,14 @@ Bonus 2 All
 00001B7D 00000063
 00001C61 00000063
 00001D45 00000063
+
+[Update ADD for GAMEDATA.DAT (Required)]
+set [initial]:0x3428
+set [hash]:add(0x8,0x342F)
+set [hash]:[hash]+[initial]
+write at 0x00:[hash]
+
+[Update Custom Checksum (Required)]
+set range:0x8,0x342F
+set [hash]:tiara2_checksum
+write at 0x04:[hash]

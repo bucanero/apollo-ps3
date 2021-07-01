@@ -25,12 +25,12 @@ extern "C" {
 
 typedef struct
 {
-    uint8_t bandwidth;
-    uint64_t polynomial;
-    uint64_t initial_value;
-    uint64_t output_xor;
-    uint8_t reflection_input;
-    uint8_t reflection_output;
+    uint8_t width;
+    uint64_t poly;
+    uint64_t init;
+    uint64_t xor;
+    uint8_t refIn;
+    uint8_t refOut;
 } custom_crc_t;
 
 #define MOD_ADLER_16                        251
@@ -152,6 +152,13 @@ uint64_t duckTales_hash(const uint8_t* data, uint32_t len);
  * RETURN VALUE: 32 bit result array of CRC calculation
  */
 int sw4_hash(const uint8_t* data, uint32_t size, uint32_t* crcs);
+
+/**
+ * This function makes Tears to Tiara 2 hash calculation on Length data bytes
+ *
+ * RETURN VALUE: 32 bit result array of CRC calculation
+ */
+uint32_t tiara2_hash(const uint8_t* data, uint32_t len);
 
 #ifdef __cplusplus
 }
