@@ -51,6 +51,9 @@ typedef struct
 #define CRC_32_INIT_VALUE                   0xFFFFFFFFu
 #define CRC_32_XOR_VALUE                    0xFFFFFFFFu
 
+// Reversed polynomial
+#define CRC_32_REVERSED_POLY                0xEDB88320u
+
 /* ---------- Defines for 64-bit CRC calculation -------------------------------------------------------------- */
 #define CRC_64_RESULT_WIDTH                 64u
 #define CRC_64_ECMA182_POLY                 0x42F0E1EBA9EA3693
@@ -142,7 +145,7 @@ uint32_t kh_com_hash(const uint8_t* data, uint32_t len);
 /**
  * This function makes DuckTales hash calculation on Length data bytes
  *
- * RETURN VALUE: 32 bit result of CRC calculation
+ * RETURN VALUE: 64 bit result of CRC calculation
  */
 uint64_t duckTales_hash(const uint8_t* data, uint32_t len);
 
@@ -152,6 +155,13 @@ uint64_t duckTales_hash(const uint8_t* data, uint32_t len);
  * RETURN VALUE: 32 bit result array of CRC calculation
  */
 int sw4_hash(const uint8_t* data, uint32_t size, uint32_t* crcs);
+
+/**
+ * This function makes MGS2 hash calculation on Length data bytes
+ *
+ * RETURN VALUE: 32 bit result array of CRC calculation
+ */
+int mgs2_hash(const uint8_t* data, uint32_t len);
 
 /**
  * This function makes Tears to Tiara 2 hash calculation on Length data bytes

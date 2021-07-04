@@ -33,7 +33,13 @@ void nfsu_encrypt_data(uint8_t* data, uint32_t size);
 void sh3_decrypt_data(uint8_t* data, uint32_t size);
 void sh3_encrypt_data(uint8_t* data, uint32_t size);
 
+// Metal Gear Solid 2/3 HD save data encryption
+void mgs_Decrypt(uint8_t* data, int size, const char* key, int keylen);
+void mgs_Encrypt(uint8_t* data, int size, const char* key, int keylen);
+void mgs_DecodeBase64(uint8_t* data, uint32_t size);
+void mgs_EncodeBase64(uint8_t* data, uint32_t size);
+
 // Final Fantasy XIII (1/2/3) save data encryption
 void ff13_decrypt_data(uint32_t game, uint8_t* data, uint32_t len, const uint8_t* key, uint32_t key_len);
 void ff13_encrypt_data(uint32_t game, uint8_t* data, uint32_t len, const uint8_t* key, uint32_t key_len);
-uint32_t ff13_checksum(uint8_t* bytes, uint32_t len);
+uint32_t ff13_checksum(const uint8_t* bytes, uint32_t len);

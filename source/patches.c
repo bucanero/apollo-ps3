@@ -972,6 +972,21 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 					LOG("len %d KH CoM HASH = %X", len, hash);
 				}
 
+				// set [*]:mgs2_checksum*
+				else if (wildcard_match_icase(line, "mgs2_checksum*"))
+				{
+					uint32_t hash;
+					len = range_end - range_start;
+
+					hash = mgs2_hash((u8*)data + range_start, len);
+
+					var->len = BSD_VAR_INT32;
+					var->data = malloc(var->len);
+					memcpy(var->data, (u8*) &hash, var->len);
+
+					LOG("len %d MGS2 HASH = %X", len, hash);
+				}
+
 				// set [*]:sw4_checksum*
 				else if (wildcard_match_icase(line, "sw4_checksum*"))
 				{
@@ -1785,21 +1800,17 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			if (wildcard_match_icase(line, "diablo3*"))
 			{
 				LOG("Decrypt Diablo 3 data");
-				diablo_decrypt_data((u8*) data, dsize);
+				diablo_decrypt_data((u8*) data + range_start, (range_end - range_start));
 			}
 			else if (wildcard_match_icase(line, "silent_hill3*"))
 			{
-				u8* start = (u8*)data + range_start;
-
 				LOG("Decrypt Silent Hill 3 data");
-				sh3_decrypt_data(start, (range_end - range_start));
+				sh3_decrypt_data((u8*)data + range_start, (range_end - range_start));
 			}
 			else if (wildcard_match_icase(line, "nfs_undercover*"))
 			{
-				u8* start = (u8*)data + range_start;
-
 				LOG("Decrypt NFS Undercover data");
-				nfsu_decrypt_data(start, (range_end - range_start));
+				nfsu_decrypt_data((u8*)data + range_start, (range_end - range_start));
 			}
 			else if (wildcard_match_icase(line, "ffxiii(*,*)*"))
 			{
@@ -1824,6 +1835,29 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 				*tmp = ')';
 
 				ff13_decrypt_data(mode, start, (range_end - range_start), (u8*) key, key_len);
+				free(key);
+			}
+			else if (wildcard_match_icase(line, "mgs_base64*"))
+			{
+				LOG("Decode MGS Base64 data");
+				mgs_DecodeBase64((u8*)data + range_start, (range_end - range_start));
+			}
+			else if (wildcard_match_icase(line, "mgs(*)*"))
+			{
+				int key_len;
+				char *key, *tmp;
+				u8* start = (u8*)data + range_start;
+
+				line += strlen("mgs(");
+				tmp = strrchr(line, ')');
+				*tmp = 0;
+
+				LOG("MGS HD Encryption Key=%s", line);
+
+				key = _decode_variable_data(line, &key_len);
+				*tmp = ')';
+
+				mgs_Decrypt(start, (range_end - range_start), key, key_len);
 				free(key);
 			}
 			else if (wildcard_match_icase(line, "aes_ecb(*)*"))
@@ -1919,21 +1953,17 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			if (wildcard_match_icase(line, "diablo3*"))
 			{
 				LOG("Encrypt Diablo 3 data");
-				diablo_encrypt_data((u8*) data, dsize);
+				diablo_encrypt_data((u8*) data + range_start, (range_end - range_start));
 			}
 			else if (wildcard_match_icase(line, "silent_hill3*"))
 			{
-				u8* start = (u8*)data + range_start;
-
 				LOG("Encrypt Silent Hill 3 data");
-				sh3_encrypt_data(start, (range_end - range_start));
+				sh3_encrypt_data((u8*)data + range_start, (range_end - range_start));
 			}
 			else if (wildcard_match_icase(line, "nfs_undercover*"))
 			{
-				u8* start = (u8*)data + range_start;
-
 				LOG("Encrypt NFS Undercover data");
-				nfsu_encrypt_data(start, (range_end - range_start));
+				nfsu_encrypt_data((u8*)data + range_start, (range_end - range_start));
 			}
 			else if (wildcard_match_icase(line, "ffxiii(*,*)*"))
 			{
@@ -1958,6 +1988,29 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 				*tmp = ')';
 
 				ff13_encrypt_data(mode, start, (range_end - range_start), (u8*) key, key_len);
+				free(key);
+			}
+			else if (wildcard_match_icase(line, "mgs_base64*"))
+			{
+				LOG("Encode MGS Base64 data");
+				mgs_EncodeBase64((u8*)data + range_start, (range_end - range_start));
+			}
+			else if (wildcard_match_icase(line, "mgs(*)*"))
+			{
+				int key_len;
+				char *key, *tmp;
+				u8* start = (u8*)data + range_start;
+
+				line += strlen("mgs(");
+				tmp = strrchr(line, ')');
+				*tmp = 0;
+
+				LOG("MGS HD Encryption Key=%s", line);
+
+				key = _decode_variable_data(line, &key_len);
+				*tmp = ')';
+
+				mgs_Encrypt(start, (range_end - range_start), key, key_len);
 				free(key);
 			}
 			else if (wildcard_match_icase(line, "aes_ecb(*)*"))

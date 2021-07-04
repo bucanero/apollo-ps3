@@ -591,6 +591,8 @@ Bonus 2 All
 00001C61 00000063
 00001D45 00000063
 
+; --- Update Checksums ---
+
 [Update ADD for GAMEDATA.DAT (Required)]
 set [initial]:0x3428
 set [hash]:add(0x8,0x342F)

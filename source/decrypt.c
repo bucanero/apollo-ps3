@@ -343,7 +343,7 @@ void ff13_init_key(u8* key_table, u32 ff_game, const u64* kdata)
 	}
 }
 
-u32 ff13_checksum(u8* bytes, u32 len)
+u32 ff13_checksum(const u8* bytes, u32 len)
 {
 	u32 ff_csum = 0;
 	len /= 4;
@@ -542,4 +542,137 @@ void ff13_encrypt_data(u32 type, u8* MemBlock, u32 size, const u8* key, u32 key_
 
 	LOG("[*] Encrypted File Successfully!");
 	return;
+}
+
+void mgs_Decrypt(u8* data, int size, const char* key, int keylen)
+{
+    LOG("[*] Total Decrypted Size Is 0x%X (%d bytes)", size, size);
+
+    for (int i = size - 1; i > 0; i--)
+        data[i] -= (key[i % keylen] + data[i-1]);
+    
+    data[0] -= key[0];
+    return;
+}
+
+void mgs_Encrypt(u8* data, int size, const char* key, int keylen)
+{
+    LOG("[*] Total Encrypted Size Is 0x%X (%d bytes)", size, size);
+
+    data[0] += key[0];
+
+    for (int i = 1; i < size; i++)
+        data[i] += (key[i % keylen] + data[i-1]);
+
+    return;
+}
+
+void mgs_EncodeBase64(u8* data, u32 size)
+{
+    int i, j, k;
+    u8 chars[64];
+    u8 tmpArray[28];
+
+    LOG("[*] Total Encoded Size Is 0x%X (%d bytes)", size, size);
+
+    if (size != 32)
+        return;
+
+    u8 type = data[31];
+    memcpy(chars, (type == 2) ? MGS2_ALPHABET : MGS3_ALPHABET, sizeof(chars));
+
+    data[31] = 0;
+    data[20] = 0;
+    for (j = 0; j < 20; j++)
+        data[20] ^= data[j];
+
+    for (i = 0, j = 0, k = 0; j < 28; j++)
+    {
+        if (k == 0 || k == 1)
+            tmpArray[j] = (u8)(data[i] >> (2-k));
+
+        else if (k == 2)
+            tmpArray[j] = (u8)(data[i] & 63);
+
+        else if (k <= 7)
+            tmpArray[j] = (u8)(data[i + 1] >> (10-k)) | ((data[i] & ((1 << (8-k)) - 1)) << (k-2));
+
+        k += 6;
+        if (k >= 8)
+        {
+            k -= 8;
+            i++;
+        }
+    }
+
+    data[0] = (type == 2) ? 68 : 0x5F;
+    for (i = 0, j = 0; i < 28; i++, j += (i % 4) ? 0 : 28)
+        data[i + 1] = (u8)chars[(tmpArray[i] + j +  7 * (i % 4)) & 63];
+
+    return;
+}
+
+void mgs_DecodeBase64(u8* data, u32 size)
+{
+    int i, j, k, m;
+    u8 chars[64];
+    u8 b64_table[0x100];
+    u8 tmpArray[0x20];
+
+    LOG("[*] Total Decoded Size Is 0x%X (%d bytes)", size, size);
+
+    if (size != 32)
+        return;
+
+    u8 type = (data[0] == 0x5F) + 2;
+    memset(tmpArray, 0, sizeof(tmpArray));
+    memset(b64_table, 0xFF, sizeof(b64_table));
+    memcpy(chars, (type == 2) ? MGS2_ALPHABET : MGS3_ALPHABET, sizeof(chars));
+
+    for (k = 0; k < 64; k++)
+        b64_table[(u8)chars[k]] = (u8)k;
+
+    for (j = 0, m = 0; j < 196; j += 7, m++)
+    {
+        k = b64_table[data[1 + m]];
+
+        if (k == 0xff)
+            return;
+
+        data[m] = (u8)((k - j) & 63);
+    }
+
+    for (j = 0, k = 0, m = 0; m < 21; m++)
+    {
+        if (j <= 5)
+            tmpArray[m] = (u8)(data[k] & 63 >> (j & 31)) << ((j + 2) & 31);
+
+        i = ~j + 7;
+        j = 0;
+        k++;
+
+        if (i < 2)
+        {
+            tmpArray[m] |= (u8)(data[k] << ((~i + 3) & 31));
+            i += 6;
+            k++;
+        }
+        i -= 2;
+
+        if (i == 0)
+        {
+            tmpArray[m] |= (u8)(data[k]);
+            k++;
+            j = 0;
+        }
+        else if (i <= 5)
+        {
+            j = 6 - i;
+            tmpArray[m] |= (u8)(data[k] >> (i & 31));
+        }
+    }
+    memcpy(data, tmpArray, sizeof(tmpArray));
+    data[31] = type;
+
+    return;
 }

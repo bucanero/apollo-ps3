@@ -12,6 +12,12 @@
 // NFS Undercover
 #define NFS_XOR_KEY     "\x21\xF3\xC6\xD2\x08\x63\xAA\xAC\x38\xE2\x20\x62\x0D\x0D\x4D\x52"
 
+// Metal Gear Solid 2/3 HD
+#define MGS2_KEY        "2MetalOfSolidSonsLibertyGear"
+#define MGS3_KEY        "3MetalSolidSnakeEaterGear"
+#define MGS2_ALPHABET   "ghijklmn01234567opqrstuvEFGHIJKL89abcdefUVWXYZ_.wxyzABCDMNOPQRST"
+#define MGS3_ALPHABET   "ghijklmn01234567opqrstuvEFGHIJKL89abcdefUVWXYZ+-wxyzABCDMNOPQRST"
+
 // Silent Hill 3
 #define SH3_KEY1		0x5b6c3a2aL
 #define SH3_KEY2		0x100000000L

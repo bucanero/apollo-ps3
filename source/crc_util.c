@@ -279,6 +279,26 @@ int sw4_hash(const uint8_t* data, uint32_t size, uint32_t* crcs)
     return is_jp;
 }
 
+int mgs2_hash(const uint8_t* data, uint32_t size)
+{
+    int num, crc = -1;
+
+    while (size--)
+    {
+        crc = crc ^ *data++ << 24 >> 24;
+        for (int j = 0; j < 8; j++)
+        {
+            num = crc & 1;
+            crc = crc >> 1 & 0x7fffffff;
+
+            if (num != 0)
+                crc ^= CRC_32_REVERSED_POLY;
+        }
+    }
+
+    return ~crc;
+}
+
 uint32_t tiara2_hash(const uint8_t* data, uint32_t len)
 {
 	uint32_t crc = 1;
