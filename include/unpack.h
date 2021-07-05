@@ -39,6 +39,10 @@ void mgs_Encrypt(uint8_t* data, int size, const char* key, int keylen);
 void mgs_DecodeBase64(uint8_t* data, uint32_t size);
 void mgs_EncodeBase64(uint8_t* data, uint32_t size);
 
+// Metal Gear Solid Peace Walker save data encryption
+void mgspw_Encrypt(uint32_t* data, uint32_t len);
+void mgspw_Decrypt(uint32_t* data, uint32_t len);
+
 // Final Fantasy XIII (1/2/3) save data encryption
 void ff13_decrypt_data(uint32_t game, uint8_t* data, uint32_t len, const uint8_t* key, uint32_t key_len);
 void ff13_encrypt_data(uint32_t game, uint8_t* data, uint32_t len, const uint8_t* key, uint32_t key_len);

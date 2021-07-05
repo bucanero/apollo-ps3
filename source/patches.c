@@ -1837,6 +1837,11 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 				ff13_decrypt_data(mode, start, (range_end - range_start), (u8*) key, key_len);
 				free(key);
 			}
+			else if (wildcard_match_icase(line, "mgs_pw*"))
+			{
+				LOG("Decrypt MGS Peace Walker data");
+				mgspw_Decrypt((u32*)(data + range_start), (range_end - range_start));
+			}
 			else if (wildcard_match_icase(line, "mgs_base64*"))
 			{
 				LOG("Decode MGS Base64 data");
@@ -1989,6 +1994,11 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 
 				ff13_encrypt_data(mode, start, (range_end - range_start), (u8*) key, key_len);
 				free(key);
+			}
+			else if (wildcard_match_icase(line, "mgs_pw*"))
+			{
+				LOG("Encrypt MGS Peace Walker data");
+				mgspw_Encrypt((u32*)(data + range_start), (range_end - range_start));
 			}
 			else if (wildcard_match_icase(line, "mgs_base64*"))
 			{

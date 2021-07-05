@@ -676,3 +676,98 @@ void mgs_DecodeBase64(u8* data, u32 size)
 
     return;
 }
+
+u32 mgspw_Checksum(const u8* data, int size)
+{
+    u32 csum = -1;
+
+    while (size--)
+        csum = mgspw_Table[(u8)(*data++ ^ csum)] ^ csum >> 8 ^ mgspw_Table[0];
+
+    return ~csum;
+}
+
+void mgspw_DeEncryptBlock(u32* data, int size, u32* pwSalts)
+{
+	for (int i = 0; i < size; i++)
+	{
+		data[i] ^= pwSalts[0];
+		pwSalts[0] = pwSalts[0] * 0x2e90edd + pwSalts[1];
+	}
+}
+
+void mgspw_SetSalts(u32* pwSalts, const u32 *data)
+{
+    u32 offset = (data[1] | 0xAD47DE8F) ^ data[0];
+
+    pwSalts[0] = (data[offset + 2] ^ 0x1327de73) ^ (data[offset + 3] ^ 0x2d71d26c);
+    pwSalts[1] = pwSalts[0] * (data[offset + 7] ^ 0xBC4DEFA2);
+    pwSalts[0] = (pwSalts[0] ^ 0x6576) << 16 | pwSalts[0];
+}
+
+void mgspw_SwapBlock(u32* data, int len)
+{
+    for (int i = 0; i < len; i++)
+    	data[i] = ES32(data[i]);
+}
+
+void mgspw_Decrypt(u32* data, u32 size)
+{
+    u32 salts[2] = {0, 0};
+
+    LOG("[*] Total Decrypted Size Is 0x%X (%d bytes)", size, size);
+
+    if (size < 0x35998)
+        return;
+
+    mgspw_SwapBlock(data, 0xd676);
+    mgspw_SetSalts(salts, data);
+    mgspw_DeEncryptBlock(data + 16, 0xD666, salts);
+
+    mgspw_SetSalts(salts, data + 0xD676);
+    mgspw_DeEncryptBlock(data + 0xD686, 0x3C34, salts);
+    mgspw_SwapBlock(data + 17, 0xd665);
+
+    if (mgspw_Checksum((u8*)data + 68, 0x1af24) != data[14])
+        LOG("[!] Checksum error (%x)", 68);
+
+    if (mgspw_Checksum((u8*)data + 0x1af68, 0x1c00) != data[15])
+        LOG("[!] Checksum error (%x)", 0x1af68);
+
+    if (mgspw_Checksum((u8*)data + 0x1cb68, 0x18e68) != data[12])
+        LOG("[!] Checksum error (%x)", 0x1cb68);
+
+    if (mgspw_Checksum((u8*)data + 0x35a18, 0xf0d0) != data[0xD683])
+        LOG("[!] Checksum error (%x)", 0x35a18);
+
+    LOG("[*] Decrypted File Successfully!");
+    return;
+}
+
+void mgspw_Encrypt(u32* data, u32 size)
+{
+    u32 salts[2] = {0, 0};
+
+    LOG("[*] Total Encrypted Size Is 0x%X (%d bytes)", size, size);
+
+    if (size < 0x35998)
+        return;
+
+    data[0xD683] = mgspw_Checksum((u8*)data + 0x35a18, 0xf0d0);
+    data[12] = mgspw_Checksum((u8*)data + 0x1cb68, 0x18e68);
+    data[15] = mgspw_Checksum((u8*)data + 0x1af68, 0x1c00);
+    data[14] = mgspw_Checksum((u8*)data + 68, 0x1af24);
+
+    LOG("[*] New Checksums: %08X %08X %08X %08X", data[12], data[14], data[15], data[0xD683]);
+
+    mgspw_SwapBlock(data + 17, 0xd665);
+    mgspw_SetSalts(salts, data + 0xD676);
+    mgspw_DeEncryptBlock(data + 0xD686, 0x3C34, salts);
+
+    mgspw_SetSalts(salts, data);
+    mgspw_DeEncryptBlock(data + 16, 0xD666, salts);
+    mgspw_SwapBlock(data, 0xD676);
+
+    LOG("[*] Encrypted File Successfully!");
+    return;
+}
