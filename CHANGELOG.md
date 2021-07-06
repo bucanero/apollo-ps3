@@ -4,6 +4,40 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.6.3](https://github.com/bucanero/apollo-ps3/releases/tag/v1.6.3) - 2021-07-06
+
+### Added
+
+* Added offline PS3 account activation
+  * Creates a fake account ID
+  * Generates an offline activation file `act.dat`
+* View raw `.ps3savepatch` patch files
+* Added BSD `mid`, `endian_swap` commands support
+* Added `fnv1`, `checksum32`, `wadd_le`, `sha1_xor64` hash methods
+* Added custom decryption support
+  * Metal Gear Solid 2
+  * Metal Gear Solid 3
+  * Metal Gear Solid Peace Walker
+* Added custom checksum support
+  * Alien: Isolation
+  * Digimon All-Star Rumble
+  * Dragon Ball Z: Ultimate Tenkaichi
+  * DuckTales: Remastered
+  * LEGO Batman 2: DC Super Heroes
+  * LEGO Harry Potter: Years 1-4
+  * LEGO Harry Potter: Years 5-7
+  * LEGO Lord Of The Rings
+  * LEGO The Hobbit
+  * Samurai Warriors 4
+  * Sengoku Musou 4
+  * Tears to Tiara 2
+* New save-game cheats
+  * Dragon Ball Z: Xenoverse
+  * Odin Sphere Leifthrasir
+  * One Piece Pirate Warriors 3
+  * Sengoku Basara 4 Sumeragi
+  * Transformers: Devastation
+
 ## [v1.6.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.6.0) - 2021-05-22
 
 ### Added
@@ -103,8 +137,11 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
   * List trophies
   * Resign trophy sets
   * Backup trophies to Zip
-* Added custom encryption support (DmC, GTA5, Diablo 3, NFS Rivals)
-  * Algorithms: Blowfish, AES, DES
+* Added custom encryption support (Blowfish, AES, DES)
+  * Diablo 3
+  * DmC: Devil May Cry (Blowfish)
+  * Grand Theft Auto V (AES CBC)
+  * Need for Speed Rivals (Blowfish)
 * Added "Import decrypted save file" option
 * Added PS2/PS1 `.PSV` saves to the Online Database
 * Improved user messages
