@@ -1,0 +1,12 @@
+; LEGO The Hobbit
+; BLES01998
+;by bucanero
+
+:GAME1
+
+[Update Checksum for GAME1 (Required)]
+set pointer:eof+1
+set range:0x14,pointer
+set [hash]:fnv1:0xFFFFFFFF
+set [hash]:xor:FFFFFFFF
+write at 0x0010:[hash]

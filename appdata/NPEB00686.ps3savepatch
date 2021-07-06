@@ -1,0 +1,15 @@
+; NPEB00686
+; Metal Gear Solid Peace Walker
+; by bucanero
+
+:00000000.000
+
+[Decrypt DATA (Required)]
+set range:0x0000,eof+1
+DECRYPT mgs_pw
+
+; cheats should go here
+
+[Encrypt DATA (Required)]
+set range:0x0000,eof+1
+ENCRYPT mgs_pw

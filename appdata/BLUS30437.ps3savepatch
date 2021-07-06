@@ -10,3 +10,11 @@
 000186A0 00000000
 28000108 000000E8
 2800010C D4A50FFF
+
+[Update Checksum for GAME1 (Required)]
+;set pointer:eof-0xECC
+;set range:0x0C,pointer
+set range:0x0C,0x5E13F
+set [hash]:fnv1:0xFFFFFFFF
+set [hash]:xor:FFFFFFFF
+write at 0x0008:[hash]
