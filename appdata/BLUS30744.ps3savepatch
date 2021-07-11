@@ -1,0 +1,12 @@
+; LEGO Pirates of the Caribbean: The Video Game
+; BLUS30744
+; by bucanero
+
+:GAME1
+
+[Update Checksum for GAME1 (Required)]
+set pointer:eof+1
+set range:0x10,pointer
+set [hash]:fnv1:0xFFFFFFFF
+set [hash]:xor:FFFFFFFF
+write at 0x000C:[hash]
