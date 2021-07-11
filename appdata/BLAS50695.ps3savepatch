@@ -3,6 +3,14 @@
 
 :SAVEDATA\APP.BIN
 
+[Decrypt APP.BIN (Required)] 
+set pointer:eof-1
+set range:0x0000,pointer
+DECRYPT dw8xl
+
+[65535 Gems]
+10001D43 0000FFFF
+
 [All Generals Max Exp]
 42007FE4 002C7905
 40520048 00000000
@@ -89,7 +97,15 @@
 [Inferno Times 1st Place Score Mod (Just Win for Trophy)]
 1002056D 0000FFFF
 
+[Group:Encrypt Data]
 
+[Update ADD for APP.BIN (Required)] 
+set pointer:eof-1
+set [csum]:add(0x0000,pointer)
+set [csum]:right([csum],1)
+write next (1):[csum]
 
-
-
+[Encrypt APP.BIN (Required)] 
+set pointer:eof-1
+set range:0x0000,pointer
+ENCRYPT dw8xl

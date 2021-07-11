@@ -26,6 +26,10 @@
 #define DIABLO3_KEY1    0x305f92d8
 #define DIABLO3_KEY2    0x2ec9a01b
 
+// Dynasty Warriors 8 Xtreme Legends
+#define DW8XL_KEY1		0x13100200
+#define DW8XL_KEY2		0x41c64e6d
+
 // Final Fantasy XIII
 #define FFXIII_KEY          0x1317fb09b9b42080L
 #define FFXIII_2_KEY        0x9B1F01011A6438B0L

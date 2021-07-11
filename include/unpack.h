@@ -33,6 +33,9 @@ void nfsu_encrypt_data(uint8_t* data, uint32_t size);
 void sh3_decrypt_data(uint8_t* data, uint32_t size);
 void sh3_encrypt_data(uint8_t* data, uint32_t size);
 
+// Dynasty Warriors 8 Xtreme Legends save data encryption
+void dw8xl_encode_data(uint8_t* data, uint32_t len);
+
 // Metal Gear Solid 2/3 HD save data encryption
 void mgs_Decrypt(uint8_t* data, int size, const char* key, int keylen);
 void mgs_Encrypt(uint8_t* data, int size, const char* key, int keylen);

@@ -1802,6 +1802,11 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 				LOG("Decrypt Diablo 3 data");
 				diablo_decrypt_data((u8*) data + range_start, (range_end - range_start));
 			}
+			else if (wildcard_match_icase(line, "dw8xl*"))
+			{
+				LOG("Decrypt Dynasty Warriors 8 XL data");
+				dw8xl_encode_data((u8*)data + range_start, (range_end - range_start));
+			}
 			else if (wildcard_match_icase(line, "silent_hill3*"))
 			{
 				LOG("Decrypt Silent Hill 3 data");
@@ -1959,6 +1964,11 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 			{
 				LOG("Encrypt Diablo 3 data");
 				diablo_encrypt_data((u8*) data + range_start, (range_end - range_start));
+			}
+			else if (wildcard_match_icase(line, "dw8xl*"))
+			{
+				LOG("Encrypt Dynasty Warriors 8 XL data");
+				dw8xl_encode_data((u8*)data + range_start, (range_end - range_start));
 			}
 			else if (wildcard_match_icase(line, "silent_hill3*"))
 			{

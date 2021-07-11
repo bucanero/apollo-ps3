@@ -771,3 +771,19 @@ void mgspw_Encrypt(u32* data, u32 size)
     LOG("[*] Encrypted File Successfully!");
     return;
 }
+
+void dw8xl_encode_data(u8* data, u32 size)
+{
+	u32 xor_key = DW8XL_KEY1;
+
+	LOG("[*] Total Encoded Size Is 0x%X (%d bytes)", size, size);
+
+    for(int i = 0; i <= size; i++)
+    {
+        xor_key = (xor_key * DW8XL_KEY2) + 0x3039;
+        data[i] ^= ((xor_key >> 16) & 0xff);
+    }
+
+	LOG("[*] Encoded File Successfully!");
+	return;
+}
