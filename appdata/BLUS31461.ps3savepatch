@@ -1,0 +1,20 @@
+; Class of Heroes 2G
+; BLUS31461
+; cheat by SHAkA
+
+:SYSTEM.DAT
+
+[monster kills 500]
+write at 0x224BF:0x01000001F2
+
+[monster kills 10,000]
+write at 0x224BF:0x010000270E
+
+[monster kills 50,000]
+write at 0x224BF:0x010000C34E
+
+[MONEY]
+write at 0x2ADE0:0x3B9AC9FF
+
+[x99 Wyvern Call Ticket]
+write at 0x2A639:0x028C63

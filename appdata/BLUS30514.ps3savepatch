@@ -1,0 +1,35 @@
+; BLUS30514
+; Iron Man™ 2
+
+:SAVE0
+
+[Field Data/Credits/Money]
+write at 0x00001160:0x3B9AC9FF
+
+[Kill Trophies]
+; Kill 1 Enemy Each Weapon/Mode
+
+write at 0x00000FAB:0x000000FF
+write at 0x00000FD2:0x000000FF
+write at 0x00000FF5:0x000000FF
+write at 0x00001018:0x000000FF
+write at 0x0000103D:0x000000FF
+write at 0x00001063:0x000000FF
+write at 0x00001089:0x000000FF
+write at 0x000010AE:0x000000FF
+write at 0x000010D1:0x0000FFFF
+write at 0x000010F6:0x000000FF
+write at 0x0000111A:0x000000FF
+write at 0x00001141:0x000000FF
+
+[Finish Game Trophies]
+; Beat Tutorial on Formidable Difficulty
+
+write at 0x000004B5:0x00000001
+write at 0x00000659:0x00000001
+write at 0x000007FD:0x00000001
+write at 0x00000988:0x00000001
+write at 0x00000AC0:0x00000001
+write at 0x00000BF8:0x00000001
+write at 0x00000D83:0x00000001
+write at 0x00000EBB:0x00000001
