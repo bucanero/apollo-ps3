@@ -337,181 +337,211 @@ write at 0x29F8A0:7FFFFFFF
 Group: Update XOR checksums for OKAMI
 
 [Update XOR checksum for OKAMI - Slot 1]
-write at 0x00000C:00000000   ;Initializing checksum with null bytes
+write at 0x00000C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x00000C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 2]
-write at 0x01728C:00000000   ;Initializing checksum with null bytes
+write at 0x01728C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x01728C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 3]
-write at 0x02E50C:00000000   ;Initializing checksum with null bytes
+write at 0x02E50C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x02E50C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 4]
-write at 0x04578C:00000000   ;Initializing checksum with null bytes
+write at 0x04578C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x04578C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 5]
-write at 0x05CA0C:00000000   ;Initializing checksum with null bytes
+write at 0x05CA0C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x05CA0C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 6]
-write at 0x073C8C:00000000   ;Initializing checksum with null bytes
+write at 0x073C8C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x073C8C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 7]
-write at 0x08AF0C:00000000   ;Initializing checksum with null bytes
+write at 0x08AF0C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x08AF0C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 8]
-write at 0x0A218C:00000000   ;Initializing checksum with null bytes
+write at 0x0A218C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x0A218C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 9]
-write at 0x0B940C:00000000   ;Initializing checksum with null bytes
+write at 0x0B940C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x0B940C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 10]
-write at 0x0D068C:00000000   ;Initializing checksum with null bytes
+write at 0x0D068C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x0D068C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 11]
-write at 0x0E790C:00000000   ;Initializing checksum with null bytes
+write at 0x0E790C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x0E790C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 12]
-write at 0x0FEB8C:00000000   ;Initializing checksum with null bytes
+write at 0x0FEB8C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x0FEB8C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 13]
-write at 0x115E0C:00000000   ;Initializing checksum with null bytes
+write at 0x115E0C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x115E0C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 14]
-write at 0x12D08C:00000000   ;Initializing checksum with null bytes
+write at 0x12D08C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x12D08C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 15]
-write at 0x14430C:00000000   ;Initializing checksum with null bytes
+write at 0x14430C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x14430C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 16]
-write at 0x15B58C:00000000   ;Initializing checksum with null bytes
+write at 0x15B58C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x15B58C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 17]
-write at 0x17280C:00000000   ;Initializing checksum with null bytes
+write at 0x17280C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x17280C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 18]
-write at 0x189A8C:00000000   ;Initializing checksum with null bytes
+write at 0x189A8C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x189A8C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 19]
-write at 0x1A0D0C:00000000   ;Initializing checksum with null bytes
+write at 0x1A0D0C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x1A0D0C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 20]
-write at 0x1B7F8C:00000000   ;Initializing checksum with null bytes
+write at 0x1B7F8C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x1B7F8C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 21]
-write at 0x1CF20C:00000000   ;Initializing checksum with null bytes
+write at 0x1CF20C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x1CF20C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 22]
-write at 0x1E648C:00000000   ;Initializing checksum with null bytes
+write at 0x1E648C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x1E648C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 23]
-write at 0x1FD70C:00000000   ;Initializing checksum with null bytes
+write at 0x1FD70C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x1FD70C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 24]
-write at 0x21498C:00000000   ;Initializing checksum with null bytes
+write at 0x21498C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x21498C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 25]
-write at 0x22BC0C:00000000   ;Initializing checksum with null bytes
+write at 0x22BC0C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x22BC0C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 26]
-write at 0x242E8C:00000000   ;Initializing checksum with null bytes
+write at 0x242E8C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x242E8C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 27]
-write at 0x25A10C:00000000   ;Initializing checksum with null bytes
+write at 0x25A10C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x25A10C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 28]
-write at 0x27138C:00000000   ;Initializing checksum with null bytes
+write at 0x27138C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x27138C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 29]
-write at 0x28860C:00000000   ;Initializing checksum with null bytes
+write at 0x28860C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x28860C:[hash]
 
 [Update XOR checksum for OKAMI - Slot 30]
-write at 0x29F88C:00000000   ;Initializing checksum with null bytes
+write at 0x29F88C:00000000
+;Initializing checksum with null bytes
 set [hash]:0
 set [hash]:xor(0x0,0x2B6AFF,4)
 write at 0x29F88C:[hash]

@@ -151,10 +151,12 @@ write next (90):0A
 
 ;from chaoszage
 
-[Red potion x99] ;use this if want to complete the game/beat bosses
+[Red potion x99]
+;use this if want to complete the game/beat bosses
 search 0x00000003000000030000000300000000000000
 write next 51:63
 
-[Blue potion x99] ;use this if want to kill a boss without losing health
+[Blue potion x99]
+;use this if want to kill a boss without losing health
 search 0x00000003000000030000000300000000000000
 write next 53:63

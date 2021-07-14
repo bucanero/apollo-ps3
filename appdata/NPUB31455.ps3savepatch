@@ -23,7 +23,8 @@
 20000078 FFFFFFFF
 [Update CRC32 for AUTOSAVE (Required)]
 ; Checksum offset is located within the checksum range.
-write at 0x00000C:00000000   ;Initializing checksum with null bytes
+write at 0x00000C:00000000
+;Initializing checksum with null bytes
 ;----------------------------
 ;set range:0x0,0x003D01
 set pointer:eof+1
@@ -37,7 +38,8 @@ write at 0x00000C:[hash]
 
 [Update CRC32 for AUTOSAVE (Required)]
 ; Checksum offset is located within the checksum range.
-write at 0x00000C:00000000   ;Initializing checksum with null bytes
+write at 0x00000C:00000000
+;Initializing checksum with null bytes
 ;----------------------------
 ;set range:0x0,0x003D01
 set pointer:eof+1
