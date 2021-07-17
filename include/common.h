@@ -31,4 +31,11 @@ int ss_aim_get_open_psid(uint8_t *psid);
 int sys_ss_get_open_psid(uint64_t psid[2]);
 int is_ps3hen(void);
 
+//----------------------------------------
+//POWER UTILS
+//----------------------------------------
+
+int sys_shutdown();
+int sys_reboot();
+
 #endif

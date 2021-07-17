@@ -227,8 +227,8 @@ save_entry_t* selected_entry;
 code_entry_t* selected_centry;
 int option_index = 0;
 
-void release_all() {
-	
+void release_all()
+{	
 	if(inited & INITED_CALLBACK)
 		sysUtilUnregisterCallback(SYSUTIL_EVENT_SLOT0);
 
@@ -246,21 +246,23 @@ void release_all() {
 	inited=0;
 }
 
-static void sys_callback(uint64_t status, uint64_t param, void* userdata) {
-
+static void sys_callback(uint64_t status, uint64_t param, void* userdata)
+{
 	 switch (status) {
 		case SYSUTIL_EXIT_GAME: //0x0101
-				
 			release_all();
+			if (file_exists("/dev_hdd0/mms/db.err") == SUCCESS)
+				sys_reboot();
+
 			sysProcessExit(1);
 			break;
 	  
 		case SYSUTIL_MENU_OPEN: //0x0131
-
 			break;
+
 		case SYSUTIL_MENU_CLOSE: //0x0132
-
 			break;
+
 	   default:
 		   break;
 		 
@@ -1515,5 +1517,9 @@ s32 main(s32 argc, const char* argv[])
 		tiny3d_Flip();
 	}
 	
+	release_all();
+	if (file_exists("/dev_hdd0/mms/db.err") == SUCCESS)
+		sys_reboot();
+
 	return 0;
 }

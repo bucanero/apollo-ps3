@@ -3,10 +3,10 @@
 
 :DATA0
 
-by me
+;by me
 [EARY highscore 65535]
 write at 0x0000000E:0xFFFF
 
-New code by Dark_Nacho_XD
+;New code by Dark_Nacho_XD
 [EARY highscore 65535]
 1000000E 0000FFFF
