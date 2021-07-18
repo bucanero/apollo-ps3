@@ -51,6 +51,7 @@ void ani_callback(int sel);
 void horm_callback(int sel);
 void verm_callback(int sel);
 void update_callback(int sel);
+void redetect_callback(int sel);
 void clearcache_callback(int sel);
 void upd_appdata_callback(int sel);
 void unzip_app_data(const char* zip_file);

@@ -10,7 +10,7 @@
 uint8_t owner_sel = 0;
 
 menu_option_t menu_options[] = {
-	{ .name = "Background Music", 
+	{ .name = "\nBackground Music", 
 		.options = NULL, 
 		.type = APP_OPTION_BOOL, 
 		.value = &apollo_config.music, 
@@ -40,7 +40,7 @@ menu_option_t menu_options[] = {
 		.value = &apollo_config.marginV, 
 		.callback = verm_callback 
 	},
-	{ .name = "Version Update Check", 
+	{ .name = "\nVersion Update Check", 
 		.options = NULL, 
 		.type = APP_OPTION_BOOL, 
 		.value = &apollo_config.update, 
@@ -58,11 +58,17 @@ menu_option_t menu_options[] = {
 		.value = NULL, 
 		.callback = upd_appdata_callback 
 	},
-	{ .name = "Save Data Owner",
+	{ .name = "\nSave Data Owner",
 		.options = NULL,
 		.type = APP_OPTION_LIST,
 		.value = &owner_sel,
 		.callback = owner_callback
+	},
+	{ .name = "Update Account & Console IDs",
+		.options = NULL,
+		.type = APP_OPTION_CALL,
+		.value = NULL,
+		.callback = redetect_callback 
 	},
 	{ .name = "Enable Debug Log",
 		.options = NULL,
@@ -220,4 +226,11 @@ void log_callback(int sel)
 {
 	dbglogger_init_mode(FILE_LOGGER, "/dev_hdd0/tmp/apollo.log", 0);
 	show_message("Debug Logging Enabled!\n\n/dev_hdd0/tmp/apollo.log");
+}
+
+void redetect_callback(int sel)
+{
+	init_loading_screen("Updating Account & Console IDs...");
+	reset_app_settings(&apollo_config);
+	stop_loading_screen();
 }

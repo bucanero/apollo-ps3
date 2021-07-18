@@ -13,13 +13,20 @@
 void _draw_OptionsMenu(u8 alpha)
 {
 	int c = 0, w = 0, h = 0;
+	char *option_name;
 
     SetFontSize(APP_FONT_SIZE_SELECTION);
     int ind = 0, y_off = 120;
-    while (menu_options[ind].name)
+    while ((option_name = menu_options[ind].name))
     {
+        if (option_name[0] == '\n')
+        {
+            option_name++;
+            y_off += 20;
+        }
+
         SetFontColor(APP_FONT_COLOR | alpha, 0);
-        DrawString(MENU_ICON_OFF + MENU_TITLE_OFF + 50, y_off, menu_options[ind].name);
+        DrawString(MENU_ICON_OFF + MENU_TITLE_OFF + 50, y_off, option_name);
         
 		switch (menu_options[ind].type)
 		{

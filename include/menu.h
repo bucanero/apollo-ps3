@@ -213,5 +213,6 @@ void drawSplashLogo(int m);
 
 int load_app_settings(app_config_t* config);
 int save_app_settings(app_config_t* config);
+int reset_app_settings(app_config_t* config);
 
 #endif

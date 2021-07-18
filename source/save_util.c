@@ -469,3 +469,13 @@ int load_app_settings(app_config_t* config)
 
     return TRUE;
 }
+
+int reset_app_settings(app_config_t* config)
+{
+	char tmp_path[256];
+
+	snprintf(tmp_path, sizeof(tmp_path), SAVES_PATH_HDD SAVE_DATA_FOLDER "/" SAVE_DATA_FILENAME, config->user_id);
+	write_buffer(tmp_path, (u8*) tmp_path, 1);
+
+	return (load_app_settings(config));
+}

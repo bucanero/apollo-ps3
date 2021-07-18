@@ -1394,6 +1394,7 @@ s32 main(s32 argc, const char* argv[])
 {
 #ifdef APOLLO_ENABLE_LOGGING
 	dbglogger_init();
+	dbglogger_failsafe("9999");
 #endif
 
 	http_init();
@@ -1516,7 +1517,7 @@ s32 main(s32 argc, const char* argv[])
 		
 		tiny3d_Flip();
 	}
-	
+
 	release_all();
 	if (file_exists("/dev_hdd0/mms/db.err") == SUCCESS)
 		sys_reboot();
