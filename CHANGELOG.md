@@ -4,6 +4,31 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.6.4](https://github.com/bucanero/apollo-ps3/releases/tag/v1.6.4) - 2021-07-18
+
+### Added
+
+* Added setting to redetect user/console IDs
+* Added custom decryption support
+  * Dynasty Warriors 8: Xtreme Legends
+* Added custom checksum support
+  * LEGO Pirates of the Caribbean: The Video Game
+  * LEGO Star Wars III: The Clone Wars
+* New save-game cheats
+  * Atelier Rorona Plus
+  * Atelier Shallie
+  * Class of Heroes 2G
+  * DuckTales Remastered
+  * Everybody's Golf
+  * Iron Man 2
+  * Monster High - New Ghoul in School
+  * Narco Terror
+
+### Fixed
+
+* Fixed freeze issue when db rebuild was scheduled
+* Fixed comments in `ps3savepatch` files
+
 ## [v1.6.3](https://github.com/bucanero/apollo-ps3/releases/tag/v1.6.3) - 2021-07-06
 
 ### Added
