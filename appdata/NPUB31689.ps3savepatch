@@ -59,6 +59,19 @@ DECRYPT blowfish_ecb("SBmdYgEamc=#sA0)Mhs9#>/4iiXbMPxW")
 000390BF 00000037
 100390C2 0000270F
 
+[Rebeca infinite ammo slot 1]
+1003909a 0000ffff
+[Rebeca infinite ammo slot 2]
+100390a2 0000ffff
+[Rebeca infinite ammo slot 3]
+100390aa 0000ffff
+[Rebeca infinite ammo slot 4]
+100390b2 0000ffff
+[Rebeca infinite ammo slot 5]
+100390ba 0000ffff
+[Rebeca infinite ammo slot 6]
+100390c2 0000ffff
+
 [Billy Maximum Health (Easy)]
 0001DC9B 000000FA
 
@@ -91,6 +104,19 @@ DECRYPT blowfish_ecb("SBmdYgEamc=#sA0)Mhs9#>/4iiXbMPxW")
 [Billy's item 6: 9999 ink ribbons]
 000390FB 00000037
 100390FE 0000270F
+
+[Bill infinite ammo slot 1]
+100390d6 0000ffff
+[Bill infinite ammo slot 2]
+100390de 0000ffff
+[Bill infinite ammo slot 3]
+100390e6 0000ffff
+[Bill infinite ammo slot 4]
+100390ee 0000ffff
+[Bill infinite ammo slot 5]
+100390f6 0000ffff
+[Bill infinite ammo slot 6]
+100390fe 0000ffff
 
 [Group:Save Slot 2]
 ; Slot 1 address +0xE4300

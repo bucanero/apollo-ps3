@@ -1,0 +1,41 @@
+; NPUB30075
+; Vandal Hearts: Flames of Judgment
+;From minjajef
+
+
+[max money]
+20000A6c 31003939
+20000A70 39393900
+
+[tobias hp999]
+200000E8 39393900
+
+[tobias mp999]
+200000F0 39393900
+
+
+[calvin hp999]
+20000297 00393939
+
+[calvin mp999]
+2000029C 00300039
+200002A0 39393000
+
+
+[connor hp999]
+20000430 39393900
+
+[connor mp999]
+20000437 39393930
+
+[altyria hp999]
+200005B8 39393900
+
+[altyria mp999]
+200005C0 39393930
+
+[luce hp999]
+20000742 00393939
+
+[gren hp999]
+200008D1 39393900

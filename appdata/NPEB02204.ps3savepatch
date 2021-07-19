@@ -1,0 +1,17 @@
+; NPEB02204
+; J-STARS Victory VS+
+; By Dark Nacho
+
+:SYS-DATA
+
+[99999999 PJ]
+20029A88 05F5E0FF
+20029A8C 05F5E0FF
+
+[Max Bonif]
+20029A90 05F5E0FF
+20029A94 05F5E0FF
+20029A98 05F5E0FF
+
+; It maybe look weir but when I apply my cheats and load the save the game said me corrupt, 
+; do you want to delete the save and press yes and when it create the new save it was mod no idea why but work .-.

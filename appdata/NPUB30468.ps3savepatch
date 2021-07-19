@@ -1,0 +1,9 @@
+; Mortal Kombat Arcade Kollection
+; NPUB30468
+; by minjajef
+
+[198 wins]
+200000F0 000000C6
+
+[all FINISH HIM!]
+200000EA 01010101

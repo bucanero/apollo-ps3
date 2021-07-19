@@ -1,0 +1,7 @@
+; NPJB00305
+; Battle of Tiles EX
+
+:RECORD0
+
+[999999999 Money]
+write at 0x98:0x3B9AC9FF

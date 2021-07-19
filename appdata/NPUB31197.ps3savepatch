@@ -1,0 +1,19 @@
+; NPUB31197
+; Deathmatch Village
+
+:SAVE0
+
+[Money 999,999$]
+write at 0x00000648:0x0F423F00
+
+[Pigs 255]
+write at 0x0000064B:0x000000FF
+
+[level 50]
+write at 0x0000001B:0x32
+
+[Skill Points 255]
+write at 0x0000002F:0xFF
+
+[Donkey 250]
+write at 0x00000023:0xFA

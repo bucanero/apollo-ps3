@@ -1,0 +1,10 @@
+; NPEB00885
+; Kick Beat
+
+
+:PROFILE.DAT
+
+[Update CRC32 (required)]
+set range:0x0,0x191A
+set [hash]:crc32
+write at 0x191B:[hash]

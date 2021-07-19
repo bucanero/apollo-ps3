@@ -1,0 +1,19 @@
+; NPUB30864
+; Sacred Citadel
+; by minjajef
+
+[put all codecs on your first save if you put on your actual save may crash your save]
+
+[all chars level 39]
+20000107 00000027
+2000053c 27000000
+20000320 00000027
+20000755 27000000
+
+
+[attack 62]
+2000010b 62000000
+
+
+[max all power ]
+2000010b ffffffff

@@ -4,7 +4,7 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
-## [v1.6.4](https://github.com/bucanero/apollo-ps3/releases/tag/v1.6.4) - 2021-07-18
+## [v1.6.4](https://github.com/bucanero/apollo-ps3/releases/tag/v1.6.4) - 2021-07-19
 
 ### Added
 
@@ -14,15 +14,32 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 * Added custom checksum support
   * LEGO Pirates of the Caribbean: The Video Game
   * LEGO Star Wars III: The Clone Wars
+  * Tales of Zestiria
 * New save-game cheats
   * Atelier Rorona Plus
   * Atelier Shallie
+  * Battle of Tiles EX
+  * Call of Duty: World at War
   * Class of Heroes 2G
+  * Death Spank
+  * Deathmatch Village
   * DuckTales Remastered
   * Everybody's Golf
   * Iron Man 2
+  * J-STARS Victory VS+
+  * Kick Beat
   * Monster High - New Ghoul in School
+  * Mortal Kombat Arcade Kollection
   * Narco Terror
+  * Sacred Citadel
+  * Shrek Forever After
+  * Silent Hill: Downpour
+  * Super Motherload
+  * Tales of Zestiria
+  * The Awakened Fate Ultimatum
+  * The Expendables 2
+  * Vandal Hearts: Flames of Judgment
+  * Wizardry The Labyrinth Of Lost Souls
 
 ### Fixed
 
