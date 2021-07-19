@@ -159,16 +159,23 @@ int sw4_hash(const uint8_t* data, uint32_t size, uint32_t* crcs);
 /**
  * This function makes MGS2 hash calculation on Length data bytes
  *
- * RETURN VALUE: 32 bit result array of CRC calculation
+ * RETURN VALUE: 32 bit result of CRC calculation
  */
 int mgs2_hash(const uint8_t* data, uint32_t len);
 
 /**
  * This function makes Tears to Tiara 2 hash calculation on Length data bytes
  *
- * RETURN VALUE: 32 bit result array of CRC calculation
+ * RETURN VALUE: 32 bit result of CRC calculation
  */
 uint32_t tiara2_hash(const uint8_t* data, uint32_t len);
+
+/**
+ * This function makes Tales of Zestiria hash calculation on Length data bytes
+ *
+ * RETURN VALUE: 20 byte result array of SHA1 calculation
+ */
+void toz_hash(const uint8_t* data, uint32_t len, uint8_t* sha_hash);
 
 #ifdef __cplusplus
 }

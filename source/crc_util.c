@@ -16,6 +16,7 @@
  **********************************************************************/
 
 #include <stdio.h>
+#include <polarssl/sha1.h>
 #include "crc_util.h"
 
 #define SW4_OFF_1      0x00004
@@ -311,6 +312,29 @@ uint32_t tiara2_hash(const uint8_t* data, uint32_t len)
 	}
 
 	return (crc);
+}
+
+void _toz_sha1(const uint8_t* data, uint32_t length, const char* key, uint8_t* hash_out)
+{
+    sha1_context ctx;
+
+    sha1_starts(&ctx);
+    sha1_update(&ctx, data, length);
+    sha1_update(&ctx, (const unsigned char*)key, strlen(key));
+    sha1_finish(&ctx, hash_out);
+}
+
+// https://github.com/bucanero/ps3-save-decrypters/blob/master/toz-checksum-fixer/samples/Crypto.txt
+void toz_hash(const uint8_t* data, uint32_t len, uint8_t* hash)
+{
+    const char array[8][4] = {"SRA", "ROS", "MIC", "LAI", "EDN", "DEZ", "ZAB", "ALI"};
+
+    _toz_sha1(data, len, "TO12", hash);
+
+    for (int i = 0; i < 100; i++)
+        _toz_sha1(hash, 20, array[i % 8], hash);
+
+    return;
 }
 
 uint16_t adler16(const uint8_t *data, size_t len)

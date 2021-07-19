@@ -1003,6 +1003,19 @@ int apply_bsd_patch_code(const char* filepath, code_entry_t* code)
 					LOG("len %d SW4 HASH = %X %X %X %X", len, hash[0], hash[1], hash[2], hash[3]);
 				}
 
+				// set [*]:toz_checksum*
+				else if (wildcard_match_icase(line, "toz_checksum*"))
+				{
+					u8* start = (u8*)data + range_start;
+					len = range_end - range_start;
+
+					var->len = BSD_VAR_SHA1;
+					var->data = malloc(var->len);
+					toz_hash(start, len, var->data);
+
+					LOG("len %d TOZ SHA1 HASH = %llx%llx%x", len, ((uint64_t*)var->data)[0], ((uint64_t*)var->data)[1], ((uint32_t*)var->data)[4]);
+				}
+
 				// set [*]:tiara2_checksum*
 				else if (wildcard_match_icase(line, "tiara2_checksum*"))
 				{
