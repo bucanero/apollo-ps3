@@ -34,6 +34,7 @@ The `apollo-ps3` homebrew app allows to download, unlock, patch and resign save-
 
 ## Backup Management
 
+* **Account activation:** create fake Account ID and generate offline PS3 activation (`act.dat`)
 * **License exporting:** easy backup of user licenses to `.zip` and `.rap` formats.
 * **License importing:** allows to import `.rap` files to user `.rif` licenses.
 
@@ -42,6 +43,7 @@ The `apollo-ps3` homebrew app allows to download, unlock, patch and resign save-
 * **Memory card exporting:** decrypt and export `.VME` memory cards.
 * **Memory card importing:** allows to import `.VM2` files to encrypted `.VME` memcards.
 * **ISO importing:** import PS2 `.ISO` files to `.BIN.ENC` encrypted image format.
+* **CONFIG importing:** import PS2 `.CONFIG` files to `.ENC` encrypted format.
 * **BIN.ENC exporting:** decrypt and export `BIN.ENC` images to `.ISO`.
 
 # Download
@@ -130,7 +132,7 @@ In the `owners.xml` you need to define:
 - User ID (e.g.: `00000123`)
 - Account ID (e.g.: `0123456789abcdef`)
 - Console PSID (e.g.: `FFFFFFFFFFFFFFFF 0123456789ABCDEF`)
-- Console IDPS is optional (only required for license import/export)
+- Console IDPS (required for license import/export)
 
 # Online Database
 
@@ -150,7 +152,7 @@ Currently, the list of available games and files is limited, but the project aim
     If you have a save file that is not currently available on the Online Database and want to share it, please check [this link](https://github.com/bucanero/apollo-saves) for instructions.
  1. Why is it called **Apollo**?
     
-    [Apollo](https://en.wikipedia.org/wiki/Apollo) was the twin brother of [Artemis](https://en.wikipedia.org/wiki/Artemis), goddess of the hunt. Since this project was born using the [Artemis-GUI](https://github.com/Dnawrkshp/ArtemisPS3/Artemis-GUI) codebase, I decided to respect that heritage by calling it Apollo.
+    [Apollo](https://en.wikipedia.org/wiki/Apollo) was the twin brother of [Artemis](https://en.wikipedia.org/wiki/Artemis), goddess of the hunt. Since this project was born using the [Artemis-GUI](https://github.com/Dnawrkshp/ArtemisPS3/) codebase, I decided to respect that heritage by calling it Apollo.
 
 # Credits
 
