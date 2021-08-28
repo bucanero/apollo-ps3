@@ -60,7 +60,7 @@ endif
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
 LIBS	:=	-ltiny3d -lfreetype -lgcm_sys -lrsx -lsysutil -lio -lnet -laudioplayer -lmpg123 -logg -lspu_sound -laudio -lsysmodule -lssl -lhttp -lhttputil -lzip -ldbglogger -lpolarssl \
-			-I$(PS3DEV)/portlibs/modules/lib/spu_soundmodule.bin.a -lpngdec -lpng -lxml2 -lz -lm
+			-lpngdec -lpng -lxml2 -lz -lm
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
@@ -120,6 +120,8 @@ export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
 export INCLUDE	:=	$(foreach dir,$(INCLUDES), -I$(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
 					$(LIBPSL1GHT_INC) \
+					-I$(PORTLIBS)/include/libxml2 \
+					-I$(PORTLIBS)/include/freetype2 \
 					-I$(CURDIR)/$(BUILD)
 
 #---------------------------------------------------------------------------------
@@ -154,6 +156,7 @@ exec:
 #---------------------------------------------------------------------------------
 createzip:
 	@echo "creating appdata.zip ..."
+	@[ -d pkgfiles/USRDIR/CACHE ] || mkdir -p pkgfiles/USRDIR/CACHE
 	@rm -fr pkgfiles/USRDIR/CACHE/appdata.zip
 	@cd appdata && zip ../pkgfiles/USRDIR/CACHE/appdata.zip *.*
 

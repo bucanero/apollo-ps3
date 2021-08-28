@@ -1,11 +1,11 @@
 #include <dirent.h>
 #include <stdio.h>
 #include <string.h>
+#include <soundlib/audioplayer.h>
 
 #include "menu.h"
 #include "saves.h"
 #include "common.h"
-#include "audioplayer.h"
 
 uint8_t owner_sel = 0;
 
