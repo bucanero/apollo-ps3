@@ -385,8 +385,7 @@ u64 create_fake_account(u32 user_id)
 	}
 
 	// Disable auto sign in PSN with empty email/password
-	memset(data, 0, 4);
-	memcpy(buffer + pos, data, 4);
+	memset(buffer + pos, 0, 4);
 
 	if (write_file(XREGISTRY_FILE, (u8*) buffer, len) < 0)
 	{

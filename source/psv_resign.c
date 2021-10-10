@@ -284,6 +284,7 @@ int ps1_psv2mcs(const char* psvfile, const char* mcs_path)
 
 	memset(mcshdr, 0, sizeof(mcshdr));
 	memcpy(mcshdr + 4, &ps1h->saveSize, 4);
+	memcpy(mcshdr + 56, &ps1h->saveSize, 4);
 	memcpy(mcshdr + 10, ps1h->prodCode, sizeof(ps1h->prodCode));
 	mcshdr[0] = 0x51;
 	mcshdr[8] = 0xFF;
