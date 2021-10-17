@@ -174,7 +174,8 @@ You need to have installed:
 - [polarSSL](https://github.com/bucanero/ps3libraries/blob/master/scripts/015-polarssl-1.3.9.sh) library
 - [dbglogger](https://github.com/bucanero/psl1ght-libs/tree/master/dbglogger) library (only required for debug logging)
 
-Run `make` to create a release build. After that, run `make pkg` to create a `.pkg` install file. 
+Run `make` to create a release build. If you want to include the latest save patches in your `.pkg` file, run `make createzip`.
+Finally, run `make pkg` to create a `.pkg` install file.
 
 You can also set the `PS3LOAD` environment variable to the PS3 IP address: `export PS3LOAD=tcp:x.x.x.x`.
 This will allow you to use `make run` and send `apollo-ps3.self` directly to the [PS3Load listener](https://github.com/bucanero/ps3loadx).
