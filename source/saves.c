@@ -58,12 +58,12 @@ char* endsWith(const char * a, const char * b)
  * Function:		readFile()
  * File:			saves.c
  * Project:			Apollo PS3
- * Description:		reads the contents of a file into a new buffer
+ * Description:		reads the contents of a file into a new buffer (null terminated)
  * Arguments:
  *	path:			Path to file
  * Return:			Pointer to the newly allocated buffer
  */
-char * readFile(const char * path, long* size)
+char * readTextFile(const char * path, long* size)
 {
 	FILE *f = fopen(path, "rb");
 
@@ -83,26 +83,9 @@ char * readFile(const char * path, long* size)
 	fread(string, fsize, 1, f);
 	fclose(f);
 
+	string[fsize] = 0;
 	*size = fsize;
 	return string;
-}
-
-/*
- * Function:		rtrim()
- * File:			saves.c
- * Project:			Apollo PS3
- * Description:		Trims ending white spaces (' ') from a string
- * Arguments:
- *	buffer:			String
- * Return:			Amount of characters removed
- */
-int rtrim(char * buffer)
-{
-	int i, max = strlen(buffer) - 1;
-	for (i = max; (buffer[i] == ' ') && (i >= 0); i--)
-		buffer[i] = 0;
-
-	return (max - i);
 }
 
 code_entry_t* _createCmdCode(uint8_t type, const char* name, char code)
@@ -148,84 +131,6 @@ save_entry_t* _createSaveEntry(uint16_t flag, const char* name)
 	entry->name = strdup(name);
 
 	return entry;
-}
-
-void remove_char(char * str, int len, char seek);
-
-// Expects buffer without CR's (\r)
-void get_patch_code(char* buffer, int code_id, code_entry_t* entry)
-{
-	int i=0;
-    char *tmp = NULL;
-    char *res = calloc(1, 1);
-    char *line = strtok(buffer, "\n");
-
-    while (line)
-    {
-    	if ((wildcard_match(line, "[*]") ||
-			wildcard_match(line, "; --- * ---") ||
-			wildcard_match_icase(line, "GROUP:*")) && (i++ == code_id))
-    	{
-			LOG("Reading patch code for '%s'...", line);
-	    	line = strtok(NULL, "\n");
-
-		    while (line)
-		    {
-		    	if ((wildcard_match(line, "; --- * ---")) 	||
-		    		(wildcard_match(line, ":*"))			||
-		    		(wildcard_match(line, "[*]"))			||
-		    		(wildcard_match_icase(line, "PATH:*"))	||
-		    		(wildcard_match_icase(line, "GROUP:*")))
-		    	{
-						break;
-			    }
-
-		    	if (!wildcard_match(line, ";*"))
-		    	{
-					asprintf(&tmp, "%s%s\n", res, line);
-					free(res);
-					res = tmp;
-
-//			    	LOG("%s", line);
-					if (!wildcard_match(line, "\?\?\?\?\?\?\?\? \?\?\?\?\?\?\?\?") || (
-						(line[0] != '0') && (line[0] != '1') && (line[0] != '2') && (line[0] != '4') &&
-						(line[0] != '5') && (line[0] != '6') && (line[0] != '7') && (line[0] != '8') &&
-						(line[0] != '9') && (line[0] != 'A')))
-						entry->type = PATCH_BSD;
-
-					// set the correct file for the decompress command
-					if (wildcard_match_icase(line, "DECOMPRESS *"))
-					{
-						line += strlen("DECOMPRESS ");
-						if (entry->file)
-							free(entry->file);
-
-						entry->file = strdup(line);
-					}
-
-					// set the correct file for the compress command
-					if (wildcard_match_icase(line, "COMPRESS *,*"))
-					{
-						line += strlen("COMPRESS ");
-						if (entry->file)
-							free(entry->file);
-
-						char* tmp = strchr(line, ',');
-						*tmp = 0;
-
-						entry->file = strdup(line);
-						*tmp = ',';
-					}
-
-			    }
-		    	line = strtok(NULL, "\n");
-		    }
-    	}
-    	line = strtok(NULL, "\n");
-    }
-
-//	LOG("Result (%s)", res);
-	entry->codes = res;
 }
 
 option_entry_t* _getFileOptions(const char* save_path, const char* mask, uint8_t is_cmd)
@@ -498,6 +403,11 @@ int set_ps2_codes(save_entry_t* item)
 	return list_count(item->codes);
 }
 
+option_entry_t* get_file_entries(const char* path, const char* mask)
+{
+	return _getFileOptions(path, mask, CMD_CODE_NULL);
+}
+
 /*
  * Function:		ReadLocalCodes()
  * File:			saves.c
@@ -510,11 +420,8 @@ int set_ps2_codes(save_entry_t* item)
  */
 int ReadCodes(save_entry_t * save)
 {
-	int code_count = 0;
 	code_entry_t * code;
-	option_entry_t * file_opt = NULL;
-	char filePath[256] = "";
-	char group = 0;
+	char filePath[256];
 	long bufferLen;
 	char * buffer = NULL;
 
@@ -536,129 +443,15 @@ int ReadCodes(save_entry_t * save)
 	if (file_exists(filePath) != SUCCESS)
 		return list_count(save->codes);
 
-	LOG("Loading BSD codes '%s'...", filePath);
-	buffer = readFile(filePath, &bufferLen);
-	buffer[bufferLen]=0;
-
-	remove_char(buffer, bufferLen, '\r');
-
 	code = _createCmdCode(PATCH_NULL, "----- " UTF8_CHAR_STAR " Cheats " UTF8_CHAR_STAR " -----", CMD_CODE_NULL);	
 	list_append(save->codes, code);
 
 	code = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " View Raw Patch File", CMD_VIEW_RAW_PATCH);
 	list_append(save->codes, code);
 
-	list_node_t* node = list_tail(save->codes);
-	char *line = strtok(buffer, "\n");
-		
-	while (line)
-	{
-		rtrim(line);
-		if (wildcard_match(line, ":*"))
-		{
-			char* tmp_mask;
-
-			strcpy(filePath, line+1);
-			LOG("FILE: %s\n", filePath);
-
-			if (strrchr(filePath, '\\'))
-				tmp_mask = strrchr(filePath, '\\')+1;
-			else
-				tmp_mask = filePath;
-
-			if (strchr(tmp_mask, '*'))
-				file_opt = _getFileOptions(save->path, tmp_mask, CMD_CODE_NULL);
-			else
-				file_opt = NULL;
-
-		}
-		else if (wildcard_match(line, "?=*") ||
-					wildcard_match(line, "\?\?=*") ||
-					wildcard_match(line, "\?\?\?\?=*"))
-		{
-			// options
-		}
-		else if (wildcard_match_icase(line, "PATH:*"))
-		{
-			//
-		}
-		else if (wildcard_match(line, "[*]") ||
-				wildcard_match(line, "; --- * ---") ||
-				wildcard_match_icase(line, "GROUP:*"))
-		{
-			if (wildcard_match_icase(line, "[DEFAULT:*"))
-			{
-				line += 6;
-				line[1] = CHAR_TAG_WARNING;
-				line[2] = ' ';
-			}
-			else if (wildcard_match_icase(line, "[INFO:*"))
-			{
-				line += 3;
-				line[1] = CHAR_TAG_WARNING;
-				line[2] = ' ';
-			}
-			else if (wildcard_match_icase(line, "*GROUP:\\*"))
-			{
-				group = 0;
-				line = strrchr(line, '\\');
-				line[0] = ' ';
-			}
-			else if (wildcard_match_icase(line, "[GROUP:*"))
-			{
-				line += 6;
-				group = 1;
-				LOG("GROUP: %s\n", line);
-			}
-			else if (wildcard_match(line, "; --- * ---") || wildcard_match_icase(line, "GROUP:*"))
-			{
-				line += 5;
-				group = 1;
-				LOG("GROUP: %s\n", line);
-			}
-			line++;
-
-			code = calloc(1, sizeof(code_entry_t));
-			code->type = PATCH_GAMEGENIE;
-			code->options = file_opt;
-			code->options_count = (file_opt ? 1 : 0);
-			asprintf(&code->file, "%s", filePath);
-			list_append(save->codes, code);
-
-			switch (group)
-			{
-				case 1:
-					asprintf(&code->name, UTF8_CHAR_GROUP " %s", line);
-					group = 2;
-					break;
-				case 2:
-					asprintf(&code->name, " " UTF8_CHAR_ITEM " %s", line);
-					break;
-				
-				default:
-					asprintf(&code->name, "%s", line);
-					break;
-			}
-
-			char* end = strrchr(code->name, ']');
-			if (end) *end = 0;
-
-			end = endsWith(code->name, " ---");
-			if (end) *end = 0;
-		}
-
-		line = strtok(NULL, "\n");
-	}
-
-	while ((node = list_next(node)) != NULL)
-	{
-		code = list_get(node);
-		// remove 0x00 from previous strtok(...)
-		remove_char(buffer, bufferLen, '\0');
-		get_patch_code(buffer, code_count++, code);
-
-		LOG("[%d] Name: %s\nFile: %s\nCode (%d): %s\n", code_count, code->name, code->file, code->type, code->codes);
-	}
+	LOG("Loading BSD codes '%s'...", filePath);
+	buffer = readTextFile(filePath, &bufferLen);
+	load_patch_code_list(buffer, save->codes, &get_file_entries, save->path);
 
 	free (buffer);
 
@@ -705,11 +498,10 @@ int ReadTrophies(save_entry_t * game)
 	if (file_exists(filePath) != SUCCESS)
 		return 0;
 
-	buffer = readFile(filePath, &bufferLen);
-	buffer[bufferLen]=0;
+	buffer = readTextFile(filePath, &bufferLen);
 
 	/*parse the file and get the DOM */
-	doc = xmlReadMemory(buffer + 0x40, bufferLen - 0x40, NULL, NULL, XML_PARSE_NONET);
+	doc = xmlParseMemory(buffer + 0x40, bufferLen - 0x40);
 
 	if (!doc)
 	{
@@ -857,8 +649,7 @@ int ReadOnlineSaves(save_entry_t * game)
 	}
 
 	long fsize;
-	char *data = readFile(path, &fsize);
-	data[fsize] = 0;
+	char *data = readTextFile(path, &fsize);
 	
 	char *ptr = data;
 	char *end = data + fsize + 1;
@@ -1639,8 +1430,7 @@ void _ReadOnlineListEx(const char* urlPath, uint16_t flag, list_t *list)
 	}
 	
 	long fsize;
-	char *data = readFile(path, &fsize);
-	data[fsize] = 0;
+	char *data = readTextFile(path, &fsize);
 	
 	char *ptr = data;
 	char *end = data + fsize + 1;
@@ -1743,7 +1533,7 @@ list_t * ReadTrophyList(const char* userPath)
 
 	while ((dir = readdir(d)) != NULL)
 	{
-		if (dir->d_type != DT_DIR || strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0)
+		if (dir->d_type != DT_DIR || strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0 || strncmp(dir->d_name, "_BU_", 4) == 0)
 			continue;
 
 		snprintf(filePath, sizeof(filePath), "%s%s/TROPCONF.SFM", userPath, dir->d_name);
@@ -1751,11 +1541,10 @@ list_t * ReadTrophyList(const char* userPath)
 		{
 			LOG("Reading %s...", filePath);
 
-			buffer = readFile(filePath, &bufferLen);
-			buffer[bufferLen]=0;
+			buffer = readTextFile(filePath, &bufferLen);
 
 			/*parse the file and get the DOM */
-			doc = xmlReadMemory(buffer + 0x40, bufferLen - 0x40, NULL, NULL, XML_PARSE_NONET);
+			doc = xmlParseMemory(buffer + 0x40, bufferLen - 0x40);
 
 			if (!doc)
 			{

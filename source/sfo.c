@@ -1,5 +1,5 @@
+#include <apollo.h>
 #include "sfo.h"
-#include "list.h"
 #include "util.h"
 
 #define SFO_MAGIC   0x46535000u

@@ -19,11 +19,6 @@ endif
 ICON0		:=	$(CURDIR)/pkgfiles/ICON0.PNG
 SFOXML		:=	$(CURDIR)/sfo.xml
 
-SCETOOL_FLAGS	?=	--self-app-version=0001000000000000  --sce-type=SELF --compress-data=TRUE --self-add-shdrs=TRUE --skip-sections=FALSE --key-revision=1 \
-					--self-auth-id=1010000001000003 --self-vendor-id=01000002 --self-fw-version=0003004000000000 \
-					--self-ctrl-flags 4000000000000000000000000000000000000000000000000000000000000002 \
-					--self-cap-flags 00000000000000000000000000000000000000000000007B0000000100000000
-
 include $(PSL1GHT)/ppu_rules
 
 #---------------------------------------------------------------------------------
@@ -59,8 +54,8 @@ endif
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:=	-ltiny3d -lfreetype -lgcm_sys -lrsx -lsysutil -lio -lnet -laudioplayer -lmpg123 -logg -lspu_sound -laudio -lsysmodule -lssl -lhttp -lhttputil -lzip -ldbglogger -lpolarssl \
-			-lpngdec -lpng -lxml2 -lz -lm
+LIBS	:=	-ltiny3d -lfreetype -lgcm_sys -lrsx -lsysutil -lio -lnet -laudioplayer -lmpg123 -logg -lspu_sound -laudio -lsysmodule \
+			-lssl -lhttp -lhttputil -lapollo -lzip -ldbglogger -lpolarssl -lpngdec -lpng -lxml2 -lz -lm
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing

@@ -1,5 +1,4 @@
-#include "list.h"
-
+#include <apollo.h>
 #include <dbglogger.h>
 #define LOG dbglogger_log
 
@@ -185,38 +184,6 @@ enum char_flag_enum
     CHAR_TRP_SYNC,
 };
 
-enum code_type_enum
-{
-    PATCH_NULL,
-    PATCH_COMMAND,
-    PATCH_SFO,
-    PATCH_GAMEGENIE,
-    PATCH_BSD,
-    PATCH_TROP_UNLOCK,
-    PATCH_TROP_LOCK,
-};
-
-typedef struct option_entry
-{
-    char * line;
-    char * * name;
-    char * * value;
-    int id;
-    int size;
-    int sel;
-} option_entry_t;
-
-typedef struct code_entry
-{
-    uint8_t type;
-    char * name;
-    char * file;
-    uint8_t activated;
-    int options_count;
-    char * codes;
-    option_entry_t * options;
-} code_entry_t;
-
 typedef struct save_entry
 {
     char * name;
@@ -243,7 +210,7 @@ list_t * ReadOnlineList(const char* urlPath);
 list_t * ReadBackupList(const char* userPath);
 list_t * ReadTrophyList(const char* userPath);
 void UnloadGameList(list_t * list);
-char * readFile(const char * path, long* size);
+char * readTextFile(const char * path, long* size);
 int sortSaveList_Compare(const void* A, const void* B);
 int sortCodeList_Compare(const void* A, const void* B);
 int ReadCodes(save_entry_t * save);
@@ -267,8 +234,6 @@ void end_progress_bar(void);
 int init_loading_screen(const char* msg);
 void stop_loading_screen();
 
-void free_patch_var_list();
-int apply_cheat_patch_code(const char* fpath, const char* title_id, code_entry_t* code);
 void execCodeCommand(code_entry_t* code, const char* codecmd);
 
 int patch_trophy_account(const char* trp_path, const char* account_id);
@@ -276,7 +241,7 @@ int apply_trophy_patch(const char* trp_path, uint32_t trophy_id, int unlock);
 
 int rif2rap(const uint8_t* idps_key, const char* lic_path, const char* rifFile, const char* rap_path);
 int rap2rif(const uint8_t* idps_key, const char* exdata_path, const char* rap_file, const char *rif_path);
-int rif2klicensee(const u8* idps_key, const char* exdata_path, const char* rif_file, u8* klic);
+int rif2klicensee(const uint8_t* idps_key, const char* exdata_path, const char* rif_file, uint8_t* klic);
 int create_actdat(const char* exdata_path, uint64_t account_id);
 uint64_t create_fake_account(uint32_t user_id);
 

@@ -817,7 +817,7 @@ int apply_cheat_patches()
 			}
 		}
 
-		if (!apply_cheat_patch_code(tmpfile, selected_entry->title_id, code))
+		if (!apply_cheat_patch_code(tmpfile, selected_entry->title_id, code, APOLLO_LOCAL_CACHE))
 		{
 			LOG("Error: failed to apply (%s)", code->name);
 			ret = 0;

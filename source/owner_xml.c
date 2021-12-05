@@ -85,7 +85,7 @@ int read_xml_owner(const char *xmlfile, const char *owner)
     xmlNode *cur_node = NULL;
 
     /*parse the file and get the DOM */
-    doc = xmlReadFile(xmlfile, NULL, XML_PARSE_NONET);
+    doc = xmlParseFile(xmlfile);
 
     if (doc == NULL) {
         LOG("XML error: could not parse file %s", xmlfile);
@@ -127,7 +127,7 @@ char** get_xml_owners(const char *xmlfile)
     char** ret = NULL;
 
     /*parse the file and get the DOM */
-    doc = xmlReadFile(xmlfile, NULL, XML_PARSE_NONET);
+    doc = xmlParseFile(xmlfile);
 
     if (doc == NULL)
     {
