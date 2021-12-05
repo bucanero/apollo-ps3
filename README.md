@@ -170,6 +170,7 @@ You need to have installed:
 
 - [PS3 toolchain](https://github.com/bucanero/ps3toolchain)
 - [PSL1GHT](https://github.com/ps3dev/PSL1GHT) SDK
+- [Apollo](https://github.com/bucanero/apollo-lib) library
 - [Tiny3D](https://github.com/wargio/Tiny3D) library
 - [polarSSL](https://github.com/bucanero/ps3libraries/blob/master/scripts/015-polarssl-1.3.9.sh) library
 - [dbglogger](https://github.com/bucanero/psl1ght-libs/tree/master/dbglogger) library (only required for debug logging)
