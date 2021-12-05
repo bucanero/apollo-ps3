@@ -1,17 +1,11 @@
 ; BLJM67005
 ; FINAL FANTASY® XIII
 
-[red:INFO: Instructions]
-[red:INFO: Step 1 - Load Save into BSD]
-[red:INFO: Step 2 - Download FFXIII Encryptor from http://ps3cheating.net/external-save-editors/]
-[red:INFO: Step 3 - Press DIRECTORY to load your Save data]
-[red:INFO: Step 4 - Press Decrypt]
-[red:INFO: Step 5 - Copy "~files_decrypted_by_pfdtool.txt" file into the Save Data's root folder]
-[red:INFO: Step 6 - Hit "Refresh" button in BSD. Apply Cheats.]
-[red:INFO: Step 7 - Go back to FFXIII Multi Encryptor and Press Encrypt]
-[red:INFO: Step 8 - Delete "~files_decrypted_by_pfdtool.txt" file from your save folder]
-
 :MRTC00003-*\APP.DAT
+
+[Decrypt APP.DAT (Required)]
+set range:0x000000,eof+1
+DECRYPT FFXIII(1, 0x00)
 
 [Max Money]
 200046B4 3B9AC9FF
@@ -257,109 +251,109 @@ write at 0x0002B2D5:00
 write at 0x0002B2B5:00
 write at 0x0002B2B9:08
 
-Group: New Code by Skiller & Deathwing Zero
+[Group: New Code by Skiller & Deathwing Zero]
 
-Individual Item Code
+[Individual Item Code]
 
-Potion
+[Potion]
 20037288 69745F70
 2003728C 6F74696F
 20037290 6E000000
 20037294 00000000
 20037298 00000063
 
-Phoenix Down
+[Phoenix Down]
 2003729C 69745F70
 200372A0 68656E78
 200372A4 74616C00
 200372A8 00000000
 200372AC 00000063
 
-Elixir
+[Elixir]
 200372B0 69745F65
 200372B4 6C697869
 200372B8 72000000
 200372BC 00000000
 200372C0 00000063
 
-Librascope
+[Librascope]
 200372C4 69745F6C
 200372C8 69627261
 200372CC 00000000
 200372D0 00000000
 200372D4 00000063
 
-Antidote
+[Antidote]
 200372D8 69745F61
 200372DC 6E746964
 200372E0 6F746500
 200372E4 00000000
 200372E8 00000063
 
-Holywater
+[Holywater]
 200372EC 69745F68
 200372F0 6F6C7977
 200372F4 61746572
 200372F8 00000000
 200372FC 00000063
 
-Painkiller
+[Painkiller]
 20037300 69745F73
 20037304 65646174
 20037308 69766500
 2003730C 00000000
 20037310 00000063
 
-Mallet
+[Mallet]
 20037314 69745F74
 20037318 6F6E6B61
 2003731C 74690000
 20037320 00000000
 20037324 00000063
 
-Foul Liquid
+[Foul Liquid]
 20037328 69745F73
 2003732C 74696E6B
 20037330 77617465
 20037334 72000000
 20037338 00000063
 
-Wax
+[Wax]
 2003733C 69745F77
 20037340 61780000
 20037344 00000000
 20037348 00000000
 2003734C 00000063
 
-Fortisol
+[Fortisol]
 20037350 69745F70
 20037354 6F776572
 20037358 736D6F6B
 2003735C 65000000
 20037360 00000063
 
-Aegisol
+[Aegisol]
 20037364 69745F62
 20037368 6172736D
 2003736C 6F6B6500
 20037370 00000000
 20037374 00000063
 
-Deceptisol
+[Deceptisol]
 20037378 69745F73
 2003737C 6E65616B
 20037380 736D6F6B
 20037384 65000000
 20037388 00000063
 
-Ethersol
+[Ethersol]
 2003738C 69745F74
 20037390 70736D6F
 20037394 6B650000
 20037398 00000000
 2003739C 00000063
 
-Have Max/All Components
+[Have Max/All Components]
 4203B754 6D617465
 408E0014 00000000
 4203B758 7269616C
@@ -431,8 +425,9 @@ Have Max/All Components
 4203C23C 30000000
 40030014 01000000
 
-All Weapons
-Note: if u use this code right now u will have No ACC in any of the slots up to 144..  this code is still being worked on and needs the ACC added to it .. 
+[All Weapons]
+;Note: if u use this code right now u will have No ACC in any of the slots up to 144..  
+;this code is still being worked on and needs the ACC added to it .. 
 420378CC 30303030
 40900014 00000000
 420378D0 3030305F
@@ -536,8 +531,9 @@ Note: if u use this code right now u will have No ACC in any of the slots up to 
 42048074 30323000
 4005001C 00000100
 
-Have all ACC
-Note: Best use along with the all weapons code: u can also change this line [color=#FF0000]42048110 00000032[/color] the 00000032 to higher like 2710 to change the % u get for the added effect 
+[Have all ACC]
+;Note: Best use along with the all weapons code: 
+;u can also change this line ===42048110 00000032=== the 00000032 to higher like 2710 to change the % u get for the added effect 
 420391D0 30303030
 40770014 00000000
 420391D4 3030305F
@@ -588,7 +584,8 @@ Note: Best use along with the all weapons code: u can also change this line [col
 4077001C 00000000
 4204810C 00000000
 4077001C 00000000
-[color=#FF0000]42048110 00000BB8[/color]
+;===42048110 00000BB8===
+42048110 00000BB8
 4077001C 00000000
 200481A4 3030395F
 420481C0 3031305F
@@ -646,31 +643,31 @@ Note: Best use along with the all weapons code: u can also change this line [col
 20048DE4 3030305F
 20048DE8 32303400
 
-Fang has 4 Accessory Slots
+[Fang has 4 Accessory Slots]
 000246B0 00000004
 
-Hope has 4 Accessory Slots
+[Hope has 4 Accessory Slots]
 000261B0 00000004
 
-Lightning has 4 Accessory Slots
+[Lightning has 4 Accessory Slots]
 00027CB0 00000004
 
-Sazh has 4 Accessory Slots
+[Sazh has 4 Accessory Slots]
 00028A30 00000004
 
-Snow has 4 Accessory Slots
+[Snow has 4 Accessory Slots]
 0002A530 00000004
 
-Vanille has 4 Accessory Slots
+[Vanille has 4 Accessory Slots]
 0002B2B0 00000004
 
-Crystarium Level 10
+[Crystarium Level 10]
 0000472F 0000000A
 
-Access Battle Team
+[Access Battle Team]
 00042CEF 00000000
 
-Enable All Party Members
+[Enable All Party Members]
 2001BE20 00090000
 2001BE24 000D0000
 2001BE28 00100000
@@ -679,56 +676,51 @@ Enable All Party Members
 2001BE34 00110000
 0001BE4C 00000006
 
-Party Modifier
+;Party Modifier
+;Slot 1
+;2001BE38 00XX0000
+;Slot 2
+;2001BE3C 00XX0000
+;Slot 3
+;2001BE40 00XX0000
+;09 = Fang
+;0B = Hope
+;0D = Lightning
+;0E = Sazh
+;10 = Snow
+;11 = Vanille
 
-Slot 1
-2001BE38 00XX0000
+;Party Leader
+;0001BE45 000000XX
+;09 = Fang
+;0B = Hope
+;0D = Lightning
+;0E = Sazh
+;10 = Snow
+;11 = Vanille
 
-Slot 2
-2001BE3C 00XX0000
-
-Slot 3
-2001BE40 00XX0000
-
-09 = Fang
-0B = Hope
-0D = Lightning
-0E = Sazh
-10 = Snow
-11 = Vanille
-
-Party Leader
-0001BE45 000000XX
-
-09 = Fang
-0B = Hope
-0D = Lightning
-0E = Sazh
-10 = Snow
-11 = Vanille
-
-Maximum TP
+[Maximum TP]
 1001BE52 00000834
 
-Fang: Access all Roles
+[Fang: Access all Roles]
 10023A94 00003FFF
 
-Hope: Access all Roles
+[Hope: Access all Roles]
 10025594 00003FFF
 
-Lightning: Access all Roles
+[Lightning: Access all Roles]
 10027094 00003FFF
 
-Sazh: Access all Roles
+[Sazh: Access all Roles]
 10027E14 00003FFF
 
-Snow: Access all Roles
+[Snow: Access all Roles]
 10029914 00003FFF
 
-Vanille: Access all Roles
+[Vanille: Access all Roles]
 1002A694 00003FFF
 
-Fang Has All Abilities
+[Fang Has All Abilities]
 00023A97 0000006B
 42023AA0 00000000
 404B0010 00000000
@@ -816,7 +808,7 @@ Fang Has All Abilities
 40040010 00000000
 20024138 63303035
 
-Hope has All Abilities
+[Hope has All Abilities]
 00025597 0000006B
 420255A0 00000000
 404B0010 00000000
@@ -928,7 +920,7 @@ Hope has All Abilities
 20025B10 3537305F
 20025B14 30300000
 
-Lightning Has All Abilities
+[Lightning Has All Abilities]
 00027097 0000006B
 420270A0 00000000
 404B0010 00000000
@@ -1020,7 +1012,7 @@ Lightning Has All Abilities
 200270A0 31305F30
 000270A4 00000030
 
-Sazh Has All Abilities
+[Sazh Has All Abilities]
 00027E17 0000006B
 42027E20 00000000
 404B0010 00000000
@@ -1128,7 +1120,7 @@ Sazh Has All Abilities
 20027EB0 31305F30
 00027EB4 00000030
 
-Snow Has All Abilities
+[Snow Has All Abilities]
 00029917 0000006B
 42029920 00000000
 404B0010 00000000
@@ -1216,7 +1208,7 @@ Snow Has All Abilities
 40040010 00000000
 20029FB8 63303035
 
-Vanille Has All Abilities
+[Vanille Has All Abilities]
 0002A697 0000006B
 4202A6A0 00000000
 404B0010 00000000
@@ -1320,4 +1312,14 @@ Vanille Has All Abilities
 2002A740 31305F30
 0002A744 00000030
 
+[Group:Encryption]
 
+[Update APP.DAT Checksum (Required)]
+set pointer:eof-0x7
+set range:0x0,pointer
+set [hash]:ff13_checksum
+write next (4):[hash]
+
+[Encrypt APP.DAT (Required)]
+set range:0x000000,eof+1
+ENCRYPT FFXIII(1, 0x00)

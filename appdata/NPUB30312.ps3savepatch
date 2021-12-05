@@ -2166,6 +2166,58 @@
 201003F4 007F0001
 201003FC 00530001
 
+[Group:Character swap]
+;Hacked by Randy97Killa
+
+[Save Slot 1:swap player to Leon Normal Black Shirt]
+200003EC 00010000
+
+[Save Slot 1:swap player to Leon with jacket]
+200003EC 00000000
+
+[Save Slot 1:swap player to Leon with RPD]
+200003EC 00030000
+
+[Save Slot 1:swap player to Ada mercenaries]
+200003EC 02000000
+
+[Save Slot 1:swap player to Ada separate ways]
+200003EC 02030000
+
+[Save Slot 1:swap player to Ada Assigment]
+200003EC 02010000
+
+[Save Slot 1:swap player to Krauser]
+200003EC 04000000
+
+[Save Slot 1:swap player to Hunk]
+200003EC 03000000
+
+[Save Slot 1:swap player to Wesker]
+200003EC 05000000
+
+[Save Slot 1:swap player to Ashley]
+200003EC 01000000
+
+[Save Slot 1:swap player to Ashley with Armor]
+200003EC 01020000
+
+[Save Slot 1:swap player to Ashley White Pants]
+200003EC 01010000
+
+[INFO:first play as ada, save and quit]
+;first play as ada
+;save and quit 
+
+[Save Slot 1:Change Costume to ada separate ways]
+200003EC 02030000
+
+[Save Slot 1:Change Costume to ada assigment]
+200003EC 02010000
+
+[Save Slot 1:Change Costume to ada mercenaries]
+200003EC 02000000
+
 [Group:Checksum]
 [Update crc32(required)]
 set range:0x380,0xCE77

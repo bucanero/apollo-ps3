@@ -29,6 +29,23 @@ DECRYPT blowfish_ecb("zW$2eWaHNdT~6j86T_&j")
 [Red:Max Hearts]
 20015478 7FFFFFFF
 
+[Orange:Cure Pills For All Characters]
+write at 0x004B22:0x01F4
+write at 0x004B92:0x01F4
+write at 0x004C02:0x01F4
+write at 0x004C72:0x01F4
+write at 0x004CE2:0x01F4
+write at 0x004D52:0x01F4
+write at 0x004DC2:0x01F4
+write at 0x004E32:0x01F4
+
+[Odd Field of Vision at Point and Character]
+write at 0x0015F0:0x00000000470BB46C0000000047A4D320000000004787522C0000000000000000﻿
+
+[Orange:Modify Camera Speed ​​and Aimed]
+write at 0x000053:0x0B
+write at 0x00005F:0x0B
+
 [Group: Weapon Hacks]
 
 [Orange:Weapons Level 100 - Slot1-24]
