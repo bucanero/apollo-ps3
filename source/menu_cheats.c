@@ -221,7 +221,7 @@ int DrawCodes(code_entry_t* code, u8 alpha, int y_inc, int xOff, int selIndex)
     //SetCurrentFont(font_comfortaa_regular);
     //SetExtraSpace(0);
 
-    if (code->file)
+    if (code->file && code->file[0])
         DrawFormatString(xOff + MENU_ICON_OFF + 20, 434, "Target File: %s", code->file);
 
     for (c = startDrawX; c < max; c++)
