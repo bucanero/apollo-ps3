@@ -1,0 +1,15 @@
+; BLJM61133
+;
+; "Yakuza Extreme / Ryu ga Gotoku Kiwami"
+
+:*
+
+[Max money]
+2000C74C 3B9AC9FF
+
+[Max CP]
+2000C7DC 3B9AC9FF
+
+[Max exp]
+200072BC 0098967F
+20007474 0098967F
