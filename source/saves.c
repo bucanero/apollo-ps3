@@ -367,7 +367,7 @@ int set_ps2_codes(save_entry_t* item)
 	list_append(item->codes, cmd);
 
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Decrypt SCEVMC0.VME", CMD_CODE_NULL);
-	asprintf(&cmd->file, "SCEVMC0.VME");
+	cmd->file = strdup("SCEVMC0.VME");
 	cmd->options_count = 1;
 	cmd->options = _createOptions(3, "Decrypt SCEVMC0.VME to USB", CMD_DECRYPT_PS2_VME);
 	asprintf(&cmd->options->name[2], "Decrypt SCEVMC0.VME to HDD");
@@ -375,7 +375,7 @@ int set_ps2_codes(save_entry_t* item)
 	list_append(item->codes, cmd);
 
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Decrypt SCEVMC1.VME", CMD_CODE_NULL);
-	asprintf(&cmd->file, "SCEVMC1.VME");
+	cmd->file = strdup("SCEVMC1.VME");
 	cmd->options_count = 1;
 	cmd->options = _createOptions(3, "Decrypt SCEVMC1.VME to USB", CMD_DECRYPT_PS2_VME);
 	asprintf(&cmd->options->name[2], "Decrypt SCEVMC1.VME to HDD");
@@ -383,19 +383,19 @@ int set_ps2_codes(save_entry_t* item)
 	list_append(item->codes, cmd);
 
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Import a .VM2 to SCEVMC0.VME", CMD_CODE_NULL);
-	asprintf(&cmd->file, "SCEVMC0.VME");
+	cmd->file = strdup("SCEVMC0.VME");
 	cmd->options_count = 1;
 	cmd->options = _getFileOptions(EXP_PS2_PATH_HDD, "*.VM2", CMD_ENCRYPT_PS2_VMC);
 	list_append(item->codes, cmd);
 
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Import a .VM2 to SCEVMC1.VME", CMD_CODE_NULL);
-	asprintf(&cmd->file, "SCEVMC1.VME");
+	cmd->file = strdup("SCEVMC1.VME");
 	cmd->options_count = 1;
 	cmd->options = _getFileOptions(EXP_PS2_PATH_HDD, "*.VM2", CMD_ENCRYPT_PS2_VMC);
 	list_append(item->codes, cmd);
 
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy dummy .PSV Save", CMD_CODE_NULL);
-	asprintf(&cmd->file, "APOLLO-99PS2.PSV");
+	cmd->file = strdup("APOLLO-99PS2.PSV");
 	cmd->options_count = 1;
 	cmd->options = _createOptions(2, "Copy APOLLO-99PS2.PSV to USB", CMD_COPY_DUMMY_PSV);
 	list_append(item->codes, cmd);
@@ -715,7 +715,7 @@ list_t * ReadBackupList(const char* userPath)
 	{
 		snprintf(tmp, sizeof(tmp), USB_PATH, i);
 
-		if (dir_exists(tmp) != SUCCESS)
+		if (i && dir_exists(tmp) != SUCCESS)
 			continue;
 
 		snprintf(tmp, sizeof(tmp), CHAR_ICON_COPY " Import Licenses (USB %d)", i);
@@ -738,17 +738,17 @@ list_t * ReadBackupList(const char* userPath)
 	}
 
 	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " PS2 Classics: Import & Encrypt ISOs (HDD)");
-	asprintf(&item->path, PS2ISO_PATH_HDD);
+	item->path = strdup(PS2ISO_PATH_HDD);
 	item->type = FILE_TYPE_ISO;
 	list_append(list, item);
 
 	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " PS2 Classics: Export & Decrypt BIN.ENC images");
-	asprintf(&item->path, PS2ISO_PATH_HDD);
+	item->path = strdup(PS2ISO_PATH_HDD);
 	item->type = FILE_TYPE_BINENC;
 	list_append(list, item);
 
 	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " Export /dev_flash2");
-	asprintf(&item->path, "/dev_flash2/");
+	item->path = strdup("/dev_flash2/");
 	item->codes = list_alloc();
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " Zip /dev_flash2 to USB", CMD_CODE_NULL);
 	cmd->options_count = 1;
@@ -757,7 +757,7 @@ list_t * ReadBackupList(const char* userPath)
 	list_append(list, item);
 
 	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " Export PS2 .VM2 memory cards to USB");
-	asprintf(&item->path, EXP_PS2_PATH_HDD);
+	item->path = strdup(EXP_PS2_PATH_HDD);
 	item->type = FILE_TYPE_VM2;
 	list_append(list, item);
 
@@ -783,7 +783,7 @@ int get_iso_files(save_entry_t * item)
 				snprintf(name, sizeof(name), "Encode %s", dir->d_name);
 
 				cmd = _createCmdCode(PATCH_COMMAND, name, endsWith(dir->d_name, "CONFIG") ? CMD_IMP_PS2_CONFIG : CMD_IMP_PS2_ISO);
-				asprintf(&cmd->file, dir->d_name);
+				cmd->file = strdup(dir->d_name);
 				list_append(item->codes, cmd);
 
 				LOG("Adding File '%s'", cmd->file);
@@ -821,7 +821,7 @@ int get_binenc_files(save_entry_t * item)
 				snprintf(name, sizeof(name), "Decode %s to .ISO", dir->d_name);
 
 				cmd = _createCmdCode(PATCH_COMMAND, name, CMD_CODE_NULL);
-				asprintf(&cmd->file, dir->d_name);
+				cmd->file = strdup(dir->d_name);
 				cmd->options_count = 1;
 				cmd->options = _createOptions(3, "Save .ISO to USB", CMD_EXP_PS2_BINENC);
 				asprintf(&cmd->options->name[2], "Save .ISO to HDD");
@@ -863,7 +863,7 @@ int get_vm2_files(save_entry_t * item)
 				snprintf(name, sizeof(name), "Export %s to .VMC", dir->d_name);
 
 				cmd = _createCmdCode(PATCH_COMMAND, name, CMD_CODE_NULL);
-				asprintf(&cmd->file, dir->d_name);
+				cmd->file = strdup(dir->d_name);
 				cmd->options_count = 1;
 				cmd->options = _createOptions(2, "Save .VMC to USB", CMD_EXP_VM2_RAW);
 				list_append(item->codes, cmd);
@@ -903,7 +903,7 @@ int get_ps2_raw_files(save_entry_t * item)
 				snprintf(name, sizeof(name), "Import %s to .VM2 (HDD)", dir->d_name);
 
 				cmd = _createCmdCode(PATCH_COMMAND, name, CMD_IMP_PS2VMC_USB);
-				asprintf(&cmd->file, dir->d_name);
+				cmd->file = strdup(dir->d_name);
 				list_append(item->codes, cmd);
 
 				LOG("Adding File '%s'", cmd->file);
@@ -1010,7 +1010,7 @@ int ReadBackupCodes(save_entry_t * bup)
 					sprintf(cmd->codes, "%c", CMD_IMP_EXDATA_USB);
 				}
 
-				asprintf(&cmd->file, dir->d_name);
+				cmd->file = strdup(dir->d_name);
 				list_append(bup->codes, cmd);
 
 				LOG("Added File '%s'", cmd->file);
@@ -1341,6 +1341,7 @@ list_t * ReadUserList(const char* userPath)
 	list = list_alloc();
 
 	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " Bulk Save Management");
+	item->type = FILE_TYPE_MENU;
 	item->codes = list_alloc();
 
 	if (strncmp(userPath, "/dev_hdd0/", 10) == 0)
@@ -1514,7 +1515,8 @@ list_t * ReadTrophyList(const char* userPath)
 	list = list_alloc();
 
 	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " Export Trophies");
-	asprintf(&item->path, userPath);
+	item->type = FILE_TYPE_MENU;
+	item->path = strdup(userPath);
 	item->codes = list_alloc();
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Backup Trophies to USB", CMD_CODE_NULL);
 	cmd->options_count = 1;

@@ -786,8 +786,8 @@ void SetMenu(int id)
 			break;
 
 		case MENU_ONLINE_DB: //Cheats Online Menu
-			if (!online_saves.list)
-				ReloadUserSaves(&online_saves);
+			if (!online_saves.list && !ReloadUserSaves(&online_saves))
+				return;
 
 			if (apollo_config.doAni)
 				Draw_UserCheatsMenu_Ani(&online_saves);
@@ -980,9 +980,12 @@ void doSaveMenu(save_list_t * save_list)
     	else if (paddata[0].BTN_TRIANGLE && save_list->UpdatePath)
     	{
 			selected_entry = list_get_item(save_list->list, menu_sel);
-			selected_centry = LoadSaveDetails();
-    		SetMenu(MENU_SAVE_DETAILS);
-    		return;
+			if (selected_entry->type != FILE_TYPE_MENU)
+			{
+				selected_centry = LoadSaveDetails();
+				SetMenu(MENU_SAVE_DETAILS);
+				return;
+			}
     	}
 		else if (paddata[0].BTN_SQUARE)
 		{
