@@ -193,6 +193,12 @@ char* escape_filename(const char* filename)
 	return ret;
 }
 
+int skip_ssl_callback(s32 verErr,sslCert const sslCerts[],int certNum,const char *host,httpSslId id,void *arg)
+{
+	LOG("sslId (%d) Err=%08X", id, verErr);
+	return 0;
+}
+
 int http_download(const char* url, const char* filename, const char* local_dst, int show_progress)
 {
 	int ret = 0, httpCode = 0;
@@ -213,6 +219,7 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 		ret=HTTP_FAILED;
 		goto end;
 	}
+	httpClientSetSslCallback(httpClient, &skip_ssl_callback, NULL);
     httpClientSetConnTimeout(httpClient, 10 * 1000 * 1000);
     httpClientSetUserAgent(httpClient, HTTP_USER_AGENT);
 	httpClientSetAutoRedirect(httpClient, 1);

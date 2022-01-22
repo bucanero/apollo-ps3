@@ -60,7 +60,14 @@ u8 ec_Q_nm[40] = {
 };
 
 
-long search_data(const char* data, size_t size, int start, const char* search, int len, int count);
+static long search_data(const char* data, size_t size, const char* search, int len)
+{
+	for (long i = 0; i < (size-len); i++)
+		if (memcmp(data + i, search, len) == 0)
+			return i;
+
+	return -1;
+}
 
 void aesecb128_encrypt(const u8 *key, const u8 *in, u8 *out)
 {
@@ -327,7 +334,7 @@ int find_xReg_data(const char* data, const char* value, const char* id)
 	uint16_t offset;
 
 	// Get offset
-	if ((i = search_data(data, 0x10000, 0, value, strlen(value), 1)) < 0)
+	if ((i = search_data(data, 0x10000, value, strlen(value))) < 0)
 		return (-1);
 	
 	// Found offset

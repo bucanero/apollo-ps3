@@ -55,7 +55,7 @@
 #define PS2ISO_PATH_USB         USB_PATH "PS2ISO/"
 #define PS2ISO_PATH_HDD         "/dev_hdd0/PS2ISO/"
 
-#define ONLINE_URL				"http://apollo-db.psdev.tk/"
+#define ONLINE_URL				"https://bucanero.github.io/apollo-saves/"
 #define ONLINE_CACHE_TIMEOUT    24*3600     // 1-day local cache
 
 #define OWNER_XML_FILE          "owners.xml"
