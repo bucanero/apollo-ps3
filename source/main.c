@@ -1288,7 +1288,7 @@ void doPatchMenu()
 			selected_centry = list_get_item(selected_entry->codes, menu_sel);
 
 			if (selected_centry->type == PATCH_GAMEGENIE || selected_centry->type == PATCH_BSD ||
-				(selected_entry->type == FILE_TYPE_TRP && selected_entry->flags & SAVE_FLAG_TROPHY))
+				selected_centry->type == PATCH_TROP_LOCK || selected_centry->type == PATCH_TROP_UNLOCK)
 			{
 				SetMenu(MENU_PATCH_VIEW);
 				return;

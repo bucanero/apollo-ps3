@@ -4,6 +4,27 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.6.5](https://github.com/bucanero/apollo-ps3/releases/tag/v1.6.5) - 2022-01-22
+
+### Added
+
+* New save-game cheats
+  * Final Fantasy XIII
+  * Ratchet & Clank Future: A Crack in Time
+  * Resident Evil 4 HD
+  * Resident Evil 6
+  * Resident Evil Revelations 2
+  * Ryu ga Gotoku Kiwami
+  * Tales of Zestiria
+
+### Fixed
+
+* Fixed Online DB URL
+
+### Misc
+
+* Use Apollo-lib (shared with Apollo PS4)
+
 ## [v1.6.4](https://github.com/bucanero/apollo-ps3/releases/tag/v1.6.4) - 2021-07-19
 
 ### Added
