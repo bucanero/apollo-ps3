@@ -1,0 +1,15 @@
+; LEGO Star Wars: The Force Awakens
+; BLES02213
+;by bucanero
+
+:GAME1
+
+;add cheats here
+
+[Update Checksum for GAME1 (Required)]
+;set pointer:eof-0x1B9
+;set range:0x18,pointer
+set range:0x18,0x13A46
+set [hash]:fnv1:0xFFFFFFFF
+set [hash]:xor:FFFFFFFF
+write at 0x0010:[hash]
