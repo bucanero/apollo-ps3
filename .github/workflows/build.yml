@@ -43,7 +43,7 @@ jobs:
         make
         make install
 
-    - name: Build Artemis App Package
+    - name: Build Apollo App Package
       run: |
         make createzip
         make pkg
