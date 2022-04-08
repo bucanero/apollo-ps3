@@ -1,6 +1,7 @@
 # Apollo Save Tool (PS3)
 
 [![Downloads][img_downloads]][app_downloads] [![Release][img_latest]][app_latest] [![License][img_license]][app_license]
+[![Build package](https://github.com/bucanero/apollo-ps3/actions/workflows/build.yml/badge.svg)](https://github.com/bucanero/apollo-ps3/actions/workflows/build.yml)
 
 **Apollo Save Tool** is an application to manage save-game files, trophies, and licenses on the PlayStation 3.
 
@@ -182,7 +183,7 @@ You need to have installed:
 - [Apollo](https://github.com/bucanero/apollo-lib) library
 - [Tiny3D](https://github.com/wargio/Tiny3D) library
 - [polarSSL](https://github.com/bucanero/ps3libraries/blob/master/scripts/015-polarssl-1.3.9.sh) library
-- [dbglogger](https://github.com/bucanero/psl1ght-libs/tree/master/dbglogger) library (only required for debug logging)
+- [dbglogger](https://github.com/bucanero/dbglogger) library (only required for debug logging)
 
 Run `make` to create a release build. After that, run `make pkg` to create a `.pkg` install file. 
 
