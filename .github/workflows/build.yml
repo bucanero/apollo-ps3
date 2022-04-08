@@ -44,7 +44,6 @@ jobs:
         make install
 
     - name: Build Artemis App Package
-      working-directory: apollo-ps3
       run: |
         make createzip
         make pkg
