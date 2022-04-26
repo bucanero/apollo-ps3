@@ -1060,6 +1060,12 @@ void UnloadGameList(list_t * list)
 			item->title_id = NULL;
 		}
 		
+		if (item->dir_name)
+		{
+			free(item->dir_name);
+			item->title_id = NULL;
+		}
+
 		if (item->codes)
 		{
 			for (nc = list_head(item->codes); (code = list_get(nc)); nc = list_next(nc))
@@ -1154,6 +1160,7 @@ void read_savegames(const char* userPath, list_t *list, uint32_t flag)
 
 			asprintf(&item->path, "%s%s/", userPath, dir->d_name);
 			asprintf(&item->title_id, "%.9s", dir->d_name);
+			item->dir_name = strdup(dir->d_name);
 
 			if (flag & SAVE_FLAG_PS3)
 			{
@@ -1343,13 +1350,16 @@ list_t * ReadUserList(const char* userPath)
 	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " Bulk Save Management");
 	item->type = FILE_TYPE_MENU;
 	item->codes = list_alloc();
+	//bulk management hack
+	item->dir_name = malloc(sizeof(void**));
+	((void**)item->dir_name)[0] = list;
+
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Resign & Unlock all Saves", CMD_RESIGN_ALL_SAVES);
+	list_append(item->codes, cmd);
 
 	if (strncmp(userPath, "/dev_hdd0/", 10) == 0)
 	{
 		asprintf(&item->path, SAVES_PATH_HDD, apollo_config.user_id);
-
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Resign & Unlock all Saves", CMD_RESIGN_ALL_SAVES);
-		list_append(item->codes, cmd);
 
 		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy all Saves to USB", CMD_CODE_NULL);
 		cmd->options_count = 1;
@@ -1364,9 +1374,6 @@ list_t * ReadUserList(const char* userPath)
 	{
 		asprintf(&item->path, "%s" PS3_SAVES_PATH_USB, userPath);
 
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Resign & Unlock all Saves", CMD_RESIGN_ALL_SAVES);
-		list_append(item->codes, cmd);
-
 		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy all Saves to HDD", CMD_COPY_SAVES_HDD);
 		list_append(item->codes, cmd);
 
@@ -1374,6 +1381,9 @@ list_t * ReadUserList(const char* userPath)
 		save_paths[1] = PS2_SAVES_PATH_USB;
 		save_paths[2] = PSP_SAVES_PATH_USB;
 	}
+
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Start local Web Server", CMD_RUN_WEB_SERVER);
+	list_append(item->codes, cmd);
 	list_append(list, item);
 
 	snprintf(savePath, sizeof(savePath), "%s%s", userPath, save_paths[0]);

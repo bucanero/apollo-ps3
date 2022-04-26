@@ -76,6 +76,53 @@ int zip_directory(const char* basedir, const char* inputdir, const char* output_
     return (ret == ZIP_ER_OK);
 }
 
+int zip_savegame(const char* folder, const char* inputdir, const char* output_filename)
+{
+	char fullname[256];
+	struct dirent *dirp;
+	struct zip* archive;
+	DIR *dp = opendir(inputdir);
+
+	if (!dp) {
+		LOG("Failed to open input directory: '%s'", inputdir);
+		return 0;
+	}
+
+	unlink_secure(output_filename);
+	archive = zip_open(output_filename, ZIP_CREATE, NULL);
+	if (!archive) {
+		LOG("Failed to create zip file '%s'", output_filename);
+		closedir(dp);
+		return 0;
+	}
+
+	LOG("Zipping <%s> to %s...", inputdir, output_filename);
+	LOG("Adding folder '%s'", folder);
+	zip_add_dir(archive, folder);
+
+	while ((dirp = readdir(dp)) != NULL) {
+		if ((strcmp(dirp->d_name, ".")  == 0) || (strcmp(dirp->d_name, "..") == 0))
+			continue;
+
+		snprintf(fullname, sizeof(fullname), "%s%s", inputdir, dirp->d_name);
+		struct zip_source *source = zip_source_file(archive, fullname, 0, 0);
+		if (!source) {
+			LOG("Failed to source file to zip: %s", fullname);
+			continue;
+		}
+
+		snprintf(fullname, sizeof(fullname), "%s/%s", folder, dirp->d_name);
+		LOG("Adding file '%s'", fullname);
+		if (zip_add(archive, fullname, source) < 0) {
+			zip_source_free(source);
+			LOG("Failed to add file to zip: %s", fullname);
+		}
+	}
+	closedir(dp);
+
+	return (zip_close(archive) == ZIP_ER_OK);
+}
+
 int extract_zip(const char* zip_file, const char* dest_path)
 {
 	char path[256];

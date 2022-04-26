@@ -300,7 +300,7 @@ void saveload_settings_thread(void *user_data)
 
 	save_data->result = ret;
 
-	LOG("sysSaveAutoLoad2/Save2 returned : %d", ret);
+	LOG("sysSaveAutoLoad2/Save2 returned: %X", ret);
 	sysMemContainerDestroy (container);
 
 end:
@@ -385,7 +385,7 @@ int create_savegame_folder(const char* folder)
 	file_data = tmp;
 	file_size = 10;
 
-	if (!save_game_thread(folder, "APOLLO.PS3"))
+	if (!save_game_thread(folder, "ICON0.PNG"))
 		return FALSE;
  
 	wait_save_thread();

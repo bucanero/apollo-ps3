@@ -2,6 +2,7 @@
 #include <string.h>
 #include <dirent.h>
 #include <sysutil/sysutil.h>
+#include <polarssl/md5.h>
 
 #include "saves.h"
 #include "menu.h"
@@ -11,7 +12,7 @@
 #include "sfo.h"
 
 
-void downloadSave(const char* file, const char* path)
+static void downloadSave(const char* file, const char* path)
 {
 	if (mkdirs(path) != SUCCESS)
 	{
@@ -33,7 +34,7 @@ void downloadSave(const char* file, const char* path)
 	unlink_secure(APOLLO_LOCAL_CACHE "tmpsave.zip");
 }
 
-void _saveOwnerData(const char* path)
+static void _saveOwnerData(const char* path)
 {
 	char buff[SYSUTIL_SYSTEMPARAM_CURRENT_USERNAME_SIZE+1];
 
@@ -42,7 +43,7 @@ void _saveOwnerData(const char* path)
 	save_xml_owner(path, buff);
 }
 
-uint32_t get_filename_id(const char* dir)
+static uint32_t get_filename_id(const char* dir)
 {
 	char path[128];
 	uint32_t tid = 0;
@@ -57,7 +58,7 @@ uint32_t get_filename_id(const char* dir)
 	return tid;
 }
 
-void zipSave(const char* exp_path)
+static void zipSave(const char* exp_path)
 {
 	char* export_file;
 	char* tmp;
@@ -98,7 +99,7 @@ void zipSave(const char* exp_path)
 	show_message("Zip file successfully saved to:\n%s%08d.zip", exp_path, fid);
 }
 
-void copySave(const char* save_path, const char* exp_path)
+static void copySave(const char* save_path, const char* exp_path)
 {
 	char* copy_path;
 	char* tmp;
@@ -128,71 +129,156 @@ void copySave(const char* save_path, const char* exp_path)
 	show_message("Files successfully copied to:\n%s", exp_path);
 }
 
-void copySaveHDD(const char* save_path)
+static int _copy_save_hdd(const save_entry_t *item)
 {
 	char* copy_path;
-	char* tmp = strdup(save_path);
-	const char* folder;
 
-	*strrchr(tmp, '/') = 0;
-	folder = strrchr(tmp, '/')+1;
-	asprintf(&copy_path, SAVES_PATH_HDD "%s/", apollo_config.user_id, folder);
+	asprintf(&copy_path, SAVES_PATH_HDD "%s/", apollo_config.user_id, item->dir_name);
 
 	if (dir_exists(copy_path) == SUCCESS)
 	{
-		show_message("Error! Save-game folder already exists:\n%s", copy_path);
+		LOG("Error! Save-game folder already exists: %s", copy_path);
 		free(copy_path);
-		free(tmp);
-		return;
+		return 0;
 	}
 
-	init_loading_screen("Copying save game...");
-
-	if (create_savegame_folder(folder))
+	if (create_savegame_folder(item->dir_name))
 	{
-		LOG("Copying <%s> to %s...", save_path, copy_path);
-		copy_directory(save_path, save_path, copy_path);
+		LOG("Copying <%s> to %s...", item->path, copy_path);
+		copy_directory(item->path, item->path, copy_path);
 	}
 
 	free(copy_path);
-	free(tmp);
-
-	stop_loading_screen();
+	return 1;
 }
 
-void copyAllSavesHDD(const char* path)
+static void copySaveHDD(const save_entry_t* save)
 {
-	DIR *d;
-	struct dirent *dir;
-	char savePath[256];
+	init_loading_screen("Copying save game...");
+	int ret = _copy_save_hdd(save);
+	stop_loading_screen();
 
-	if (dir_exists(path) != SUCCESS)
-	{
-		show_message("Error! Folder is not available:\n%s", path);
-		return;
-	}
-
-	d = opendir(path);
-	if (!d)
-		return;
-
-	LOG("Copying all saves from '%s'...", path);
-	while ((dir = readdir(d)) != NULL)
-	{
-		if (dir->d_type == DT_DIR && strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
-		{
-			snprintf(savePath, sizeof(savePath), "%s%s/PARAM.SFO", path, dir->d_name);
-			if (file_exists(savePath) == SUCCESS)
-			{
-				snprintf(savePath, sizeof(savePath), "%s%s/", path, dir->d_name);
-				copySaveHDD(savePath);
-			}
-		}
-	}
-	closedir(d);
+	if (ret)
+		show_message("Save-game copied to HDD");
+	else
+		show_message("Error! Save-game folder already exists:\n%s", save->dir_name);
 }
 
-void exportLicensesZip(const char* exp_path)
+static int webReqHandler(const dWebRequest_t* req, char* outfile)
+{
+	list_node_t *node;
+	save_entry_t *item;
+	list_t *list = ((void**)selected_entry->dir_name)[0];
+
+	// http://ps3-ip:8080/
+	if (strcmp(req->resource, "/") == 0)
+	{
+		uint64_t hash[2];
+		md5_context ctx;
+
+		md5_starts(&ctx);
+		for (node = list_head(list); (item = list_get(node)); node = list_next(node))
+			md5_update(&ctx, (uint8_t*) item->name, strlen(item->name));
+
+		md5_finish(&ctx, (uint8_t*) hash);
+		snprintf(outfile, BUFSIZ, APOLLO_LOCAL_CACHE "web%08lx%08lx.html", hash[0], hash[1]);
+
+		if (file_exists(outfile) == SUCCESS)
+			return 1;
+
+		FILE* f = fopen(outfile, "w");
+		if (!f)
+			return 0;
+
+		fprintf(f, "<html><head><meta charset=\"UTF-8\"><style>h1, h2 { font-family: arial; } table { border-collapse: collapse; margin: 25px 0; font-size: 0.9em; font-family: sans-serif; min-width: 400px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.15); } table thead tr { background-color: #009879; color: #ffffff; text-align: left; } table th, td { padding: 12px 15px; } table tbody tr { border-bottom: 1px solid #dddddd; } table tbody tr:nth-of-type(even) { background-color: #f3f3f3; } table tbody tr:last-of-type { border-bottom: 2px solid #009879; }</style>");
+		fprintf(f, "<title>Apollo Save Tool</title></head><body><h1>.:: Apollo Save Tool</h1><h2>Index of %s</h2><table><thead><tr><th>Name</th><th>Icon</th><th>Title ID</th><th>Folder</th><th>Location</th></tr></thead><tbody>", selected_entry->path);
+
+		for (node = list_head(list); (item = list_get(node)); node = list_next(node))
+		{
+			if (item->type == FILE_TYPE_MENU || !(item->flags & SAVE_FLAG_PS3))
+				continue;
+
+			fprintf(f, "<tr><td><a href=\"/zip/%s.zip\">%s</a></td>", item->dir_name, item->name);
+			fprintf(f, "<td><img src=\"/icon/%s.png\" alt=\"%s\" width=\"320\" height=\"176\"></td>", item->dir_name, item->name);
+			fprintf(f, "<td>%s</td>", item->title_id);
+			fprintf(f, "<td>%s</td>", item->dir_name);
+			fprintf(f, "<td>%.3s</td></tr>", selected_entry->path + 5);
+		}
+
+		fprintf(f, "</tbody></table></body></html>");
+		fclose(f);
+		return 1;
+	}
+
+	// http://ps3-ip:8080/zip/DIR-NAME.zip
+	if (wildcard_match(req->resource, "/zip/*.zip"))
+	{
+		char *folder, *path;
+
+		snprintf(outfile, BUFSIZ, "%s%s", APOLLO_LOCAL_CACHE, req->resource + 5);
+		folder = strdup(req->resource + 5);
+		*strrchr(folder, '.') = 0;
+		asprintf(&path, "%s%s/", selected_entry->path, folder);
+
+		int ret = zip_savegame(folder, path, outfile);
+
+		free(folder);
+		free(path);
+		return ret;
+	}
+
+	// http://ps3-ip:8080/icon/DIR-NAME.png
+	if (wildcard_match(req->resource, "/icon/*.png"))
+	{
+		snprintf(outfile, BUFSIZ, "%s%s", selected_entry->path, req->resource + 5);
+		*strrchr(outfile, '.') = 0;
+		strcat(outfile, "/ICON0.PNG");
+		return 1;
+	}
+
+	return 0;
+}
+
+static void enableWebServer(const save_entry_t* save, int port)
+{
+	LOG("Starting local web server for '%s'...", save->path);
+
+	if (web_start(port, webReqHandler))
+	{
+		show_message("Web Server listening on port %d.\nPress OK to stop the Server.", port);
+		web_stop();
+	}
+	else show_message("Error starting Web Server!");
+}
+
+static void copyAllSavesHDD(const save_entry_t* save, int all)
+{
+	int err_count = 0;
+	list_node_t *node;
+	save_entry_t *item;
+	uint64_t progress = 0;
+	list_t *list = ((void**)save->dir_name)[0];
+
+	init_progress_bar("Copying all saves...", save->path);
+
+	LOG("Copying all saves from '%s' to HDD...", save->path);
+	for (node = list_head(list); (item = list_get(node)); node = list_next(node))
+	{
+		progress++;
+		update_progress_bar(&progress, list_count(list), item->name);
+		if (item->type != FILE_TYPE_MENU && (item->flags & SAVE_FLAG_PS3) && (all || item->flags & SAVE_FLAG_SELECTED))
+			err_count += ! _copy_save_hdd(item);
+	}
+
+	end_progress_bar();
+
+	if (err_count)
+		show_message("Error: %d Saves couldn't be copied to HDD", err_count);
+	else
+		show_message("All Saves copied to HDD");
+}
+
+static void exportLicensesZip(const char* exp_path)
 {
 	char* export_file;
 	char* lic_path;
@@ -228,7 +314,7 @@ void exportLicensesZip(const char* exp_path)
 	show_message("Licenses successfully saved to:\n%slicenses_%08d.zip", exp_path, apollo_config.user_id);
 }
 
-void exportFlashZip(const char* exp_path)
+static void exportFlashZip(const char* exp_path)
 {
 	char* export_file;
 
@@ -255,7 +341,7 @@ void exportFlashZip(const char* exp_path)
 	show_message("Files successfully saved to:\n%sdev_flash2.zip", exp_path);
 }
 
-void exportTrophiesZip(const char* exp_path)
+static void exportTrophiesZip(const char* exp_path)
 {
 	char* export_file;
 	char* trp_path;
@@ -288,7 +374,7 @@ void exportTrophiesZip(const char* exp_path)
 	show_message("Trophies successfully saved to:\n%strophies_%08d.zip", exp_path, apollo_config.user_id);
 }
 
-void resignPSVfile(const char* psv_path)
+static void resignPSVfile(const char* psv_path)
 {
 	init_loading_screen("Resigning PSV file...");
 	psv_resign(psv_path);
@@ -297,7 +383,7 @@ void resignPSVfile(const char* psv_path)
 	show_message("File successfully resigned!");
 }
 
-void activateAccount(const char* ex_path)
+static void activateAccount(const char* ex_path)
 {
 	int ret;
 	char path[256];
@@ -347,7 +433,7 @@ void activateAccount(const char* ex_path)
 	show_message("Account successfully activated!\nA system reboot might be required");
 }
 
-void copyDummyPSV(const char* psv_file, const char* out_path)
+static void copyDummyPSV(const char* psv_file, const char* out_path)
 {
 	char *in, *out;
 
@@ -370,7 +456,7 @@ void copyDummyPSV(const char* psv_file, const char* out_path)
 	show_message("File successfully saved to:\n%s%s", out_path, psv_file);
 }
 
-void exportPSVfile(const char* in_file, const char* out_path)
+static void exportPSVfile(const char* in_file, const char* out_path)
 {
 	if (mkdirs(out_path) != SUCCESS)
 	{
@@ -389,7 +475,7 @@ void exportPSVfile(const char* in_file, const char* out_path)
 	show_message("File successfully saved to:\n%s", out_path);
 }
 
-void convertSavePSV(const char* save_path, const char* out_path, uint16_t type)
+static void convertSavePSV(const char* save_path, const char* out_path, uint16_t type)
 {
 	if (mkdirs(out_path) != SUCCESS)
 	{
@@ -433,7 +519,7 @@ void convertSavePSV(const char* save_path, const char* out_path, uint16_t type)
 	show_message("File successfully saved to:\n%s", out_path);
 }
 
-void decryptVMEfile(const char* vme_path, const char* vme_file, uint8_t dst)
+static void decryptVMEfile(const char* vme_path, const char* vme_file, uint8_t dst)
 {
 	char vmefile[256];
 	char outfile[256];
@@ -473,7 +559,7 @@ void decryptVMEfile(const char* vme_path, const char* vme_file, uint8_t dst)
 	show_message("File successfully saved to:\n%s", outfile);
 }
 
-void encryptVM2file(const char* vme_path, const char* vme_file, const char* src_name)
+static void encryptVM2file(const char* vme_path, const char* vme_file, const char* src_name)
 {
 	char vmefile[256];
 	char srcfile[256];
@@ -488,7 +574,7 @@ void encryptVM2file(const char* vme_path, const char* vme_file, const char* src_
 	show_message("File successfully saved to:\n%s", vmefile);
 }
 
-void importPS2VMC(const char* vmc_path, const char* vmc_file)
+static void importPS2VMC(const char* vmc_path, const char* vmc_file)
 {
 	char vm2file[256];
 	char srcfile[256];
@@ -504,7 +590,7 @@ void importPS2VMC(const char* vmc_path, const char* vmc_file)
 	show_message("File successfully saved to:\n%s", vm2file);
 }
 
-void exportVM2raw(const char* vm2_path, const char* vm2_file, const char* dst_path)
+static void exportVM2raw(const char* vm2_path, const char* vm2_file, const char* dst_path)
 {
 	char vm2file[256];
 	char dstfile[256]; 
@@ -525,7 +611,7 @@ void exportVM2raw(const char* vm2_path, const char* vm2_file, const char* dst_pa
 	show_message("File successfully saved to:\n%s%s", dstfile);
 }
 
-void importPS2classicsCfg(const char* cfg_path, const char* cfg_file)
+static void importPS2classicsCfg(const char* cfg_path, const char* cfg_file)
 {
 	char ps2file[256];
 	char outfile[256];
@@ -542,7 +628,7 @@ void importPS2classicsCfg(const char* cfg_path, const char* cfg_file)
 	show_message("File successfully saved to:\n%s", outfile);
 }
 
-void importPS2classics(const char* iso_path, const char* iso_file)
+static void importPS2classics(const char* iso_path, const char* iso_file)
 {
 	char ps2file[256];
 	char outfile[256];
@@ -560,7 +646,7 @@ void importPS2classics(const char* iso_path, const char* iso_file)
 	show_message("File successfully saved to:\n%s", outfile);
 }
 
-void exportPS2classics(const char* enc_path, const char* enc_file, uint8_t dst)
+static void exportPS2classics(const char* enc_path, const char* enc_file, uint8_t dst)
 {
 	char path[256];
 	char ps2file[256];
@@ -590,8 +676,7 @@ void exportPS2classics(const char* enc_path, const char* enc_file, uint8_t dst)
 	show_message("File successfully saved to:\n%s", outfile);
 }
 
-
-void exportFolder(const char* src_path, const char* exp_path, const char* msg)
+static void exportFolder(const char* src_path, const char* exp_path, const char* msg)
 {
 	if (mkdirs(exp_path) != SUCCESS)
 	{
@@ -608,7 +693,7 @@ void exportFolder(const char* src_path, const char* exp_path, const char* msg)
 	show_message("Files successfully copied to:\n%s", exp_path);
 }
 
-void exportLicensesRap(const char* fname, uint8_t dest)
+static void exportLicensesRap(const char* fname, uint8_t dest)
 {
 	DIR *d;
 	struct dirent *dir;
@@ -652,7 +737,7 @@ void exportLicensesRap(const char* fname, uint8_t dest)
 	show_message("Files successfully copied to:\n%s", exp_path);
 }
 
-void importLicenses(const char* fname, const char* exdata_path)
+static void importLicenses(const char* fname, const char* exdata_path)
 {
 	DIR *d;
 	struct dirent *dir;
@@ -688,7 +773,7 @@ void importLicenses(const char* fname, const char* exdata_path)
 	show_message("Files successfully copied to:\n%s", lic_path);
 }
 
-int apply_sfo_patches(sfo_patch_t* patch)
+static int apply_sfo_patches(sfo_patch_t* patch)
 {
     code_entry_t* code;
     char in_file_path[256];
@@ -752,7 +837,8 @@ int apply_sfo_patches(sfo_patch_t* patch)
 	return (patch_sfo(in_file_path, patch) == SUCCESS);
 }
 
-int _is_decrypted(list_t* list, const char* fname) {
+static int _is_decrypted(list_t* list, const char* fname)
+{
 	list_node_t *node;
 	u8 *protected_file_id = get_secure_file_id(selected_entry->title_id, "UNPROTECTED");
 
@@ -766,7 +852,7 @@ int _is_decrypted(list_t* list, const char* fname) {
 	return 0;
 }
 
-int apply_cheat_patches()
+static int apply_cheat_patches()
 {
 	int ret = 1;
 	char tmpfile[256];
@@ -847,7 +933,7 @@ int apply_cheat_patches()
 	return ret;
 }
 
-void resignSave(sfo_patch_t* patch)
+static void resignSave(sfo_patch_t* patch)
 {
     if (!apply_sfo_patches(patch))
         show_message("Error! Account changes couldn't be applied");
@@ -866,26 +952,15 @@ void resignSave(sfo_patch_t* patch)
     pfd_util_end();
 }
 
-void resignAllSaves(const char* path)
+static void resignAllSaves(const save_entry_t* save, int all)
 {
-	DIR *d;
-	struct dirent *dir;
 	char sfoPath[256];
-	char titleid[10];
 	char acct_id[SFO_ACCOUNT_ID_SIZE+1] = {0};
-	char message[128] = "Resigning all saves...";
-
-	if (dir_exists(path) != SUCCESS)
-	{
-		show_message("Error! Folder is not available:\n%s", path);
-		return;
-	}
-
-	d = opendir(path);
-	if (!d)
-		return;
-
-    init_loading_screen(message);
+	int err_count = 0;
+	list_node_t *node;
+	save_entry_t *item;
+	uint64_t progress = 0;
+	list_t *list = ((void**)save->dir_name)[0];
 
 	if (apollo_config.account_id)
 		snprintf(acct_id, sizeof(acct_id), "%*lx", SFO_ACCOUNT_ID_SIZE, apollo_config.account_id);
@@ -898,37 +973,40 @@ void resignAllSaves(const char* path)
 		.directory = NULL,
 	};
 
-	LOG("Resigning saves from '%s'...", path);
-	while ((dir = readdir(d)) != NULL)
+	init_progress_bar("Resigning all saves...", save->path);
+
+	LOG("Resigning all saves from '%s'...", save->path);
+	for (node = list_head(list); (item = list_get(node)); node = list_next(node))
 	{
-		if (dir->d_type == DT_DIR && strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0)
+		progress++;
+		update_progress_bar(&progress, list_count(list), item->name);
+		if (item->type != FILE_TYPE_MENU && (item->flags & SAVE_FLAG_PS3) && (all || item->flags & SAVE_FLAG_SELECTED))
 		{
-			snprintf(sfoPath, sizeof(sfoPath), "%s%s/PARAM.SFO", path, dir->d_name);
-			if (file_exists(sfoPath) == SUCCESS)
-			{
-				LOG("Patching SFO '%s'...", sfoPath);
-				if (patch_sfo(sfoPath, &patch) != SUCCESS)
-					continue;
+			snprintf(sfoPath, sizeof(sfoPath), "%s" "PARAM.SFO", item->path);
+			if (file_exists(sfoPath) != SUCCESS)
+				continue;
 
-				snprintf(titleid, sizeof(titleid), "%.9s", dir->d_name);
-				snprintf(sfoPath, sizeof(sfoPath), "%s%s/", path, dir->d_name);
-				snprintf(message, sizeof(message), "Resigning %s...", dir->d_name);
+			LOG("Patching SFO '%s'...", sfoPath);
+			err_count += patch_sfo(sfoPath, &patch);
 
-				LOG("Resigning save '%s'...", sfoPath);
-				if (!pfd_util_init((u8*) apollo_config.idps, apollo_config.user_id, titleid, sfoPath) ||
-					(pfd_util_process(PFD_CMD_UPDATE, 0) != SUCCESS))
-					LOG("Error! Save file couldn't be resigned");
+			LOG("Resigning save '%s'...", item->path);
+			if (!pfd_util_init((u8*) apollo_config.idps, apollo_config.user_id, item->title_id, item->path) ||
+				(pfd_util_process(PFD_CMD_UPDATE, 0) != SUCCESS))
+				LOG("Error! Save file couldn't be resigned");
 
-				pfd_util_end();
-			}
+			pfd_util_end();
 		}
 	}
-	closedir(d);
 
-	stop_loading_screen();
+	end_progress_bar();
+
+	if (err_count)
+		show_message("Error: %d Saves couldn't be resigned", err_count);
+	else
+		show_message("All saves successfully resigned!");
 }
 
-int apply_trophy_account()
+static int apply_trophy_account()
 {
 	char sfoPath[256];
 	char account_id[SFO_ACCOUNT_ID_SIZE+1];
@@ -945,7 +1023,7 @@ int apply_trophy_account()
 	return 1;
 }
 
-int apply_trophy_patches()
+static int apply_trophy_patches()
 {
 	int ret = 1;
 	uint32_t trophy_id;
@@ -987,7 +1065,7 @@ int apply_trophy_patches()
 	return ret;
 }
 
-void resignTrophy()
+static void resignTrophy()
 {
 	LOG("Decrypting TROPTRNS.DAT ...");
 	if (!decrypt_trophy_trns(selected_entry->path))
@@ -1027,7 +1105,7 @@ void resignTrophy()
 	}
 }
 
-int _copy_save_file(const char* src_path, const char* dst_path, const char* filename)
+static int _copy_save_file(const char* src_path, const char* dst_path, const char* filename)
 {
 	char src[256], dst[256];
 
@@ -1037,7 +1115,7 @@ int _copy_save_file(const char* src_path, const char* dst_path, const char* file
 	return copy_file(src, dst);
 }
 
-void decryptSaveFile(const char* filename)
+static void decryptSaveFile(const char* filename)
 {
 	char path[256];
 
@@ -1061,7 +1139,7 @@ void decryptSaveFile(const char* filename)
 		show_message("Error! File %s couldn't be decrypted", filename);
 }
 
-void encryptSaveFile(const char* filename)
+static void encryptSaveFile(const char* filename)
 {
 	char path[256];
 
@@ -1126,7 +1204,7 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_COPY_SAVE_HDD:
-			copySaveHDD(selected_entry->path);
+			copySaveHDD(selected_entry);
 			code->activated = 0;
 			break;
 
@@ -1194,12 +1272,12 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_RESIGN_ALL_SAVES:
-			resignAllSaves(selected_entry->path);
+			resignAllSaves(selected_entry, 1);
 			code->activated = 0;
 			break;
 
 		case CMD_COPY_SAVES_HDD:
-			copyAllSavesHDD(selected_entry->path);
+			copyAllSavesHDD(selected_entry, 1);
 			code->activated = 0;
 			break;
 
@@ -1270,6 +1348,11 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_RESIGN_TROPHY:
 			resignTrophy();
+			code->activated = 0;
+			break;
+
+		case CMD_RUN_WEB_SERVER:
+			enableWebServer(selected_entry, 8080);
 			code->activated = 0;
 			break;
 

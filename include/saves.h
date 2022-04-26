@@ -89,9 +89,13 @@ enum cmd_code_enum
     CMD_IMPORT_DATA_FILE,
 
 // Bulk commands
+    CMD_RESIGN_SAVES,
     CMD_RESIGN_ALL_SAVES,
     CMD_COPY_SAVES_USB,
     CMD_COPY_SAVES_HDD,
+    CMD_COPY_ALL_SAVES_USB,
+    CMD_COPY_ALL_SAVES_HDD,
+    CMD_RUN_WEB_SERVER,
 
 // Export commands
     CMD_EXP_EXDATA_USB,
@@ -126,6 +130,7 @@ enum cmd_code_enum
 #define SAVE_FLAG_PSV           64
 #define SAVE_FLAG_TROPHY        128
 #define SAVE_FLAG_ONLINE        256
+#define SAVE_FLAG_SELECTED      512
 
 enum save_type_enum
 {
@@ -200,6 +205,7 @@ typedef struct save_entry
 {
     char * name;
 	char * title_id;
+    char * dir_name;
 	char * path;
 	uint16_t flags;
     uint16_t type;
@@ -236,6 +242,7 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 
 int extract_zip(const char* zip_file, const char* dest_path);
 int zip_directory(const char* basedir, const char* inputdir, const char* output_zipfile);
+int zip_savegame(const char* basedir, const char* inputdir, const char* output_zipfile);
 
 int show_dialog(int dialog_type, const char * format, ...);
 void init_progress_bar(const char* progress_bar_title, const char* msg);
