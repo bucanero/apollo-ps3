@@ -99,12 +99,19 @@ static void zipSave(const char* exp_path)
 	show_message("Zip file successfully saved to:\n%s%08d.zip", exp_path, fid);
 }
 
-static void copySave(const char* save_path, const char* exp_path)
+static int _copy_save_usb(const save_entry_t* save, const char* exp_path)
 {
-	char* copy_path;
-	char* tmp;
+	char copy_path[256];
 
-	if (strncmp(save_path, exp_path, strlen(exp_path)) == 0)
+	snprintf(copy_path, sizeof(copy_path), "%s%s/", exp_path, save->dir_name);
+	LOG("Copying <%s> to %s...", save->path, copy_path);
+
+	return (copy_directory(save->path, save->path, copy_path) == SUCCESS);
+}
+
+static void copySave(const save_entry_t* save, const char* exp_path)
+{
+	if (strncmp(save->path, exp_path, strlen(exp_path)) == 0)
 		return;
 
 	if (mkdirs(exp_path) != SUCCESS)
@@ -114,42 +121,64 @@ static void copySave(const char* save_path, const char* exp_path)
 	}
 
 	init_loading_screen("Copying files...");
-
-	asprintf(&tmp, save_path);
-	*strrchr(tmp, '/') = 0;
-	asprintf(&copy_path, "%s%s/", exp_path, strrchr(tmp, '/')+1);
-
-	LOG("Copying <%s> to %s...", save_path, copy_path);
-	copy_directory(save_path, save_path, copy_path);
-
-	free(copy_path);
-	free(tmp);
-
+	_copy_save_usb(save, exp_path);
 	stop_loading_screen();
+
 	show_message("Files successfully copied to:\n%s", exp_path);
+}
+
+static void copyAllSavesUSB(const save_entry_t* save, const char* usb_path, int all)
+{
+	int err_count = 0;
+	list_node_t *node;
+	save_entry_t *item;
+	uint64_t progress = 0;
+	list_t *list = ((void**)save->dir_name)[0];
+
+	if (mkdirs(usb_path) != SUCCESS)
+	{
+		show_message("Error! Export folder is not available:\n%s", usb_path);
+		return;
+	}
+
+	init_progress_bar("Copying all saves...", save->path);
+	LOG("Copying all saves from '%s' to USB '%s'...", save->path, usb_path);
+
+	for (node = list_head(list); (item = list_get(node)); node = list_next(node))
+	{
+		progress++;
+		update_progress_bar(&progress, list_count(list), item->name);
+		if (item->type != FILE_TYPE_MENU && (item->flags & SAVE_FLAG_PS3) && (all || item->flags & SAVE_FLAG_SELECTED))
+			err_count += ! _copy_save_usb(item, usb_path);
+	}
+	end_progress_bar();
+
+	if (err_count)
+		show_message("Error: %d Saves couldn't be copied to USB", err_count);
+	else
+		show_message("All Saves copied to USB");
 }
 
 static int _copy_save_hdd(const save_entry_t *item)
 {
-	char* copy_path;
+	char copy_path[256];
 
-	asprintf(&copy_path, SAVES_PATH_HDD "%s/", apollo_config.user_id, item->dir_name);
+	snprintf(copy_path, sizeof(copy_path), SAVES_PATH_HDD "%s/", apollo_config.user_id, item->dir_name);
 
 	if (dir_exists(copy_path) == SUCCESS)
 	{
 		LOG("Error! Save-game folder already exists: %s", copy_path);
-		free(copy_path);
 		return 0;
 	}
 
-	if (create_savegame_folder(item->dir_name))
+	if (!create_savegame_folder(item->dir_name))
 	{
-		LOG("Copying <%s> to %s...", item->path, copy_path);
-		copy_directory(item->path, item->path, copy_path);
+		LOG("Error! Can't create save folder: %s", item->dir_name);
+		return 0;
 	}
 
-	free(copy_path);
-	return 1;
+	LOG("Copying <%s> to %s...", item->path, copy_path);
+	return (copy_directory(item->path, item->path, copy_path) == SUCCESS);
 }
 
 static void copySaveHDD(const save_entry_t* save)
@@ -1112,38 +1141,38 @@ static int _copy_save_file(const char* src_path, const char* dst_path, const cha
 	snprintf(src, sizeof(src), "%s%s", src_path, filename);
 	snprintf(dst, sizeof(dst), "%s%s", dst_path, filename);
 
-	return copy_file(src, dst);
+	return (copy_file(src, dst) == SUCCESS);
 }
 
-static void decryptSaveFile(const char* filename)
+static void decryptSaveFile(const save_entry_t* entry, const char* filename)
 {
 	char path[256];
 
-	snprintf(path, sizeof(path), APOLLO_TMP_PATH "%s/", selected_entry->title_id);
+	snprintf(path, sizeof(path), APOLLO_TMP_PATH "%s/", entry->dir_name);
 	mkdirs(path);
 
 	if (_is_decrypted(NULL, filename))
 	{
-		_copy_save_file(selected_entry->path, path, filename);
-		show_message("Save-game %s is not encrypted. File was not decrypted:\n%s%s", selected_entry->title_id, path, filename);
+		_copy_save_file(entry->path, path, filename);
+		show_message("Save-game %s is not encrypted. File was not decrypted:\n%s%s", entry->title_id, path, filename);
 		return;
 	}
 
-	u8* protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
+	u8* protected_file_id = get_secure_file_id(entry->title_id, filename);
 
-	LOG("Decrypt '%s%s' to '%s'...", selected_entry->path, filename, path);
+	LOG("Decrypt '%s%s' to '%s'...", entry->path, filename, path);
 
-	if (decrypt_save_file(selected_entry->path, filename, path, protected_file_id))
+	if (decrypt_save_file(entry->path, filename, path, protected_file_id))
 		show_message("File successfully decrypted to:\n%s%s", path, filename);
 	else
 		show_message("Error! File %s couldn't be decrypted", filename);
 }
 
-static void encryptSaveFile(const char* filename)
+static void encryptSaveFile(const save_entry_t* entry, const char* filename)
 {
 	char path[256];
 
-	snprintf(path, sizeof(path), APOLLO_TMP_PATH "%s/%s", selected_entry->title_id, filename);
+	snprintf(path, sizeof(path), APOLLO_TMP_PATH "%s/%s", entry->dir_name, filename);
 
 	if (file_exists(path) != SUCCESS)
 	{
@@ -1154,18 +1183,18 @@ static void encryptSaveFile(const char* filename)
 
 	if (_is_decrypted(NULL, filename))
 	{
-		_copy_save_file(path, selected_entry->path, filename);
-		show_message("Save-game %s is not encrypted.\nFile %s was not encrypted", selected_entry->title_id, filename);
+		_copy_save_file(path, entry->path, filename);
+		show_message("Save-game %s is not encrypted.\nFile %s was not encrypted", entry->title_id, filename);
 		return;
 	}
 
-	u8* protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
+	u8* protected_file_id = get_secure_file_id(entry->title_id, filename);
 
-	LOG("Encrypt '%s%s' to '%s'...", path, filename, selected_entry->path);
-	_copy_save_file(path, selected_entry->path, filename);
+	LOG("Encrypt '%s%s' to '%s'...", path, filename, entry->path);
+	_copy_save_file(path, entry->path, filename);
 
-	if (encrypt_save_file(selected_entry->path, filename, protected_file_id))
-		show_message("File successfully encrypted to:\n%s%s", selected_entry->path, filename);
+	if (encrypt_save_file(entry->path, filename, protected_file_id))
+		show_message("File successfully encrypted to:\n%s%s", entry->path, filename);
 	else
 		show_message("Error! File %s couldn't be encrypted", filename);
 }
@@ -1175,7 +1204,7 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 	switch (codecmd[0])
 	{
 		case CMD_DECRYPT_FILE:
-			decryptSaveFile(code->options[0].name[code->options[0].sel]);
+			decryptSaveFile(selected_entry, code->options[0].name[code->options[0].sel]);
 			code->activated = 0;
 			break;
 
@@ -1199,7 +1228,7 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_COPY_SAVE_USB:
-			copySave(selected_entry->path, codecmd[1] ? SAVES_PATH_USB1 : SAVES_PATH_USB0);
+			copySave(selected_entry, codecmd[1] ? SAVES_PATH_USB1 : SAVES_PATH_USB0);
 			code->activated = 0;
 			break;
 
@@ -1224,7 +1253,7 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_EXP_TROPHY_USB:
-			copySave(selected_entry->path, codecmd[1] ? TROPHY_PATH_USB1 : TROPHY_PATH_USB0);
+			copySave(selected_entry, codecmd[1] ? TROPHY_PATH_USB1 : TROPHY_PATH_USB0);
 			code->activated = 0;
 			break;
 
@@ -1239,7 +1268,8 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_COPY_SAVES_USB:
-			exportFolder(selected_entry->path, codecmd[1] ? SAVES_PATH_USB1 : SAVES_PATH_USB0, "Copying saves...");
+		case CMD_COPY_ALL_SAVES_USB:
+			copyAllSavesUSB(selected_entry, codecmd[1] ? SAVES_PATH_USB1 : SAVES_PATH_USB0, codecmd[0] == CMD_COPY_ALL_SAVES_USB);
 			code->activated = 0;
 			break;
 
@@ -1271,13 +1301,15 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			code->activated = 0;
 			break;
 
+		case CMD_RESIGN_SAVES:
 		case CMD_RESIGN_ALL_SAVES:
-			resignAllSaves(selected_entry, 1);
+			resignAllSaves(selected_entry, codecmd[0] == CMD_RESIGN_ALL_SAVES);
 			code->activated = 0;
 			break;
 
 		case CMD_COPY_SAVES_HDD:
-			copyAllSavesHDD(selected_entry, 1);
+		case CMD_COPY_ALL_SAVES_HDD:
+			copyAllSavesHDD(selected_entry, codecmd[0] == CMD_COPY_ALL_SAVES_HDD);
 			code->activated = 0;
 			break;
 
@@ -1342,7 +1374,7 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_IMPORT_DATA_FILE:
-			encryptSaveFile(code->options[0].name[code->options[0].sel]);
+			encryptSaveFile(selected_entry, code->options[0].name[code->options[0].sel]);
 			code->activated = 0;
 			break;
 

@@ -1357,11 +1357,19 @@ list_t * ReadUserList(const char* userPath)
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Resign & Unlock all Saves", CMD_RESIGN_ALL_SAVES);
 	list_append(item->codes, cmd);
 
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Resign & Unlock selected Saves", CMD_RESIGN_SAVES);
+	list_append(item->codes, cmd);
+
 	if (strncmp(userPath, "/dev_hdd0/", 10) == 0)
 	{
 		asprintf(&item->path, SAVES_PATH_HDD, apollo_config.user_id);
 
 		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy all Saves to USB", CMD_CODE_NULL);
+		cmd->options_count = 1;
+		cmd->options = _createOptions(2, "Copy Saves to USB", CMD_COPY_ALL_SAVES_USB);
+		list_append(item->codes, cmd);
+
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy selected Saves to USB", CMD_CODE_NULL);
 		cmd->options_count = 1;
 		cmd->options = _createOptions(2, "Copy Saves to USB", CMD_COPY_SAVES_USB);
 		list_append(item->codes, cmd);
@@ -1374,7 +1382,10 @@ list_t * ReadUserList(const char* userPath)
 	{
 		asprintf(&item->path, "%s" PS3_SAVES_PATH_USB, userPath);
 
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy all Saves to HDD", CMD_COPY_SAVES_HDD);
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy all Saves to HDD", CMD_COPY_ALL_SAVES_HDD);
+		list_append(item->codes, cmd);
+
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy selected Saves to HDD", CMD_COPY_SAVES_HDD);
 		list_append(item->codes, cmd);
 
 		save_paths[0] = PS3_SAVES_PATH_USB;
@@ -1571,6 +1582,7 @@ list_t * ReadTrophyList(const char* userPath)
 
 			item = _createSaveEntry(SAVE_FLAG_PS3 | SAVE_FLAG_TROPHY, value);
 			asprintf(&item->path, "%s%s/", userPath, dir->d_name);
+			item->dir_name = strdup(dir->d_name);
 
 			value = _get_xml_node_value(root_element->children, BAD_CAST "npcommid");
 			item->title_id = strdup(value);

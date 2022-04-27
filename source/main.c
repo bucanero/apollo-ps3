@@ -987,6 +987,13 @@ void doSaveMenu(save_list_t * save_list)
 				return;
 			}
     	}
+		else if (paddata[0].BTN_SELECT)
+		{
+			selected_entry = list_get_item(save_list->list, menu_sel);
+			if ((save_list->icon_id == cat_hdd_png_index || save_list->icon_id == cat_usb_png_index) &&
+				selected_entry->type != FILE_TYPE_MENU && (selected_entry->flags & SAVE_FLAG_PS3))
+				selected_entry->flags ^= SAVE_FLAG_SELECTED;
+		}
 		else if (paddata[0].BTN_SQUARE)
 		{
 			ReloadUserSaves(save_list);
@@ -1488,15 +1495,6 @@ s32 main(s32 argc, const char* argv[])
 		tiny3d_Project2D();
 
 		drawScene();
-
-#ifdef APOLLO_ENABLE_LOGGING
-		if(paddata[0].BTN_SELECT)
-		{
-			LOG("Screen");
-			dbglogger_screenshot_tmp(0);
-			LOG("Shot");
-		}
-#endif
 
 		//Draw help
 		if (menu_pad_help[menu_id])

@@ -385,6 +385,9 @@ void DrawGameList(int selIndex, list_t * games, u8 alpha)
 			if (item->title_id)
 				DrawString(800 - (MENU_ICON_OFF * 3), game_y, item->title_id);
 
+			if (item->flags & SAVE_FLAG_SELECTED)
+				DrawString(MENU_ICON_OFF + 10, game_y, "\xE2\x98\x85");
+
 			tmp[0] = ' ';
 			if (item->flags & SAVE_FLAG_PS1) tmp[0] = CHAR_TAG_PS1;
 			if (item->flags & SAVE_FLAG_PS2) tmp[0] = CHAR_TAG_PS2;
@@ -536,14 +539,42 @@ void Draw_CheatsMenu_Selection(int menuSel, u32 rgba)
     DrawCheatsList(menuSel, selected_entry, (u8)rgba);
 }
 
+static void get_subtitle(int type, size_t count, char* sub)
+{
+    switch (type)
+    {
+        case cat_usb_png_index:
+        case cat_hdd_png_index:
+            sprintf(sub, "%ld Saves", count -1);
+            break;
+
+        case cat_db_png_index:
+            sprintf(sub, "%ld Games", count);
+            break;
+
+        case cat_warning_png_index:
+            sprintf(sub, "%ld Trophy-Sets", count -1);
+            break;
+
+        case cat_bup_png_index:
+            sprintf(sub, "Tools");
+            break;
+
+        default:
+            sub[0] = 0;
+            break;
+    }
+}
 
 /*
  * User Cheats Game Selection Menu
  */
 void Draw_UserCheatsMenu_Ani(save_list_t * list)
 {
-    int ani = 0;
-    for (ani = 0; ani < MENU_ANI_MAX; ani++)
+    char subtitle[0x40];
+
+    get_subtitle(list->icon_id, list_count(list->list), subtitle);
+    for (int ani = 0; ani < MENU_ANI_MAX; ani++)
     {
         tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
         tiny3d_AlphaTest(1, 0x0, TINY3D_ALPHA_FUNC_GEQUAL);
@@ -555,7 +586,7 @@ void Draw_UserCheatsMenu_Ani(save_list_t * list)
         
         u8 icon_a = (u8)(((ani * 2) > 0xFF) ? 0xFF : (ani * 2));
         
-		DrawHeader_Ani(list->icon_id, list->title, "Save Game List", APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
+        DrawHeader_Ani(list->icon_id, list->title, subtitle, APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
         
         int _game_a = (int)(icon_a - (MENU_ANI_MAX / 2)) * 2;
         if (_game_a > 0xFF)
@@ -572,6 +603,9 @@ void Draw_UserCheatsMenu_Ani(save_list_t * list)
 
 void Draw_UserCheatsMenu(save_list_t * list, int menuSel, u8 alpha)
 {
-	DrawHeader(list->icon_id, 0, list->title, "Save Game List", APP_FONT_TITLE_COLOR | 0xFF, 0xffffff00 | alpha, 0);
-	DrawGameList(menuSel, list->list, alpha);
+    char subtitle[0x40];
+
+    get_subtitle(list->icon_id, list_count(list->list), subtitle);
+    DrawHeader(list->icon_id, 0, list->title, subtitle, APP_FONT_TITLE_COLOR | 0xFF, 0xffffff00 | alpha, 0);
+    DrawGameList(menuSel, list->list, alpha);
 }
