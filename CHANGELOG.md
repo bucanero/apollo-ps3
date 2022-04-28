@@ -4,6 +4,18 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.7.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.6.5) - 2022-04-28
+
+### Added
+
+* Added local Web Server (Download saves as .Zip)
+* Save-game selection (press `SELECT` to tag items)
+  * Copy/Resign selected saves (Bulk Management)
+* Improved listings (items count)
+* New custom checksum support
+  * LEGO Marvel Avengers
+  * LEGO Star Wars: The Force Awakens
+
 ## [v1.6.5](https://github.com/bucanero/apollo-ps3/releases/tag/v1.6.5) - 2022-01-22
 
 ### Added
