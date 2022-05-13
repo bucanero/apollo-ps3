@@ -1,0 +1,26 @@
+; BLUS30415
+; Dragon Age™ Origins
+
+; checksum by chaoszage
+
+Group: Update CRC32 Checksum (Required)
+
+:SAVEGAME.DAS
+[Get CRC32 SAVEGAME.DAS (Required)]
+set [crc32_SAVEGAME.DAS]:crc32
+
+;dependency: SAVEGAME.DAX
+
+:SAVEGAME.DAX
+[Update CRC32 on SAVEGAME.DAX (required)]
+write at 0x0:[crc32_SAVEGAME.DAS]
+
+:SAVEGAME.MET
+[Get CRC32 SAVEGAME.MET (Required)]
+set [crc32_SAVEGAME.MET]:crc32
+
+;dependency: SAVEGAME.MEX
+
+:SAVEGAME.MEX
+[Update CRC32 on SAVEGAME.MEX (required)]
+write at 0x0:[crc32_SAVEGAME.MEX]
