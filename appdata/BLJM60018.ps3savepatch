@@ -1,0 +1,24 @@
+; Gundam Musou
+; Dynasty Warriors: Gundam
+; BLJM60018
+
+:DATA.BIN
+
+; add cheats here
+
+[Update 1st ADD for DATA.BIN (Required)]
+set [csum]:0
+set [csum]:add(0x000020,0x001FFF)
+write at 0x000008:[csum]
+
+[Update 2nd ADD for DATA.BIN (Required)]
+set [csum]:0
+set [csum]:add(0x001DD0,0x07FDCF)
+write at 0x00000C:[csum]
+
+[Update 3rd ADD for DATA.BIN (Required)]
+set [csum]:0
+;set [csum]:add(0x000020,0x07FFFF)
+set pointer:eof+1
+set [csum]:add(0x000020,pointer)
+write at 0x000010:[csum]

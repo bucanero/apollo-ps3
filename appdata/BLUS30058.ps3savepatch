@@ -104,3 +104,11 @@ set [csum]:0
 set pointer:eof+1
 set [csum]:add(0x000020,pointer)
 write at 0x000010:[csum]
+; update 1st ADD checksum
+set [csum]:0
+set [csum]:add(0x000020,0x001FFF)
+write at 0x000008:[csum]
+; update 2nd ADD checksum
+set [csum]:0
+set [csum]:add(0x001DD1,0x088DCF)
+write at 0x00000C:[csum]
