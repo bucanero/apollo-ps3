@@ -9,3 +9,8 @@
 00000000 00000000
 28000108 000000E8
 2800010C D4A50FFF
+
+[Update DWADD for SAVEDATA.DAT(Required)]
+set [csum]:0x5C0999
+set [csum]:dwadd(0x000000,0x0813DF)
+write at 0x0813E0:[csum]
