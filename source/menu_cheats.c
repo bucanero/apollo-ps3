@@ -10,6 +10,10 @@
 #include <tiny3d.h>
 #include <libfont.h>
 
+#define UTF8_CHAR_GROUP     "\xe2\x97\x86"
+#define UTF8_CHAR_ITEM      "\xe2\x94\x97"
+#define CHAR_ICON_ALERT     "\x0F"
+
 void DrawScrollBar(int selIndex, int max, int y_inc, int xOff, u8 alpha)
 {
     int game_y = 120;
@@ -442,11 +446,15 @@ void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)
         if (x >= 0 && node)
         {
 			code = list_get(node);
-            //u32 color = game.codes[x].activated ? 0x4040C000 : 0x00000000;
 			u8 a = (u8)((alpha * CalculateAlphaList(x, selIndex, maxPerPage)) / 0xFF);
             SetFontColor(APP_FONT_COLOR | a, 0);
-            //printf ("Drawing code name %d\n", x);
-            float dx = DrawString(MENU_ICON_OFF + (MENU_TITLE_OFF * 3) - xo, game_y, code->name);
+
+            const char *group = "";
+            if (code->flags & APOLLO_CODE_FLAG_PARENT) group = UTF8_CHAR_GROUP " ";
+            if (code->flags & APOLLO_CODE_FLAG_CHILD)  group = " " UTF8_CHAR_ITEM " ";
+            const char *alert = (code->flags & APOLLO_CODE_FLAG_ALERT) ? CHAR_ICON_ALERT : "";
+
+            float dx = DrawFormatString(MENU_ICON_OFF + (MENU_TITLE_OFF * 3) - xo, game_y, "%s%s%s", group, alert, code->name);
             
             if (code->activated)
             {
@@ -461,8 +469,7 @@ void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)
                 
                 if (code->options_count > 0 && code->options)
                 {
-                    int od = 0;
-                    for (od = 0; od < code->options_count; od++)
+                    for (int od = 0; od < code->options_count; od++)
                     {
                         if (code->options[od].sel >= 0 && code->options[od].name && code->options[od].name[code->options[od].sel])
                         {
@@ -490,8 +497,7 @@ void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)
         if (x == selIndex)
         {
             //Draw selection bar
-            int c = 0;
-            for (c = 0; c < 848; c++)
+            for (int c = 0; c < 848; c++)
 				DrawTexture(&menu_textures[mark_line_png_index], c, game_y, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
         
 			DrawTextureCenteredX(&menu_textures[mark_arrow_png_index], MENU_ICON_OFF - 20, game_y, 0, (2 * y_inc) / 3, y_inc + 2, 0xFFFFFF00 | alpha);

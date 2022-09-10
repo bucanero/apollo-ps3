@@ -19,8 +19,6 @@
 #include "pfd.h"
 #include "trophy.h"
 
-#define UTF8_CHAR_GROUP		"\xe2\x97\x86"
-#define UTF8_CHAR_ITEM		"\xe2\x94\x97"
 #define UTF8_CHAR_STAR		"\xE2\x98\x85"
 
 #define CHAR_ICON_ZIP		"\x0C"
