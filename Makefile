@@ -54,8 +54,8 @@ endif
 #---------------------------------------------------------------------------------
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
-LIBS	:=	-ldbglogger -ltiny3d -lfreetype -lgcm_sys -lrsx -lsysutil -lio -lnet -laudioplayer -lmpg123 -logg -lspu_sound \
-			-laudio -lsysmodule -lssl -lhttp -lhttputil -lapollo -lzip -lpolarssl -lpngdec -lpng -lxml2 -lz -lm
+LIBS	:=	-ldbglogger -ltiny3d -lfreetype -lgcm_sys -lrsx -lsysutil -lio -lnet -lxmp-lite -lspu_sound \
+			-laudio -lsysmodule -lcurl -lapollo -lzip -lpolarssl -lpngdec -lpng -lxml2 -lz -lm
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
@@ -90,7 +90,7 @@ BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.bin)))
 PNGFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.png)))
 JPGFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.jpg)))
 TTFFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.ttf)))
-MP3FILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.mp3)))
+S3MFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.s3m)))
 
 #---------------------------------------------------------------------------------
 # use CXX for linking C++ projects, CC for standard C
@@ -103,7 +103,7 @@ endif
 
 export OFILES	:=	$(addsuffix .o,$(BINFILES)) \
 			$(addsuffix .o,$(TTFFILES)) \
-			$(addsuffix .o,$(MP3FILES)) \
+			$(addsuffix .o,$(S3MFILES)) \
 			$(addsuffix .o,$(PNGFILES)) \
 			$(addsuffix .o,$(JPGFILES)) \
 					$(CPPFILES:.cpp=.o) $(CFILES:.c=.o) \
@@ -189,7 +189,7 @@ $(OUTPUT).elf:	$(OFILES)
 	@echo $(notdir $<)
 	@$(bin2o)
 #---------------------------------------------------------------------------------
-%.mp3.o	:	%.mp3
+%.s3m.o	:	%.s3m
 #---------------------------------------------------------------------------------
 	@echo $(notdir $<)
 	@$(bin2o)

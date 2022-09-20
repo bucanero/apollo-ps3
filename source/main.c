@@ -49,8 +49,11 @@ enum menu_screen_ids
 //Sound
 #include "spu_soundmodule_bin.h"
 #include <soundlib/spu_soundlib.h>
-#include <soundlib/audioplayer.h>
-#include "background_music_mp3.h"
+#include <libxmp-lite/xmp.h>
+#include "haiku_s3m.h"
+
+#define SAMPLING_FREQ       48000 /* 48khz. */
+#define AUDIO_SAMPLES       SAMPLING_FREQ * 4 * 4 /* audio buffer to decode (for 48000 samples x 4 seconds and 16 bit stereo as reference) */
 
 // SPU
 u32 inited;
@@ -233,7 +236,7 @@ void release_all()
 		sysUtilUnregisterCallback(SYSUTIL_EVENT_SLOT0);
 
 	if(inited & INITED_AUDIOPLAYER)
-		StopAudio();
+		{ }
 	
 	if(inited & INITED_SOUNDLIB)
 		SND_End();
@@ -559,10 +562,17 @@ void LoadTextures_Menu()
 	LOG("LoadTextures_Menu() :: Allocated %db (%.02fkb, %.02fmb) for textures", tBytes, tBytes / (float)1024, tBytes / (float)(1024 * 1024));
 }
 
-short *background_music = NULL;
-int background_music_size = 48000*72*4; // initial size of buffer to decode (for 48000 samples x 72 seconds and 16 bit stereo as reference)
-int effect_freq;
-int effect_is_stereo;
+short *background_music[2] = {NULL, NULL};
+xmp_context xmp = NULL;
+
+void xmp_audio_callback(int voice)
+{
+	static int music_buffer = 0;
+
+	music_buffer ^= 1;
+	xmp_play_buffer(xmp, background_music[music_buffer], AUDIO_SAMPLES, 0);
+	SND_AddVoice(voice, background_music[music_buffer], AUDIO_SAMPLES);
+}
 
 void LoadSounds()
 {
@@ -587,18 +597,30 @@ void LoadSounds()
 	if(SND_Init(spu)==0)
 		inited |= INITED_SOUNDLIB;
 	
-	background_music   = (short *) malloc(background_music_size);
-
 	// decode the mp3 effect file included to memory. It stops by EOF or when samples exceed size_effects_samples
-	DecodeAudio( (void *) background_music_mp3, background_music_mp3_size, background_music, &background_music_size, &effect_freq, &effect_is_stereo);
+	xmp = xmp_create_context();
 
+	// Decode a s3m file to play
+	if (xmp_load_module_from_memory(xmp, (void*) haiku_s3m, haiku_s3m_size) < 0)
+	{
+		LOG("[ERROR] Failed to decode audio file");
+		return;
+	}
+
+	xmp_set_player(xmp, XMP_PLAYER_VOLUME, 100);
+	xmp_set_player(xmp, XMP_PLAYER_INTERP, XMP_INTERP_SPLINE);
+	xmp_start_player(xmp, SAMPLING_FREQ, 0);
+
+	// Calculate the sample count and allocate a buffer for the sample data accordingly
 	// adjust the sound buffer sample correctly to the background_music_size
 	// SPU dma works aligned to 128 bytes. SPU module is designed to read unaligned buffers and it is better thing aligned buffers)
-	short *temp = (short *)memalign(128, SPU_SIZE(background_music_size));
-	memcpy((void *) temp, (void *) background_music, background_music_size);
-	free(background_music);
-	background_music = temp;
-	
+	background_music[0] = (short *)memalign(128, SPU_SIZE(AUDIO_SAMPLES));
+	background_music[1] = (short *)memalign(128, SPU_SIZE(AUDIO_SAMPLES));
+
+	// Decode the audio into pSampleData
+	if (xmp_play_buffer(xmp, background_music[0], AUDIO_SAMPLES, 0) == SUCCESS)
+		inited |= INITED_AUDIOPLAYER;
+
 	SND_Pause(0);
 }
 
@@ -1361,6 +1383,10 @@ void drawScene()
 
 void exiting()
 {
+	xmp_end_player(xmp);
+	xmp_release_module(xmp);
+	xmp_free_context(xmp);
+
 	http_end();
 	sysModuleUnload(SYSMODULE_PNGDEC);
 }
@@ -1468,7 +1494,7 @@ s32 main(s32 argc, const char* argv[])
 	// Splash screen logo (fade-out)
 	drawSplashLogo(-1);
 
-	SND_SetInfiniteVoice(2, (effect_is_stereo) ? VOICE_STEREO_16BIT : VOICE_MONO_16BIT, effect_freq, 0, background_music, background_music_size, 255, 255);
+	SND_SetVoice(2, VOICE_STEREO_16BIT, SAMPLING_FREQ, 0, background_music[0], AUDIO_SAMPLES, MAX_VOLUME, MAX_VOLUME, xmp_audio_callback);
 	
 	//Set options
 	music_callback(!apollo_config.music);

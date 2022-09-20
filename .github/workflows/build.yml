@@ -16,6 +16,7 @@ jobs:
       run: |
         git clone https://github.com/bucanero/dbglogger.git       --depth 1
         git clone https://github.com/bucanero/apollo-lib.git      --depth 1
+        git clone https://github.com/bucanero/libxmp-lite-ps4.git --depth 1
 
     - name: Set env vars
       id: slug
@@ -39,6 +40,11 @@ jobs:
       working-directory: apollo-lib
       run: |
         make install
+
+    - name: Install libxmp-lite
+      working-directory: libxmp-lite-ps4
+      run: |
+        make -f Makefile.ps3 install
 
     - name: Build Apollo App Package
       run: |
