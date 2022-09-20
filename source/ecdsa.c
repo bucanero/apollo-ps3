@@ -464,6 +464,7 @@ try_again:
 	bn_from_mon(S, ec_N, 21);
 }
 
+#if 0
 static int check_ecdsa(struct point *Q, u8 *R, u8 *S, u8 *hash)
 {
 	u8 Sinv[21];
@@ -505,14 +506,13 @@ static int check_ecdsa(struct point *Q, u8 *R, u8 *S, u8 *hash)
 	return (bn_compare(rr, R, 21) == 0);
 }
 
-#if 0
 static void ec_priv_to_pub(u8 *k, u8 *Q)
 {
 	point_mul(Q, k, ec_G);
 }
 #endif
 
-int set_vsh_curve(u8 *p, u8 *a, u8 *b, u8 *N, u8 *Gx, u8 *Gy)
+static int set_vsh_curve(u8 *p, u8 *a, u8 *b, u8 *N, u8 *Gx, u8 *Gy)
 {	
 	memcpy(p, p_fixed, 20);
 	memcpy(a, a_fixed, 20);
@@ -552,12 +552,14 @@ void ecdsa_set_priv(u8 *k)
 	memcpy(ec_k, k, sizeof ec_k);
 }
 
+/*
 int ecdsa_verify(u8 *hash, u8 *R, u8 *S)
 {
 	return check_ecdsa(&ec_Q, R, S, hash);
 }
+*/
 
-void ecdsa_sign(u8 *hash, u8 *R, u8 *S)
+void ecdsa_data_sign(u8 *hash, u8 *R, u8 *S)
 {
 	generate_ecdsa(R, S, ec_k, hash);
 }

@@ -38,6 +38,6 @@ typedef struct actdat actdat_t;
 int ecdsa_set_curve(u32 type);
 void ecdsa_set_pub(u8 *Q);
 void ecdsa_set_priv(u8 *k);
-void ecdsa_sign(u8 *hash, u8 *R, u8 *S);
+void ecdsa_data_sign(u8 *hash, u8 *R, u8 *S);
 
 void get_rand(u8 *dst, u32 len);

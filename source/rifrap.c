@@ -240,7 +240,7 @@ int rap2rif(const u8* idps_key, const char* exdata_path, const char* rap_file, c
 	ecdsa_set_curve(0);
 	ecdsa_set_pub(ec_Q_nm);
 	ecdsa_set_priv(ec_k_nm);
-	ecdsa_sign(sha1_digest, R, S);
+	ecdsa_data_sign(sha1_digest, R, S);
 
 	memcpy(rif.r, R+1, sizeof(rif.r));
 	memcpy(rif.s, S+1, sizeof(rif.s));
@@ -430,7 +430,7 @@ int create_actdat(const char* exdata_path, u64 account_id)
 	ecdsa_set_curve(0);
 	ecdsa_set_pub(ec_Q_nm);
 	ecdsa_set_priv(ec_k_nm);
-	ecdsa_sign(act_dat.sig_r, R, S);
+	ecdsa_data_sign(act_dat.sig_r, R, S);
 
 	memcpy(act_dat.sig_r, R+1, sizeof(act_dat.sig_r));
 	memcpy(act_dat.sig_s, S+1, sizeof(act_dat.sig_s));
