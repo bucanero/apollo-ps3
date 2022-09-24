@@ -1,0 +1,9 @@
+; Saint Seiya Sanctuary Battle
+; BLUS31004
+;From SteweEliteModder For PS3
+
+:SAVEDATA
+
+; By SteweEliteModder
+[Max Cosmo Points (9999999)]
+20000AF8 0098967F

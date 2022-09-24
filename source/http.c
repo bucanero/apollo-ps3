@@ -51,14 +51,15 @@ void http_end(void)
 /* follow the CURLOPT_XFERINFOFUNCTION callback definition */
 static int update_progress(void *p, int64_t dltotal, int64_t dlnow, int64_t ultotal, int64_t ulnow)
 {
-    LOG("DL: %lld / %lld", dlnow, dltotal);
+	LOG("DL: %lld / %lld", dlnow, dltotal);
 	update_progress_bar(&prog_bar1_value, dltotal, (const char*) p);
-    return 0;
+
+	return 0;
 }
 
 static size_t curl_write_file(void *contents, size_t size, size_t nmemb, void *userp)
 {
-    prog_bar1_value += (size * nmemb);
+	prog_bar1_value += (size * nmemb);
 
 	return fwrite(contents, size, nmemb, userp);
 }

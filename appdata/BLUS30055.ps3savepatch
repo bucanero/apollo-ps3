@@ -1,0 +1,14 @@
+; The Orange Box
+; BLUS30055
+; by bucanero
+
+:*.CFG
+
+[Calculate CRC32 for .CFG]
+set range:0x00,eof+1
+set [hash]:crc32
+
+:*.CHK
+
+[Write new CRC32 to .CHK]
+write at 0x00:[hash]
