@@ -45,6 +45,9 @@
 #define SAVE_UTIL_LOADING   1
 #define SAVE_UTIL_SAVING    2
 
+#define save_game_thread(folder, name)        _create_thread(SAVE_UTIL_SAVING, folder, name)
+#define load_game_thread(folder, name)        _create_thread(SAVE_UTIL_LOADING, folder, name)
+
 typedef struct {
 	uint64_t psid[2];
 	uint32_t user_id;
@@ -75,7 +78,7 @@ save_metadata_t* save_data;
 u8* file_data;
 u64 file_size;
 
-void saveload_game_status_cb (sysSaveCallbackResult *result, sysSaveStatusIn *in, sysSaveStatusOut *out)
+static void saveload_game_status_cb (sysSaveCallbackResult *result, sysSaveStatusIn *in, sysSaveStatusOut *out)
 {
 	int i;
 
@@ -183,7 +186,7 @@ void saveload_game_status_cb (sysSaveCallbackResult *result, sysSaveStatusIn *in
 	}
 }
 
-void saveload_game_file_cb (sysSaveCallbackResult *result, sysSaveFileIn *in, sysSaveFileOut *out)
+static void saveload_game_file_cb (sysSaveCallbackResult *result, sysSaveFileIn *in, sysSaveFileOut *out)
 {
 	LOG("saveload_game_file_cb called");
 
@@ -262,7 +265,7 @@ void saveload_game_file_cb (sysSaveCallbackResult *result, sysSaveFileIn *in, sy
 	LOG("saveload_game_file_cb exit");
 }
 
-void saveload_settings_thread(void *user_data)
+static void saveload_settings_thread(void *user_data)
 {
 	sysSaveBufferSettings bufferSettings;
 	sys_mem_container_t container;
@@ -318,7 +321,7 @@ end:
 	sysThreadExit (0);
 }
 
-int _create_thread (int flags, const char *folder, const char *filename)
+static int _create_thread (int flags, const char *folder, const char *filename)
 {
 	s32 ret;
 
@@ -343,24 +346,14 @@ int _create_thread (int flags, const char *folder, const char *filename)
 	return TRUE;
 }
 
-inline int save_game_thread(const char *folder, const char *filename)
-{
-	return _create_thread (SAVE_UTIL_SAVING, folder, filename);
-}
-
-inline int load_game_thread(const char *folder, const char *filename)
-{
-	return _create_thread (SAVE_UTIL_LOADING, folder, filename);
-}
-
-void wait_save_thread()
+static void wait_save_thread()
 {
     while (save_tid != 0) {
         usleep(100*1000);
     }
 }
 
-uint32_t get_userid_dir(uint32_t tid)
+static uint32_t get_userid_dir(uint32_t tid)
 {
 	char path[128];
 	struct stat sb;
@@ -392,10 +385,19 @@ int create_savegame_folder(const char* folder)
 	return TRUE;
 }
 
+static void _log_settings(app_config_t* config)
+{
+    LOG("User Settings: UserID (%08d) AccountID (%016lX)", config->user_id, config->account_id);
+    LOG("PSID %016lX %016lX", config->psid[0], config->psid[1]);
+    LOG("IDPS %016lX %016lX", config->idps[0], config->idps[1]);
+	LOG("Music [%d] Sort [%d] Update [%d] Animation [%d]", config->music, config->doSort, config->update, config->doAni);
+}
+
 int save_app_settings(app_config_t* config)
 {
     file_data = (u8*) config;
     file_size = sizeof(app_config_t);
+    _log_settings(config);
 
     return save_game_thread(SAVE_DATA_FOLDER, SAVE_DATA_FILENAME);
 }
@@ -414,9 +416,7 @@ int load_app_settings(app_config_t* config)
     {
         memcpy(config, file_data, file_size);
 
-        LOG("Settings loaded: UserID (%08d) AccountID (%016lX)", config->user_id, config->account_id);
-        LOG("PSID %016lX %016lX", config->psid[0], config->psid[1]);
-        LOG("IDPS %016lX %016lX", config->idps[0], config->idps[1]);
+        _log_settings(config);
         return TRUE;
     }
 
@@ -428,6 +428,7 @@ int load_app_settings(app_config_t* config)
     file_data = canary;
     file_size = 10;
 
+    config->account_id = 0;
     ss_aim_get_device_id((u8*) config->idps);
     ss_aim_get_open_psid((u8*) config->psid);
 
@@ -462,7 +463,7 @@ int load_app_settings(app_config_t* config)
     config->user_id = uid;
     config->psid[0] = param_ids->psid[0];
     config->psid[1] = param_ids->psid[1];
-    sscanf(param_ids->account_id, "%lx", &(config->account_id));
+    sscanf((char*) sfo_get_param_value(sfo, "ACCOUNT_ID"), "%lx", &(config->account_id));
 
     sfo_free(sfo);
     save_app_settings(config);

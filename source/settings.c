@@ -83,7 +83,7 @@ menu_option_t menu_options[] = {
 void music_callback(int sel)
 {
 	apollo_config.music = !sel;
-	SND_PauseVoice(2, sel);
+	SND_Pause(sel);
 }
 
 void sort_callback(int sel)
@@ -232,4 +232,7 @@ void redetect_callback(int sel)
 	init_loading_screen("Updating Account & Console IDs...");
 	reset_app_settings(&apollo_config);
 	stop_loading_screen();
+
+	show_message("IDs Updated! Account ID: %016lx\nPSID: %016lX %016lX\nIDPS: %016lX %016lX", 
+		apollo_config.account_id, apollo_config.psid[0], apollo_config.psid[1], apollo_config.idps[0], apollo_config.idps[1]);
 }

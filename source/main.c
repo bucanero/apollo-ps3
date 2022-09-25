@@ -621,7 +621,7 @@ void LoadSounds()
 	if (xmp_play_buffer(xmp, background_music[0], AUDIO_SAMPLES, 0) == SUCCESS)
 		inited |= INITED_AUDIOPLAYER;
 
-	SND_Pause(0);
+	SND_Pause(1);
 }
 
 void update_usb_path(char* path)
