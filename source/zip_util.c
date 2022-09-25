@@ -8,6 +8,8 @@
 #include "saves.h"
 #include "common.h"
 
+#define UNZIP_BUF_SIZE 0x80000
+
 static inline uint64_t min64(uint64_t a, uint64_t b)
 {
     return a < b ? a : b;
@@ -135,20 +137,21 @@ int extract_zip(const char* zip_file, const char* dest_path)
 		return 0;
 	}
 
-	buffer = malloc(0x10000);
+	buffer = malloc(UNZIP_BUF_SIZE);
 	if (!buffer)
 		return 0;
 
 	uint64_t progress = 0;
 	init_progress_bar("Extracting files...", " ");
 
-	LOG("Installing ZIP to <%s>...", dest_path);
+	LOG("Extracting %s to <%s>...", zip_file, dest_path);
 
 	for (int i = 0; i < files; i++) {
 		progress++;
 		const char* filename = zip_get_name(archive, i, 0);
 
 		update_progress_bar(&progress, files, filename);
+		LOG("Unzip [%d/%d] '%s'...", i+1, files, filename);
 
 		if (!filename)
 			continue;
@@ -185,7 +188,7 @@ int extract_zip(const char* zip_file, const char* dest_path)
 
 		uint64_t pos = 0, count;
 		while (pos < st.size) {
-			count = min64(0x10000, st.size - pos);
+			count = min64(UNZIP_BUF_SIZE, st.size - pos);
 			if (zip_fread(zfd, buffer, count) != count) {
 				free(buffer);
                 fclose(tfd);

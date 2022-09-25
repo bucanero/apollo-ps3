@@ -390,7 +390,7 @@ static void _log_settings(app_config_t* config)
     LOG("User Settings: UserID (%08d) AccountID (%016lX)", config->user_id, config->account_id);
     LOG("PSID %016lX %016lX", config->psid[0], config->psid[1]);
     LOG("IDPS %016lX %016lX", config->idps[0], config->idps[1]);
-	LOG("Music [%d] Sort [%d] Update [%d] Animation [%d]", config->music, config->doSort, config->update, config->doAni);
+    LOG("Music [%d] Sort [%d] Update [%d] Animation [%d]", config->music, config->doSort, config->update, config->doAni);
 }
 
 int save_app_settings(app_config_t* config)
