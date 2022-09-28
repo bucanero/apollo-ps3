@@ -4,6 +4,36 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.7.2](https://github.com/bucanero/apollo-ps3/releases/tag/v1.7.2) - 2022-09-28
+
+### Added
+
+* New cheat codes
+  * Saint Seiya Sanctuary Battle
+* New custom checksum support
+  * Dragon Age: Origins
+  * Dynasty Warriors: Gundam
+  * LEGO Harry Potter: Years 1-4
+  * LEGO Indiana Jones 2: The Adventure Continues
+  * The Orange Box (Half-Life, Portal, TF2)
+
+### Misc
+
+* Updated Apollo patch engine v0.1.1
+  * Improve patch error handling
+  * New commands: `copy`, `endian_swap`, `msgbox`
+  * New custom hash: `force_crc32`
+  * Improve SW code types 9, A
+  * Add SW code types 3, 7, B, C, D
+  * Support initial value for `add/wadd/dwadd/wsub`
+  * Fix `md5_xor` custom hash
+* Updated network code to `libcurl` (TLS 1.2) 
+* Changed background music using `libxmp`
+
+### Fixed
+
+* Improved Account/Console ID re-detection
+
 ## [v1.7.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.7.0) - 2022-04-28
 
 ### Added

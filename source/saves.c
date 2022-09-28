@@ -1174,7 +1174,7 @@ void read_savegames(const char* userPath, list_t *list, uint32_t flag)
 
 			sfo_free(sfo);
 				
-			LOG("[%s] F(%d) name '%s'", item->title_id, item->flags, item->name);
+			LOG("[%s] F(%X) name '%s'", item->title_id, item->flags, item->name);
 			list_append(list, item);
 		}
 	}
@@ -1235,7 +1235,7 @@ void read_psv_savegames(const char* userPath, list_t *list)
 		//PS1 Title offset 0x04
 		item->name = sjis2utf8(data + (type == 1 ? 0x04 : 0xC0));
 			
-		LOG("[%s] F(%d) name '%s'", item->title_id, item->flags, item->name);
+		LOG("[%s] F(%X) name '%s'", item->title_id, item->flags, item->name);
 		list_append(list, item);
 	}
 
@@ -1317,7 +1317,7 @@ void read_psx_savegames(const char* userPath, list_t *list)
 		asprintf(&item->path, "%s%s", userPath, dir->d_name);
 		asprintf(&item->title_id, "%.12s", data);
 			
-		LOG("[%s] F(%d) name '%s'", item->title_id, item->flags, item->name);
+		LOG("[%s] F(%X) name '%s'", item->title_id, item->flags, item->name);
 		list_append(list, item);
 	}
 
@@ -1504,8 +1504,8 @@ list_t * ReadOnlineList(const char* urlPath)
 	_ReadOnlineListEx(url, SAVE_FLAG_PS2, list);
 
 	// PS1 save-games (Zip PSV)
-	//snprintf(url, sizeof(url), "%s" "PS1/", urlPath);
-	//_ReadOnlineListEx(url, SAVE_FLAG_PS1, list);
+	snprintf(url, sizeof(url), "%s" "PS1/", urlPath);
+	_ReadOnlineListEx(url, SAVE_FLAG_PS1, list);
 
 	if (!list_count(list))
 	{
@@ -1592,7 +1592,7 @@ list_t * ReadTrophyList(const char* userPath)
 			xmlCleanupParser();
 			free(buffer);
 				
-			LOG("[%s] F(%d) name '%s'", item->title_id, item->flags, item->name);
+			LOG("[%s] F(%X) name '%s'", item->title_id, item->flags, item->name);
 			list_append(list, item);
 		}
 	}

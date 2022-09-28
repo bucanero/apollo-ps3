@@ -43,7 +43,7 @@ void _draw_OptionsMenu(u8 alpha)
 				break;
 			case APP_OPTION_LIST:
 				SetFontAlign(FONT_ALIGN_CENTER);
-				DrawFormatString(OPTION_ITEM_OFF - 18, y_off, "< %s >", menu_options[ind].options[*menu_options[ind].value]);
+				DrawFormatString(OPTION_ITEM_OFF - 18, y_off, "\xe2\x97\x80 %s \xe2\x96\xb6", menu_options[ind].options[*menu_options[ind].value]);
 				SetFontAlign(FONT_ALIGN_LEFT);
 				break;
 			case APP_OPTION_INC:

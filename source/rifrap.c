@@ -351,6 +351,35 @@ int find_xReg_data(const char* data, const char* value, const char* id)
 	return (-1);
 }
 
+u64 get_account_id(u32 user_id)
+{
+	int pos;
+	u64 aid = 0;
+	char data[256];
+	char *buffer;
+
+	if (read_buffer(XREGISTRY_FILE, (u8**) &buffer, NULL) != 0)
+	{
+		LOG("Error: can't open %s", XREGISTRY_FILE);
+		return 0;
+	}
+
+	snprintf(data, sizeof(data), XREG_SETTING_ACCOUNTID, user_id);
+	if ((pos = find_xReg_data(buffer, data, "\x11\x02")) < 0)
+	{
+		LOG("Error: unable to find offset '%s'", data);
+		free(buffer);
+		return 0;
+	}
+
+	// parse the accountID
+	sscanf(buffer + pos, "%lx", &aid);
+	LOG("%s: %lx", data, aid);
+
+	free(buffer);
+	return aid;
+}
+
 u64 create_fake_account(u32 user_id)
 {
 	int pos;

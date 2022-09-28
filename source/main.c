@@ -53,7 +53,7 @@ enum menu_screen_ids
 #include "haiku_s3m.h"
 
 #define SAMPLING_FREQ       48000 /* 48khz. */
-#define AUDIO_SAMPLES       SAMPLING_FREQ * 4 * 4 /* audio buffer to decode (for 48000 samples x 4 seconds and 16 bit stereo as reference) */
+#define AUDIO_SAMPLES       SAMPLING_FREQ * 2 /* audio buffer to decode (for 48000 samples x 0.5 seconds and 16 bit stereo as reference) */
 
 // SPU
 u32 inited;

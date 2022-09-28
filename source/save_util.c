@@ -20,7 +20,6 @@
 
 #include "saves.h"
 #include "util.h"
-#include "sfo.h"
 #include "settings.h"
 #include "common.h"
 
@@ -47,12 +46,6 @@
 
 #define save_game_thread(folder, name)        _create_thread(SAVE_UTIL_SAVING, folder, name)
 #define load_game_thread(folder, name)        _create_thread(SAVE_UTIL_LOADING, folder, name)
-
-typedef struct {
-	uint64_t psid[2];
-	uint32_t user_id;
-	char account_id[17];
-} params_ids_t;
 
 enum SaveDataMode {
 	PS3_SAVE_MODE_ICON,
@@ -415,7 +408,6 @@ int load_app_settings(app_config_t* config)
     if (file_size == sizeof(app_config_t))
     {
         memcpy(config, file_data, file_size);
-
         _log_settings(config);
         return TRUE;
     }
@@ -453,19 +445,9 @@ int load_app_settings(app_config_t* config)
         read_file(tmp_path, verify, 9);
     }
 
-    snprintf(tmp_path, sizeof(tmp_path), SAVES_PATH_HDD SAVE_DATA_FOLDER "/PARAM.SFO", uid);
-    LOG("Reading '%s'...", tmp_path);
-
-    sfo_context_t* sfo = sfo_alloc();
-    sfo_read(sfo, tmp_path);
-    params_ids_t* param_ids = (params_ids_t*)(sfo_get_param_value(sfo, "PARAMS") + 0x1C);
-
     config->user_id = uid;
-    config->psid[0] = param_ids->psid[0];
-    config->psid[1] = param_ids->psid[1];
-    sscanf((char*) sfo_get_param_value(sfo, "ACCOUNT_ID"), "%lx", &(config->account_id));
+    config->account_id = get_account_id(uid);
 
-    sfo_free(sfo);
     save_app_settings(config);
 
     return TRUE;

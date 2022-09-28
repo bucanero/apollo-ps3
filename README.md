@@ -157,13 +157,16 @@ Currently, the list of available games and files is limited, but the project aim
 
 # Credits
 
-* [Bucanero](http://www.bucanero.com.ar/): Project developer
+* [Bucanero](http://www.bucanero.com.ar/): [Project developer](https://github.com/bucanero)
+
+## Acknowledgments
+
 * [Dnawrkshp](https://github.com/Dnawrkshp/): [Artemis PS3](https://github.com/Dnawrkshp/ArtemisPS3)
 * [Berion](https://www.psx-place.com/members/berion.1431/): GUI design
 * [flatz](https://github.com/flatz): [SFO/PFD tools](https://github.com/bucanero/pfd_sfo_tools/)
 * [aldostools](https://aldostools.org/): [Bruteforce Save Data](https://bruteforcesavedata.forumms.net/)
-* [aluigi](http://aluigi.org): [offzip/packzip](http://aluigi.altervista.org/mytoolz.htm)
 * [darkautism](https://darkautism.blogspot.com/): [PS3TrophyIsGood](https://github.com/darkautism/PS3TrophyIsGood)
+* [Nobody/Wild Light](https://github.com/nobodo): [S3M music track](https://github.com/bucanero/apollo-ps3/blob/master/data/haiku.s3m)
 
 # Building
 
@@ -174,7 +177,9 @@ You need to have installed:
 - [Apollo](https://github.com/bucanero/apollo-lib) library
 - [Tiny3D](https://github.com/wargio/Tiny3D) library
 - [polarSSL](https://github.com/bucanero/ps3libraries/blob/master/scripts/015-polarssl-1.3.9.sh) library
-- [dbglogger](https://github.com/bucanero/dbglogger) library (only required for debug logging)
+- [libcurl](https://github.com/bucanero/ps3libraries/blob/master/scripts/016-libcurl-7.64.1.sh) library
+- [libxmp-lite](https://github.com/bucanero/libxmp-lite-ps4) library
+- [dbglogger](https://github.com/bucanero/dbglogger) library
 
 Run `make` to create a release build. If you want to include the latest save patches in your `.pkg` file, run `make createzip`.
 Finally, run `make pkg` to create a `.pkg` install file.
@@ -189,10 +194,10 @@ UDP multicast address `239.255.0.100:30000`. To receive them you can use [socat]
 
 # License
 
-[Apollo Save Tool](https://github.com/bucanero/apollo-ps3/) (PS3) - Copyright (C) 2020-2021  Damian Parrino
+[Apollo Save Tool](https://github.com/bucanero/apollo-ps3/) (PS3) - Copyright (C) 2020-2022  [Damian Parrino](https://twitter.com/dparrino)
 
 This program is free software: you can redistribute it and/or modify
-it under the terms of the [GNU General Public License](LICENSE) as published by
+it under the terms of the [GNU General Public License][app_license] as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
