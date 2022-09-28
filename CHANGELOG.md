@@ -4,7 +4,7 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
-## [v1.7.2](https://github.com/bucanero/apollo-ps3/releases/tag/v1.7.2) - 2022-09-28
+## [v1.7.4](https://github.com/bucanero/apollo-ps3/releases/tag/v1.7.4) - 2022-09-28
 
 ### Added
 
@@ -19,7 +19,7 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ### Misc
 
-* Updated Apollo patch engine v0.1.1
+* Updated Apollo patch engine v0.2.0
   * Improve patch error handling
   * New commands: `copy`, `endian_swap`, `msgbox`
   * New custom hash: `force_crc32`
