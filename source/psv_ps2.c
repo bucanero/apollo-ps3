@@ -78,7 +78,7 @@ static int roundUp(int i, int j)
     return (i + j - 1) / j * j;
 }
 
-int isMAXFile(const char *path)
+static int isMAXFile(const char *path)
 {
     if(!path)
         return 0;
@@ -112,7 +112,7 @@ int isMAXFile(const char *path)
            strlen(header.iconSysName) > 0;
 }
 
-void setMcDateTime(sceMcStDateTime* mc, struct tm *ftm)
+static void setMcDateTime(sceMcStDateTime* mc, struct tm *ftm)
 {
     mc->Resv2 = 0;
     mc->Sec = ftm->tm_sec;
@@ -123,7 +123,7 @@ void setMcDateTime(sceMcStDateTime* mc, struct tm *ftm)
     mc->Year = ES16(ftm->tm_year + 1900);
 }
 
-void set_ps2header_values(ps2_header_t *ps2h, const ps2_FileInfo_t *ps2fi, const ps2_IconSys_t *ps2sys)
+static void set_ps2header_values(ps2_header_t *ps2h, const ps2_FileInfo_t *ps2fi, const ps2_IconSys_t *ps2sys)
 {
     if (strcmp(ps2fi->filename, ps2sys->IconName) == 0)
     {
@@ -437,7 +437,7 @@ int ps2_psu2psv(const char *save, const char* psv_path)
     return psv_resign(dstName);
 }
 
-void cbsCrypt(uint8_t *buf, size_t bufLen)
+static void cbsCrypt(uint8_t *buf, size_t bufLen)
 {
     arc4_context ctx;
 
@@ -446,7 +446,7 @@ void cbsCrypt(uint8_t *buf, size_t bufLen)
     arc4_crypt(&ctx, bufLen, buf, buf);
 }
 
-int isCBSFile(const char *path)
+static int isCBSFile(const char *path)
 {
     if(!path)
         return 0;

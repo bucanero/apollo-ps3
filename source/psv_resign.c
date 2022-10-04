@@ -42,14 +42,14 @@ const uint8_t psv_iv[0x10] = {
 };
 
 
-void XorWithByte(uint8_t* buf, uint8_t byte, int length)
+static void XorWithByte(uint8_t* buf, uint8_t byte, int length)
 {
 	for (int i = 0; i < length; ++i) {
     	buf[i] ^= byte;
 	}
 }
 
-void XorWithIv(uint8_t* buf, const uint8_t* Iv)
+static void XorWithIv(uint8_t* buf, const uint8_t* Iv)
 {
   uint8_t i;
   for (i = 0; i < 16; ++i) // The block in AES is always 128bit no matter the key size
@@ -58,7 +58,7 @@ void XorWithIv(uint8_t* buf, const uint8_t* Iv)
   }
 }
  
-void generateHash(const uint8_t *input, uint8_t *dest, size_t sz, uint8_t type)
+static void generateHash(const uint8_t *input, uint8_t *dest, size_t sz, uint8_t type)
 {
 	aes_context aes_ctx;
 	sha1_context sha1_ctx;
@@ -219,7 +219,7 @@ int ps1_mcs2psv(const char* mcsfile, const char* psv_path)
 	}
 
 	if (memcmp(input, "Q\x00", 2) != 0) {
-		printf("Not a .mcs file\n");
+		LOG("Not a .mcs file");
 		free(input);
 		return 0;
 	}
@@ -227,7 +227,7 @@ int ps1_mcs2psv(const char* mcsfile, const char* psv_path)
 	get_psv_filename(dstName, psv_path, (char*) &input[0x0A]);
 	pf = fopen(dstName, "wb");
 	if (!pf) {
-		perror("Failed to open output file");
+		LOG("Failed to open output file");
 		free(input);
 		return 0;
 	}
@@ -267,7 +267,7 @@ int ps1_psv2mcs(const char* psvfile, const char* mcs_path)
 	}
 
 	if (memcmp(input, PSV_MAGIC, 4) != 0) {
-		printf("Not a .psv file");
+		LOG("Not a .psv file");
 		free(input);
 		return 0;
 	}
@@ -275,7 +275,7 @@ int ps1_psv2mcs(const char* psvfile, const char* mcs_path)
 	snprintf(dstName, sizeof(dstName), "%s%s.mcs", mcs_path, strrchr(psvfile, '/')+1);
 	pf = fopen(dstName, "wb");
 	if (!pf) {
-		perror("Failed to open output file");
+		LOG("Failed to open output file");
 		free(input);
 		return 0;
 	}
@@ -315,7 +315,7 @@ int ps1_psx2psv(const char* psxfile, const char* psv_path)
 	}
 
 	if (memcmp(input + 0x36, "SC", 2) != 0) {
-		printf("Not a .psx file\n");
+		LOG("Not a .psx file");
 		free(input);
 		return 0;
 	}
@@ -323,7 +323,7 @@ int ps1_psx2psv(const char* psxfile, const char* psv_path)
 	get_psv_filename(dstName, psv_path, (char*) input);
 	pf = fopen(dstName, "wb");
 	if (!pf) {
-		perror("Failed to open output file");
+		LOG("Failed to open output file");
 		free(input);
 		return 0;
 	}
@@ -349,7 +349,7 @@ int ps1_psx2psv(const char* psxfile, const char* psv_path)
 }
 
 //Convert Shift-JIS characters to ASCII equivalent
-void sjis2ascii(char* bData)
+static void sjis2ascii(char* bData)
 {
 	uint16_t ch;
 	int i, j = 0;

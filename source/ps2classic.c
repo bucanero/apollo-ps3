@@ -52,14 +52,14 @@ typedef struct
 
 //prototypes
 static void build_ps2_header(u8 * buffer, int npd_type, const char* content_id, const char* filename, s64 iso_size);
-int vmc_hash(const char *mc_in);
-int ps2_iso9660_sig(const char *img_in);
-void ps2_build_limg(const char *img_in, int64_t size);
+static int vmc_hash(const char *mc_in);
+static int ps2_iso9660_sig(const char *img_in);
+static void ps2_build_limg(const char *img_in, int64_t size);
 int rif2klicensee(const u8* idps_key, const char* exdata_path, const char* rif_file, u8* klic);
-int64_t get_fsize(const char* fname);
+static int64_t get_fsize(const char* fname);
 
 
-void aes128cbc(const u8 *key, const u8 *iv_in, const u8 *in, u64 len, u8 *out)
+static void aes128cbc(const u8 *key, const u8 *iv_in, const u8 *in, u64 len, u8 *out)
 {
 	u8 iv[16];
 	aes_context ctx;
@@ -70,7 +70,7 @@ void aes128cbc(const u8 *key, const u8 *iv_in, const u8 *in, u64 len, u8 *out)
 	aes_crypt_cbc(&ctx, AES_DECRYPT, len, iv, in, out);
 }
 
-void aes128cbc_enc(const u8 *key, const u8 *iv_in, const u8 *in, u64 len, u8 *out)
+static void aes128cbc_enc(const u8 *key, const u8 *iv_in, const u8 *in, u64 len, u8 *out)
 {
 	u8 iv[16];
 	aes_context ctx;
@@ -81,7 +81,7 @@ void aes128cbc_enc(const u8 *key, const u8 *iv_in, const u8 *in, u64 len, u8 *ou
 	aes_crypt_cbc(&ctx, AES_ENCRYPT, len, iv, in, out);
 }
 
-void rol1(u8* worthless) {
+static void rol1(u8* worthless) {
 	int i;
 	u8 xor = (worthless[0]&0x80)?0x87:0;
 
@@ -93,7 +93,7 @@ void rol1(u8* worthless) {
 	worthless[0xF] ^= xor;
 }
 
-void aesOmacMode1(u8* output, const u8* input, int len, const u8* aes_key_data, int aes_key_bits)
+static void aesOmacMode1(u8* output, const u8* input, int len, const u8* aes_key_data, int aes_key_bits)
 {
 	int i,j;
 	i = 0;
@@ -133,7 +133,7 @@ void aesOmacMode1(u8* output, const u8* input, int len, const u8* aes_key_data, 
 /*
  *  vmc proper hash
  */
-int vmc_hash(const char *mc_in)
+static int vmc_hash(const char *mc_in)
 {    
     int i, segment_count = 0, TotalSize=0 ;
     uint8_t segment_hashes[16384], segment_data[16384], sha1_hash[0x14];
@@ -194,7 +194,7 @@ int vmc_hash(const char *mc_in)
 * ECC source code by hanimar@geocities.com
 * http://www.geocities.com/SiliconValley/Station/8269/sma02/sma02.html#ecc
 */
-void calc_ECC(uint8_t *ecc, const uint8_t *data)
+static void calc_ECC(uint8_t *ecc, const uint8_t *data)
 {
 	int i, c;
 
@@ -292,7 +292,7 @@ int ps2_remove_vmc_ecc(const char* src, const char* dst)
 /*
  *  ps2_iso9660_sig
  */
-int ps2_iso9660_sig(const char *img_in)
+static int ps2_iso9660_sig(const char *img_in)
 {
 	FILE *f = fopen(img_in, "rb");
     
@@ -328,7 +328,7 @@ int ps2_iso9660_sig(const char *img_in)
 /*
  * ps2_build_limg
  */
-void ps2_build_limg(const char *img_in, int64_t size) {
+static void ps2_build_limg(const char *img_in, int64_t size) {
 	int i, b_size = 0;
 	uint8_t buf[8], tmp[8], num_sectors[8];
 	int64_t tsize=0;
@@ -421,7 +421,7 @@ void ps2_build_limg(const char *img_in, int64_t size) {
 	fclose(f);
 }
 
-int get_image_klicensee(const char* fname, u8* klic)
+static int get_image_klicensee(const char* fname, u8* klic)
 {
 	char cid[37];
 	FILE* fp;
@@ -470,17 +470,17 @@ int get_image_klicensee(const char* fname, u8* klic)
 	return 0;
 }
 
-void wbe16(u8* buf, u16 data)
+static void wbe16(u8* buf, u16 data)
 {
 	memcpy(buf, &data, sizeof(u16));
 }
 
-void wbe32(u8* buf, u32 data)
+static void wbe32(u8* buf, u32 data)
 {
 	memcpy(buf, &data, sizeof(u32));
 }
 
-void wbe64(u8* buf, u64 data)
+static void wbe64(u8* buf, u64 data)
 {
 	memcpy(buf, &data, sizeof(u64));
 }
@@ -612,7 +612,7 @@ void ps2_decrypt_image(u8 dex_mode, const char* image_name, const char* data_fil
 	fclose(data_out);
 }
 
-int64_t get_fsize(const char* fname)
+static int64_t get_fsize(const char* fname)
 {
 	struct stat st;
 	stat(fname, &st);

@@ -69,21 +69,21 @@ static long search_data(const char* data, size_t size, const char* search, int l
 	return -1;
 }
 
-void aesecb128_encrypt(const u8 *key, const u8 *in, u8 *out)
+static void aesecb128_encrypt(const u8 *key, const u8 *in, u8 *out)
 {
 	aes_context ctx;
 	aes_setkey_enc(&ctx, key, 128);
 	aes_crypt_ecb(&ctx, AES_ENCRYPT, in, out);
 }
 
-void aesecb128_decrypt(const u8 *key, const u8 *in, u8 *out)
+static void aesecb128_decrypt(const u8 *key, const u8 *in, u8 *out)
 {
 	aes_context ctx;
 	aes_setkey_dec(&ctx, key, 128);
 	aes_crypt_ecb(&ctx, AES_DECRYPT, in, out);
 }
 
-int klicensee_to_rap(u8 *klicensee, u8 *rap_key)
+static int klicensee_to_rap(u8 *klicensee, u8 *rap_key)
 {
 	int round_num;
 	int i;
@@ -116,7 +116,7 @@ int klicensee_to_rap(u8 *klicensee, u8 *rap_key)
 	return 0;
 }
 
-int rap_to_klicensee(u8 *rap_key, u8 *klicensee)
+static int rap_to_klicensee(u8 *rap_key, u8 *klicensee)
 {
 	int round_num;
 	int i;
@@ -154,7 +154,7 @@ int rap_to_klicensee(u8 *rap_key, u8 *klicensee)
 	return 0;
 }
 
-struct actdat *actdat_get(const char* base) {
+static struct actdat *actdat_get(const char* base) {
 	char path[256];
     struct actdat *actdat;
 
@@ -328,7 +328,7 @@ int rif2rap(const u8* idps_key, const char* exdata_path, const char* rif_file, c
 	return 1;
 }
 
-int find_xReg_data(const char* data, const char* value, const char* id)
+static int find_xReg_data(const char* data, const char* value, const char* id)
 {
 	long i;
 	uint16_t offset;
