@@ -1,7 +1,0 @@
-; NPEB00727
-; The Simpsons: Arcade Game
-
-[Update CRC32 (required)]
-set range:0x4,0x2BB
-set [hash]:crc32
-write at 0x0:[hash]

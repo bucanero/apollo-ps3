@@ -1,8 +1,0 @@
-;NPUB30151
-;After Burner Climax (PSN)
-
-:SYSTEM.DAT
-[Update CRC32 (Required)]
-set range:0x000010,0x0041F3
-set [hash]:CRC32
-write at 0x000008:[hash]

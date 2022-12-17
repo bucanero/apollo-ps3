@@ -1,8 +1,0 @@
-;BLES00255
-;Monster Madness: Grave Danger
-
-:PAYLOAD
-[Update SHA1 (Required)]
-set range:0x000014,0x0003AA
-set [hash]:SHA1
-write at 0x000000:[hash]

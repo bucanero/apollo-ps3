@@ -1,9 +1,0 @@
-;BLES00150
-;X-Men Origins: Wolverine
-
-:PAYLOAD
-[Update SHA1 (Required)]
-set pointer:eof+1
-set range:0x000014,pointer
-set [hash]:SHA1
-write at 0x000000:[hash]

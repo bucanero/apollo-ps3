@@ -1,7 +1,0 @@
-; NPUA80696
-; Carnival Island
-
-:SYS-DATA
-
-[9999 Tickets]
-write at 0x00000482:0x270F

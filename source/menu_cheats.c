@@ -60,7 +60,7 @@ void DrawOptions(option_entry_t* option, u8 alpha, int y_inc, int selIndex)
     if (!option->name || !option->value)
         return;
     
-    int c = 0, yOff = 80, cIndex = 0;
+    int c = 0, yOff = 80;
     
     int maxPerPage = (512 - (yOff * 2)) / y_inc;
     int startDrawX = selIndex - (maxPerPage / 2);
@@ -84,8 +84,6 @@ void DrawOptions(option_entry_t* option, u8 alpha, int y_inc, int selIndex)
 				for (i = MENU_SPLIT_OFF; i < 848; i++)
 					DrawTexture(&menu_textures[mark_line_png_index], i, yOff, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
             }
-            
-            cIndex++;
         }
         yOff += y_inc;
     }

@@ -1,9 +1,0 @@
-;BLES00946
-;Spider-Man™ Shattered Dimensions
-
-:GAMEDATA
-
-[Update CRC32 (Required)]
-set range:0x000004,0x0047B7
-set [hash]:CRC32
-write at 0x000000:[hash

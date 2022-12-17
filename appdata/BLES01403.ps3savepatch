@@ -1,9 +1,0 @@
-;BLES01403
-;Hitman: Absolution™
-
-:SAVE.DAT
-
-[Update MD5 (Required)]
-set range:0x000010,0x07FFFF
-set [hash]:MD5
-write at 0x000000:[hash]

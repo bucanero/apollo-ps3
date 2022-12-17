@@ -1,8 +1,0 @@
-; Sonic The Hedgehog
-; BLES00028
-;From Game Genie For PS3
-
-:SYS-DATA
-
-[Max Rings]
-20000084 3B9AC9FF

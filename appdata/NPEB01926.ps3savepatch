@@ -1,8 +1,0 @@
-; NPEB01926
-; Ragnarok Odyssey ACE
-
-
-[Update MD2 for PLY-MIRR (Required)]
-set range:0x000100,0x0000F6
-set [hash]:MD2
-write at 0x0000F7:[hash]

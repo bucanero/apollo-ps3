@@ -1,8 +1,0 @@
-; NPEB01798
-; Stick It To The Man! (PSN)
-; From SHAkA
-
-:APPDATA.DAT
-
-[Unlock All Levels]
-write at 0x000000B0:0x3130

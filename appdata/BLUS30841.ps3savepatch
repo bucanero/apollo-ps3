@@ -1,9 +1,0 @@
-;BLUS30841
-;WWE '12
-
-:SAVE.DAT
-
-[Update ADD for SAVE.DAT (Required)]
-set [csum]:0
-set [csum]:add(0x1C,0x001A70A0)
-write at 0x18:[csum]

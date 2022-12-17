@@ -1,8 +1,0 @@
-; Ratchet & Clank 3 (PSN) / The Ratchet & Clank Trilogy
-; NPEA00387
-;From Game Genie For PS3
-
-:NPEA00387_RC3_SAVEDATA_*\USR-DATA
-
-[Max Bolts]
-20000024 05F5E0FF

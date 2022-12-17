@@ -1,8 +1,0 @@
-;BLES00107
-;SEGA Rally™ Revo
-
-:SR.DAT
-[Update CRC32 (Required)]
-set range:0x000008,0x005C8F
-set [hash]:CRC32
-write at 0x000004:[hash]

@@ -1,8 +1,0 @@
-; NPUB30537
-; CastleStorm (PSN)
-
-
-:PROFILE.DAT
-
-[Max Money]
-write at 0x0000000D:0x3B9AC9FF

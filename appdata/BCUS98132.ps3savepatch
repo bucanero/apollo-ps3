@@ -1,9 +1,0 @@
-; BCUS98132
-; Heavenly Sword
-
-:USERDATA.DAT
-
-[Update CRC32 for USERDATA.DAT (Required)]
-set range:0x000004,0x00783F
-set [hash]:CRC32
-write at 0x000000:[hash]

@@ -150,10 +150,10 @@ exec:
 
 #---------------------------------------------------------------------------------
 createzip:
-	@echo "creating appdata.zip ..."
+	@echo "Downloading appdata.zip ..."
 	@[ -d pkgfiles/USRDIR/CACHE ] || mkdir -p pkgfiles/USRDIR/CACHE
 	@rm -fr pkgfiles/USRDIR/CACHE/appdata.zip
-	@cd appdata && zip ../pkgfiles/USRDIR/CACHE/appdata.zip *.*
+	@curl -L "https://bucanero.github.io/apollo-patches/PS3/apollo-ps3-update.zip" > pkgfiles/USRDIR/CACHE/appdata.zip
 
 #---------------------------------------------------------------------------------
 pkg:	$(BUILD) $(OUTPUT).pkg

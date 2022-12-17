@@ -1,7 +1,0 @@
-; NPUB30165
-; Death Spank
-
-:SLOT1.SAV
-
-[money 999,999,999$]
-write at 0x0000931C:0x3B9AC9FF

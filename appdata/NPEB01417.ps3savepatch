@@ -1,9 +1,0 @@
-;NPEB01417
-;Flashback (PSN)
-;From SHAkA
-
-
-:PAYLOAD
-
-[999 Skills Point]
-write at 0x0000010A:0x03E7
