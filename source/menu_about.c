@@ -1,13 +1,39 @@
+#include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <pngdec/pngdec.h>
 
 #include "saves.h"
 #include "menu.h"
-#include "menu_about.h"
+#include "menu_gui.h"
 
 #include <tiny3d.h>
 #include <libfont.h>
+
+static char user_id_str[9] = "00000000";
+static char idps_str[] = "0000000000000000 0000000000000000";
+static char psid_str[] = "0000000000000000 0000000000000000";
+static char account_id_str[] = "0000000000000000";
+
+const char * menu_about_strings[] = { "Bucanero", "Developer",
+									"Berion", "GUI design",
+									"Dnawrkshp", "Artemis code",
+									"flatz", "PFD/SFO tools",
+									"aldostools", "Bruteforce Save Data",
+									NULL };
+
+const char * menu_about_strings_project[] = { "User ID", user_id_str,
+											"Account ID", account_id_str,
+											idps_str, psid_str, NULL };
+
+static void _setIdValues()
+{
+	// set to display the PSID on the About menu
+	snprintf(idps_str, sizeof(idps_str), "%016lX %016lX", apollo_config.idps[0], apollo_config.idps[1]);
+	snprintf(psid_str, sizeof(psid_str), "%016lX %016lX", apollo_config.psid[0], apollo_config.psid[1]);
+	snprintf(user_id_str, sizeof(user_id_str), "%08d", apollo_config.user_id);
+	snprintf(account_id_str, sizeof(account_id_str), "%016lx", apollo_config.account_id);
+}
 
 void _draw_AboutMenu(u8 alpha)
 {
@@ -60,8 +86,8 @@ void _draw_AboutMenu(u8 alpha)
 
 void Draw_AboutMenu_Ani()
 {
-	int ani = 0;
-	for (ani = 0; ani < MENU_ANI_MAX; ani++)
+	_setIdValues();
+	for (int ani = 0; ani < MENU_ANI_MAX; ani++)
 	{
 		tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
 		tiny3d_AlphaTest(1, 0x0, TINY3D_ALPHA_FUNC_GEQUAL);
@@ -91,6 +117,7 @@ void Draw_AboutMenu_Ani()
 
 void Draw_AboutMenu()
 {
+	_setIdValues();
 	DrawHeader(cat_about_png_index, 0, "About", "v" APOLLO_VERSION, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 0);
 	_draw_AboutMenu(0xFF);
 }

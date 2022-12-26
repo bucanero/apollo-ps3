@@ -5,7 +5,7 @@
 
 #include "saves.h"
 #include "menu.h"
-#include "menu_cheats.h"
+#include "menu_gui.h"
 
 #include <tiny3d.h>
 #include <libfont.h>

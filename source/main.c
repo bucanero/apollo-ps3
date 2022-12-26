@@ -13,33 +13,13 @@
 #include <io/pad.h>
 
 #include "saves.h"
-#include "sfo.h"
 #include "pfd.h"
 #include "util.h"
 #include "common.h"
 
 //Menus
 #include "menu.h"
-#include "menu_about.h"
-#include "menu_options.h"
-#include "menu_cheats.h"
-
-enum menu_screen_ids
-{
-	MENU_MAIN_SCREEN,
-	MENU_TROPHIES,
-	MENU_USB_SAVES,
-	MENU_HDD_SAVES,
-	MENU_ONLINE_DB,
-	MENU_USER_BACKUP,
-	MENU_SETTINGS,
-	MENU_CREDITS,
-	MENU_PATCHES,
-	MENU_PATCH_VIEW,
-	MENU_CODE_OPTIONS,
-	MENU_SAVE_DETAILS,
-	TOTAL_MENU_IDS
-};
+#include "menu_gui.h"
 
 //Font
 #include "libfont.h"
@@ -55,10 +35,13 @@ enum menu_screen_ids
 #define SAMPLING_FREQ       48000 /* 48khz. */
 #define AUDIO_SAMPLES       SAMPLING_FREQ * 2 /* audio buffer to decode (for 48000 samples x 0.5 seconds and 16 bit stereo as reference) */
 
+static short *background_music[2] = {NULL, NULL};
+static xmp_context xmp = NULL;
+
 // SPU
-u32 inited;
-u32 spu = 0;
-sysSpuImage spu_image;
+static u32 inited;
+static u32 spu = 0;
+static sysSpuImage spu_image;
 
 #define INITED_CALLBACK     1
 #define INITED_SPU          2
@@ -74,17 +57,6 @@ sysSpuImage spu_image;
 	   menu_textures[name##_##type##_index].size = name##_##type##_size; \
 	   LoadTexture(name##_##type##_index); \
 	})
-
-#define ANALOG_CENTER       0x78
-#define ANALOG_THRESHOLD    0x68
-#define ANALOG_MIN          (ANALOG_CENTER - ANALOG_THRESHOLD)
-#define ANALOG_MAX          (ANALOG_CENTER + ANALOG_THRESHOLD)
-
-//Pad stuff
-padInfo padinfo;
-padData paddata[MAX_PADS];
-padData padA[MAX_PADS];
-padData padB[MAX_PADS];
 
 void update_usb_path(char *p);
 void update_hdd_path(char *p);
@@ -103,49 +75,10 @@ app_config_t apollo_config = {
     .account_id = 0,
 };
 
-int menu_options_maxopt = 0;
-int * menu_options_maxsel;
-
 int close_app = 0;
 int idle_time = 0;                          // Set by readPad
 
 png_texture * menu_textures;                // png_texture array for main menu, initialized in LoadTexture
-
-
-const char * menu_about_strings[] = { "Bucanero", "Developer",
-									"Berion", "GUI design",
-									"Dnawrkshp", "Artemis code",
-									"flatz", "PFD/SFO tools",
-									"aldostools", "Bruteforce Save Data",
-									NULL, NULL };
-
-char user_id_str[9] = "00000000";
-char idps_str[SFO_PSID_SIZE*2+2] = "0000000000000000 0000000000000000";
-char psid_str[SFO_PSID_SIZE*2+2] = "0000000000000000 0000000000000000";
-char account_id_str[SFO_ACCOUNT_ID_SIZE+1] = "0000000000000000";
-
-const char * menu_about_strings_project[] = { "User ID", user_id_str,
-											"Account ID", account_id_str,
-											idps_str, psid_str,
-											NULL, NULL };
-
-/*
-* 0 - Main Menu
-* 1 - Trophies
-* 2 - USB Menu (User List)
-* 3 - HDD Menu (User List)
-* 4 - Online Menu (Online List)
-* 5 - User Backup
-* 6 - Options Menu
-* 7 - About Menu
-* 8 - Code Menu (Select Cheats)
-* 9 - Code Menu (View Cheat)
-* 10 - Code Menu (View Cheat Options)
-*/
-int menu_id = 0;												// Menu currently in
-int menu_sel = 0;												// Index of selected item (use varies per menu)
-int menu_old_sel[TOTAL_MENU_IDS] = { 0 };						// Previous menu_sel for each menu
-int last_menu_id[TOTAL_MENU_IDS] = { 0 };						// Last menu id called (for returning)
 
 const char * menu_pad_help[TOTAL_MENU_IDS] = { NULL,												//Main
 								"\x10 Select    \x13 Back    \x12 Details    \x11 Refresh",			//Trophy list
@@ -226,11 +159,7 @@ save_list_t user_backup = {
     .UpdatePath = NULL,
 };
 
-save_entry_t* selected_entry;
-code_entry_t* selected_centry;
-int option_index = 0;
-
-void release_all()
+static void release_all()
 {	
 	if(inited & INITED_CALLBACK)
 		sysUtilUnregisterCallback(SYSUTIL_EVENT_SLOT0);
@@ -272,189 +201,26 @@ static void sys_callback(uint64_t status, uint64_t param, void* userdata)
 	}
 }
 
-int pad_time = 0, rest_time = 0, pad_held_time = 0, rest_held_time = 0;
-u16 oldPad = 0;
-
-int readPad(int port)
-{
-	ioPadGetInfo(&padinfo);
-	int off = 2;
-	int retDPAD = 0, retREST = 0;
-	u8 dpad = 0, _dpad = 0;
-	u16 rest = 0, _rest = 0;
-	
-	if(padinfo.status[port])
-	{
-		ioPadGetData(port, &padA[port]);
-		
-		if (padA[port].ANA_L_V < ANALOG_MIN)
-			padA[port].BTN_UP = 1;
-			
-		if (padA[port].ANA_L_V > ANALOG_MAX)
-			padA[port].BTN_DOWN = 1;
-			
-		if (padA[port].ANA_L_H < ANALOG_MIN)
-			padA[port].BTN_LEFT = 1;
-			
-		if (padA[port].ANA_L_H > ANALOG_MAX)
-			padA[port].BTN_RIGHT = 1;
-
-		//new
-		dpad = ((char)*(&padA[port].zeroes + off) << 8) >> 12;
-		rest = ((((char)*(&padA[port].zeroes + off) & 0xF) << 8) | ((char)*(&padA[port].zeroes + off + 1) << 0));
-		
-		//old
-		_dpad = ((char)*(&padB[port].zeroes + off) << 8) >> 12;
-		_rest = ((((char)*(&padB[port].zeroes + off) & 0xF) << 8) | ((char)*(&padB[port].zeroes + off + 1) << 0));
-		
-		if (dpad == 0 && rest == 0)
-			idle_time++;
-		else
-			idle_time = 0;
-		
-		//Copy new to old
-		//memcpy(&_paddata[port].zeroes + off, &paddata[port].zeroes + off, size);
-		memcpy(paddata, padA, sizeof(padData));
-		memcpy(padB, padA, sizeof(padData));
-		
-		//DPad has 3 mode input delay
-		if (dpad == _dpad && dpad != 0)
-		{
-			if (pad_time > 0) //dpad delay
-			{
-				pad_held_time++;
-				pad_time--;
-				retDPAD = 0;
-			}
-			else
-			{
-				//So the pad speeds up after a certain amount of time being held
-				if (pad_held_time > 180)
-				{
-					pad_time = 2;
-				}
-				else if (pad_held_time > 60)
-				{
-					pad_time = 5;
-				}
-				else
-					pad_time = 20;
-				
-				retDPAD = 1;
-			}
-		}
-		else
-		{
-			pad_held_time = 0;
-			pad_time = 0;
-		}
-		
-		//rest has its own delay
-		if (rest == _rest && rest != 0)
-		{
-			if (rest_time > 0) //rest delay
-			{
-				rest_held_time++;
-				rest_time--;
-				retREST = 0;
-			}
-			else
-			{
-				//So the pad speeds up after a certain amount of time being held
-				if (rest_held_time > 180)
-				{
-					rest_time = 2;
-				}
-				else if (rest_held_time > 60)
-				{
-					rest_time = 5;
-				}
-				else
-					rest_time = 20;
-				
-				retREST = 1;
-			}
-		}
-		else
-		{
-			rest_held_time = 0;
-			rest_time = 0;
-		}
-		
-	}
-	
-	if (!retDPAD && !retREST)
-		return 0;
-	
-	if (!retDPAD)
-	{
-		paddata[port].BTN_LEFT = 0;
-		paddata[port].BTN_RIGHT = 0;
-		paddata[port].BTN_UP = 0;
-		paddata[port].BTN_DOWN = 0;
-	}
-	
-	if (!retREST)
-	{
-		paddata[port].BTN_L2 = 0;
-		paddata[port].BTN_R2 = 0;
-		paddata[port].BTN_L1 = 0;
-		paddata[port].BTN_R1 = 0;
-		paddata[port].BTN_TRIANGLE = 0; 
-		paddata[port].BTN_CIRCLE = 0;
-		paddata[port].BTN_CROSS = 0;
-		paddata[port].BTN_SQUARE = 0;
-		paddata[port].BTN_SELECT = 0;
-		paddata[port].BTN_L3 = 0;
-		paddata[port].BTN_R3 = 0;
-		paddata[port].BTN_START = 0;
-	}
-	
-	return 1;
-}
-
-void copyTexture(int cnt)
-{
-	// copy texture datas from PNG to the RSX memory allocated for textures
-	if (menu_textures[cnt].texture.bmp_out)
-	{
-		memcpy(free_mem, menu_textures[cnt].texture.bmp_out, menu_textures[cnt].texture.pitch * menu_textures[cnt].texture.height);
-		free(menu_textures[cnt].texture.bmp_out); // free the PNG because i don't need this datas
-		menu_textures[cnt].texture_off = tiny3d_TextureOffset(free_mem);      // get the offset (RSX use offset instead address)
-		free_mem += ((menu_textures[cnt].texture.pitch * menu_textures[cnt].texture.height + 15) & ~15) / 4; // aligned to 16 bytes (it is u32) and update the pointer
-	}
-}
-
-void LoadTexture(int idx)
+static void LoadTexture(int idx)
 {
 	pngLoadFromBuffer(menu_textures[idx].buffer, menu_textures[idx].size, &menu_textures[idx].texture);
 	copyTexture(idx);
 }
 
-void LoadImageFontTexture(const u8* rawData, uint16_t unicode, int idx)
+static void LoadImageFontTexture(const u8* rawData, uint16_t unicode, int idx)
 {
 	menu_textures[idx].size = LoadImageFontEntry(rawData, unicode, &menu_textures[idx].texture);
 	copyTexture(idx);
 }
 
-void LoadFileTexture(const char* fname, int idx)
-{
-	if (!menu_textures[idx].buffer)
-		menu_textures[idx].buffer = free_mem;
-
-	pngLoadFromFile(fname, &menu_textures[idx].texture);
-	copyTexture(idx);
-
-	menu_textures[idx].size = 1;
-	free_mem = (u32*) menu_textures[idx].buffer;
-}
-
 // Used only in initialization. Allocates 64 mb for textures and loads the font
-void LoadTextures_Menu()
+static void LoadTextures_Menu()
 {
 	texture_mem = tiny3d_AllocTexture(64*1024*1024); // alloc 64MB of space for textures (this pointer can be global)
+	menu_textures = (png_texture *)calloc(TOTAL_MENU_TEXTURES, sizeof(png_texture));
 	
-	if(!texture_mem) return; // fail!
+	if(!texture_mem || !menu_textures)
+		return; // fail!
 	
 	ResetFont();
 	free_mem = (u32 *) AddFontFromBitmapArray((u8 *) data_font_Adonais, (u8 *) texture_mem, 0x20, 0x7e, 32, 31, 1, BIT7_FIRST_PIXEL);
@@ -469,10 +235,7 @@ void LoadTextures_Menu()
 	
 	set_ttf_window(0, 0, 848 + apollo_config.marginH, 512 + apollo_config.marginV, WIN_SKIP_LF);
 //	TTFUnloadFont();
-	
-	if (!menu_textures)
-		menu_textures = (png_texture *)malloc(sizeof(png_texture) * TOTAL_MENU_TEXTURES);
-	
+
 	//Init Main Menu textures
 	load_menu_texture(bgimg, png);
 	load_menu_texture(cheat, png);
@@ -555,17 +318,20 @@ void LoadTextures_Menu()
 		free(imagefont);
 	}
 
-	menu_textures[icon_png_file_index].buffer = NULL;
-	LoadFileTexture(APOLLO_PATH "../ICON0.PNG", icon_png_file_index);
+	menu_textures[icon_png_file_index].buffer = free_mem;
+	menu_textures[icon_png_file_index].size = 1;
+	menu_textures[icon_png_file_index].texture.height = 176;
+	menu_textures[icon_png_file_index].texture.pitch = (320*4);
+	menu_textures[icon_png_file_index].texture.bmp_out = calloc(320 * 176, sizeof(u32));
+
+	copyTexture(icon_png_file_index);
+	free_mem = (u32*) menu_textures[icon_png_file_index].buffer;
 
 	u32 tBytes = free_mem - texture_mem;
 	LOG("LoadTextures_Menu() :: Allocated %db (%.02fkb, %.02fmb) for textures", tBytes, tBytes / (float)1024, tBytes / (float)(1024 * 1024));
 }
 
-short *background_music[2] = {NULL, NULL};
-xmp_context xmp = NULL;
-
-void xmp_audio_callback(int voice)
+static void xmp_audio_callback(int voice)
 {
 	static int music_buffer = 0;
 
@@ -574,7 +340,7 @@ void xmp_audio_callback(int voice)
 	SND_AddVoice(voice, background_music[music_buffer], AUDIO_SAMPLES);
 }
 
-void LoadSounds()
+static void LoadSounds()
 {
 	//Initialize SPU
 	u32 entry = 0;
@@ -647,741 +413,7 @@ void update_trophy_path(char* path)
 	sprintf(path, TROPHY_PATH_HDD, apollo_config.user_id);
 }
 
-int ReloadUserSaves(save_list_t* save_list)
-{
-    init_loading_screen("Loading save games...");
-
-	if (save_list->list)
-	{
-		UnloadGameList(save_list->list);
-		save_list->list = NULL;
-	}
-
-	if (save_list->UpdatePath)
-		save_list->UpdatePath(save_list->path);
-
-	save_list->list = save_list->ReadList(save_list->path);
-	if (apollo_config.doSort)
-		list_bubbleSort(save_list->list, &sortSaveList_Compare);
-
-    stop_loading_screen();
-
-	if (!save_list->list)
-	{
-		show_message("No save-games found");
-		return 0;
-	}
-
-	return list_count(save_list->list);
-}
-
-code_entry_t* LoadRawPatch()
-{
-	char patchPath[256];
-	code_entry_t* centry = calloc(1, sizeof(code_entry_t));
-
-	centry->name = strdup(selected_entry->title_id);
-	snprintf(patchPath, sizeof(patchPath), APOLLO_DATA_PATH "%s.ps3savepatch", selected_entry->title_id);
-	centry->codes = readTextFile(patchPath, NULL);
-
-	return centry;
-}
-
-code_entry_t* LoadSaveDetails()
-{
-	char sfoPath[256];
-	code_entry_t* centry = calloc(1, sizeof(code_entry_t));
-
-	centry->name = strdup(selected_entry->title_id);
-
-	if (!(selected_entry->flags & SAVE_FLAG_PS3))
-	{
-		asprintf(&centry->codes, "%s\n\nTitle: %s\n", selected_entry->path, selected_entry->name);
-		return(centry);
-	}
-
-	snprintf(sfoPath, sizeof(sfoPath), "%s" "PARAM.SFO", selected_entry->path);
-	LOG("Save Details :: Reading %s...", sfoPath);
-
-	sfo_context_t* sfo = sfo_alloc();
-	if (sfo_read(sfo, sfoPath) < 0) {
-		LOG("Unable to read from '%s'", sfoPath);
-		sfo_free(sfo);
-		return centry;
-	}
-
-	if (selected_entry->flags & SAVE_FLAG_TROPHY)
-	{
-		char* account = (char*) sfo_get_param_value(sfo, "ACCOUNTID");
-		asprintf(&centry->codes, "%s\n\n"
-			"Title: %s\n"
-			"NP Comm ID: %s\n"
-			"Account ID: %.16s\n", selected_entry->path, selected_entry->name, selected_entry->title_id, account);
-		LOG(centry->codes);
-
-		sfo_free(sfo);
-		return(centry);
-	}
-
-	char* subtitle = (char*) sfo_get_param_value(sfo, "SUB_TITLE");
-	sfo_params_ids_t* param_ids = (sfo_params_ids_t*)(sfo_get_param_value(sfo, "PARAMS") + 0x1C);
-	param_ids->user_id = ES32(param_ids->user_id);
-
-    asprintf(&centry->codes, "%s\n\n"
-        "Title: %s\n"
-        "Sub-Title: %s\n"
-        "Lock: %s\n\n"
-        "User ID: %08d\n"
-        "Account ID: %.16s (%s)\n"
-        "PSID: %016lX %016lX\n", selected_entry->path, selected_entry->name, subtitle, 
-        (selected_entry->flags & SAVE_FLAG_LOCKED ? "Copying Prohibited" : "Unlocked"),
-        param_ids->user_id, param_ids->account_id, 
-        (selected_entry->flags & SAVE_FLAG_OWNER ? "Owner" : "Not Owner"),
-		param_ids->psid[0], param_ids->psid[1]);
-	LOG(centry->codes);
-
-	sfo_free(sfo);
-	return (centry);
-}
-
-void SetMenu(int id)
-{   
-	switch (menu_id) //Leaving menu
-	{
-		case MENU_MAIN_SCREEN: //Main Menu
-		case MENU_TROPHIES:
-		case MENU_USB_SAVES: //USB Saves Menu
-		case MENU_HDD_SAVES: //HHD Saves Menu
-		case MENU_ONLINE_DB: //Cheats Online Menu
-		case MENU_USER_BACKUP: //Backup Menu
-			menu_textures[icon_png_file_index].size = 0;
-			break;
-
-		case MENU_SETTINGS: //Options Menu
-		case MENU_CREDITS: //About Menu
-		case MENU_PATCHES: //Cheat Selection Menu
-			break;
-
-		case MENU_SAVE_DETAILS:
-		case MENU_PATCH_VIEW: //Cheat View Menu
-			if (apollo_config.doAni)
-				Draw_CheatsMenu_View_Ani_Exit();
-			break;
-
-		case MENU_CODE_OPTIONS: //Cheat Option Menu
-			if (apollo_config.doAni)
-				Draw_CheatsMenu_Options_Ani_Exit();
-			break;
-	}
-	
-	switch (id) //going to menu
-	{
-		case MENU_MAIN_SCREEN: //Main Menu
-			if (apollo_config.doAni || menu_id == MENU_MAIN_SCREEN) //if load animation
-				Draw_MainMenu_Ani();
-			break;
-
-		case MENU_TROPHIES: //Trophies Menu
-			if (!trophies.list && !ReloadUserSaves(&trophies))
-				return;
-
-			if (apollo_config.doAni)
-				Draw_UserCheatsMenu_Ani(&trophies);
-			break;
-
-		case MENU_USB_SAVES: //USB saves Menu
-			if (!usb_saves.list && !ReloadUserSaves(&usb_saves))
-				return;
-			
-			if (apollo_config.doAni)
-				Draw_UserCheatsMenu_Ani(&usb_saves);
-			break;
-
-		case MENU_HDD_SAVES: //HDD saves Menu
-			if (!hdd_saves.list)
-				ReloadUserSaves(&hdd_saves);
-			
-			if (apollo_config.doAni)
-				Draw_UserCheatsMenu_Ani(&hdd_saves);
-			break;
-
-		case MENU_ONLINE_DB: //Cheats Online Menu
-			if (!online_saves.list && !ReloadUserSaves(&online_saves))
-				return;
-
-			if (apollo_config.doAni)
-				Draw_UserCheatsMenu_Ani(&online_saves);
-			break;
-
-		case MENU_CREDITS: //About Menu
-			// set to display the PSID on the About menu
-			sprintf(idps_str, "%016lX %016lX", apollo_config.idps[0], apollo_config.idps[1]);
-			sprintf(psid_str, "%016lX %016lX", apollo_config.psid[0], apollo_config.psid[1]);
-			sprintf(user_id_str, "%08d", apollo_config.user_id);
-			sprintf(account_id_str, "%016lx", apollo_config.account_id);
-
-			if (apollo_config.doAni)
-				Draw_AboutMenu_Ani();
-			break;
-
-		case MENU_SETTINGS: //Options Menu
-			if (apollo_config.doAni)
-				Draw_OptionsMenu_Ani();
-			break;
-
-		case MENU_USER_BACKUP: //User Backup Menu
-			if (!user_backup.list)
-				ReloadUserSaves(&user_backup);
-
-			if (apollo_config.doAni)
-				Draw_UserCheatsMenu_Ani(&user_backup);
-			break;
-
-		case MENU_PATCHES: //Cheat Selection Menu
-			//if entering from game list, don't keep index, otherwise keep
-			if (menu_id == MENU_USB_SAVES || menu_id == MENU_HDD_SAVES || menu_id == MENU_ONLINE_DB || menu_id == MENU_TROPHIES)
-				menu_old_sel[MENU_PATCHES] = 0;
-
-			char iconfile[256];
-			snprintf(iconfile, sizeof(iconfile), "%s" "ICON0.PNG", selected_entry->path);
-
-			if (selected_entry->flags & SAVE_FLAG_ONLINE)
-			{
-				snprintf(iconfile, sizeof(iconfile), APOLLO_TMP_PATH "%s.PNG", selected_entry->title_id);
-
-				if (file_exists(iconfile) != SUCCESS)
-					http_download(selected_entry->path, "ICON0.PNG", iconfile, 0);
-			}
-
-			if (file_exists(iconfile) == SUCCESS)
-				LoadFileTexture(iconfile, icon_png_file_index);
-			else
-				menu_textures[icon_png_file_index].size = 0;
-
-			if (apollo_config.doAni && menu_id != MENU_PATCH_VIEW && menu_id != MENU_CODE_OPTIONS)
-				Draw_CheatsMenu_Selection_Ani();
-			break;
-
-		case MENU_PATCH_VIEW: //Cheat View Menu
-			menu_old_sel[MENU_PATCH_VIEW] = 0;
-			if (apollo_config.doAni)
-				Draw_CheatsMenu_View_Ani("Patch view");
-			break;
-
-		case MENU_SAVE_DETAILS: //Save Detail View Menu
-			if (apollo_config.doAni)
-				Draw_CheatsMenu_View_Ani(selected_entry->name);
-			break;
-
-		case MENU_CODE_OPTIONS: //Cheat Option Menu
-			menu_old_sel[MENU_CODE_OPTIONS] = 0;
-			if (apollo_config.doAni)
-				Draw_CheatsMenu_Options_Ani();
-			break;
-	}
-	
-	menu_old_sel[menu_id] = menu_sel;
-	if (last_menu_id[menu_id] != id)
-		last_menu_id[id] = menu_id;
-	menu_id = id;
-	
-	menu_sel = menu_old_sel[menu_id];
-}
-
-void move_letter_back(list_t * games)
-{
-	int i;
-	save_entry_t *game = list_get_item(games, menu_sel);
-	char ch = toupper(game->name[0]);
-
-	if ((ch > '\x29') && (ch < '\x40'))
-	{
-		menu_sel = 0;
-		return;
-	}
-
-	for (i = menu_sel; (i > 0) && (ch == toupper(game->name[0])); i--)
-	{
-		game = list_get_item(games, i-1);
-	}
-
-	menu_sel = i;
-}
-
-void move_letter_fwd(list_t * games)
-{
-	int i;
-	int game_count = list_count(games) - 1;
-	save_entry_t *game = list_get_item(games, menu_sel);
-	char ch = toupper(game->name[0]);
-
-	if (ch == 'Z')
-	{
-		menu_sel = game_count;
-		return;
-	}
-	
-	for (i = menu_sel; (i < game_count) && (ch == toupper(game->name[0])); i++)
-	{
-		game = list_get_item(games, i+1);
-	}
-
-	menu_sel = i;
-}
-
-void move_selection_back(int game_count, int steps)
-{
-	menu_sel -= steps;
-	if ((menu_sel == -1) && (steps == 1))
-		menu_sel = game_count - 1;
-	else if (menu_sel < 0)
-		menu_sel = 0;
-}
-
-void move_selection_fwd(int game_count, int steps)
-{
-	menu_sel += steps;
-	if ((menu_sel == game_count) && (steps == 1))
-		menu_sel = 0;
-	else if (menu_sel >= game_count)
-		menu_sel = game_count - 1;
-}
-
-void doSaveMenu(save_list_t * save_list)
-{
-    if(readPad(0))
-    {
-    	if(paddata[0].BTN_UP)
-    		move_selection_back(list_count(save_list->list), 1);
-    
-    	else if(paddata[0].BTN_DOWN)
-    		move_selection_fwd(list_count(save_list->list), 1);
-    
-    	else if (paddata[0].BTN_LEFT)
-    		move_selection_back(list_count(save_list->list), 5);
-    
-    	else if (paddata[0].BTN_L1)
-    		move_selection_back(list_count(save_list->list), 25);
-    
-    	else if (paddata[0].BTN_L2)
-    		move_letter_back(save_list->list);
-    
-    	else if (paddata[0].BTN_RIGHT)
-    		move_selection_fwd(list_count(save_list->list), 5);
-    
-    	else if (paddata[0].BTN_R1)
-    		move_selection_fwd(list_count(save_list->list), 25);
-    
-    	else if (paddata[0].BTN_R2)
-    		move_letter_fwd(save_list->list);
-    
-    	else if (paddata[0].BTN_CIRCLE)
-    	{
-    		SetMenu(MENU_MAIN_SCREEN);
-    		return;
-    	}
-    	else if (paddata[0].BTN_CROSS)
-    	{
-			selected_entry = list_get_item(save_list->list, menu_sel);
-
-    		if (!selected_entry->codes && !save_list->ReadCodes(selected_entry))
-    		{
-    			show_message("No data found in folder:\n%s", selected_entry->path);
-    			return;
-    		}
-
-    		if (apollo_config.doSort && 
-				((save_list->icon_id == cat_bup_png_index) || (save_list->icon_id == cat_db_png_index)))
-    			list_bubbleSort(selected_entry->codes, &sortCodeList_Compare);
-
-    		SetMenu(MENU_PATCHES);
-    		return;
-    	}
-    	else if (paddata[0].BTN_TRIANGLE && save_list->UpdatePath)
-    	{
-			selected_entry = list_get_item(save_list->list, menu_sel);
-			if (selected_entry->type != FILE_TYPE_MENU)
-			{
-				selected_centry = LoadSaveDetails();
-				SetMenu(MENU_SAVE_DETAILS);
-				return;
-			}
-    	}
-		else if (paddata[0].BTN_SELECT)
-		{
-			selected_entry = list_get_item(save_list->list, menu_sel);
-			if ((save_list->icon_id == cat_hdd_png_index || save_list->icon_id == cat_usb_png_index) &&
-				selected_entry->type != FILE_TYPE_MENU && (selected_entry->flags & SAVE_FLAG_PS3))
-				selected_entry->flags ^= SAVE_FLAG_SELECTED;
-		}
-		else if (paddata[0].BTN_SQUARE)
-		{
-			ReloadUserSaves(save_list);
-		}
-	}
-
-	Draw_UserCheatsMenu(save_list, menu_sel, 0xFF);
-}
-
-void doMainMenu()
-{
-	// Check the pads.
-	if (readPad(0))
-	{
-		if(paddata[0].BTN_LEFT)
-			move_selection_back(MENU_CREDITS, 1);
-
-		else if(paddata[0].BTN_RIGHT)
-			move_selection_fwd(MENU_CREDITS, 1);
-
-		else if (paddata[0].BTN_CROSS)
-		    SetMenu(menu_sel+1);
-
-		else if(paddata[0].BTN_CIRCLE && show_dialog(1, "Exit to XMB?"))
-			close_app = 1;
-	}
-	
-	Draw_MainMenu();
-}
-
-void doAboutMenu()
-{
-	// Check the pads.
-	if (readPad(0))
-	{
-		if (paddata[0].BTN_CIRCLE)
-		{
-			SetMenu(MENU_MAIN_SCREEN);
-			return;
-		}
-	}
-
-	Draw_AboutMenu();
-}
-
-void doOptionsMenu()
-{
-	// Check the pads.
-	if (readPad(0))
-	{
-		if(paddata[0].BTN_UP)
-			move_selection_back(menu_options_maxopt, 1);
-
-		else if(paddata[0].BTN_DOWN)
-			move_selection_fwd(menu_options_maxopt, 1);
-
-		else if (paddata[0].BTN_CIRCLE)
-		{
-			save_app_settings(&apollo_config);
-			set_ttf_window(0, 0, 848 + apollo_config.marginH, 512 + apollo_config.marginV, WIN_SKIP_LF);
-			SetMenu(MENU_MAIN_SCREEN);
-			return;
-		}
-		else if (paddata[0].BTN_LEFT)
-		{
-			if (menu_options[menu_sel].type == APP_OPTION_LIST)
-			{
-				if (*menu_options[menu_sel].value > 0)
-					(*menu_options[menu_sel].value)--;
-				else
-					*menu_options[menu_sel].value = menu_options_maxsel[menu_sel] - 1;
-			}
-			else if (menu_options[menu_sel].type == APP_OPTION_INC)
-				(*menu_options[menu_sel].value)--;
-			
-			if (menu_options[menu_sel].type != APP_OPTION_CALL)
-				menu_options[menu_sel].callback(*menu_options[menu_sel].value);
-		}
-		else if (paddata[0].BTN_RIGHT)
-		{
-			if (menu_options[menu_sel].type == APP_OPTION_LIST)
-			{
-				if (*menu_options[menu_sel].value < (menu_options_maxsel[menu_sel] - 1))
-					*menu_options[menu_sel].value += 1;
-				else
-					*menu_options[menu_sel].value = 0;
-			}
-			else if (menu_options[menu_sel].type == APP_OPTION_INC)
-				*menu_options[menu_sel].value += 1;
-
-			if (menu_options[menu_sel].type != APP_OPTION_CALL)
-				menu_options[menu_sel].callback(*menu_options[menu_sel].value);
-		}
-		else if (paddata[0].BTN_CROSS)
-		{
-			if (menu_options[menu_sel].type == APP_OPTION_BOOL)
-				menu_options[menu_sel].callback(*menu_options[menu_sel].value);
-
-			else if (menu_options[menu_sel].type == APP_OPTION_CALL)
-				menu_options[menu_sel].callback(0);
-		}
-	}
-	
-	Draw_OptionsMenu();
-}
-
-int count_code_lines()
-{
-	//Calc max
-	int max = 0;
-	const char * str;
-
-	for(str = selected_centry->codes; *str; ++str)
-		max += (*str == '\n');
-
-	if (max <= 0)
-		max = 1;
-
-	return max;
-}
-
-void doPatchViewMenu()
-{
-	int max = count_code_lines();
-	
-	// Check the pads.
-	if (readPad(0))
-	{
-		if(paddata[0].BTN_UP)
-			move_selection_back(max, 1);
-
-		else if(paddata[0].BTN_DOWN)
-			move_selection_fwd(max, 1);
-
-		else if (paddata[0].BTN_CIRCLE)
-		{
-			SetMenu(last_menu_id[MENU_PATCH_VIEW]);
-			return;
-		}
-	}
-	
-	Draw_CheatsMenu_View("Patch view");
-}
-
-void doCodeOptionsMenu()
-{
-    code_entry_t* code = list_get_item(selected_entry->codes, menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]);
-	// Check the pads.
-	if (readPad(0))
-	{
-		if(paddata[0].BTN_UP)
-			move_selection_back(selected_centry->options[option_index].size, 1);
-
-		else if(paddata[0].BTN_DOWN)
-			move_selection_fwd(selected_centry->options[option_index].size, 1);
-
-		else if (paddata[0].BTN_CIRCLE)
-		{
-			code->activated = 0;
-			SetMenu(last_menu_id[MENU_CODE_OPTIONS]);
-			return;
-		}
-		else if (paddata[0].BTN_CROSS)
-		{
-			code->options[option_index].sel = menu_sel;
-
-			if (code->type == PATCH_COMMAND)
-				execCodeCommand(code, code->options[option_index].value[menu_sel]);
-
-			option_index++;
-			
-			if (option_index >= code->options_count)
-			{
-				SetMenu(last_menu_id[MENU_CODE_OPTIONS]);
-				return;
-			}
-			else
-				menu_sel = 0;
-		}
-	}
-	
-	Draw_CheatsMenu_Options();
-}
-
-void doSaveDetailsMenu()
-{
-	int max = count_code_lines();
-
-	// Check the pads.
-	if (readPad(0))
-	{
-		if(paddata[0].BTN_UP)
-			move_selection_back(max, 1);
-
-		else if(paddata[0].BTN_DOWN)
-			move_selection_fwd(max, 1);
-
-		if (paddata[0].BTN_CIRCLE)
-		{
-			if (selected_centry->name)
-				free(selected_centry->name);
-			if (selected_centry->codes)
-				free(selected_centry->codes);
-			free(selected_centry);
-
-			SetMenu(last_menu_id[MENU_SAVE_DETAILS]);
-			return;
-		}
-	}
-	
-	Draw_CheatsMenu_View(selected_entry->name);
-}
-
-void doPatchMenu()
-{
-	// Check the pads.
-	if (readPad(0))
-	{
-		if(paddata[0].BTN_UP)
-			move_selection_back(list_count(selected_entry->codes), 1);
-
-		else if(paddata[0].BTN_DOWN)
-			move_selection_fwd(list_count(selected_entry->codes), 1);
-
-		else if (paddata[0].BTN_LEFT)
-			move_selection_back(list_count(selected_entry->codes), 5);
-
-		else if (paddata[0].BTN_RIGHT)
-			move_selection_fwd(list_count(selected_entry->codes), 5);
-
-		else if (paddata[0].BTN_L1)
-			move_selection_back(list_count(selected_entry->codes), 25);
-
-		else if (paddata[0].BTN_R1)
-			move_selection_fwd(list_count(selected_entry->codes), 25);
-
-		else if (paddata[0].BTN_CIRCLE)
-		{
-			SetMenu(last_menu_id[MENU_PATCHES]);
-			return;
-		}
-		else if (paddata[0].BTN_CROSS)
-		{
-			selected_centry = list_get_item(selected_entry->codes, menu_sel);
-
-			if (selected_centry->type != PATCH_NULL)
-				selected_centry->activated = !selected_centry->activated;
-
-			if (selected_centry->type == PATCH_COMMAND)
-				execCodeCommand(selected_centry, selected_centry->codes);
-
-			if (selected_centry->activated)
-			{
-				// Only activate Required codes if a cheat is selected
-				if (selected_centry->type == PATCH_GAMEGENIE || selected_centry->type == PATCH_BSD)
-				{
-					code_entry_t* code;
-					list_node_t* node;
-
-					for (node = list_head(selected_entry->codes); (code = list_get(node)); node = list_next(node))
-						if (wildcard_match_icase(code->name, "*(REQUIRED)*"))
-							code->activated = 1;
-				}
-				/*
-				if (!selected_centry->options)
-				{
-					int size;
-					selected_entry->codes[menu_sel].options = ReadOptions(selected_entry->codes[menu_sel], &size);
-					selected_entry->codes[menu_sel].options_count = size;
-				}
-				*/
-				
-				if (selected_centry->options)
-				{
-					option_index = 0;
-					SetMenu(MENU_CODE_OPTIONS);
-					return;
-				}
-
-				if (selected_centry->codes[0] == CMD_VIEW_RAW_PATCH)
-				{
-					selected_centry->activated = 0;
-					selected_centry = LoadRawPatch();
-					SetMenu(MENU_SAVE_DETAILS);
-					return;
-				}
-
-				if (selected_centry->codes[0] == CMD_VIEW_DETAILS)
-				{
-					selected_centry->activated = 0;
-					selected_centry = LoadSaveDetails();
-					SetMenu(MENU_SAVE_DETAILS);
-					return;
-				}
-			}
-		}
-		else if (paddata[0].BTN_TRIANGLE)
-		{
-			selected_centry = list_get_item(selected_entry->codes, menu_sel);
-
-			if (selected_centry->type == PATCH_GAMEGENIE || selected_centry->type == PATCH_BSD ||
-				selected_centry->type == PATCH_TROP_LOCK || selected_centry->type == PATCH_TROP_UNLOCK)
-			{
-				SetMenu(MENU_PATCH_VIEW);
-				return;
-			}
-		}
-	}
-	
-	Draw_CheatsMenu_Selection(menu_sel, 0xFFFFFFFF);
-}
-
-// Resets new frame
-void drawScene()
-{
-	switch (menu_id)
-	{
-		case MENU_MAIN_SCREEN:
-			doMainMenu();
-			break;
-
-		case MENU_TROPHIES: //Trophies Menu
-			doSaveMenu(&trophies);
-			break;
-
-		case MENU_USB_SAVES: //USB Saves Menu
-			doSaveMenu(&usb_saves);
-			break;
-
-		case MENU_HDD_SAVES: //HDD Saves Menu
-			doSaveMenu(&hdd_saves);
-			break;
-
-		case MENU_ONLINE_DB: //Online Cheats Menu
-			doSaveMenu(&online_saves);
-			break;
-
-		case MENU_CREDITS: //About Menu
-			doAboutMenu();
-			break;
-
-		case MENU_SETTINGS: //Options Menu
-			doOptionsMenu();
-			break;
-
-		case MENU_USER_BACKUP: //User Backup Menu
-			doSaveMenu(&user_backup);
-			break;
-
-		case MENU_PATCHES: //Cheats Selection Menu
-			doPatchMenu();
-			break;
-
-		case MENU_PATCH_VIEW: //Cheat View Menu
-			doPatchViewMenu();
-			break;
-
-		case MENU_CODE_OPTIONS: //Cheat Option Menu
-			doCodeOptionsMenu();
-			break;
-
-		case MENU_SAVE_DETAILS: //Save Details Menu
-			doSaveDetailsMenu();
-			break;
-	}
-}
-
-void exiting()
+static void exiting()
 {
 	xmp_end_player(xmp);
 	xmp_release_module(xmp);
@@ -1391,7 +423,7 @@ void exiting()
 	sysModuleUnload(SYSMODULE_PNGDEC);
 }
 
-void registerSpecialChars()
+static void registerSpecialChars()
 {
 	// Register save tags
 	RegisterSpecialCharacter(CHAR_TAG_PS1, 2, 1.5, &menu_textures[tag_ps1_png_index]);
@@ -1474,22 +506,7 @@ s32 main(s32 argc, const char* argv[])
 	SetCurrentFont(0);
 
 	registerSpecialChars();
-
-	menu_options_maxopt = 0;
-	while (menu_options[menu_options_maxopt].name)
-		menu_options_maxopt++;
-	
-	menu_options_maxsel = (int *)calloc(1, menu_options_maxopt * sizeof(int));
-	
-	for (int i = 0; i < menu_options_maxopt; i++)
-	{
-		menu_options_maxsel[i] = 0;
-		if (menu_options[i].type == APP_OPTION_LIST)
-		{
-			while (menu_options[i].options[menu_options_maxsel[i]])
-				menu_options_maxsel[i]++;
-		}
-	}
+	initMenuOptions();
 
 	// Splash screen logo (fade-out)
 	drawSplashLogo(-1);
@@ -1499,9 +516,8 @@ s32 main(s32 argc, const char* argv[])
 	//Set options
 	music_callback(!apollo_config.music);
 	update_callback(!apollo_config.update);
-	*menu_options[8].value = menu_options_maxsel[8] - 1;
 
-	SetMenu(MENU_MAIN_SCREEN);
+	Draw_MainMenu_Ani();
 	
 	while (!close_app)
 	{       
@@ -1544,6 +560,7 @@ s32 main(s32 argc, const char* argv[])
 	}
 
 	release_all();
+	http_end();
 	if (file_exists("/dev_hdd0/mms/db.err") == SUCCESS)
 		sys_reboot();
 

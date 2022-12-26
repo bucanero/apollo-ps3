@@ -10,10 +10,20 @@
 
 #define JAR_COLUMNS 7
 
-/*
-    From sprite2D source
-    I'm not going to document them for that reason
-*/
+void copyTexture(int cnt)
+{
+	if (!menu_textures[cnt].texture.bmp_out)
+		return;
+
+	// copy texture data from PNG to the RSX memory allocated for textures
+	memcpy(free_mem, menu_textures[cnt].texture.bmp_out, menu_textures[cnt].texture.pitch * menu_textures[cnt].texture.height);
+	// free the PNG because i don't need this data
+	free(menu_textures[cnt].texture.bmp_out);
+	// get the offset (RSX use offset instead address)
+	menu_textures[cnt].texture_off = tiny3d_TextureOffset(free_mem);
+	// aligned to 16 bytes (it is u32) and update the pointer
+	free_mem += ((menu_textures[cnt].texture.pitch * menu_textures[cnt].texture.height + 15) & ~15) / 4;
+}
 
 // draw one background color in virtual 2D coordinates
 void DrawBackground2D(u32 rgba)
@@ -392,7 +402,7 @@ void drawJars(uint8_t alpha)
 	drawJar(jar_db_png_index, jar_db_png_x, jar_db_png_y, (alpha == 0xFF ? "Online DB" : ""), alpha);
 	
 	//User Backup
-	drawJar(jar_bup_png_index, jar_bup_png_x, jar_bup_png_y, (alpha == 0xFF ? "User Backup" : ""), alpha);
+	drawJar(jar_bup_png_index, jar_bup_png_x, jar_bup_png_y, (alpha == 0xFF ? "User Tools" : ""), alpha);
 
 	//Options
 	drawJar(jar_opt_png_index, jar_opt_png_x, jar_opt_png_y, (alpha == 0xFF ? "Settings" : ""), alpha);

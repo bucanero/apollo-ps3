@@ -5,7 +5,7 @@
 
 #include "saves.h"
 #include "menu.h"
-#include "menu_options.h"
+#include "menu_gui.h"
 
 #include <tiny3d.h>
 #include <libfont.h>
@@ -55,8 +55,7 @@ void _draw_OptionsMenu(u8 alpha)
         
         if (menu_sel == ind)
         {
-            int i = 0;
-            for (i = 0; i < 848; i++)
+            for (int i = 0; i < 848; i++)
 				DrawTexture(&menu_textures[mark_line_png_index], i, y_off, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
         }
         
@@ -67,8 +66,7 @@ void _draw_OptionsMenu(u8 alpha)
 
 void Draw_OptionsMenu_Ani()
 {
-    int ani = 0;
-    for (ani = 0; ani < MENU_ANI_MAX; ani++)
+    for (int ani = 0; ani < MENU_ANI_MAX; ani++)
     {
         tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
         tiny3d_AlphaTest(1, 0x0, TINY3D_ALPHA_FUNC_GEQUAL);
