@@ -1,4 +1,5 @@
 #include <net/net.h>
+#include <net/netctl.h>
 #include <sysmodule/sysmodule.h>
 
 #include <stdlib.h>
@@ -28,9 +29,21 @@ int http_init(void)
 		return HTTP_FAILED;
 	}
 
+	ret = sysModuleLoad(SYSMODULE_NETCTL);
+	if (ret < 0) {
+		LOG("Error: sysModuleLoad(SYSMODULE_NETCTL) (%X)", ret);
+		return HTTP_FAILED;
+	}
+
 	ret = netInitialize();
 	if (ret < 0) {
 		LOG("Error : netInitialize HTTP_FAILED (%x)", ret);
+		return HTTP_FAILED;
+	}
+
+	ret = netCtlInit();
+	if (ret < 0) {
+		LOG("Error: netCtlInit (%X)", ret);
 		return HTTP_FAILED;
 	}
 
@@ -43,6 +56,9 @@ void http_end(void)
 {
 	curl_global_cleanup();
 //	netDeinitialize();
+	netCtlTerm();
+
+	sysModuleUnload(SYSMODULE_NETCTL);
 	sysModuleUnload(SYSMODULE_NET);
 
 	return;

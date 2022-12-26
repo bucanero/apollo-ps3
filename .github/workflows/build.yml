@@ -9,19 +9,29 @@ jobs:
 
     - name: Checkout
       uses: actions/checkout@v3
-      with:
-        fetch-depth: 1
 
-    - name: Checkout Dependecies
-      run: |
-        git clone https://github.com/bucanero/dbglogger.git       --depth 1
-        git clone https://github.com/bucanero/apollo-lib.git      --depth 1
-        git clone https://github.com/bucanero/libxmp-lite-ps4.git --depth 1
+    - name: Checkout dbglogger
+      uses: actions/checkout@v3
+      with:
+        repository: bucanero/dbglogger
+        path: dbglogger
+
+    - name: Checkout apollo-lib
+      uses: actions/checkout@v3
+      with:
+        repository: bucanero/apollo-lib
+        path: apollo-lib
+
+    - name: Checkout libxmp-lite-ps4
+      uses: actions/checkout@v3
+      with:
+        repository: bucanero/libxmp-lite-ps4
+        path: libxmp-lite-ps4
 
     - name: Set env vars
       id: slug
       run: |
-        echo "::set-output name=sha8::$(echo ${GITHUB_SHA} | cut -c1-8)"
+        echo "sha_name=$(echo ${GITHUB_SHA} | cut -c1-8)" >> $GITHUB_ENV
         echo "pkg_file=apollo-ps3.pkg" >> $GITHUB_ENV
 
       # using pre-compiled sdk
@@ -54,7 +64,7 @@ jobs:
     - name: Push package artifact
       uses: actions/upload-artifact@v3
       with:
-        name: apollo-ps3-build_${{ steps.slug.outputs.sha8 }}
+        name: apollo-ps3-build_${{ env.sha_name }}
         path: ${{ env.pkg_file }}
         if-no-files-found: error
         # don't keep artifacts for too long

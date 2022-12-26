@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
+#include <net/netctl.h>
 #include <sysutil/sysutil.h>
 #include <polarssl/md5.h>
 
@@ -272,11 +273,14 @@ static int webReqHandler(const dWebRequest_t* req, char* outfile)
 
 static void enableWebServer(const save_entry_t* save, int port)
 {
-	LOG("Starting local web server for '%s'...", save->path);
+	union net_ctl_info ip_info;
+
+	netCtlGetInfo(NET_CTL_INFO_IP_ADDRESS, &ip_info);
+	LOG("Starting local web server %s:%d for '%s'...", ip_info.ip_address, port, save->path);
 
 	if (dbg_webserver_start(port, webReqHandler))
 	{
-		show_message("Web Server listening on port %d.\nPress OK to stop the Server.", port);
+		show_message("Web Server listening on http://%s:%d\nPress OK to stop the Server.", ip_info.ip_address, port);
 		dbg_webserver_stop();
 	}
 	else show_message("Error starting Web Server!");
