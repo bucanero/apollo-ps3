@@ -8,6 +8,7 @@
 #include "common.h"
 
 uint8_t owner_sel = 0;
+static char * sort_opt[] = {"Disabled", "by Name", "by Title ID", NULL};
 
 menu_option_t menu_options[] = {
 	{ .name = "\nBackground Music", 
@@ -16,17 +17,17 @@ menu_option_t menu_options[] = {
 		.value = &apollo_config.music, 
 		.callback = music_callback 
 	},
-	{ .name = "Sort Saves", 
-		.options = NULL, 
-		.type = APP_OPTION_BOOL, 
-		.value = &apollo_config.doSort, 
-		.callback = sort_callback 
-	},
 	{ .name = "Menu Animations", 
 		.options = NULL, 
 		.type = APP_OPTION_BOOL, 
 		.value = &apollo_config.doAni, 
 		.callback = ani_callback 
+	},
+	{ .name = "Sort Saves", 
+		.options = sort_opt,
+		.type = APP_OPTION_LIST,
+		.value = &apollo_config.doSort,
+		.callback = sort_callback
 	},
 	{ .name = "Screen Horizontal Margin", 
 		.options = NULL, 
@@ -88,7 +89,7 @@ void music_callback(int sel)
 
 void sort_callback(int sel)
 {
-	apollo_config.doSort = !sel;
+	apollo_config.doSort = sel;
 }
 
 void ani_callback(int sel)

@@ -81,8 +81,10 @@ static int ReloadUserSaves(save_list_t* save_list)
 		save_list->UpdatePath(save_list->path);
 
 	save_list->list = save_list->ReadList(save_list->path);
-	if (apollo_config.doSort)
+	if (apollo_config.doSort == SORT_BY_NAME)
 		list_bubbleSort(save_list->list, &sortSaveList_Compare);
+	else if (apollo_config.doSort == SORT_BY_TITLE_ID)
+		list_bubbleSort(save_list->list, &sortSaveList_Compare_TitleID);
 
 	stop_loading_screen();
 

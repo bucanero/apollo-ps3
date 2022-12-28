@@ -275,6 +275,7 @@ static void enableWebServer(const save_entry_t* save, int port)
 {
 	union net_ctl_info ip_info;
 
+	memset(&ip_info, 0, sizeof(ip_info));
 	netCtlGetInfo(NET_CTL_INFO_IP_ADDRESS, &ip_info);
 	LOG("Starting local web server %s:%d for '%s'...", ip_info.ip_address, port, save->path);
 

@@ -32,7 +32,6 @@ jobs:
       id: slug
       run: |
         echo "sha_name=$(echo ${GITHUB_SHA} | cut -c1-8)" >> $GITHUB_ENV
-        echo "pkg_file=apollo-ps3.pkg" >> $GITHUB_ENV
 
       # using pre-compiled sdk
     - name: Download PSL1GHT Toolchain
@@ -65,7 +64,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: apollo-ps3-build_${{ env.sha_name }}
-        path: ${{ env.pkg_file }}
+        path: apollo-ps3.pkg
         if-no-files-found: error
         # don't keep artifacts for too long
         retention-days: 7

@@ -15,7 +15,7 @@
 
 #define HTTP_USER_AGENT "Mozilla/5.0 (PLAYSTATION 3; 1.00)"
 
-uint64_t prog_bar1_value=0;
+static uint64_t prog_bar1_value=0;
 
 
 int http_init(void)
