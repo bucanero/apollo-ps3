@@ -304,47 +304,6 @@ static void SetMenu(int id)
 	menu_sel = menu_old_sel[menu_id];
 }
 
-static void move_letter_back(list_t * games)
-{
-	int i;
-	save_entry_t *game = list_get_item(games, menu_sel);
-	char ch = toupper(game->name[0]);
-
-	if ((ch > '\x29') && (ch < '\x40'))
-	{
-		menu_sel = 0;
-		return;
-	}
-
-	for (i = menu_sel; (i > 0) && (ch == toupper(game->name[0])); i--)
-	{
-		game = list_get_item(games, i-1);
-	}
-
-	menu_sel = i;
-}
-
-static void move_letter_fwd(list_t * games)
-{
-	int i;
-	int game_count = list_count(games) - 1;
-	save_entry_t *game = list_get_item(games, menu_sel);
-	char ch = toupper(game->name[0]);
-
-	if (ch == 'Z')
-	{
-		menu_sel = game_count;
-		return;
-	}
-	
-	for (i = menu_sel; (i < game_count) && (ch == toupper(game->name[0])); i++)
-	{
-		game = list_get_item(games, i+1);
-	}
-
-	menu_sel = i;
-}
-
 static void move_selection_back(int game_count, int steps)
 {
 	menu_sel -= steps;
@@ -363,33 +322,43 @@ static void move_selection_fwd(int game_count, int steps)
 		menu_sel = game_count - 1;
 }
 
+static int updatePadSelection(int total)
+{
+	if(paddata[0].BTN_UP)
+		move_selection_back(total, 1);
+
+	else if(paddata[0].BTN_DOWN)
+		move_selection_fwd(total, 1);
+
+	else if (paddata[0].BTN_LEFT)
+		move_selection_back(total, 5);
+
+	else if (paddata[0].BTN_L1)
+		move_selection_back(total, 25);
+
+	else if (paddata[0].BTN_L2)
+		menu_sel = 0;
+
+	else if (paddata[0].BTN_RIGHT)
+		move_selection_fwd(total, 5);
+
+	else if (paddata[0].BTN_R1)
+		move_selection_fwd(total, 25);
+
+	else if (paddata[0].BTN_R2)
+		menu_sel = total - 1;
+
+	else return 0;
+
+	return 1;
+}
+
 static void doSaveMenu(save_list_t * save_list)
 {
 	if(readPad(0))
 	{
-		if(paddata[0].BTN_UP)
-			move_selection_back(list_count(save_list->list), 1);
-	
-		else if(paddata[0].BTN_DOWN)
-			move_selection_fwd(list_count(save_list->list), 1);
-	
-		else if (paddata[0].BTN_LEFT)
-			move_selection_back(list_count(save_list->list), 5);
-	
-		else if (paddata[0].BTN_L1)
-			move_selection_back(list_count(save_list->list), 25);
-	
-		else if (paddata[0].BTN_L2)
-			move_letter_back(save_list->list);
-	
-		else if (paddata[0].BTN_RIGHT)
-			move_selection_fwd(list_count(save_list->list), 5);
-	
-		else if (paddata[0].BTN_R1)
-			move_selection_fwd(list_count(save_list->list), 25);
-	
-		else if (paddata[0].BTN_R2)
-			move_letter_fwd(save_list->list);
+		if (updatePadSelection(list_count(save_list->list)))
+			(void)0;
 	
 		else if (paddata[0].BTN_CIRCLE)
 		{
@@ -553,16 +522,11 @@ static int count_code_lines()
 
 static void doPatchViewMenu()
 {
-	int max = count_code_lines();
-	
 	// Check the pads.
 	if (readPad(0))
 	{
-		if(paddata[0].BTN_UP)
-			move_selection_back(max, 1);
-
-		else if(paddata[0].BTN_DOWN)
-			move_selection_fwd(max, 1);
+		if (updatePadSelection(count_code_lines()))
+			(void)0;
 
 		else if (paddata[0].BTN_CIRCLE)
 		{
@@ -616,16 +580,11 @@ static void doCodeOptionsMenu()
 
 static void doSaveDetailsMenu()
 {
-	int max = count_code_lines();
-
 	// Check the pads.
 	if (readPad(0))
 	{
-		if(paddata[0].BTN_UP)
-			move_selection_back(max, 1);
-
-		else if(paddata[0].BTN_DOWN)
-			move_selection_fwd(max, 1);
+		if (updatePadSelection(count_code_lines()))
+			(void)0;
 
 		if (paddata[0].BTN_CIRCLE)
 		{
@@ -648,23 +607,8 @@ static void doPatchMenu()
 	// Check the pads.
 	if (readPad(0))
 	{
-		if(paddata[0].BTN_UP)
-			move_selection_back(list_count(selected_entry->codes), 1);
-
-		else if(paddata[0].BTN_DOWN)
-			move_selection_fwd(list_count(selected_entry->codes), 1);
-
-		else if (paddata[0].BTN_LEFT)
-			move_selection_back(list_count(selected_entry->codes), 5);
-
-		else if (paddata[0].BTN_RIGHT)
-			move_selection_fwd(list_count(selected_entry->codes), 5);
-
-		else if (paddata[0].BTN_L1)
-			move_selection_back(list_count(selected_entry->codes), 25);
-
-		else if (paddata[0].BTN_R1)
-			move_selection_fwd(list_count(selected_entry->codes), 25);
+		if (updatePadSelection(list_count(selected_entry->codes)))
+			(void)0;
 
 		else if (paddata[0].BTN_CIRCLE)
 		{
