@@ -1375,7 +1375,7 @@ list_t * ReadUserList(const char* userPath)
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Resign & Unlock selected Saves", CMD_RESIGN_SAVES);
 	list_append(item->codes, cmd);
 
-	if (strncmp(userPath, "/dev_hdd0/", 10) == 0)
+	if (strncmp(userPath, USER_PATH_HDD, 15) == 0)
 	{
 		asprintf(&item->path, SAVES_PATH_HDD, apollo_config.user_id);
 

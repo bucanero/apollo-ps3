@@ -2,8 +2,9 @@
 #include <dbglogger.h>
 #define LOG dbglogger_log
 
+#define PS3_TMP_PATH			"/dev_hdd0/tmp/"
 #define APOLLO_PATH				"/dev_hdd0/game/NP0APOLLO/USRDIR/"
-#define APOLLO_TMP_PATH			"/dev_hdd0/tmp/apollo/"
+#define APOLLO_TMP_PATH			PS3_TMP_PATH "apollo/"
 #define APOLLO_DATA_PATH		APOLLO_PATH "DATA/"
 #define APOLLO_LOCAL_CACHE		APOLLO_PATH "CACHE/"
 #define APOLLO_UPDATE_URL		"https://api.github.com/repos/bucanero/apollo-ps3/releases/latest"
@@ -12,6 +13,7 @@
 #define USB0_PATH               "/dev_usb000/"
 #define USB1_PATH               "/dev_usb001/"
 #define USB_PATH                "/dev_usb%03d/"
+#define FAKE_USB_PATH           PS3_TMP_PATH "fakeusb/"
 #define USER_PATH_HDD			"/dev_hdd0/home/%08d/"
 
 #define PS3_SAVES_PATH_USB      "PS3/SAVEDATA/"

@@ -400,7 +400,11 @@ void update_usb_path(char* path)
 			return;
 	}
 
-	strcpy(path, "");
+	sprintf(path, FAKE_USB_PATH);
+	if (dir_exists(path) == SUCCESS)
+		return;
+
+	path[0] = 0;
 }
 
 void update_hdd_path(char* path)
