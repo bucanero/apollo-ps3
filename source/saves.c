@@ -117,9 +117,9 @@ option_entry_t* _createOptions(int count, const char* name, char value)
 	option_entry_t* options = _initOptions(count);
 
 	asprintf(&options->name[0], "%s %d", name, 0);
-	asprintf(&options->value[0], "%c%c", value, 0);
+	asprintf(&options->value[0], "%c%c", value, STORAGE_USB0);
 	asprintf(&options->name[1], "%s %d", name, 1);
-	asprintf(&options->value[1], "%c%c", value, 1);
+	asprintf(&options->value[1], "%c%c", value, STORAGE_USB1);
 
 	return options;
 }
@@ -672,7 +672,9 @@ int ReadOnlineSaves(save_entry_t * game)
 			asprintf(&item->file, "%.12s", content);
 
 			item->options_count = 1;
-			item->options = _createOptions(2, "Download to USB", CMD_DOWNLOAD_USB);
+			item->options = _createOptions(3, "Download to USB", CMD_DOWNLOAD_USB);
+			asprintf(&item->options->name[2], "Download to HDD");
+			asprintf(&item->options->value[2], "%c%c", CMD_DOWNLOAD_USB, STORAGE_HDD);
 			list_append(game->codes, item);
 
 			LOG("[%s%s] %s", game->path, item->file, item->name + 1);
@@ -749,7 +751,7 @@ list_t * ReadBackupList(const char* userPath)
 	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " Export /dev_flash2");
 	item->path = strdup("/dev_flash2/");
 	item->codes = list_alloc();
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " Zip /dev_flash2 to USB", CMD_CODE_NULL);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " Backup /dev_flash2 to USB", CMD_CODE_NULL);
 	cmd->options_count = 1;
 	cmd->options = _createOptions(2, "Save dev_flash2.zip to USB", CMD_EXP_FLASH2_USB);
 	list_append(item->codes, cmd);
