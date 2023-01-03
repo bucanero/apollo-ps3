@@ -38,7 +38,7 @@
  *	b:				Potential end
  * Return:			pointer if true, NULL if false
  */
-char* endsWith(const char * a, const char * b)
+static char* endsWith(const char * a, const char * b)
 {
 	int al = strlen(a), bl = strlen(b);
     
@@ -88,7 +88,7 @@ char * readTextFile(const char * path, long* size)
 	return string;
 }
 
-code_entry_t* _createCmdCode(uint8_t type, const char* name, char code)
+static code_entry_t* _createCmdCode(uint8_t type, const char* name, char code)
 {
 	code_entry_t* entry = (code_entry_t *)calloc(1, sizeof(code_entry_t));
 	entry->type = type;
@@ -98,7 +98,7 @@ code_entry_t* _createCmdCode(uint8_t type, const char* name, char code)
 	return entry;
 }
 
-option_entry_t* _initOptions(int count)
+static option_entry_t* _initOptions(int count)
 {
 	option_entry_t* options = (option_entry_t*)malloc(sizeof(option_entry_t));
 
@@ -112,7 +112,7 @@ option_entry_t* _initOptions(int count)
 	return options;
 }
 
-option_entry_t* _createOptions(int count, const char* name, char value)
+static option_entry_t* _createOptions(int count, const char* name, char value)
 {
 	option_entry_t* options = _initOptions(count);
 
@@ -124,7 +124,7 @@ option_entry_t* _createOptions(int count, const char* name, char value)
 	return options;
 }
 
-save_entry_t* _createSaveEntry(uint16_t flag, const char* name)
+static save_entry_t* _createSaveEntry(uint16_t flag, const char* name)
 {
 	save_entry_t* entry = (save_entry_t *)calloc(1, sizeof(save_entry_t));
 	entry->flags = flag;
@@ -133,7 +133,7 @@ save_entry_t* _createSaveEntry(uint16_t flag, const char* name)
 	return entry;
 }
 
-option_entry_t* _getFileOptions(const char* save_path, const char* mask, uint8_t is_cmd)
+static option_entry_t* _getFileOptions(const char* save_path, const char* mask, uint8_t is_cmd)
 {
 	DIR *d;
 	struct dirent *dir;
@@ -197,7 +197,7 @@ option_entry_t* _getFileOptions(const char* save_path, const char* mask, uint8_t
 	return opt;
 }
 
-void _addBackupCommands(save_entry_t* item)
+static void _addBackupCommands(save_entry_t* item)
 {
 	code_entry_t* cmd;
 
@@ -235,7 +235,7 @@ void _addBackupCommands(save_entry_t* item)
 	list_append(item->codes, cmd);
 }
 
-option_entry_t* _getSaveTitleIDs(const char* title_id)
+static option_entry_t* _getSaveTitleIDs(const char* title_id)
 {
 	int count = 1;
 	option_entry_t* opt;
@@ -272,7 +272,7 @@ option_entry_t* _getSaveTitleIDs(const char* title_id)
 	return opt;
 }
 
-void _addSfoCommands(save_entry_t* save)
+static void _addSfoCommands(save_entry_t* save)
 {
 	code_entry_t* cmd;
 
@@ -303,7 +303,7 @@ void _addSfoCommands(save_entry_t* save)
 	list_append(save->codes, cmd);
 }
 
-int set_psx_import_codes(save_entry_t* item)
+static int set_psx_import_codes(save_entry_t* item)
 {
 	code_entry_t* cmd;
 	item->codes = list_alloc();
@@ -319,7 +319,7 @@ int set_psx_import_codes(save_entry_t* item)
 	return list_count(item->codes);
 }
 
-int set_psp_codes(save_entry_t* item)
+static int set_psp_codes(save_entry_t* item)
 {
 	code_entry_t* cmd;
 	item->codes = list_alloc();
@@ -330,7 +330,7 @@ int set_psp_codes(save_entry_t* item)
 	return list_count(item->codes);
 }
 
-int set_psv_codes(save_entry_t* item)
+static int set_psv_codes(save_entry_t* item)
 {
 	code_entry_t* cmd;
 	item->codes = list_alloc();
@@ -358,7 +358,7 @@ int set_psv_codes(save_entry_t* item)
 	return list_count(item->codes);
 }
 
-int set_ps2_codes(save_entry_t* item)
+static int set_ps2_codes(save_entry_t* item)
 {
 	code_entry_t* cmd;
 	item->codes = list_alloc();
@@ -403,7 +403,7 @@ int set_ps2_codes(save_entry_t* item)
 	return list_count(item->codes);
 }
 
-option_entry_t* get_file_entries(const char* path, const char* mask)
+static option_entry_t* get_file_entries(const char* path, const char* mask)
 {
 	return _getFileOptions(path, mask, CMD_CODE_NULL);
 }
@@ -459,7 +459,7 @@ int ReadCodes(save_entry_t * save)
 	return list_count(save->codes);
 }
 
-char* _get_xml_node_value(xmlNode * a_node, const xmlChar* node_name)
+static char* _get_xml_node_value(xmlNode * a_node, const xmlChar* node_name)
 {
 	xmlNode *cur_node = NULL;
 	char *value = NULL;
@@ -674,7 +674,7 @@ int ReadOnlineSaves(save_entry_t * game)
 			item->options_count = 1;
 			item->options = _createOptions(3, "Download to USB", CMD_DOWNLOAD_USB);
 			asprintf(&item->options->name[2], "Download to HDD");
-			asprintf(&item->options->value[2], "%c%c", CMD_DOWNLOAD_USB, STORAGE_HDD);
+			asprintf(&item->options->value[2], "%c%c", CMD_DOWNLOAD_HDD, STORAGE_HDD);
 			list_append(game->codes, item);
 
 			LOG("[%s%s] %s", game->path, item->file, item->name + 1);
@@ -803,7 +803,7 @@ int get_iso_files(save_entry_t * item)
 	return list_count(item->codes);
 }
 
-int get_binenc_files(save_entry_t * item)
+static int get_binenc_files(save_entry_t * item)
 {
 	code_entry_t* cmd;
 	DIR *d;
@@ -845,7 +845,7 @@ int get_binenc_files(save_entry_t * item)
 	return list_count(item->codes);
 }
 
-int get_vm2_files(save_entry_t * item)
+static int get_vm2_files(save_entry_t * item)
 {
 	code_entry_t* cmd;
 	DIR *d;
@@ -885,7 +885,7 @@ int get_vm2_files(save_entry_t * item)
 	return list_count(item->codes);
 }
 
-int get_ps2_raw_files(save_entry_t * item)
+static int get_ps2_raw_files(save_entry_t * item)
 {
 	code_entry_t* cmd;
 	DIR *d;
@@ -1141,7 +1141,7 @@ int sortSaveList_Compare_TitleID(const void* a, const void* b)
 	return strcasecmp(ta, tb);
 }
 
-void read_savegames(const char* userPath, list_t *list, uint32_t flag)
+static void read_savegames(const char* userPath, list_t *list, uint32_t flag)
 {
 	DIR *d;
 	struct dirent *dir;
@@ -1198,7 +1198,7 @@ void read_savegames(const char* userPath, list_t *list, uint32_t flag)
 	closedir(d);
 }
 
-void read_psv_savegames(const char* userPath, list_t *list)
+static void read_psv_savegames(const char* userPath, list_t *list)
 {
 	DIR *d;
 	struct dirent *dir;
@@ -1258,7 +1258,7 @@ void read_psv_savegames(const char* userPath, list_t *list)
 	closedir(d);
 }
 
-void read_psx_savegames(const char* userPath, list_t *list)
+static void read_psx_savegames(const char* userPath, list_t *list)
 {
 	DIR *d;
 	struct dirent *dir;
@@ -1445,7 +1445,7 @@ list_t * ReadUserList(const char* userPath)
  *	gmc:			Set as the number of games read
  * Return:			Pointer to array of game_entry, null if failed
  */
-void _ReadOnlineListEx(const char* urlPath, uint16_t flag, list_t *list)
+static void _ReadOnlineListEx(const char* urlPath, uint16_t flag, list_t *list)
 {
 	save_entry_t *item;
 	char path[256];
@@ -1578,12 +1578,10 @@ list_t * ReadTrophyList(const char* userPath)
 		if (file_exists(filePath) == SUCCESS)
 		{
 			LOG("Reading %s...", filePath);
-
 			buffer = readTextFile(filePath, &bufferLen);
 
 			/*parse the file and get the DOM */
 			doc = xmlParseMemory(buffer + 0x40, bufferLen - 0x40);
-
 			if (!doc)
 			{
 				LOG("XML: could not parse file %s", filePath);

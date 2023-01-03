@@ -83,7 +83,7 @@ static uint32_t get_filename_id(const char* dir)
 	return tid;
 }
 
-static void zipSave(const char* exp_path)
+static void zipSave(const save_entry_t* entry, const char* exp_path)
 {
 	char* export_file;
 	char* tmp;
@@ -100,17 +100,17 @@ static void zipSave(const char* exp_path)
 	fid = get_filename_id(exp_path);
 	asprintf(&export_file, "%s%08d.zip", exp_path, fid);
 
-	asprintf(&tmp, selected_entry->path);
+	asprintf(&tmp, entry->path);
 	*strrchr(tmp, '/') = 0;
 	*strrchr(tmp, '/') = 0;
 
-	zip_directory(tmp, selected_entry->path, export_file);
+	zip_directory(tmp, entry->path, export_file);
 
 	sprintf(export_file, "%s%08d.txt", exp_path, fid);
 	FILE* f = fopen(export_file, "a");
 	if (f)
 	{
-		fprintf(f, "%08d.zip=[%s] %s\n", fid, selected_entry->title_id, selected_entry->name);
+		fprintf(f, "%08d.zip=[%s] %s\n", fid, entry->title_id, entry->name);
 		fclose(f);
 	}
 
@@ -841,7 +841,7 @@ static int apply_sfo_patches(save_entry_t* entry, sfo_patch_t* patch)
     u8 tmp_psid[SFO_PSID_SIZE];
     list_node_t* node;
 
-    for (node = list_head(selected_entry->codes); (code = list_get(node)); node = list_next(node))
+    for (node = list_head(entry->codes); (code = list_get(node)); node = list_next(node))
     {
         if (!code->activated || code->type != PATCH_SFO)
             continue;
@@ -1251,6 +1251,7 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_DOWNLOAD_USB:
+		case CMD_DOWNLOAD_HDD:
 			if (selected_entry->flags & SAVE_FLAG_PS3)
 				downloadSave(selected_entry, code->file, codecmd[1], PS3_SAVES_PATH_USB);
 			else
@@ -1260,12 +1261,12 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_EXPORT_ZIP_USB:
-			zipSave(codecmd[1] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0);
+			zipSave(selected_entry, codecmd[1] ? EXPORT_PATH_USB1 : EXPORT_PATH_USB0);
 			code->activated = 0;
 			break;
 
 		case CMD_EXPORT_ZIP_HDD:
-			zipSave(APOLLO_TMP_PATH);
+			zipSave(selected_entry, APOLLO_TMP_PATH);
 			code->activated = 0;
 			break;
 

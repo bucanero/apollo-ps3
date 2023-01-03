@@ -15,8 +15,6 @@
 
 #define HTTP_USER_AGENT "Mozilla/5.0 (PLAYSTATION 3; 1.00)"
 
-static uint64_t prog_bar1_value=0;
-
 
 int http_init(void)
 {
@@ -79,7 +77,6 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 	CURL *curl;
 	CURLcode res;
 	FILE* fd;
-	prog_bar1_value = 0;
 
 	curl = curl_easy_init();
 	if(!curl)
