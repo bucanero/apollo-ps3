@@ -67,17 +67,10 @@ void http_end(void)
 /* follow the CURLOPT_XFERINFOFUNCTION callback definition */
 static int update_progress(void *p, int64_t dltotal, int64_t dlnow, int64_t ultotal, int64_t ulnow)
 {
-	LOG("DL: %lld / %lld", dlnow, dltotal);
-	update_progress_bar(&prog_bar1_value, dltotal, (const char*) p);
+	LOG("DL: %ld / %ld", dlnow, dltotal);
+	update_progress_bar(dlnow, dltotal, (const char*) p);
 
 	return 0;
-}
-
-static size_t curl_write_file(void *contents, size_t size, size_t nmemb, void *userp)
-{
-	prog_bar1_value += (size * nmemb);
-
-	return fwrite(contents, size, nmemb, userp);
 }
 
 int http_download(const char* url, const char* filename, const char* local_dst, int show_progress)
@@ -118,7 +111,7 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 	// Follow redirects
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 	// The function that will be used to write the data 
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curl_write_file);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, fwrite);
 	// The data filedescriptor which will be written to
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, fd);
 	// maximum number of redirects allowed

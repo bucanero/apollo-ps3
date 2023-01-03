@@ -8,6 +8,7 @@
 
 void drawDialogBackground();
 
+static uint64_t progbar_tmp;
 static float bar1_countparts;
 volatile int msg_dialog_action = 0;
 
@@ -55,7 +56,8 @@ int show_dialog(int tdialog, const char * format, ...)
 
 void init_progress_bar(const char* progress_bar_title, const char* msg)
 {
-	bar1_countparts = 0.0f;
+    progbar_tmp = 0;
+    bar1_countparts = 0.0f;
 
     msgDialogOpen2(MSG_DIALOG_BKG_INVISIBLE | MSG_DIALOG_SINGLE_PROGRESSBAR | MSG_DIALOG_MUTE_ON, progress_bar_title, NULL, NULL, NULL);
     msgDialogProgressBarSetMsg(MSG_PROGRESSBAR_INDEX0, msg);
@@ -69,19 +71,18 @@ void end_progress_bar(void)
     msgDialogAbort();
 }
 
-void update_progress_bar(uint64_t* progress, const uint64_t total_size, const char* msg)
+void update_progress_bar(uint64_t progress, const uint64_t total_size, const char* msg)
 {
-	if(*progress > 0) {
-		bar1_countparts += (100.0f * ((double) *progress)) / ((double) total_size);
-        *progress = 0;
-	}
+    if((progress - progbar_tmp) > 0) {
+        bar1_countparts += (100.0f * ((double) (progress - progbar_tmp))) / ((double) total_size);
+        progbar_tmp += (progress - progbar_tmp);
+    }
 
-	if(bar1_countparts >= 1.0f) {
+    if(bar1_countparts >= 1.0f) {
         msgDialogProgressBarSetMsg(MSG_PROGRESSBAR_INDEX0, msg);
         msgDialogProgressBarInc(MSG_PROGRESSBAR_INDEX0, (u32) bar1_countparts);
-            
-       	bar1_countparts -= (float) ((u32) bar1_countparts);
-	}
+        bar1_countparts -= (float) ((u32) bar1_countparts);
+    }
 
-	drawDialogBackground();
+    drawDialogBackground();
 }

@@ -172,7 +172,7 @@ static void copyAllSavesUSB(const save_entry_t* save, const char* usb_path, int 
 	for (node = list_head(list); (item = list_get(node)); node = list_next(node))
 	{
 		progress++;
-		update_progress_bar(&progress, list_count(list), item->name);
+		update_progress_bar(progress, list_count(list), item->name);
 		if (item->type != FILE_TYPE_MENU && (item->flags & SAVE_FLAG_PS3) && (all || item->flags & SAVE_FLAG_SELECTED))
 			err_count += ! _copy_save_usb(item, usb_path);
 	}
@@ -325,7 +325,7 @@ static void copyAllSavesHDD(const save_entry_t* save, int all)
 	for (node = list_head(list); (item = list_get(node)); node = list_next(node))
 	{
 		progress++;
-		update_progress_bar(&progress, list_count(list), item->name);
+		update_progress_bar(progress, list_count(list), item->name);
 		if (item->type != FILE_TYPE_MENU && (item->flags & SAVE_FLAG_PS3) && (all || item->flags & SAVE_FLAG_SELECTED))
 			err_count += ! _copy_save_hdd(item);
 	}
@@ -833,7 +833,7 @@ static void importLicenses(const char* fname, const char* exdata_path)
 	show_message("Files successfully copied to:\n%s", lic_path);
 }
 
-static int apply_sfo_patches(sfo_patch_t* patch)
+static int apply_sfo_patches(save_entry_t* entry, sfo_patch_t* patch)
 {
     code_entry_t* code;
     char in_file_path[256];
@@ -851,15 +851,15 @@ static int apply_sfo_patches(sfo_patch_t* patch)
         switch (code->codes[0])
         {
         case SFO_UNLOCK_COPY:
-            if (selected_entry->flags & SAVE_FLAG_LOCKED)
-                selected_entry->flags ^= SAVE_FLAG_LOCKED;
+            if (entry->flags & SAVE_FLAG_LOCKED)
+                entry->flags ^= SAVE_FLAG_LOCKED;
 
             patch->flags = SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION;
             break;
 
         case SFO_CHANGE_ACCOUNT_ID:
-            if (selected_entry->flags & SAVE_FLAG_OWNER)
-                selected_entry->flags ^= SAVE_FLAG_OWNER;
+            if (entry->flags & SAVE_FLAG_OWNER)
+                entry->flags ^= SAVE_FLAG_OWNER;
 
             memcpy(patch->account_id, code->options->value[code->options->sel], SFO_ACCOUNT_ID_SIZE);
             break;
@@ -870,18 +870,18 @@ static int apply_sfo_patches(sfo_patch_t* patch)
             break;
 
         case SFO_CHANGE_TITLE_ID:
-            patch->directory = strstr(selected_entry->path, selected_entry->title_id);
-            snprintf(in_file_path, sizeof(in_file_path), "%s", selected_entry->path);
+            patch->directory = strstr(entry->path, entry->title_id);
+            snprintf(in_file_path, sizeof(in_file_path), "%s", entry->path);
             strncpy(tmp_dir, patch->directory, SFO_DIRECTORY_SIZE);
 
-            strncpy(selected_entry->title_id, code->options[0].name[code->options[0].sel], 9);
-            strncpy(patch->directory, selected_entry->title_id, 9);
-            strncpy(tmp_dir, selected_entry->title_id, 9);
+            strncpy(entry->title_id, code->options[0].name[code->options[0].sel], 9);
+            strncpy(patch->directory, entry->title_id, 9);
+            strncpy(tmp_dir, entry->title_id, 9);
             *strrchr(tmp_dir, '/') = 0;
             patch->directory = tmp_dir;
 
-            LOG("Moving (%s) -> (%s)", in_file_path, selected_entry->path);
-            rename(in_file_path, selected_entry->path);
+            LOG("Moving (%s) -> (%s)", in_file_path, entry->path);
+            rename(in_file_path, entry->path);
             break;
 
         default:
@@ -891,10 +891,10 @@ static int apply_sfo_patches(sfo_patch_t* patch)
         code->activated = 0;
     }
 
-	snprintf(in_file_path, sizeof(in_file_path), "%s" "PARAM.SFO", selected_entry->path);
-	LOG("Applying SFO patches '%s'...", in_file_path);
+    snprintf(in_file_path, sizeof(in_file_path), "%s" "PARAM.SFO", entry->path);
+    LOG("Applying SFO patches '%s'...", in_file_path);
 
-	return (patch_sfo(in_file_path, patch) == SUCCESS);
+    return (patch_sfo(in_file_path, patch) == SUCCESS);
 }
 
 static int _is_decrypted(list_t* list, const char* fname)
@@ -912,7 +912,7 @@ static int _is_decrypted(list_t* list, const char* fname)
 	return 0;
 }
 
-static int apply_cheat_patches()
+static int apply_cheat_patches(const save_entry_t *entry)
 {
 	int ret = 1;
 	char tmpfile[256];
@@ -924,7 +924,7 @@ static int apply_cheat_patches()
 
 	init_loading_screen("Applying changes...");
 
-	for (node = list_head(selected_entry->codes); (code = list_get(node)); node = list_next(node))
+	for (node = list_head(entry->codes); (code = list_get(node)); node = list_next(node))
 	{
 		if (!code->activated || (code->type != PATCH_GAMEGENIE && code->type != PATCH_BSD))
 			continue;
@@ -940,17 +940,17 @@ static int apply_cheat_patches()
 			filename = code->options[0].name[code->options[0].sel];
 
 		if (strstr(code->file, "~extracted\\"))
-			snprintf(tmpfile, sizeof(tmpfile), "%s[%s]%s", APOLLO_LOCAL_CACHE, selected_entry->title_id, filename);
+			snprintf(tmpfile, sizeof(tmpfile), "%s[%s]%s", APOLLO_LOCAL_CACHE, entry->title_id, filename);
 		else
 		{
-			snprintf(tmpfile, sizeof(tmpfile), "%s%s", selected_entry->path, filename);
+			snprintf(tmpfile, sizeof(tmpfile), "%s%s", entry->path, filename);
 
 			if (!_is_decrypted(decrypted_files, filename))
 			{
 				LOG("Decrypting '%s'...", filename);
-				protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
+				protected_file_id = get_secure_file_id(entry->title_id, filename);
 
-				if (decrypt_save_file(selected_entry->path, filename, NULL, protected_file_id))
+				if (decrypt_save_file(entry->path, filename, NULL, protected_file_id))
 				{
 					list_append(decrypted_files, strdup(filename));
 				}
@@ -963,7 +963,7 @@ static int apply_cheat_patches()
 			}
 		}
 
-		if (!apply_cheat_patch_code(tmpfile, selected_entry->title_id, code, APOLLO_LOCAL_CACHE))
+		if (!apply_cheat_patch_code(tmpfile, entry->title_id, code, APOLLO_LOCAL_CACHE))
 		{
 			LOG("Error: failed to apply (%s)", code->name);
 			ret = 0;
@@ -975,9 +975,9 @@ static int apply_cheat_patches()
 	for (node = list_head(decrypted_files); (filename = list_get(node)); node = list_next(node))
 	{
 		LOG("Encrypting '%s'...", filename);
-		protected_file_id = get_secure_file_id(selected_entry->title_id, filename);
+		protected_file_id = get_secure_file_id(entry->title_id, filename);
 		
-		if (!encrypt_save_file(selected_entry->path, filename, protected_file_id))
+		if (!encrypt_save_file(entry->path, filename, protected_file_id))
 		{
 			LOG("Error: failed to encrypt (%s)", filename);
 			ret = 0;
@@ -993,21 +993,33 @@ static int apply_cheat_patches()
 	return ret;
 }
 
-static void resignSave(sfo_patch_t* patch)
+static void resignSave(save_entry_t* entry)
 {
-    if (!apply_sfo_patches(patch))
+    char acct_id[SFO_ACCOUNT_ID_SIZE+1] = {0};
+    sfo_patch_t patch = {
+        .flags = 0,
+        .user_id = apollo_config.user_id,
+        .psid = (u8*) apollo_config.psid,
+        .account_id = acct_id,
+        .directory = NULL,
+    };
+
+    if (apollo_config.account_id)
+        snprintf(patch.account_id, sizeof(acct_id), "%*lx", SFO_ACCOUNT_ID_SIZE, apollo_config.account_id);
+
+    if (!apply_sfo_patches(entry, &patch))
         show_message("Error! Account changes couldn't be applied");
 
-    LOG("Applying cheats to '%s'...", selected_entry->name);
-    if (!apply_cheat_patches())
+    LOG("Applying cheats to '%s'...", entry->name);
+    if (!apply_cheat_patches(entry))
         show_message("Error! Cheat codes couldn't be applied");
 
-    LOG("Resigning save '%s'...", selected_entry->name);
-    if (!pfd_util_init((u8*) apollo_config.idps, apollo_config.user_id, selected_entry->title_id, selected_entry->path) ||
+    LOG("Resigning save '%s'...", entry->name);
+    if (!pfd_util_init((u8*) apollo_config.idps, apollo_config.user_id, entry->title_id, entry->path) ||
         (pfd_util_process(PFD_CMD_UPDATE, 0) != SUCCESS))
-        show_message("Error! Save %s couldn't be resigned", selected_entry->title_id);
+        show_message("Error! Save %s couldn't be resigned", entry->title_id);
     else
-        show_message("Save %s successfully modified!", selected_entry->title_id);
+        show_message("Save %s successfully modified!", entry->title_id);
 
     pfd_util_end();
 }
@@ -1021,10 +1033,6 @@ static void resignAllSaves(const save_entry_t* save, int all)
 	save_entry_t *item;
 	uint64_t progress = 0;
 	list_t *list = ((void**)save->dir_name)[0];
-
-	if (apollo_config.account_id)
-		snprintf(acct_id, sizeof(acct_id), "%*lx", SFO_ACCOUNT_ID_SIZE, apollo_config.account_id);
-
 	sfo_patch_t patch = {
 		.flags = SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION,
 		.user_id = apollo_config.user_id,
@@ -1033,13 +1041,16 @@ static void resignAllSaves(const save_entry_t* save, int all)
 		.directory = NULL,
 	};
 
+	if (apollo_config.account_id)
+		snprintf(patch.account_id, sizeof(acct_id), "%*lx", SFO_ACCOUNT_ID_SIZE, apollo_config.account_id);
+
 	init_progress_bar("Resigning all saves...", save->path);
 
 	LOG("Resigning all saves from '%s'...", save->path);
 	for (node = list_head(list); (item = list_get(node)); node = list_next(node))
 	{
 		progress++;
-		update_progress_bar(&progress, list_count(list), item->name);
+		update_progress_bar(progress, list_count(list), item->name);
 		if (item->type != FILE_TYPE_MENU && (item->flags & SAVE_FLAG_PS3) && (all || item->flags & SAVE_FLAG_SELECTED))
 		{
 			snprintf(sfoPath, sizeof(sfoPath), "%s" "PARAM.SFO", item->path);
@@ -1047,7 +1058,7 @@ static void resignAllSaves(const save_entry_t* save, int all)
 				continue;
 
 			LOG("Patching SFO '%s'...", sfoPath);
-			err_count += patch_sfo(sfoPath, &patch);
+			err_count += (patch_sfo(sfoPath, &patch) != SUCCESS);
 
 			LOG("Resigning save '%s'...", item->path);
 			if (!pfd_util_init((u8*) apollo_config.idps, apollo_config.user_id, item->title_id, item->path) ||
@@ -1066,7 +1077,7 @@ static void resignAllSaves(const save_entry_t* save, int all)
 		show_message("All saves successfully resigned!");
 }
 
-static int apply_trophy_account()
+static int apply_trophy_account(const save_entry_t* entry)
 {
 	char sfoPath[256];
 	char account_id[SFO_ACCOUNT_ID_SIZE+1];
@@ -1075,15 +1086,15 @@ static int apply_trophy_account()
 	if (!apollo_config.account_id)
 		memset(account_id, 0, SFO_ACCOUNT_ID_SIZE);
 
-	snprintf(sfoPath, sizeof(sfoPath), "%s" "PARAM.SFO", selected_entry->path);
+	snprintf(sfoPath, sizeof(sfoPath), "%s" "PARAM.SFO", entry->path);
 
-	patch_sfo_trophy(sfoPath, account_id);
-	patch_trophy_account(selected_entry->path, account_id);
+	if (patch_sfo_trophy(sfoPath, account_id) != SUCCESS || !patch_trophy_account(entry->path, account_id))
+		return 0;
 
 	return 1;
 }
 
-static int apply_trophy_patches()
+static int apply_trophy_patches(const save_entry_t* entry)
 {
 	int ret = 1;
 	uint32_t trophy_id;
@@ -1092,7 +1103,7 @@ static int apply_trophy_patches()
 
 	init_loading_screen("Applying changes...");
 
-	for (node = list_head(selected_entry->codes); (code = list_get(node)); node = list_next(node))
+	for (node = list_head(entry->codes); (code = list_get(node)); node = list_next(node))
 	{
 		if (!code->activated || (code->type != PATCH_TROP_UNLOCK && code->type != PATCH_TROP_LOCK))
 			continue;
@@ -1100,7 +1111,7 @@ static int apply_trophy_patches()
 		trophy_id = *(uint32_t*)(code->file);
     	LOG("Active code: [%d] '%s'", trophy_id, code->name);
 
-		if (!apply_trophy_patch(selected_entry->path, trophy_id, (code->type == PATCH_TROP_UNLOCK)))
+		if (!apply_trophy_patch(entry->path, trophy_id, (code->type == PATCH_TROP_UNLOCK)))
 		{
 			LOG("Error: failed to apply (%s)", code->name);
 			ret = 0;
@@ -1125,36 +1136,36 @@ static int apply_trophy_patches()
 	return ret;
 }
 
-static void resignTrophy()
+static void resignTrophy(const save_entry_t* entry)
 {
 	LOG("Decrypting TROPTRNS.DAT ...");
-	if (!decrypt_trophy_trns(selected_entry->path))
+	if (!decrypt_trophy_trns(entry->path))
 	{
 		LOG("Error: failed to decrypt TROPTRNS.DAT");
 		return;
 	}
 
-    if (!apply_trophy_account())
+    if (!apply_trophy_account(entry))
         show_message("Error! Account changes couldn't be applied");
 
-    LOG("Applying trophy changes to '%s'...", selected_entry->name);
-    if (!apply_trophy_patches())
+    LOG("Applying trophy changes to '%s'...", entry->name);
+    if (!apply_trophy_patches(entry))
         show_message("Error! Trophy changes couldn't be applied");
 
 	LOG("Encrypting TROPTRNS.DAT ...");
-	if (!encrypt_trophy_trns(selected_entry->path))
+	if (!encrypt_trophy_trns(entry->path))
 	{
 		LOG("Error: failed to encrypt TROPTRNS.DAT");
 		return;
 	}
 
-    LOG("Resigning trophy '%s'...", selected_entry->name);
+    LOG("Resigning trophy '%s'...", entry->name);
 
-    if (!pfd_util_init((u8*) apollo_config.idps, apollo_config.user_id, selected_entry->title_id, selected_entry->path) ||
+    if (!pfd_util_init((u8*) apollo_config.idps, apollo_config.user_id, entry->title_id, entry->path) ||
         (pfd_util_process(PFD_CMD_UPDATE, 0) != SUCCESS))
-        show_message("Error! Trophy %s couldn't be resigned", selected_entry->title_id);
+        show_message("Error! Trophy %s couldn't be resigned", entry->title_id);
     else
-        show_message("Trophy %s successfully modified!", selected_entry->title_id);
+        show_message("Trophy %s successfully modified!", entry->title_id);
 
     pfd_util_end();
 
@@ -1315,20 +1326,7 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_RESIGN_SAVE:
-			{
-				sfo_patch_t patch = {
-					.flags = 0,
-					.user_id = apollo_config.user_id,
-					.psid = (u8*) apollo_config.psid,
-					.directory = NULL,
-				};
-				asprintf(&patch.account_id, "%*lx", SFO_ACCOUNT_ID_SIZE, apollo_config.account_id);
-				if (!apollo_config.account_id)
-					memset(patch.account_id, 0, SFO_ACCOUNT_ID_SIZE);
-
-				resignSave(&patch);
-				free(patch.account_id);
-			}
+			resignSave(selected_entry);
 			code->activated = 0;
 			break;
 
@@ -1410,7 +1408,7 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_RESIGN_TROPHY:
-			resignTrophy();
+			resignTrophy(selected_entry);
 			code->activated = 0;
 			break;
 

@@ -142,7 +142,7 @@ int extract_zip(const char* zip_file, const char* dest_path)
 		return 0;
 
 	uint64_t progress = 0;
-	init_progress_bar("Extracting files...", " ");
+	init_progress_bar("Extracting files...", zip_file);
 
 	LOG("Extracting %s to <%s>...", zip_file, dest_path);
 
@@ -150,7 +150,7 @@ int extract_zip(const char* zip_file, const char* dest_path)
 		progress++;
 		const char* filename = zip_get_name(archive, i, 0);
 
-		update_progress_bar(&progress, files, filename);
+		update_progress_bar(progress, files, filename);
 		LOG("Unzip [%d/%d] '%s'...", i+1, files, filename);
 
 		if (!filename)
