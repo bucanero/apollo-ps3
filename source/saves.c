@@ -439,7 +439,7 @@ int ReadCodes(save_entry_t * save)
 	_addSfoCommands(save);
 
 	snprintf(filePath, sizeof(filePath), APOLLO_DATA_PATH "%s.ps3savepatch", save->title_id);
-	if (file_exists(filePath) != SUCCESS)
+	if ((buffer = readTextFile(filePath, NULL)) == NULL)
 		return list_count(save->codes);
 
 	code = _createCmdCode(PATCH_NULL, "----- " UTF8_CHAR_STAR " Cheats " UTF8_CHAR_STAR " -----", CMD_CODE_NULL);	
@@ -449,9 +449,7 @@ int ReadCodes(save_entry_t * save)
 	list_append(save->codes, code);
 
 	LOG("Loading BSD codes '%s'...", filePath);
-	buffer = readTextFile(filePath, NULL);
 	load_patch_code_list(buffer, save->codes, &get_file_entries, save->path);
-
 	free (buffer);
 
 	LOG("Loaded %d codes", list_count(save->codes));
@@ -479,6 +477,65 @@ static char* _get_xml_node_value(xmlNode * a_node, const xmlChar* node_name)
 	return value;
 }
 
+static int get_usb_trophies(save_entry_t* item)
+{
+	DIR *d;
+	struct dirent *dir;
+	code_entry_t * cmd;
+	char filePath[256];
+	long bufferLen;
+	char * buffer = NULL;
+	xmlDoc *doc = NULL;
+	xmlNode *root_element = NULL;
+	char *name, *commid;
+
+	d = opendir(item->path);
+	if (!d)
+		return 0;
+
+	item->codes = list_alloc();
+	while ((dir = readdir(d)) != NULL)
+	{
+		if (dir->d_type != DT_DIR || strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0)
+			continue;
+
+		snprintf(filePath, sizeof(filePath), "%s%s/TROPCONF.SFM", item->path, dir->d_name);
+		if ((buffer = readTextFile(filePath, &bufferLen)) == NULL)
+			continue;
+
+		LOG("Reading %s...", filePath);
+		/*parse the file and get the DOM */
+		doc = xmlParseMemory(buffer + 0x40, bufferLen - 0x40);
+		if (!doc)
+		{
+			LOG("XML: could not parse file %s", filePath);
+			free(buffer);
+			continue;
+		}
+
+		/*Get the root element node */
+		root_element = xmlDocGetRootElement(doc);
+		name = _get_xml_node_value(root_element->children, BAD_CAST "title-name");
+		commid = _get_xml_node_value(root_element->children, BAD_CAST "npcommid");
+		snprintf(filePath, sizeof(filePath), "%s (%s)", name, commid);
+
+		cmd = _createCmdCode(PATCH_COMMAND, filePath, CMD_IMP_TROPHY_HDD);
+		asprintf(&cmd->file, "%s%s/", item->path, dir->d_name);
+
+		/*free the document */
+		xmlFreeDoc(doc);
+		xmlCleanupParser();
+		free(buffer);
+
+		LOG("[%s] F(%X) name '%s'", cmd->file, cmd->flags, cmd->name);
+		list_append(item->codes, cmd);
+	}
+
+	closedir(d);
+
+	return list_count(item->codes);
+}
+
 int ReadTrophies(save_entry_t * game)
 {
 	int trop_count = 0;
@@ -493,15 +550,16 @@ int ReadTrophies(save_entry_t * game)
 	u8* usr_data;
 	tropTimeInfo_t* tti;
 
-	snprintf(filePath, sizeof(filePath), "%s" "TROPCONF.SFM", game->path);
-	if (file_exists(filePath) != SUCCESS)
-		return 0;
+	// Import trophies from USB
+	if (game->type == FILE_TYPE_MENU)
+		return get_usb_trophies(game);
 
-	buffer = readTextFile(filePath, &bufferLen);
+	snprintf(filePath, sizeof(filePath), "%s" "TROPCONF.SFM", game->path);
+	if ((buffer = readTextFile(filePath, &bufferLen)) == NULL)
+		return 0;
 
 	/*parse the file and get the DOM */
 	doc = xmlParseMemory(buffer + 0x40, bufferLen - 0x40);
-
 	if (!doc)
 	{
 		LOG("XML: could not parse file %s", filePath);
@@ -651,7 +709,7 @@ int ReadOnlineSaves(save_entry_t * game)
 	char *data = readTextFile(path, &fsize);
 	
 	char *ptr = data;
-	char *end = data + fsize + 1;
+	char *end = data + fsize;
 
 	game->codes = list_alloc();
 
@@ -1470,7 +1528,7 @@ static void _ReadOnlineListEx(const char* urlPath, uint16_t flag, list_t *list)
 	char *data = readTextFile(path, &fsize);
 	
 	char *ptr = data;
-	char *end = data + fsize + 1;
+	char *end = data + fsize;
 
 	while (ptr < end && *ptr)
 	{
@@ -1554,18 +1612,30 @@ list_t * ReadTrophyList(const char* userPath)
 	item->type = FILE_TYPE_MENU;
 	item->path = strdup(userPath);
 	item->codes = list_alloc();
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Backup Trophies to USB", CMD_CODE_NULL);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Backup All Trophies to USB", CMD_CODE_NULL);
 	cmd->options_count = 1;
 	cmd->options = _createOptions(2, "Save Trophies to USB", CMD_COPY_TROPHIES_USB);
 	list_append(item->codes, cmd);
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " Export Trophies to .Zip", CMD_CODE_NULL);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " Export All Trophies to .Zip", CMD_CODE_NULL);
 	cmd->options_count = 1;
 	cmd->options = _createOptions(2, "Save .Zip to USB", CMD_ZIP_TROPHY_USB);
 	list_append(item->codes, cmd);
 	list_append(list, item);
 
-	d = opendir(userPath);
+	for (int i = 0; i <= MAX_USB_DEVICES; i++)
+	{
+		snprintf(filePath, sizeof(filePath), USB_PATH TROPHIES_PATH_USB, i);
+		if (i && dir_exists(filePath) != SUCCESS)
+			continue;
 
+		item = _createSaveEntry(SAVE_FLAG_PS3 | SAVE_FLAG_TROPHY, CHAR_ICON_COPY " Import Trophies");
+		asprintf(&item->path, USB_PATH TROPHIES_PATH_USB, i);
+		asprintf(&item->title_id, " USB %d", i);
+		item->type = FILE_TYPE_MENU;
+		list_append(list, item);
+	}
+
+	d = opendir(userPath);
 	if (!d)
 		return list;
 
@@ -1575,11 +1645,9 @@ list_t * ReadTrophyList(const char* userPath)
 			continue;
 
 		snprintf(filePath, sizeof(filePath), "%s%s/TROPCONF.SFM", userPath, dir->d_name);
-		if (file_exists(filePath) == SUCCESS)
+		if ((buffer = readTextFile(filePath, &bufferLen)) != NULL)
 		{
 			LOG("Reading %s...", filePath);
-			buffer = readTextFile(filePath, &bufferLen);
-
 			/*parse the file and get the DOM */
 			doc = xmlParseMemory(buffer + 0x40, bufferLen - 0x40);
 			if (!doc)

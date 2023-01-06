@@ -79,6 +79,7 @@ enum cmd_code_enum
     CMD_EXP_TROPHY_USB,
     CMD_COPY_TROPHIES_USB,
     CMD_ZIP_TROPHY_USB,
+    CMD_IMP_TROPHY_HDD,
 
 // Save commands
     CMD_DECRYPT_FILE,

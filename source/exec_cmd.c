@@ -434,6 +434,17 @@ static void exportTrophiesZip(const char* exp_path)
 	show_message("Trophies successfully saved to:\n%strophies_%08d.zip", exp_path, apollo_config.user_id);
 }
 
+static void importTrophy(char* src_path)
+{
+	char dst_path[256];
+	save_entry_t tmp = {
+		.path = src_path,
+	};
+
+	snprintf(dst_path, sizeof(dst_path), TROPHY_PATH_HDD, apollo_config.user_id);
+	copySave(&tmp, dst_path);
+}
+
 static void resignPSVfile(const char* psv_path)
 {
 	init_loading_screen("Resigning PSV file...");
@@ -1297,6 +1308,11 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_EXP_TROPHY_USB:
 			copySave(selected_entry, codecmd[1] ? TROPHY_PATH_USB1 : TROPHY_PATH_USB0);
+			code->activated = 0;
+			break;
+
+		case CMD_IMP_TROPHY_HDD:
+			importTrophy(code->file);
 			code->activated = 0;
 			break;
 

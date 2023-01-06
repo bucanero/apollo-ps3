@@ -11,7 +11,7 @@ uint8_t owner_sel = 0;
 static char * sort_opt[] = {"Disabled", "by Name", "by Title ID", NULL};
 
 menu_option_t menu_options[] = {
-	{ .name = "\nBackground Music", 
+	{ .name = "Background Music", 
 		.options = NULL, 
 		.type = APP_OPTION_BOOL, 
 		.value = &apollo_config.music, 
