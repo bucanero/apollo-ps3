@@ -16,11 +16,12 @@
 #define FAKE_USB_PATH           PS3_TMP_PATH "fakeusb/"
 #define USER_PATH_HDD			"/dev_hdd0/home/%08d/"
 
+#define PS3_EXPORT_PATH         "PS3/EXPORT/"
 #define PS3_SAVES_PATH_USB      "PS3/SAVEDATA/"
-#define PS2_SAVES_PATH_USB      "PS3/EXPORT/PS2SD/"
 #define PSP_SAVES_PATH_USB      "PSP/SAVEDATA/"
-#define PSV_SAVES_PATH_USB      "PS3/EXPORT/PSV/"
-#define TROPHIES_PATH_USB       "PS3/EXPORT/TROPHY/"
+#define PS2_SAVES_PATH_USB      PS3_EXPORT_PATH "PS2SD/"
+#define PSV_SAVES_PATH_USB      PS3_EXPORT_PATH "PSV/"
+#define TROPHIES_PATH_USB       PS3_EXPORT_PATH "TROPHY/"
 
 #define PS3_LICENSE_PATH        "exdata/"
 #define PS3_SAVES_PATH_HDD      "savedata/"
@@ -30,8 +31,6 @@
 #define PS1_IMP_PATH_USB        "PS1/SAVEDATA/"
 #define PS2_IMP_PATH_USB        "PS2/SAVEDATA/"
 
-#define SAVES_PATH_USB0         USB0_PATH PS3_SAVES_PATH_USB
-#define SAVES_PATH_USB1         USB1_PATH PS3_SAVES_PATH_USB
 #define SAVES_PATH_HDD          USER_PATH_HDD PS3_SAVES_PATH_HDD
 
 #define TROPHY_PATH_USB0        USB0_PATH TROPHIES_PATH_USB
@@ -39,23 +38,18 @@
 #define TROPHY_PATH_HDD			USER_PATH_HDD "trophy/"
 #define EXDATA_PATH_HDD			USER_PATH_HDD PS3_LICENSE_PATH
 
-#define EXPORT_PATH_USB0        USB0_PATH "PS3/EXPORT/"
-#define EXPORT_PATH_USB1        USB1_PATH "PS3/EXPORT/"
 #define EXPORT_RAP_PATH_USB     USB_PATH PS3_LICENSE_PATH
 #define EXPORT_RAP_PATH_HDD     "/dev_hdd0/" PS3_LICENSE_PATH
 
-#define EXP_PSV_PATH_USB0       USB0_PATH PSV_SAVES_PATH_USB
-#define EXP_PSV_PATH_USB1       USB1_PATH PSV_SAVES_PATH_USB
+#define VMC_PS2_PATH_USB        "PS2/VMC/"
+#define VMC_PS2_PATH_HDD        "/dev_hdd0/savedata/vmc/"
 
-#define EXP_PS2_PATH_USB0       USB0_PATH "PS2/VMC/"
-#define EXP_PS2_PATH_USB1       USB1_PATH "PS2/VMC/"
-#define EXP_PS2_PATH_HDD        "/dev_hdd0/savedata/vmc/"
-
-#define IMP_PS2VMC_PATH_USB     USB_PATH "PS2/VMC/"
+#define IMP_PS2VMC_PATH_USB     USB_PATH VMC_PS2_PATH_USB
 #define IMPORT_RAP_PATH_USB     USB_PATH PS3_LICENSE_PATH
 
-#define PS2ISO_PATH_USB         USB_PATH "PS2ISO/"
-#define PS2ISO_PATH_HDD         "/dev_hdd0/PS2ISO/"
+#define PS2ISO_PATH             "PS2ISO/"
+#define PS2ISO_PATH_USB         USB_PATH PS2ISO_PATH
+#define PS2ISO_PATH_HDD         "/dev_hdd0/" PS2ISO_PATH
 
 #define ONLINE_URL				"https://bucanero.github.io/apollo-saves/"
 #define ONLINE_PATCH_URL		"https://bucanero.github.io/apollo-patches/PS3/"
@@ -67,7 +61,12 @@ enum storage_enum
 {
     STORAGE_USB0,
     STORAGE_USB1,
-    STORAGE_HDD,
+    STORAGE_USB2,
+    STORAGE_USB3,
+    STORAGE_USB4,
+    STORAGE_USB5,
+    STORAGE_USB6,
+    STORAGE_HDD = 0x10,
 };
 
 enum cmd_code_enum
