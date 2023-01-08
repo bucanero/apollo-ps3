@@ -263,7 +263,7 @@ static void SetMenu(int id)
 
 			if (selected_entry->flags & SAVE_FLAG_ONLINE)
 			{
-				snprintf(iconfile, sizeof(iconfile), APOLLO_TMP_PATH "%s.PNG", selected_entry->title_id);
+				snprintf(iconfile, sizeof(iconfile), APOLLO_LOCAL_CACHE "%s.PNG", selected_entry->title_id);
 
 				if (file_exists(iconfile) != SUCCESS)
 					http_download(selected_entry->path, "ICON0.PNG", iconfile, 0);

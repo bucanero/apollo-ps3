@@ -347,6 +347,44 @@ static void copyAllSavesHDD(const save_entry_t* save, int all)
 		show_message("All Saves copied to HDD");
 }
 
+static void extractArchive(const char* file_path)
+{
+	int ret = 0;
+	char exp_path[256];
+
+	strncpy(exp_path, file_path, sizeof(exp_path));
+	*strrchr(exp_path, '.') = 0;
+
+	switch (strrchr(file_path, '.')[1])
+	{
+	case 'z':
+	case 'Z':
+		/* ZIP */
+		strcat(exp_path, "/");
+		ret = extract_zip(file_path, exp_path);
+		break;
+
+	case 'r':
+	case 'R':
+		/* RAR */
+		ret = extract_rar(file_path, exp_path);
+		break;
+
+	case '7':
+		/* 7-Zip */
+		ret = extract_7zip(file_path, exp_path);
+		break;
+
+	default:
+		break;
+	}
+
+	if (ret)
+		show_message("All files extracted to:\n%s", exp_path);
+	else
+		show_message("Error: %s couldn't be extracted", file_path);
+}
+
 static void exportLicensesZip(int dst)
 {
 	char* export_file;
@@ -1468,6 +1506,11 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_RUN_WEB_SERVER:
 			enableWebServer(selected_entry, 8080);
+			code->activated = 0;
+			break;
+
+		case CMD_EXTRACT_ARCHIVE:
+			extractArchive(code->file);
 			code->activated = 0;
 			break;
 

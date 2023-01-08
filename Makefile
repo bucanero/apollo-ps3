@@ -55,7 +55,8 @@ endif
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
 LIBS	:=	-ldbglogger -ltiny3d -lfreetype -lgcm_sys -lrsx -lsysutil -lio -lnet -lxmp-lite -lspu_sound \
-			-laudio -lsysmodule -lcurl -lapollo -lzip -lpolarssl -lpngdec -lpng -lxml2 -lz -lm -lnetctl
+			-laudio -lsysmodule -lcurl -lapollo -lzip -lpolarssl -lpngdec -lpng -lxml2 -lz -lm -lnetctl \
+			-lunrar -lun7zip -lstdc++ -lsysfs
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing

@@ -828,6 +828,11 @@ list_t * ReadBackupList(const char* userPath)
 	item->type = FILE_TYPE_VM2;
 	list_append(list, item);
 
+	item = _createSaveEntry(0, CHAR_ICON_ZIP " Extract Archives (RAR, Zip, 7z)");
+	item->path = strdup(PS3_TMP_PATH);
+	item->type = FILE_TYPE_ZIP;
+	list_append(list, item);
+
 	return list;
 }
 
@@ -989,6 +994,45 @@ static int get_ps2_raw_files(save_entry_t * item)
 	return list_count(item->codes);
 }
 
+static int get_archives(save_entry_t * item)
+{
+	code_entry_t* cmd;
+	DIR *d;
+	struct dirent *dir;
+	char tmp[256];
+
+	item->codes = list_alloc();
+	LOG("Loading files from '%s'...", item->path);
+
+	d = opendir(item->path);
+	if (d)
+	{
+		while ((dir = readdir(d)) != NULL)
+		{
+			if (!(dir->d_type != DT_DIR) ||
+				(!endsWith(dir->d_name, ".RAR") && !endsWith(dir->d_name, ".ZIP") && !endsWith(dir->d_name, ".7Z")))
+				continue;
+
+			snprintf(tmp, sizeof(tmp), CHAR_ICON_ZIP " Extract %s", dir->d_name);
+			cmd = _createCmdCode(PATCH_COMMAND, tmp, CMD_EXTRACT_ARCHIVE);
+			asprintf(&cmd->file, "%s%s", item->path, dir->d_name);
+
+			LOG("[%s] name '%s'", cmd->file, cmd->name+2);
+			list_append(item->codes, cmd);
+		}
+		closedir(d);
+	}
+
+	if (!list_count(item->codes))
+	{
+		list_free(item->codes);
+		item->codes = NULL;
+		return 0;
+	}
+
+	return list_count(item->codes);
+}
+
 int ReadBackupCodes(save_entry_t * bup)
 {
 	code_entry_t * cmd;
@@ -1007,6 +1051,9 @@ int ReadBackupCodes(save_entry_t * bup)
 
 	case FILE_TYPE_PS2RAW:
 		return get_ps2_raw_files(bup);
+
+	case FILE_TYPE_ZIP:
+		return get_archives(bup);
 
 	case FILE_TYPE_RIF:
 		sprintf(fext, ".rif");
@@ -1638,7 +1685,7 @@ list_t * ReadTrophyList(const char* userPath)
 	list_append(item->codes, cmd);
 	list_append(list, item);
 
-	for (int i = 0; i <= MAX_USB_DEVICES; i++)
+	for (int i = MAX_USB_DEVICES; i >= 0; i--)
 	{
 		snprintf(filePath, sizeof(filePath), USB_PATH TROPHIES_PATH_USB, i);
 		if (i && dir_exists(filePath) != SUCCESS)
@@ -1649,6 +1696,7 @@ list_t * ReadTrophyList(const char* userPath)
 		asprintf(&item->title_id, " USB %d", i);
 		item->type = FILE_TYPE_MENU;
 		list_append(list, item);
+		break;
 	}
 
 	d = opendir(userPath);

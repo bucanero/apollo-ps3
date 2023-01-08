@@ -120,6 +120,7 @@ enum cmd_code_enum
     CMD_IMP_PS2_CONFIG,
     CMD_IMP_PS2VMC_USB,
     CMD_CREATE_ACT_DAT,
+    CMD_EXTRACT_ARCHIVE,
 
 // SFO patches
     SFO_UNLOCK_COPY,
@@ -164,6 +165,7 @@ enum save_type_enum
     FILE_TYPE_RAP,
     FILE_TYPE_ACT,
 
+    FILE_TYPE_ZIP,
     // ISO Files
     FILE_TYPE_ISO,
     FILE_TYPE_BINENC,
@@ -256,6 +258,8 @@ int http_init(void);
 void http_end(void);
 int http_download(const char* url, const char* filename, const char* local_dst, int show_progress);
 
+int extract_rar(const char* rar_file, const char* dest_path);
+int extract_7zip(const char* zip_file, const char* dest_path);
 int extract_zip(const char* zip_file, const char* dest_path);
 int zip_directory(const char* basedir, const char* inputdir, const char* output_zipfile);
 int zip_savegame(const char* basedir, const char* inputdir, const char* output_zipfile);
