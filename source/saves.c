@@ -446,7 +446,7 @@ int ReadCodes(save_entry_t * save)
 	_addBackupCommands(save);
 	_addSfoCommands(save);
 
-	snprintf(filePath, sizeof(filePath), APOLLO_DATA_PATH "%s.ps3savepatch", save->title_id);
+	snprintf(filePath, sizeof(filePath), APOLLO_DATA_PATH "%s.savepatch", save->title_id);
 	if ((buffer = readTextFile(filePath, NULL)) == NULL)
 		return list_count(save->codes);
 
