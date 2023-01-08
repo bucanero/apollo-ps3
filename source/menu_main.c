@@ -395,7 +395,7 @@ static void doSaveMenu(save_list_t * save_list)
 		else if (paddata[0].BTN_SELECT)
 		{
 			selected_entry = list_get_item(save_list->list, menu_sel);
-			if ((save_list->icon_id == cat_hdd_png_index || save_list->icon_id == cat_usb_png_index) &&
+			if (save_list->icon_id != cat_db_png_index && save_list->icon_id != cat_bup_png_index &&
 				selected_entry->type != FILE_TYPE_MENU && (selected_entry->flags & SAVE_FLAG_PS3))
 				selected_entry->flags ^= SAVE_FLAG_SELECTED;
 		}

@@ -772,21 +772,36 @@ static void exportPS2classics(const char* enc_path, const char* enc_file, uint8_
 	show_message("File successfully saved to:\n%s", outfile);
 }
 
-static void exportFolder(const char* src_path, const char* exp_path, const char* msg)
+static void copyAllTrophies(const save_entry_t* save, int dst, int all)
 {
+	char exp_path[256];
+	int done = 0, err_count = 0;
+	list_node_t *node;
+	save_entry_t *item;
+	uint64_t progress = 0;
+	list_t *list = ((void**)save->dir_name)[0];
+
+	_set_dest_path(exp_path, dst, TROPHIES_PATH_USB);
 	if (mkdirs(exp_path) != SUCCESS)
 	{
 		show_message("Error! Export folder is not available:\n%s", exp_path);
 		return;
 	}
 
-	init_loading_screen(msg);
+	init_progress_bar("Copying trophies...", exp_path);
+	LOG("Copying all trophies from '%s'...", save->path);
 
-    LOG("Copying <%s> to %s...", src_path, exp_path);
-	copy_directory(src_path, src_path, exp_path);
+	for (node = list_head(list); (item = list_get(node)); node = list_next(node))
+	{
+		update_progress_bar(progress++, list_count(list), item->name);
+		if (item->type != FILE_TYPE_TRP || !(all || item->flags & SAVE_FLAG_SELECTED))
+			continue;
 
-	stop_loading_screen();
-	show_message("Files successfully copied to:\n%s", exp_path);
+		(_copy_save_usb(item, exp_path) ? done++ : err_count++);
+	}
+	end_progress_bar();
+
+	show_message("%d/%d Trophy Sets copied to:\n%s", done, done+err_count, exp_path);
 }
 
 static void exportLicensesRap(const char* fname, uint8_t dest)
@@ -1343,7 +1358,8 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_COPY_TROPHIES_USB:
-			exportFolder(selected_entry->path, codecmd[1] ? TROPHY_PATH_USB1 : TROPHY_PATH_USB0, "Copying trophies...");
+		case CMD_COPY_ALL_TROP_USB:
+			copyAllTrophies(selected_entry, codecmd[1], codecmd[0] == CMD_COPY_ALL_TROP_USB);
 			code->activated = 0;
 			break;
 
