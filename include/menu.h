@@ -106,7 +106,7 @@ enum texture_index
 };
 
 //Fonts
-#define  font_adonais_regular								0
+#define font_adonais_regular				0
 
 #define APP_FONT_COLOR						0xFFFFFF00
 #define APP_FONT_TAG_COLOR					0xFFFFFF00
@@ -138,7 +138,7 @@ enum texture_index
 #define help_png_x							80
 #define help_png_y							150 * SCREEN_H_ADJ
 #define help_png_w							730
-#define help_png_h							400
+#define help_png_h							380
 
 
 //Asset positions

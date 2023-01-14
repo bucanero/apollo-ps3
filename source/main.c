@@ -67,8 +67,8 @@ app_config_t apollo_config = {
     .doSort = 1,
     .doAni = 1,
     .update = 1,
-    .marginH = 10,
-    .marginV = 20,
+    .marginH = 0,
+    .marginV = 0,
     .user_id = 0,
     .idps = {0, 0},
     .psid = {0, 0},
@@ -470,6 +470,9 @@ s32 main(s32 argc, const char* argv[])
 	http_init();
 
 	tiny3d_Init(1024*1024);
+	tiny3d_UserViewport(1, 0, 0, // 2D position
+		(float) (Video_Resolution.width / 848.0f),  (float) (Video_Resolution.height / 512.0f),   // 2D scale
+		(float) (Video_Resolution.width / 1920.0f), (float) (Video_Resolution.height / 1080.0f)); // 3D scale
 
 	ioPadInit(7);
 	
@@ -556,7 +559,7 @@ s32 main(s32 argc, const char* argv[])
 			SetCurrentFont(0);
 			SetFontAlign(FONT_ALIGN_SCREEN_CENTER);
 			SetFontColor(APP_FONT_COLOR | alpha, 0);
-			DrawString(0, 480, (char *)menu_pad_help[menu_id]);
+			DrawString(0, 470, (char *)menu_pad_help[menu_id]);
 			SetFontAlign(FONT_ALIGN_LEFT);
 		}
 		

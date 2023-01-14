@@ -224,7 +224,7 @@ int DrawCodes(code_entry_t* code, u8 alpha, int y_inc, int xOff, int selIndex)
     //SetExtraSpace(0);
 
     if (code->file && code->file[0])
-        DrawFormatString(xOff + MENU_ICON_OFF + 20, 434, "Target File: %s", code->file);
+        DrawFormatString(xOff + MENU_ICON_OFF + 20, 424, "Target File: %s", code->file);
 
     for (c = startDrawX; c < max; c++)
     {
@@ -405,8 +405,7 @@ void DrawGameList(int selIndex, list_t * games, u8 alpha)
         
         if (x == selIndex)
         {
-            int c;
-            for (c = 0; c < 848; c++)
+            for (int c = 0; c < 848; c++)
 				DrawTexture(&menu_textures[mark_line_png_index], c, game_y, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
         
 			DrawTextureCenteredX(&menu_textures[mark_arrow_png_index], MENU_ICON_OFF - 20, game_y, 0, (2 * y_inc) / 3, y_inc + 2, 0xFFFFFF00 | alpha);
@@ -439,8 +438,6 @@ void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)
 
     for (; x < max; x++)
     {
-        int xo = 0; //(((selIndex - x) < 0) ? -(selIndex - x) : (selIndex - x));
-        
         if (x >= 0 && node)
         {
 			code = list_get(node);
@@ -452,7 +449,7 @@ void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)
             if (code->flags & APOLLO_CODE_FLAG_CHILD)  group = " " UTF8_CHAR_ITEM " ";
             const char *alert = (code->flags & APOLLO_CODE_FLAG_ALERT) ? CHAR_ICON_ALERT : "";
 
-            float dx = DrawFormatString(MENU_ICON_OFF + (MENU_TITLE_OFF * 3) - xo, game_y, "%s%s%s", group, alert, code->name);
+            float dx = DrawFormatString(MENU_ICON_OFF + (MENU_TITLE_OFF * 3), game_y, "%s%s%s", group, alert, code->name);
             
             if (code->activated)
             {
@@ -509,8 +506,7 @@ void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)
 
 void Draw_CheatsMenu_Selection_Ani()
 {
-    int ani = 0;
-    for (ani = 0; ani < MENU_ANI_MAX; ani++)
+    for (int ani = 0; ani < MENU_ANI_MAX; ani++)
     {
         tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
         tiny3d_AlphaTest(1, 0x0, TINY3D_ALPHA_FUNC_GEQUAL);

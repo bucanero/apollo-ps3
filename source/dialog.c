@@ -58,8 +58,9 @@ void init_progress_bar(const char* progress_bar_title, const char* msg)
 {
     progbar_tmp = 0;
     bar1_countparts = 0.0f;
+    msg_dialog_action = 0;
 
-    msgDialogOpen2(MSG_DIALOG_BKG_INVISIBLE | MSG_DIALOG_SINGLE_PROGRESSBAR | MSG_DIALOG_MUTE_ON, progress_bar_title, NULL, NULL, NULL);
+    msgDialogOpen2(MSG_DIALOG_BKG_INVISIBLE | MSG_DIALOG_SINGLE_PROGRESSBAR | MSG_DIALOG_MUTE_ON | MSG_DIALOG_DISABLE_CANCEL_ON, progress_bar_title, msg_dialog_event, NULL, NULL);
     msgDialogProgressBarSetMsg(MSG_PROGRESSBAR_INDEX0, msg);
     msgDialogProgressBarReset(MSG_PROGRESSBAR_INDEX0);
 
