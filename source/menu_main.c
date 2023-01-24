@@ -422,7 +422,7 @@ static void doMainMenu()
 		else if (paddata[0].BTN_CROSS)
 			SetMenu(menu_sel+1);
 
-		else if(paddata[0].BTN_CIRCLE && show_dialog(1, "Exit to XMB?"))
+		else if(paddata[0].BTN_CIRCLE && show_dialog(DIALOG_TYPE_YESNO, "Exit to XMB?"))
 			close_app = 1;
 	}
 	

@@ -104,7 +104,7 @@ void DrawSelector(int x, int y, int w, int h, int hDif, u8 alpha)
 	DrawTextureCentered(&menu_textures[mark_arrow_png_index], x, y, 0, w, h, 0xFFFFFF00 | alpha);
 }
 
-void _drawListBackground(int off, int icon)
+static void _drawListBackground(int off, int icon)
 {
 	switch (icon)
 	{
@@ -295,7 +295,7 @@ void DrawTextureRotated(png_texture* tex, int x, int y, int z, int w, int h, u32
 
 static int please_wait;
 
-void loading_screen_thread(void* user_data)
+static void loading_screen_thread(void* user_data)
 {
     float angle = 0;
 
@@ -351,7 +351,7 @@ void stop_loading_screen()
         usleep(1000);
 }
 
-void drawJar(uint8_t idx, int pos_x, int pos_y, const char* text, uint8_t alpha)
+static void drawJar(uint8_t idx, int pos_x, int pos_y, const char* text, uint8_t alpha)
 {
 	uint8_t active = (menu_sel + jar_trophy_png_index == idx);
 	DrawTexture(&menu_textures[idx], pos_x, apollo_config.marginV + pos_y, 0, menu_textures[idx].texture.width * SCREEN_W_ADJ, menu_textures[idx].texture.height * SCREEN_H_ADJ, 0xffffff00 | alpha);
@@ -364,7 +364,7 @@ void drawJar(uint8_t idx, int pos_x, int pos_y, const char* text, uint8_t alpha)
 	DrawStringMono(pos_x + (menu_textures[idx].texture.width * SCREEN_W_ADJ / 2), apollo_config.marginV + pos_y - 25, text);
 }
 
-void _drawColumn(uint8_t idx, int pos_x, int pos_y, uint8_t alpha)
+static void _drawColumn(uint8_t idx, int pos_x, int pos_y, uint8_t alpha)
 {
 	DrawTexture(&menu_textures[idx], pos_x, apollo_config.marginV + pos_y, 0, menu_textures[idx].texture.width * SCREEN_W_ADJ, menu_textures[idx].texture.height * SCREEN_H_ADJ, 0xffffff00 | alpha);
 }

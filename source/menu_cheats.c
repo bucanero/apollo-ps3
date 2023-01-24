@@ -60,15 +60,14 @@ void DrawOptions(option_entry_t* option, u8 alpha, int y_inc, int selIndex)
     if (!option->name || !option->value)
         return;
     
-    int c = 0, yOff = 80;
-    
+    int yOff = 80;
     int maxPerPage = (512 - (yOff * 2)) / y_inc;
     int startDrawX = selIndex - (maxPerPage / 2);
     int max = maxPerPage + startDrawX;
     
     SetFontSize(y_inc-6, y_inc-4);
 
-    for (c = startDrawX; c < max; c++)
+    for (int c = startDrawX; c < max; c++)
     {
         if (c >= 0 && c < option->size)
         {
@@ -80,8 +79,7 @@ void DrawOptions(option_entry_t* option, u8 alpha, int y_inc, int selIndex)
             //Selector
             if (c == selIndex)
             {
-                int i = 0;
-				for (i = MENU_SPLIT_OFF; i < 848; i++)
+				for (int i = MENU_SPLIT_OFF; i < 848; i++)
 					DrawTexture(&menu_textures[mark_line_png_index], i, yOff, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
             }
         }
@@ -91,8 +89,8 @@ void DrawOptions(option_entry_t* option, u8 alpha, int y_inc, int selIndex)
 
 void Draw_CheatsMenu_Options_Ani_Exit(void)
 {
-	int div = 12, ani = 0, left = MENU_SPLIT_OFF;
-	for (ani = MENU_ANI_MAX - 1; ani >= 0; ani--)
+	int div = 12, left = MENU_SPLIT_OFF;
+	for (int ani = MENU_ANI_MAX - 1; ani >= 0; ani--)
 	{
 		tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
 		tiny3d_AlphaTest(1, 0x0, TINY3D_ALPHA_FUNC_GEQUAL);
@@ -133,8 +131,8 @@ void Draw_CheatsMenu_Options_Ani_Exit(void)
 
 void Draw_CheatsMenu_Options_Ani(void)
 {
-	int div = 12, ani = 0, left = 848;
-    for (ani = 0; ani < MENU_ANI_MAX; ani++)
+	int div = 12, left = 848;
+    for (int ani = 0; ani < MENU_ANI_MAX; ani++)
     {
         tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
         tiny3d_AlphaTest(1, 0x0, TINY3D_ALPHA_FUNC_GEQUAL);
@@ -255,8 +253,8 @@ int DrawCodes(code_entry_t* code, u8 alpha, int y_inc, int xOff, int selIndex)
 
 void Draw_CheatsMenu_View_Ani_Exit(void)
 {
-	int div = 12, ani = 0, left = MENU_SPLIT_OFF;
-	for (ani = MENU_ANI_MAX - 1; ani >= 0; ani--)
+	int div = 12, left = MENU_SPLIT_OFF;
+	for (int ani = MENU_ANI_MAX - 1; ani >= 0; ani--)
 	{
 		tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
 		tiny3d_AlphaTest(1, 0x0, TINY3D_ALPHA_FUNC_GEQUAL);
@@ -294,8 +292,8 @@ void Draw_CheatsMenu_View_Ani_Exit(void)
 
 void Draw_CheatsMenu_View_Ani(const char* title)
 {
-	int div = 12, ani = 0, left = MENU_SPLIT_OFF;
-    for (ani = 0; ani < MENU_ANI_MAX; ani++)
+	int div = 12, left = MENU_SPLIT_OFF;
+    for (int ani = 0; ani < MENU_ANI_MAX; ani++)
     {
         tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
         tiny3d_AlphaTest(1, 0x0, TINY3D_ALPHA_FUNC_GEQUAL);

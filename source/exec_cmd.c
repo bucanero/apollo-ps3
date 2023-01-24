@@ -1258,7 +1258,7 @@ static void resignTrophy(const save_entry_t* entry)
 
     pfd_util_end();
 
-	if ((file_exists("/dev_hdd0/mms/db.err") != SUCCESS) && show_dialog(1, "Schedule Database rebuild on next boot?"))
+	if ((file_exists("/dev_hdd0/mms/db.err") != SUCCESS) && show_dialog(DIALOG_TYPE_YESNO, "Schedule Database rebuild on next boot?"))
 	{
 		LOG("Creating db.err file for database rebuild...");
 		write_buffer("/dev_hdd0/mms/db.err", (u8*) "\x00\x00\x03\xE9", 4);

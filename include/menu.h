@@ -105,6 +105,9 @@ enum texture_index
 	TOTAL_MENU_TEXTURES
 };
 
+#define DIALOG_TYPE_OK						0
+#define DIALOG_TYPE_YESNO					1
+
 //Fonts
 #define font_adonais_regular				0
 
@@ -231,6 +234,7 @@ void drawScene();
 void drawJars(uint8_t alpha);
 void drawColumns(uint8_t alpha);
 void drawSplashLogo(int m);
+void drawDialogBackground(void);
 void copyTexture(int cnt);
 
 int load_app_settings(app_config_t* config);
