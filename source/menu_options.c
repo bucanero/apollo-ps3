@@ -54,10 +54,7 @@ void _draw_OptionsMenu(u8 alpha)
 		}
         
         if (menu_sel == ind)
-        {
-            for (int i = 0; i < 848; i++)
-				DrawTexture(&menu_textures[mark_line_png_index], i, y_off, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
-        }
+            DrawSelector(0, y_off, 0, 0, 0, alpha);
         
         y_off += 20;
         ind++;

@@ -95,13 +95,12 @@ void DrawSpritesRot2D(float x, float y, float layer, float dx, float dy, u32 rgb
 
 }
 
-void DrawSelector(int x, int y, int w, int h, int hDif, u8 alpha)
+void DrawSelector(int x, int y, int w, int h, int arrow, u8 alpha)
 {
-	int i = 0;
-	for (i = 0; i < 848; i++)
-		DrawTexture(&menu_textures[mark_line_png_index], i, y, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height + hDif, 0xFFFFFF00 | alpha);
+	DrawTexture(&menu_textures[mark_line_png_index], 0, y, 0, 848, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
 
-	DrawTextureCentered(&menu_textures[mark_arrow_png_index], x, y, 0, w, h, 0xFFFFFF00 | alpha);
+	if (arrow)
+		DrawTextureCenteredX(&menu_textures[mark_arrow_png_index], x, y, 0, w, h, 0xFFFFFF00 | alpha);
 }
 
 static void _drawListBackground(int off, int icon)

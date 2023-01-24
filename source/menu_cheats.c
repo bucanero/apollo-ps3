@@ -78,10 +78,7 @@ void DrawOptions(option_entry_t* option, u8 alpha, int y_inc, int selIndex)
             
             //Selector
             if (c == selIndex)
-            {
-				for (int i = MENU_SPLIT_OFF; i < 848; i++)
-					DrawTexture(&menu_textures[mark_line_png_index], i, yOff, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
-            }
+                DrawTexture(&menu_textures[mark_line_png_index], MENU_SPLIT_OFF, yOff, 0, 848 - MENU_SPLIT_OFF, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
         }
         yOff += y_inc;
     }
@@ -201,8 +198,7 @@ int DrawCodes(code_entry_t* code, u8 alpha, int y_inc, int xOff, int selIndex)
     char * splitCodes = (char *)malloc(len + 1);
     memcpy(splitCodes, code->codes, len);
     splitCodes[len] = 0;
-    char * * lines = (char **)malloc(sizeof(char *) * numOfLines);
-    memset(lines, 0, sizeof(char *) * numOfLines);
+    char * * lines = (char **)calloc(numOfLines, sizeof(char *));
     lines[0] = (char*)(&splitCodes[0]);
 
     for (c = 1; c < numOfLines; c++)
@@ -235,8 +231,7 @@ int DrawCodes(code_entry_t* code, u8 alpha, int y_inc, int xOff, int selIndex)
             
             //Selector
             if (c == selIndex)
-                for (int i = 0; i < 848; i++)
-                    DrawTexture(&menu_textures[mark_line_png_index], xOff + i, yOff, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
+                DrawTexture(&menu_textures[mark_line_png_index], xOff, yOff, 0, 848 - xOff, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
         }
         yOff += y_inc;
     }
@@ -402,12 +397,7 @@ void DrawGameList(int selIndex, list_t * games, u8 alpha)
         }
         
         if (x == selIndex)
-        {
-            for (int c = 0; c < 848; c++)
-				DrawTexture(&menu_textures[mark_line_png_index], c, game_y, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
-        
-			DrawTextureCenteredX(&menu_textures[mark_arrow_png_index], MENU_ICON_OFF - 20, game_y, 0, (2 * y_inc) / 3, y_inc + 2, 0xFFFFFF00 | alpha);
-		}
+            DrawSelector(MENU_ICON_OFF - 20, game_y, (2 * y_inc) / 3, y_inc + 2, 1, alpha);
         
         game_y += y_inc;
     }
@@ -488,13 +478,8 @@ void DrawCheatsList(int selIndex, save_entry_t* game, u8 alpha)
         }
         
         if (x == selIndex)
-        {
             //Draw selection bar
-            for (int c = 0; c < 848; c++)
-				DrawTexture(&menu_textures[mark_line_png_index], c, game_y, 0, menu_textures[mark_line_png_index].texture.width, menu_textures[mark_line_png_index].texture.height, 0xFFFFFF00 | alpha);
-        
-			DrawTextureCenteredX(&menu_textures[mark_arrow_png_index], MENU_ICON_OFF - 20, game_y, 0, (2 * y_inc) / 3, y_inc + 2, 0xFFFFFF00 | alpha);
-		}
+            DrawSelector(MENU_ICON_OFF - 20, game_y, (2 * y_inc) / 3, y_inc + 2, 1, alpha);
         
         game_y += y_inc;
     }
