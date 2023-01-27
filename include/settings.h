@@ -51,6 +51,7 @@ void redetect_callback(int sel);
 void clearcache_callback(int sel);
 void upd_appdata_callback(int sel);
 void unzip_app_data(const char* zip_file);
+void wait_save_thread(void);
 
 int save_xml_owner(const char *xmlfile, const char *owner);
 int read_xml_owner(const char *xmlfile, const char *owner);

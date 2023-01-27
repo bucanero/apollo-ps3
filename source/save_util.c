@@ -66,10 +66,10 @@ typedef struct SaveData {
 	s32 result;
 } save_metadata_t;
 
-sys_ppu_thread_t save_tid = 0;
-save_metadata_t* save_data;
-u8* file_data;
-u64 file_size;
+static sys_ppu_thread_t save_tid = 0;
+static save_metadata_t* save_data;
+static u8* file_data;
+static u64 file_size;
 
 static void saveload_game_status_cb (sysSaveCallbackResult *result, sysSaveStatusIn *in, sysSaveStatusOut *out)
 {
@@ -339,7 +339,7 @@ static int _create_thread (int flags, const char *folder, const char *filename)
 	return TRUE;
 }
 
-static void wait_save_thread()
+void wait_save_thread(void)
 {
     while (save_tid != 0) {
         usleep(100*1000);

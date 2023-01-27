@@ -162,16 +162,23 @@ static void release_all()
 	if(inited & INITED_CALLBACK)
 		sysUtilUnregisterCallback(SYSUTIL_EVENT_SLOT0);
 
-	if(inited & INITED_AUDIOPLAYER)
-		{ }
-	
 	if(inited & INITED_SOUNDLIB)
 		SND_End();
+
+	if(inited & INITED_AUDIOPLAYER) {
+		xmp_end_player(xmp);
+		xmp_release_module(xmp);
+		xmp_free_context(xmp);
+	}
 
 	if(inited & INITED_SPU) {
 		sysSpuRawDestroy(spu);
 		sysSpuImageClose(&spu_image);
 	}
+
+	http_end();
+	wait_save_thread();
+	sysModuleUnload(SYSMODULE_PNGDEC);
 
 	inited=0;
 }
@@ -416,16 +423,6 @@ void update_trophy_path(char* path)
 	sprintf(path, TROPHY_PATH_HDD, apollo_config.user_id);
 }
 
-static void exiting()
-{
-	xmp_end_player(xmp);
-	xmp_release_module(xmp);
-	xmp_free_context(xmp);
-
-	http_end();
-	sysModuleUnload(SYSMODULE_PNGDEC);
-}
-
 static void registerSpecialChars()
 {
 	// Register save tags
@@ -477,8 +474,6 @@ s32 main(s32 argc, const char* argv[])
 	ioPadInit(7);
 	
 	sysModuleLoad(SYSMODULE_PNGDEC);
-
-	atexit(exiting); // Tiny3D register the event 3 and do exit() call when you exit  to the menu
 
 	// register exit callback
 	if(sysUtilRegisterCallback(SYSUTIL_EVENT_SLOT0, sys_callback, NULL)==0) inited |= INITED_CALLBACK;
@@ -567,7 +562,6 @@ s32 main(s32 argc, const char* argv[])
 	}
 
 	release_all();
-	http_end();
 	if (file_exists("/dev_hdd0/mms/db.err") == SUCCESS)
 		sys_reboot();
 

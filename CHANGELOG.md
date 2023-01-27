@@ -26,6 +26,7 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 * Fix screen aspect ratio (Tiny3D viewport issue)
 * Fix list refresh bug with `.PSV` saves
 * Fix `.VM2` to `.VMC` export bug
+* Fix bug when saving settings
 
 ### Misc
 
