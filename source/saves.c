@@ -1521,7 +1521,7 @@ list_t * ReadUserList(const char* userPath)
 		save_paths[2] = PSP_SAVES_PATH_USB;
 	}
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Start local Web Server", CMD_RUN_WEB_SERVER);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Start local Web Server", CMD_SAVE_WEB_SERVER);
 	list_append(item->codes, cmd);
 	list_append(list, item);
 

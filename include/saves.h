@@ -103,7 +103,7 @@ enum cmd_code_enum
     CMD_COPY_SAVES_HDD,
     CMD_COPY_ALL_SAVES_USB,
     CMD_COPY_ALL_SAVES_HDD,
-    CMD_RUN_WEB_SERVER,
+    CMD_SAVE_WEB_SERVER,
 
 // Export commands
     CMD_EXP_EXDATA_USB,

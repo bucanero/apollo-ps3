@@ -14,8 +14,6 @@
 #define OSK_IME_DIALOG_MAX_TITLE_LENGTH  (128)
 #define OSK_IME_DIALOG_MAX_TEXT_LENGTH   (512)
 
-#define APP_OSK_INPUT_LENGTH 256
-
 #define ARRAY_COUNTOF(arr) (sizeof(arr)/sizeof(0[arr]))
 
 static uint64_t progbar_tmp;
@@ -269,7 +267,7 @@ static void osk_event_handle(u64 status, u64 param, void * userdata)
     }
 }
 
-static int osk_dialog_input_init(const char* title, const char* text)
+static int osk_dialog_input_init(const char* title, const char* text, int maxlen)
 {
     oskParam DialogOskParam;
     oskInputFieldInfo inputFieldInfo;
@@ -290,10 +288,10 @@ static int osk_dialog_input_init(const char* title, const char* text)
     
     inputFieldInfo.message =  g_ime_title;
     inputFieldInfo.startText = g_ime_text;
-    inputFieldInfo.maxLength = APP_OSK_INPUT_LENGTH;
+    inputFieldInfo.maxLength = maxlen;
        
     OutputReturnedParam.res = OSK_NO_TEXT;
-    OutputReturnedParam.len = APP_OSK_INPUT_LENGTH;
+    OutputReturnedParam.len = OSK_IME_DIALOG_MAX_TEXT_LENGTH;
     OutputReturnedParam.str = g_ime_input;
 
     DialogOskParam.controlPoint = pos;
@@ -330,14 +328,9 @@ static int osk_dialog_input_init(const char* title, const char* text)
 
 static int osk_dialog_input_update(void)
 {
-    if (!g_ime_active)
-    {
-        return 0;
-    }
-    
     if (!osk_unloaded)
     {
-        switch(osk_event) 
+        switch(osk_event)
         {
             case SYSUTIL_OSK_INPUT_ENTERED:
                 oskGetInputText(&OutputReturnedParam);
@@ -357,7 +350,7 @@ static int osk_dialog_input_update(void)
                 osk_event = 0;
                 break;
 
-            default:    
+            default:
                 break;
         }
     }
@@ -372,18 +365,24 @@ static int osk_dialog_input_update(void)
         } 
          
         osk_exit();
+        return (-1);
     }
 
-    return g_ime_active;
+    return 0;
 }
 
 int osk_dialog_get_text(const char* title, char* text, uint32_t size)
 {
-    if (!osk_dialog_input_init(title, text))
+    if (size > OSK_IME_DIALOG_MAX_TEXT_LENGTH) size = OSK_IME_DIALOG_MAX_TEXT_LENGTH;
+
+    if (!osk_dialog_input_init(title, text, size))
         return 0;
 
-    while (osk_dialog_input_update())
+    while (g_ime_active)
     {
+        if (osk_dialog_input_update() < 0)
+            return 0;
+
         drawDialogBackground();
     }
     convert_from_utf16(g_ime_input, text, size - 1);

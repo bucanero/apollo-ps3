@@ -227,11 +227,10 @@ static void copySaveHDD(const save_entry_t* save)
 		show_message("Error! Save-game folder already exists:\n%s", save->dir_name);
 }
 
-static int webReqHandler(const dWebRequest_t* req, char* outfile)
+static int webReqHandler(dWebRequest_t* req, dWebResponse_t* out, void* list)
 {
 	list_node_t *node;
 	save_entry_t *item;
-	list_t *list = ((void**)selected_entry->dir_name)[0];
 
 	// http://ps3-ip:8080/
 	if (strcmp(req->resource, "/") == 0)
@@ -244,12 +243,12 @@ static int webReqHandler(const dWebRequest_t* req, char* outfile)
 			md5_update(&ctx, (uint8_t*) item->name, strlen(item->name));
 
 		md5_finish(&ctx, (uint8_t*) hash);
-		snprintf(outfile, BUFSIZ, APOLLO_LOCAL_CACHE "web%08lx%08lx.html", hash[0], hash[1]);
+		asprintf(&out->data, APOLLO_LOCAL_CACHE "web%016lx%016lx.html", hash[0], hash[1]);
 
-		if (file_exists(outfile) == SUCCESS)
+		if (file_exists(out->data) == SUCCESS)
 			return 1;
 
-		FILE* f = fopen(outfile, "w");
+		FILE* f = fopen(out->data, "w");
 		if (!f)
 			return 0;
 
@@ -279,40 +278,40 @@ static int webReqHandler(const dWebRequest_t* req, char* outfile)
 	{
 		char *folder, *path;
 
-		snprintf(outfile, BUFSIZ, "%s%s", APOLLO_LOCAL_CACHE, req->resource + 5);
+		asprintf(&out->data, "%s%s", APOLLO_LOCAL_CACHE, req->resource + 5);
 		folder = strdup(req->resource + 5);
 		*strrchr(folder, '.') = 0;
 		asprintf(&path, "%s%s/", selected_entry->path, folder);
 
-		zip_savegame(folder, path, outfile);
+		zip_savegame(folder, path, out->data);
 		free(folder);
 		free(path);
 
-		return (file_exists(outfile) == SUCCESS);
+		return (file_exists(out->data) == SUCCESS);
 	}
 
 	// http://ps3-ip:8080/icon/DIR-NAME.png
 	if (wildcard_match(req->resource, "/icon/*.png"))
 	{
-		snprintf(outfile, BUFSIZ, "%s%s", selected_entry->path, req->resource + 6);
-		*strrchr(outfile, '.') = 0;
-		strcat(outfile, "/ICON0.PNG");
+		asprintf(&out->data, "%s%s", selected_entry->path, req->resource + 6);
+		*strrchr(out->data, '.') = 0;
+		strcat(out->data, "/ICON0.PNG");
 
-		return (file_exists(outfile) == SUCCESS);
+		return (file_exists(out->data) == SUCCESS);
 	}
 
 	return 0;
 }
 
-static void enableWebServer(const save_entry_t* save, int port)
+static void enableWebServer(dWebReqHandler_t handler, void* data, int port)
 {
 	union net_ctl_info ip_info;
 
 	memset(&ip_info, 0, sizeof(ip_info));
 	netCtlGetInfo(NET_CTL_INFO_IP_ADDRESS, &ip_info);
-	LOG("Starting local web server %s:%d for '%s'...", ip_info.ip_address, port, save->path);
+	LOG("Starting local web server %s:%d ...", ip_info.ip_address, port);
 
-	if (dbg_webserver_start(port, webReqHandler))
+	if (dbg_webserver_start(port, handler, data))
 	{
 		show_message("Web Server listening on http://%s:%d\nPress OK to stop the Server.", ip_info.ip_address, port);
 		dbg_webserver_stop();
@@ -1504,8 +1503,8 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			code->activated = 0;
 			break;
 
-		case CMD_RUN_WEB_SERVER:
-			enableWebServer(selected_entry, 8080);
+		case CMD_SAVE_WEB_SERVER:
+			enableWebServer(webReqHandler, ((void**)selected_entry->dir_name)[0], 8080);
 			code->activated = 0;
 			break;
 
