@@ -30,14 +30,14 @@ void DrawBackground2D(u32 rgba)
 {
 	tiny3d_SetPolygon(TINY3D_QUADS);
 
-	tiny3d_VertexPos(-apollo_config.marginH, -apollo_config.marginV, 65535);
+	tiny3d_VertexPos(0, 0, 65535);
 	tiny3d_VertexColor(rgba);
 
-	tiny3d_VertexPos(847 + apollo_config.marginH, -apollo_config.marginV, 65535);
+	tiny3d_VertexPos(848, 0, 65535);
 
-	tiny3d_VertexPos(847 + apollo_config.marginH, 511 + apollo_config.marginV, 65535);
+	tiny3d_VertexPos(848, 512, 65535);
 
-	tiny3d_VertexPos(-apollo_config.marginH, 511 + apollo_config.marginV, 65535);
+	tiny3d_VertexPos(0, 512, 65535);
 	tiny3d_End();
 }
 
@@ -236,10 +236,7 @@ void DrawHeader(int icon, int xOff, const char * hdrTitle, const char * headerSu
 
 void DrawBackgroundTexture(int x, u8 alpha)
 {
-	if (x == 0)
-		DrawTexture(&menu_textures[bgimg_png_index], x - apollo_config.marginH, -apollo_config.marginV, 0, 848 - x + (apollo_config.marginH * 2), 512 + (apollo_config.marginV * 2), 0xFFFFFF00 | alpha);
-	else
-		DrawTexture(&menu_textures[bgimg_png_index], x, -apollo_config.marginV, 0, 848 - x + apollo_config.marginH, 512 + (apollo_config.marginV * 2), 0xFFFFFF00 | alpha);
+	DrawTexture(&menu_textures[bgimg_png_index], x, 0, 0, 848 - x, 512, 0xFFFFFF00 | alpha);
 }
 
 void DrawTexture(png_texture* tex, int x, int y, int z, int w, int h, u32 rgba)
@@ -353,24 +350,24 @@ void stop_loading_screen()
 static void drawJar(uint8_t idx, int pos_x, int pos_y, const char* text, uint8_t alpha)
 {
 	uint8_t active = (menu_sel + jar_trophy_png_index == idx);
-	DrawTexture(&menu_textures[idx], pos_x, apollo_config.marginV + pos_y, 0, menu_textures[idx].texture.width * SCREEN_W_ADJ, menu_textures[idx].texture.height * SCREEN_H_ADJ, 0xffffff00 | alpha);
+	DrawTexture(&menu_textures[idx], pos_x, pos_y, 0, menu_textures[idx].texture.width * SCREEN_W_ADJ, menu_textures[idx].texture.height * SCREEN_H_ADJ, 0xffffff00 | alpha);
 
 	//Selected
 	if (active)
-		DrawTexture(&menu_textures[idx + JAR_COLUMNS], pos_x, apollo_config.marginV + pos_y, 0, menu_textures[idx + JAR_COLUMNS].texture.width * SCREEN_W_ADJ, menu_textures[idx + JAR_COLUMNS].texture.height * SCREEN_H_ADJ, 0xffffff00 | alpha);
+		DrawTexture(&menu_textures[idx + JAR_COLUMNS], pos_x, pos_y, 0, menu_textures[idx + JAR_COLUMNS].texture.width * SCREEN_W_ADJ, menu_textures[idx + JAR_COLUMNS].texture.height * SCREEN_H_ADJ, 0xffffff00 | alpha);
 
 	SetFontColor(APP_FONT_MENU_COLOR | (alpha == 0xFF ? (active ? 0xFF : 32) : alpha), 0);
-	DrawStringMono(pos_x + (menu_textures[idx].texture.width * SCREEN_W_ADJ / 2), apollo_config.marginV + pos_y - 25, text);
+	DrawStringMono(pos_x + (menu_textures[idx].texture.width * SCREEN_W_ADJ / 2), pos_y - 25, text);
 }
 
 static void _drawColumn(uint8_t idx, int pos_x, int pos_y, uint8_t alpha)
 {
-	DrawTexture(&menu_textures[idx], pos_x, apollo_config.marginV + pos_y, 0, menu_textures[idx].texture.width * SCREEN_W_ADJ, menu_textures[idx].texture.height * SCREEN_H_ADJ, 0xffffff00 | alpha);
+	DrawTexture(&menu_textures[idx], pos_x, pos_y, 0, menu_textures[idx].texture.width * SCREEN_W_ADJ, menu_textures[idx].texture.height * SCREEN_H_ADJ, 0xffffff00 | alpha);
 }
 
 void drawColumns(uint8_t alpha)
 {
-//	DrawTexture(&menu_textures[bg_water_png_index], bg_water_png_x - apollo_config.marginH, apollo_config.marginV + bg_water_png_y, 0, bg_water_png_w + (apollo_config.marginH * 2), bg_water_png_h, 0xffffff00 | 0xFF);
+//	DrawTexture(&menu_textures[bg_water_png_index], bg_water_png_x - apollo_config.marginH, bg_water_png_y, 0, bg_water_png_w + (apollo_config.marginH * 2), bg_water_png_h, 0xffffff00 | 0xFF);
 
 	//Columns
 	_drawColumn(column_1_png_index, column_1_png_x, column_1_png_y, alpha);

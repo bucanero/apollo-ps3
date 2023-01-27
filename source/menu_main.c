@@ -52,7 +52,7 @@ void initMenuOptions()
 	}
 
 	// default account owner
-	*menu_options[8].value = menu_options_maxsel[8] - 1;
+	*menu_options[6].value = menu_options_maxsel[6] - 1;
 }
 
 static void LoadFileTexture(const char* fname, int idx)
@@ -458,7 +458,7 @@ static void doOptionsMenu()
 		else if (paddata[0].BTN_CIRCLE)
 		{
 			save_app_settings(&apollo_config);
-			set_ttf_window(0, 0, 848 + apollo_config.marginH, 512 + apollo_config.marginV, WIN_SKIP_LF);
+			set_ttf_window(0, 0, 848, 512, WIN_SKIP_LF);
 			SetMenu(MENU_MAIN_SCREEN);
 			return;
 		}

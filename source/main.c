@@ -67,8 +67,6 @@ app_config_t apollo_config = {
     .doSort = 1,
     .doAni = 1,
     .update = 1,
-    .marginH = 0,
-    .marginV = 0,
     .user_id = 0,
     .idps = {0, 0},
     .psid = {0, 0},
@@ -233,7 +231,7 @@ static void LoadTextures_Menu()
 
 	free_mem = (u32*) init_ttf_table((u16*) free_mem);
 	
-	set_ttf_window(0, 0, 848 + apollo_config.marginH, 512 + apollo_config.marginV, WIN_SKIP_LF);
+	set_ttf_window(0, 0, 848, 512, WIN_SKIP_LF);
 //	TTFUnloadFont();
 
 	//Init Main Menu textures
@@ -505,7 +503,7 @@ s32 main(s32 argc, const char* argv[])
 	if (file_exists(APOLLO_PATH OWNER_XML_FILE) == SUCCESS)
 		save_xml_owner(APOLLO_PATH OWNER_XML_FILE, NULL);
 
-	menu_options[8].options = get_xml_owners(APOLLO_PATH OWNER_XML_FILE);
+	menu_options[6].options = get_xml_owners(APOLLO_PATH OWNER_XML_FILE);
  
 	// Set PFD keys from loaded settings
 	pfd_util_setup_keys();
