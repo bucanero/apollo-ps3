@@ -242,6 +242,7 @@ static void LoadTextures_Menu()
 //	TTFUnloadFont();
 
 	//Init Main Menu textures
+	load_menu_texture(leon, png);
 	load_menu_texture(bgimg, png);
 	load_menu_texture(cheat, png);
 
@@ -438,7 +439,7 @@ static void registerSpecialChars()
 	RegisterSpecialCharacter(CHAR_TAG_APPLY, 2, 1.1, &menu_textures[tag_apply_png_index]);
 	RegisterSpecialCharacter(CHAR_TAG_ZIP, 0, 1.2, &menu_textures[tag_zip_png_index]);
 	RegisterSpecialCharacter(CHAR_TAG_TRANSFER, 0, 1.2, &menu_textures[tag_transfer_png_index]);
-	RegisterSpecialCharacter(CHAR_TAG_NET, 2, 1.1, &menu_textures[tag_net_png_index]);
+	RegisterSpecialCharacter(CHAR_TAG_NET, 1, 1.2, &menu_textures[tag_net_png_index]);
 
 	// Register button icons
 	RegisterSpecialCharacter(CHAR_BTN_X, 0, 1.2, &menu_textures[footer_ico_cross_png_index]);
@@ -489,6 +490,7 @@ s32 main(s32 argc, const char* argv[])
 		unzip_app_data(APOLLO_LOCAL_CACHE "appdata.zip");
 	}
 
+	menu_textures[buk_scr_png_index] = menu_textures[leon_png_index];
 	// Splash screen logo (fade-in)
 	drawSplashLogo(1);
 
