@@ -4,6 +4,39 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.8.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.8.0) - 2023-01-28
+
+### Added
+
+* Import Trophies from USB
+* Improve Trophy bulk export
+* Download Online DB saves to HDD
+* Extract archive tool (`.zip`, `.7z`, `.rar`)
+* Network Tools
+  * URL downloader tool (download http/https/ftp/ftps links)
+  * Simple local Web Server (full access to console drives)
+* New save-game sorting options (`Settings`)
+  * by Name, by Title ID
+* Show PS3 IP address when running Apollo's Web Server
+* Improve USB support (scan USB0 to USB6)
+* On-screen Keyboard (for text input)
+
+### Fixed
+
+* Fix screen aspect ratio (Tiny3D viewport issue)
+* Fix list refresh bug with `.PSV` saves
+* Fix `.VM2` to `.VMC` export bug
+
+### Misc
+
+* Download application data updates from `apollo-patches` repository
+* Use `.savepatch` extension for save-game patches
+* Updated Apollo patch engine v0.3.0
+  * BSD scripting changes
+  * New custom hash: `mgspw_checksum`
+  * Fix `sha1_xor64` custom hashing
+  * Fix little-endian support for decrypters/hashes (PS4/Vita)
+
 ## [v1.7.4](https://github.com/bucanero/apollo-ps3/releases/tag/v1.7.4) - 2022-09-28
 
 ### Added
