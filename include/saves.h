@@ -121,6 +121,8 @@ enum cmd_code_enum
     CMD_IMP_PS2VMC_USB,
     CMD_CREATE_ACT_DAT,
     CMD_EXTRACT_ARCHIVE,
+    CMD_URL_DOWNLOAD,
+    CMD_NET_WEBSERVER,
 
 // SFO patches
     SFO_UNLOCK_COPY,
@@ -166,6 +168,7 @@ enum save_type_enum
     FILE_TYPE_ACT,
 
     FILE_TYPE_ZIP,
+    FILE_TYPE_NET,
     // ISO Files
     FILE_TYPE_ISO,
     FILE_TYPE_BINENC,
@@ -182,7 +185,7 @@ enum char_flag_enum
     CHAR_TAG_APPLY,
     CHAR_TAG_OWNER,
     CHAR_TAG_LOCKED,
-    CHAR_RES_TAB,
+    CHAR_TAG_NET,
     CHAR_RES_LF,
     CHAR_TAG_TRANSFER,
     CHAR_TAG_ZIP,

@@ -151,7 +151,7 @@ save_list_t online_saves = {
 */
 save_list_t user_backup = {
     .icon_id = cat_bup_png_index,
-    .title = "User Data Backup",
+    .title = "User Tools",
     .list = NULL,
     .path = "",
     .ReadList = &ReadBackupList,
@@ -300,6 +300,7 @@ static void LoadTextures_Menu()
 	load_menu_texture(tag_psp, png);
 	load_menu_texture(tag_psv, png);
 	load_menu_texture(tag_warning, png);
+	load_menu_texture(tag_net, png);
 	load_menu_texture(tag_zip, png);
 	load_menu_texture(tag_apply, png);
 	load_menu_texture(tag_transfer, png);
@@ -442,6 +443,7 @@ static void registerSpecialChars()
 	RegisterSpecialCharacter(CHAR_TAG_APPLY, 2, 1.1, &menu_textures[tag_apply_png_index]);
 	RegisterSpecialCharacter(CHAR_TAG_ZIP, 0, 1.2, &menu_textures[tag_zip_png_index]);
 	RegisterSpecialCharacter(CHAR_TAG_TRANSFER, 0, 1.2, &menu_textures[tag_transfer_png_index]);
+	RegisterSpecialCharacter(CHAR_TAG_NET, 2, 1.1, &menu_textures[tag_net_png_index]);
 
 	// Register button icons
 	RegisterSpecialCharacter(CHAR_BTN_X, 0, 1.2, &menu_textures[footer_ico_cross_png_index]);

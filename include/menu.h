@@ -69,6 +69,7 @@ enum texture_index
 	tag_psv_png_index,
 	tag_warning_png_index,
 	tag_transfer_png_index,
+	tag_net_png_index,
 	tag_zip_png_index,
 	tag_apply_png_index,
 	buk_scr_png_index,

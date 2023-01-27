@@ -21,6 +21,7 @@
 
 #define UTF8_CHAR_STAR		"\xE2\x98\x85"
 
+#define CHAR_ICON_NET		"\x09"
 #define CHAR_ICON_ZIP		"\x0C"
 #define CHAR_ICON_COPY		"\x0B"
 #define CHAR_ICON_SIGN		"\x06"
@@ -833,6 +834,11 @@ list_t * ReadBackupList(const char* userPath)
 	item->type = FILE_TYPE_ZIP;
 	list_append(list, item);
 
+	item = _createSaveEntry(0, CHAR_ICON_NET " Network Tools (Downloader, Web Server)");
+	item->path = strdup(PS3_TMP_PATH);
+	item->type = FILE_TYPE_NET;
+	list_append(list, item);
+
 	return list;
 }
 
@@ -1066,6 +1072,14 @@ int ReadBackupCodes(save_entry_t * bup)
 	case FILE_TYPE_ACT:
 		bup->codes = list_alloc();
 		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " Activate PS3 Account (act.dat)", CMD_CREATE_ACT_DAT);
+		list_append(bup->codes, cmd);
+		return list_count(bup->codes);
+
+	case FILE_TYPE_NET:
+		bup->codes = list_alloc();
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " URL link Downloader (http, https, ftp, ftps)", CMD_URL_DOWNLOAD);
+		list_append(bup->codes, cmd);
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " Local Web Server (full system access)", CMD_NET_WEBSERVER);
 		list_append(bup->codes, cmd);
 		return list_count(bup->codes);
 
@@ -1521,7 +1535,7 @@ list_t * ReadUserList(const char* userPath)
 		save_paths[2] = PSP_SAVES_PATH_USB;
 	}
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Start local Web Server", CMD_SAVE_WEB_SERVER);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " Start local Web Server", CMD_SAVE_WEB_SERVER);
 	list_append(item->codes, cmd);
 	list_append(list, item);
 
