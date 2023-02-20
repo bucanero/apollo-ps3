@@ -1212,6 +1212,11 @@ void UnloadGameList(list_t * list)
 				{
 					for (int z = 0; z < code->options_count; z++)
 					{
+						for (int j = 0; j < code->options[z].size; j++)
+						{
+							free(code->options[z].name[j]);
+							free(code->options[z].value[j]);
+						}
 						if (code->options[z].line)
 							free(code->options[z].line);
 						if (code->options[z].name)

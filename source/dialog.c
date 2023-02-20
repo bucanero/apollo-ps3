@@ -8,13 +8,12 @@
 #include <sysutil/sysutil.h>
 
 #include "menu.h"
+#include "types.h"
 
 #define SYSUTIL_OSK_INPUT_ENTERED        0x505
 
 #define OSK_IME_DIALOG_MAX_TITLE_LENGTH  (128)
 #define OSK_IME_DIALOG_MAX_TEXT_LENGTH   (512)
-
-#define ARRAY_COUNTOF(arr) (sizeof(arr)/sizeof(0[arr]))
 
 static uint64_t progbar_tmp;
 static float bar1_countparts;
@@ -283,8 +282,8 @@ static int osk_dialog_input_init(const char* title, const char* text, int maxlen
 
     osk_level = 1;
 
-    convert_to_utf16(title, g_ime_title, ARRAY_COUNTOF(g_ime_title) - 1);
-    convert_to_utf16(text, g_ime_text, ARRAY_COUNTOF(g_ime_text) - 1);
+    convert_to_utf16(title, g_ime_title, countof(g_ime_title) - 1);
+    convert_to_utf16(text, g_ime_text, countof(g_ime_text) - 1);
     
     inputFieldInfo.message =  g_ime_title;
     inputFieldInfo.startText = g_ime_text;

@@ -145,6 +145,8 @@ int sfo_read(sfo_context_t *context, const char *file_path) {
 		list_append(context->params, param);
 	}
 
+	free(sfo);
+
 error:
 	return ret;
 }
@@ -312,7 +314,7 @@ void sfo_grab(sfo_context_t *inout, sfo_context_t *tpl, int num_keys, const sfo_
 	}
 }
 
-void sfo_patch_lock(sfo_context_t *inout, unsigned int flags) {
+static void sfo_patch_lock(sfo_context_t *inout, unsigned int flags) {
 	sfo_context_param_t *p;
 
 	if ((flags & SFO_PATCH_FLAG_REMOVE_COPY_PROTECTION) != 0) {
@@ -324,7 +326,7 @@ void sfo_patch_lock(sfo_context_t *inout, unsigned int flags) {
 	}
 }
 
-void sfo_patch_account(sfo_context_t *inout, const char* account) {
+static void sfo_patch_account(sfo_context_t *inout, const char* account) {
 	sfo_context_param_t *p;
 
 	if (!account)
@@ -342,7 +344,7 @@ void sfo_patch_account(sfo_context_t *inout, const char* account) {
 	}
 }
 
-void sfo_patch_user_id(sfo_context_t *inout, u32 userid) {
+static void sfo_patch_user_id(sfo_context_t *inout, u32 userid) {
 	sfo_context_param_t *p;
 
 	if (userid == 0)
@@ -356,7 +358,7 @@ void sfo_patch_user_id(sfo_context_t *inout, u32 userid) {
 	}
 }
 
-void sfo_patch_psid(sfo_context_t *inout, u8* psid) {
+static void sfo_patch_psid(sfo_context_t *inout, u8* psid) {
 	sfo_context_param_t *p;
 
 	if (!psid)
@@ -369,7 +371,7 @@ void sfo_patch_psid(sfo_context_t *inout, u8* psid) {
 	}
 }
 
-void sfo_patch_directory(sfo_context_t *inout, const char* save_dir) {
+static void sfo_patch_directory(sfo_context_t *inout, const char* save_dir) {
 	sfo_context_param_t *p;
 
 	if (!save_dir)
