@@ -524,6 +524,7 @@ static void activateAccount(const char* ex_path)
 {
 	int ret;
 	char path[256];
+	char account_id[SFO_ACCOUNT_ID_SIZE+1];
 
 	snprintf(path, sizeof(path), "%s" "act.dat", ex_path);
 	if (file_exists(path) == SUCCESS)
@@ -538,7 +539,16 @@ static void activateAccount(const char* ex_path)
 		return;
 	}
 
-	if (!apollo_config.account_id && (apollo_config.account_id = create_fake_account(apollo_config.user_id)) == 0)
+	snprintf(account_id, sizeof(account_id), "%016lx", 0x6F6C6C6F70610000 + (~apollo_config.user_id & 0xFFFF));
+	if (apollo_config.account_id != 0 ||
+		!osk_dialog_get_text("Enter the Account ID", account_id, sizeof(account_id)) ||
+		!sscanf(account_id, "%lx", &apollo_config.account_id))
+	{
+		show_message("Error! Account ID is not valid");
+		return;
+	};
+
+	if (!create_fake_account(apollo_config.user_id, apollo_config.account_id))
 	{
 		show_message("Error! Fake Account could not be assigned to xRegistry.sys");
 		return;
@@ -1337,7 +1347,8 @@ static void downloadLink(const char* path)
 	if (!osk_dialog_get_text("Download URL", url, sizeof(url)))
 		return;
 
-	snprintf(out_path, sizeof(out_path), "%s%s", path, strrchr(url, '/')+1);
+	char *fname = strrchr(url, '/');
+	snprintf(out_path, sizeof(out_path), "%s%s", path, fname ? ++fname : "download.bin");
 
 	if (http_download(url, NULL, out_path, 1))
 		show_message("File successfully downloaded to:\n%s", out_path);

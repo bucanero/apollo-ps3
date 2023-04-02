@@ -1,7 +1,5 @@
 #include <ppu-types.h>
 
-#define FAKE_ACCOUNT_ID(uid)			(0x6F6C6C6F70610000 + ((uid & 0xFFFF) ^ 0xFFFF))
-
 #define XREGISTRY_FILE 					"/dev_flash2/etc/xRegistry.sys"
 #define XREG_SETTING_AUTOSIGN 			"/setting/user/%08d/npaccount/autoSignInEnable"
 #define XREG_SETTING_ACCOUNTID 			"/setting/user/%08d/npaccount/accountid"

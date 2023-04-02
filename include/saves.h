@@ -286,7 +286,7 @@ int rif2rap(const uint8_t* idps_key, const char* lic_path, const char* rifFile, 
 int rap2rif(const uint8_t* idps_key, const char* exdata_path, const char* rap_file, const char *rif_path);
 int rif2klicensee(const uint8_t* idps_key, const char* exdata_path, const char* rif_file, uint8_t* klic);
 int create_actdat(const char* exdata_path, uint64_t account_id);
-uint64_t create_fake_account(uint32_t user_id);
+uint64_t create_fake_account(uint32_t user_id, uint64_t account_id);
 uint64_t get_account_id(uint32_t user_id);
 
 int create_savegame_folder(const char* folder);

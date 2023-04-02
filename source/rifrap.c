@@ -380,7 +380,7 @@ u64 get_account_id(u32 user_id)
 	return aid;
 }
 
-u64 create_fake_account(u32 user_id)
+u64 create_fake_account(u32 user_id, u64 account_id)
 {
 	int pos;
 	char data[256];
@@ -409,7 +409,7 @@ u64 create_fake_account(u32 user_id)
 	}
 
 	// Set/Overwrite with fake accountID
-	sprintf(buffer + pos, "%016lx", FAKE_ACCOUNT_ID(user_id));
+	sprintf(buffer + pos, "%016lx", account_id);
 	LOG("Setting AccountID (%s)...", buffer + pos);
 
 	snprintf(data, sizeof(data), XREG_SETTING_AUTOSIGN, user_id);
@@ -431,7 +431,7 @@ u64 create_fake_account(u32 user_id)
 	}
 
 	free(buffer);
-	return FAKE_ACCOUNT_ID(user_id);
+	return (account_id);
 }
 
 int create_actdat(const char* exdata_path, u64 account_id)

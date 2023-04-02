@@ -145,26 +145,28 @@ static int convert_to_utf16(const char* utf8, uint16_t* utf16, uint32_t availabl
             uint8_t next = (uint8_t)*utf8++;
             if (next == 0 || (next & 0xc0) != 0x80)
             {
-                return count;
+                goto utf16_end;
             }
             code = (code << 6) | (next & 0x3f);
         }
 
         if (code < 0xd800 || code >= 0xe000)
         {
-            if (available < 1) return count;
+            if (available < 1) goto utf16_end;
             utf16[count++] = (uint16_t)code;
             available--;
         }
         else // surrogate pair
         {
-            if (available < 2) return count;
+            if (available < 2) goto utf16_end;
             code -= 0x10000;
             utf16[count++] = 0xd800 | (code >> 10);
             utf16[count++] = 0xdc00 | (code & 0x3ff);
             available -= 2;
         }
     }
+
+utf16_end:
     utf16[count]=0;
     return count;
 }
@@ -185,27 +187,27 @@ static int convert_from_utf16(const uint16_t* utf16, char* utf8, uint32_t size)
             uint16_t ch2 = *utf16++;
             if (ch < 0xdc00 || ch > 0xe000 || ch2 < 0xd800 || ch2 > 0xdc00)
             {
-                return count;
+                goto utf8_end;
             }
             code = 0x10000 + ((ch & 0x03FF) << 10) + (ch2 & 0x03FF);
         }
 
         if (code < 0x80)
         {
-            if (size < 1) return count;
+            if (size < 1) goto utf8_end;
             utf8[count++] = (char)code;
             size--;
         }
         else if (code < 0x800)
         {
-            if (size < 2) return count;
+            if (size < 2) goto utf8_end;
             utf8[count++] = (char)(0xc0 | (code >> 6));
             utf8[count++] = (char)(0x80 | (code & 0x3f));
             size -= 2;
         }
         else if (code < 0x10000)
         {
-            if (size < 3) return count;
+            if (size < 3) goto utf8_end;
             utf8[count++] = (char)(0xe0 | (code >> 12));
             utf8[count++] = (char)(0x80 | ((code >> 6) & 0x3f));
             utf8[count++] = (char)(0x80 | (code & 0x3f));
@@ -213,7 +215,7 @@ static int convert_from_utf16(const uint16_t* utf16, char* utf8, uint32_t size)
         }
         else
         {
-            if (size < 4) return count;
+            if (size < 4) goto utf8_end;
             utf8[count++] = (char)(0xf0 | (code >> 18));
             utf8[count++] = (char)(0x80 | ((code >> 12) & 0x3f));
             utf8[count++] = (char)(0x80 | ((code >> 6) & 0x3f));
@@ -221,6 +223,8 @@ static int convert_from_utf16(const uint16_t* utf16, char* utf8, uint32_t size)
             size -= 4;
         }
     }
+
+utf8_end:
     utf8[count]=0;
     return count;
 }
@@ -282,6 +286,7 @@ static int osk_dialog_input_init(const char* title, const char* text, int maxlen
 
     osk_level = 1;
 
+    memset(g_ime_input, 0, sizeof(g_ime_input));
     convert_to_utf16(title, g_ime_title, countof(g_ime_title) - 1);
     convert_to_utf16(text, g_ime_text, countof(g_ime_text) - 1);
     
@@ -297,8 +302,6 @@ static int osk_dialog_input_init(const char* title, const char* text, int maxlen
     DialogOskParam.firstViewPanel = OSK_PANEL_TYPE_ALPHABET_FULL_WIDTH;
     DialogOskParam.allowedPanels = (OSK_PANEL_TYPE_ALPHABET | OSK_PANEL_TYPE_NUMERAL | OSK_PANEL_TYPE_ENGLISH | OSK_PANEL_TYPE_URL);
     DialogOskParam.prohibitFlags = OSK_PROHIBIT_RETURN;
-
-    memset(g_ime_input, 0, sizeof(g_ime_input));
 
     if ((oskSetKeyLayoutOption (OSK_10KEY_PANEL | OSK_FULLKEY_PANEL) < 0) ||
         (oskAddSupportLanguage (DialogOskParam.allowedPanels) < 0) ||
@@ -361,7 +364,7 @@ static int osk_dialog_input_update(void)
         {
             osk_exit();
             return 1;
-        } 
+        }
          
         osk_exit();
         return (-1);
@@ -372,7 +375,7 @@ static int osk_dialog_input_update(void)
 
 int osk_dialog_get_text(const char* title, char* text, uint32_t size)
 {
-    if (size > OSK_IME_DIALOG_MAX_TEXT_LENGTH) size = OSK_IME_DIALOG_MAX_TEXT_LENGTH;
+    size = (size > OSK_IME_DIALOG_MAX_TEXT_LENGTH) ? OSK_IME_DIALOG_MAX_TEXT_LENGTH : (size-1);
 
     if (!osk_dialog_input_init(title, text, size))
         return 0;
@@ -384,7 +387,6 @@ int osk_dialog_get_text(const char* title, char* text, uint32_t size)
 
         drawDialogBackground();
     }
-    convert_from_utf16(g_ime_input, text, size - 1);
 
-    return 1;
+    return (convert_from_utf16(g_ime_input, text, size));
 }
