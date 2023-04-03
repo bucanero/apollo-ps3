@@ -61,8 +61,12 @@ static sysSpuImage spu_image;
 void update_usb_path(char *p);
 void update_hdd_path(char *p);
 void update_trophy_path(char *p);
+void update_db_path(char *p);
 
 app_config_t apollo_config = {
+    .app_name = "APOLLO",
+    .app_ver = APOLLO_VERSION,
+    .save_db = ONLINE_URL,
     .music = 1,
     .doSort = 1,
     .doAni = 1,
@@ -141,7 +145,7 @@ save_list_t online_saves = {
     .path = ONLINE_URL,
     .ReadList = &ReadOnlineList,
     .ReadCodes = &ReadOnlineSaves,
-    .UpdatePath = NULL,
+    .UpdatePath = &update_db_path,
 };
 
 /*
@@ -185,24 +189,21 @@ static void release_all()
 
 static void sys_callback(uint64_t status, uint64_t param, void* userdata)
 {
-	 switch (status) {
-		case SYSUTIL_EXIT_GAME: //0x0101
+	switch (status) {
+		case SYSUTIL_EXIT_GAME:
 			release_all();
 			if (file_exists("/dev_hdd0/mms/db.err") == SUCCESS)
 				sys_reboot();
 
 			sysProcessExit(1);
 			break;
-	  
-		case SYSUTIL_MENU_OPEN: //0x0131
+
+		case SYSUTIL_MENU_OPEN:
+		case SYSUTIL_MENU_CLOSE:
 			break;
 
-		case SYSUTIL_MENU_CLOSE: //0x0132
+		default:
 			break;
-
-	   default:
-		   break;
-		 
 	}
 }
 
@@ -424,6 +425,11 @@ void update_trophy_path(char* path)
 	sprintf(path, TROPHY_PATH_HDD, apollo_config.user_id);
 }
 
+void update_db_path(char* path)
+{
+	strcpy(path, apollo_config.save_db);
+}
+
 static void registerSpecialChars()
 {
 	// Register save tags
@@ -500,7 +506,7 @@ s32 main(s32 argc, const char* argv[])
 	if (file_exists(APOLLO_PATH OWNER_XML_FILE) == SUCCESS)
 		save_xml_owner(APOLLO_PATH OWNER_XML_FILE, NULL);
 
-	menu_options[6].options = get_xml_owners(APOLLO_PATH OWNER_XML_FILE);
+	menu_options[OWNER_SETTING].options = get_xml_owners(APOLLO_PATH OWNER_XML_FILE);
  
 	// Set PFD keys from loaded settings
 	pfd_util_setup_keys();

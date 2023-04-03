@@ -7,8 +7,17 @@
 #include "saves.h"
 #include "common.h"
 
-uint8_t owner_sel = 0;
+static uint8_t owner_sel = 0;
 static char * sort_opt[] = {"Disabled", "by Name", "by Title ID", NULL};
+
+static void log_callback(int sel);
+static void sort_callback(int sel);
+static void ani_callback(int sel);
+static void owner_callback(int sel);
+static void db_url_callback(int sel);
+static void redetect_callback(int sel);
+static void clearcache_callback(int sel);
+static void upd_appdata_callback(int sel);
 
 menu_option_t menu_options[] = {
 	{ .name = "Background Music", 
@@ -47,6 +56,12 @@ menu_option_t menu_options[] = {
 		.value = NULL, 
 		.callback = upd_appdata_callback 
 	},
+	{ .name = "Change Online DB URL",
+		.options = NULL,
+		.type = APP_OPTION_CALL,
+		.value = NULL,
+		.callback = db_url_callback 
+	},
 	{ .name = "\nSave Data Owner",
 		.options = NULL,
 		.type = APP_OPTION_LIST,
@@ -75,17 +90,23 @@ void music_callback(int sel)
 	SND_Pause(sel);
 }
 
-void sort_callback(int sel)
+static void sort_callback(int sel)
 {
 	apollo_config.doSort = sel;
 }
 
-void ani_callback(int sel)
+static void ani_callback(int sel)
 {
 	apollo_config.doAni = !sel;
 }
 
-void clearcache_callback(int sel)
+static void db_url_callback(int sel)
+{
+	if (osk_dialog_get_text("Enter the URL of the online database", apollo_config.save_db, sizeof(apollo_config.save_db)))
+		show_message("Online database URL changed to:\n%s", apollo_config.save_db);
+}
+
+static void clearcache_callback(int sel)
 {
 	LOG("Cleaning folder '%s'...", APOLLO_LOCAL_CACHE);
 	clean_directory(APOLLO_LOCAL_CACHE);
@@ -101,7 +122,7 @@ void unzip_app_data(const char* zip_file)
 	unlink_secure(zip_file);
 }
 
-void upd_appdata_callback(int sel)
+static void upd_appdata_callback(int sel)
 {
 	if (http_download(ONLINE_PATCH_URL, "apollo-ps3-update.zip", APOLLO_LOCAL_CACHE "appdata.zip", 1))
 		unzip_app_data(APOLLO_LOCAL_CACHE "appdata.zip");
@@ -186,19 +207,19 @@ end_update:
 	return;
 }
 
-void owner_callback(int sel)
+static void owner_callback(int sel)
 {
 	if (file_exists(APOLLO_PATH OWNER_XML_FILE) == SUCCESS)
-		read_xml_owner(APOLLO_PATH OWNER_XML_FILE, menu_options[8].options[sel]);
+		read_xml_owner(APOLLO_PATH OWNER_XML_FILE, menu_options[OWNER_SETTING].options[sel]);
 }
 
-void log_callback(int sel)
+static void log_callback(int sel)
 {
-	dbglogger_init_mode(FILE_LOGGER, "/dev_hdd0/tmp/apollo.log", 0);
+	dbglogger_init_mode(FILE_LOGGER, "/dev_hdd0/tmp/apollo.log", 1);
 	show_message("Debug Logging Enabled!\n\n/dev_hdd0/tmp/apollo.log");
 }
 
-void redetect_callback(int sel)
+static void redetect_callback(int sel)
 {
 	init_loading_screen("Updating Account & Console IDs...");
 	reset_app_settings(&apollo_config);

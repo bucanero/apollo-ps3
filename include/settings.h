@@ -6,6 +6,7 @@
 #define MENU_ANI_MAX 			0x80        //Max animation number
 #define MENU_SPLIT_OFF			200			//Offset from left of sub/split menu to start drawing
 #define OPTION_ITEM_OFF         730         //Offset from left of settings item/value
+#define OWNER_SETTING           7           //Index of owner setting in menu_options
 
 enum app_option_type
 {
@@ -27,6 +28,8 @@ typedef struct
 
 typedef struct
 {
+    char app_name[8];
+    char app_ver[8];
     uint8_t music;
     uint8_t doSort;
     uint8_t doAni;
@@ -35,21 +38,14 @@ typedef struct
     uint64_t idps[2];
     uint64_t psid[2];
     uint64_t account_id;
+    char save_db[256];
 } app_config_t;
 
 extern menu_option_t menu_options[];
-
 extern app_config_t apollo_config;
 
-void log_callback(int sel);
-void owner_callback(int sel);
 void music_callback(int sel);
-void sort_callback(int sel);
-void ani_callback(int sel);
 void update_callback(int sel);
-void redetect_callback(int sel);
-void clearcache_callback(int sel);
-void upd_appdata_callback(int sel);
 void unzip_app_data(const char* zip_file);
 void wait_save_thread(void);
 
