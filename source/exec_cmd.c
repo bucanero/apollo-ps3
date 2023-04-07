@@ -273,6 +273,63 @@ static int webReqHandler(dWebRequest_t* req, dWebResponse_t* out, void* list)
 		return 1;
 	}
 
+	// http://ps3-ip:8080/PS3/games.txt
+	if (wildcard_match(req->resource, "/PS3/games.txt"))
+	{
+		asprintf(&out->data, "%s%s", APOLLO_LOCAL_CACHE, "web_games.txt");
+
+		FILE* f = fopen(out->data, "w");
+		if (!f)
+			return 0;
+
+		for (node = list_head(list); (item = list_get(node)); node = list_next(node))
+		{
+			if (item->type == FILE_TYPE_MENU || !(item->flags & SAVE_FLAG_PS3))
+				continue;
+
+			fprintf(f, "%s=%s\n", item->title_id, item->name);
+		}
+
+		fclose(f);
+		return 1;
+	}
+
+	// http://ps3-ip:8080/PS3/BLUS12345/saves.txt
+	if (wildcard_match(req->resource, "/PS3/\?\?\?\?\?\?\?\?\?/saves.txt"))
+	{
+		asprintf(&out->data, "%sweb%.9s_saves.txt", APOLLO_LOCAL_CACHE, req->resource + 5);
+
+		FILE* f = fopen(out->data, "w");
+		if (!f)
+			return 0;
+
+		int i = 0;
+		for (node = list_head(list); (item = list_get(node)); node = list_next(node), i++)
+		{
+			if (item->type == FILE_TYPE_MENU || !(item->flags & SAVE_FLAG_PS3) || strncmp(item->title_id, req->resource + 5, 9))
+				continue;
+
+			fprintf(f, "%08d.zip=(%s) %s\n", i, item->dir_name, item->name);
+		}
+
+		fclose(f);
+		return 1;
+	}
+
+	// http://ps3-ip:8080/PS3/BLUS12345/00000000.zip
+	if (wildcard_match(req->resource, "/PS3/\?\?\?\?\?\?\?\?\?/*.zip"))
+	{
+		int id = 0;
+
+		sscanf(req->resource + 15, "%08d", &id);
+		item = list_get_item(list, id);
+
+		asprintf(&out->data, "%s%s.zip", APOLLO_LOCAL_CACHE, item->dir_name);
+		zip_savegame(item->dir_name, item->path, out->data);
+
+		return (file_exists(out->data) == SUCCESS);
+	}
+
 	// http://ps3-ip:8080/zip/DIR-NAME.zip
 	if (wildcard_match(req->resource, "/zip/*.zip"))
 	{
@@ -298,6 +355,21 @@ static int webReqHandler(dWebRequest_t* req, dWebResponse_t* out, void* list)
 		strcat(out->data, "/ICON0.PNG");
 
 		return (file_exists(out->data) == SUCCESS);
+	}
+
+	// http://ps3-ip:8080/PS3/BLUS12345/ICON0.PNG
+	if (wildcard_match(req->resource, "/PS3/\?\?\?\?\?\?\?\?\?/ICON0.PNG"))
+	{
+		for (node = list_head(list); (item = list_get(node)); node = list_next(node))
+		{
+			if (item->type == FILE_TYPE_MENU || !(item->flags & SAVE_FLAG_PS3) || strncmp(item->title_id, req->resource + 5, 9))
+				continue;
+
+			asprintf(&out->data, "%sICON0.PNG", item->path);
+			return (file_exists(out->data) == SUCCESS);
+		}
+
+		return 0;
 	}
 
 	return 0;
