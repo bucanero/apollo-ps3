@@ -19,6 +19,7 @@ enum menu_screen_ids
 	MENU_PATCH_VIEW,		/* 9 - Code Menu (View Cheat) */
 	MENU_CODE_OPTIONS,		/* 10 - Code Menu (View Cheat Options) */
 	MENU_SAVE_DETAILS,
+	MENU_HEX_EDITOR,
 	TOTAL_MENU_IDS
 };
 
@@ -112,6 +113,7 @@ enum texture_index
 
 //Fonts
 #define font_adonais_regular				0
+#define font_console_16x32					1
 
 #define APP_FONT_COLOR						0xFFFFFF00
 #define APP_FONT_TAG_COLOR					0xFFFFFF00
@@ -187,6 +189,16 @@ enum texture_index
 #define app_ver_png_y						67 * SCREEN_H_ADJ
 
 
+typedef struct 
+{
+	uint8_t* data;
+	size_t size;
+	int start;
+	int pos;
+	uint8_t low_nibble;
+	char filepath[256];
+} hexedit_data_t;
+
 typedef struct t_png_texture
 {
 	const void *buffer;
@@ -226,13 +238,15 @@ extern void DrawHeader(int icon, int xOff, const char * headerTitle, const char 
 extern void DrawHeader_Ani(int icon, const char * headerTitle, const char * headerSubTitle, u32 rgba, u32 bgrgba, int ani, int div);
 extern void DrawBackgroundTexture(int x, u8 alpha);
 extern void DrawTextureRotated(png_texture* tex, int x, int y, int z, int w, int h, u32 rgba, float angle);
-extern void Draw_MainMenu();
-extern void Draw_MainMenu_Ani();
+extern void Draw_MainMenu(void);
+extern void Draw_MainMenu_Ani(void);
+extern void Draw_HexEditor(const hexedit_data_t* hex);
+extern void Draw_HexEditor_Ani(const hexedit_data_t* hex);
 
-void initMenuOptions();
+void initMenuOptions(void);
 int readPad(int port);
 
-void drawScene();
+void drawScene(void);
 void drawJars(uint8_t alpha);
 void drawColumns(uint8_t alpha);
 void drawSplashLogo(int m);

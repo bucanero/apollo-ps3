@@ -25,6 +25,7 @@
 #include "libfont.h"
 #include "ttf_render.h"
 #include "font_adonais.h"
+#include "font-16x32.h"
 
 //Sound
 #include "spu_soundmodule_bin.h"
@@ -94,6 +95,7 @@ const char * menu_pad_help[TOTAL_MENU_IDS] = { NULL,												//Main
 								"\x13 Back",														//View Cheat
 								"\x10 Select    \x13 Back",											//Cheat Option
 								"\x13 Back",														//View Details
+								"\x10 Value Up  \x11 Value Down   \x13 Exit",						//Hex Editor
 								};
 
 /*
@@ -230,6 +232,7 @@ static void LoadTextures_Menu()
 	
 	ResetFont();
 	free_mem = (u32 *) AddFontFromBitmapArray((u8 *) data_font_Adonais, (u8 *) texture_mem, 0x20, 0x7e, 32, 31, 1, BIT7_FIRST_PIXEL);
+	free_mem = (u32 *) AddFontFromBitmapArray((u8 *) console_font_16x32, (u8 *) free_mem, 0, 0xFF, 16, 32, 1, BIT7_FIRST_PIXEL);
 	
 	TTFUnloadFont();
 	TTFLoadFont(0, "/dev_flash/data/font/SCE-PS3-SR-R-LATIN2.TTF", NULL, 0);
@@ -513,7 +516,7 @@ s32 main(s32 argc, const char* argv[])
 
 	// Setup font
 	SetExtraSpace(5);
-	SetCurrentFont(0);
+	SetCurrentFont(font_adonais_regular);
 
 	registerSpecialChars();
 	initMenuOptions();
@@ -559,7 +562,7 @@ s32 main(s32 argc, const char* argv[])
 			}
 			
 			SetFontSize(APP_FONT_SIZE_DESCRIPTION);
-			SetCurrentFont(0);
+			SetCurrentFont(font_adonais_regular);
 			SetFontAlign(FONT_ALIGN_SCREEN_CENTER);
 			SetFontColor(APP_FONT_COLOR | alpha, 0);
 			DrawString(0, 470, (char *)menu_pad_help[menu_id]);

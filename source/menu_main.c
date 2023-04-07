@@ -33,6 +33,7 @@ int last_menu_id[TOTAL_MENU_IDS] = { 0 };						// Last menu id called (for retur
 save_entry_t* selected_entry;
 code_entry_t* selected_centry;
 int option_index = 0;
+static hexedit_data_t hex_data;
 
 void initMenuOptions()
 {
@@ -167,7 +168,7 @@ static code_entry_t* LoadSaveDetails()
 }
 
 static void SetMenu(int id)
-{   
+{
 	switch (menu_id) //Leaving menu
 	{
 		case MENU_MAIN_SCREEN: //Main Menu
@@ -193,6 +194,12 @@ static void SetMenu(int id)
 		case MENU_CODE_OPTIONS: //Cheat Option Menu
 			if (apollo_config.doAni)
 				Draw_CheatsMenu_Options_Ani_Exit();
+			break;
+
+		case MENU_HEX_EDITOR: //Hex Editor Menu
+			//(hack) restore patch menu prev-id
+			last_menu_id[MENU_PATCHES] = last_menu_id[MENU_HEX_EDITOR];
+			last_menu_id[menu_id] = id;
 			break;
 	}
 	
@@ -293,6 +300,15 @@ static void SetMenu(int id)
 			menu_old_sel[MENU_CODE_OPTIONS] = 0;
 			if (apollo_config.doAni)
 				Draw_CheatsMenu_Options_Ani();
+			break;
+
+		case MENU_HEX_EDITOR: //Hex Editor Menu
+			//(hack) save patch menu prev-id
+			last_menu_id[MENU_HEX_EDITOR] = last_menu_id[MENU_PATCHES];
+			last_menu_id[menu_id] = id;
+
+			if (apollo_config.doAni)
+				Draw_HexEditor_Ani(&hex_data);
 			break;
 	}
 	
@@ -505,6 +521,94 @@ static void doOptionsMenu()
 	Draw_OptionsMenu();
 }
 
+static void doHexEditor(void)
+{
+	// Check the pads.
+	if (readPad(0))
+	{
+		if(paddata[0].BTN_UP)
+		{
+			if (hex_data.pos >= 0x10)
+				hex_data.pos -= 0x10;
+		}
+
+		else if(paddata[0].BTN_DOWN)
+		{
+			if (hex_data.pos + 0x10 < hex_data.size)
+				hex_data.pos += 0x10;
+		}
+		else if (paddata[0].BTN_LEFT)
+		{
+			if (hex_data.low_nibble)
+				hex_data.low_nibble ^= 1;
+
+			else if (hex_data.pos > 0)
+			{
+				hex_data.pos--;
+				hex_data.low_nibble ^= 1;
+			}
+		}
+		else if (paddata[0].BTN_RIGHT)
+		{
+			if (!hex_data.low_nibble)
+				hex_data.low_nibble ^= 1;
+
+			else if (hex_data.pos + 1 < hex_data.size)
+			{
+				hex_data.pos++;
+				hex_data.low_nibble ^= 1;
+			}
+		}
+		else if (paddata[0].BTN_L1)
+		{
+			hex_data.start -= 0x100;
+			if (hex_data.start < 0)
+				hex_data.start = 0;
+		}
+		else if (paddata[0].BTN_R1)
+		{
+			if (hex_data.start + 0x100 < hex_data.size)
+				hex_data.start += 0x100;
+		}
+
+		else if (paddata[0].BTN_CIRCLE)
+		{
+			if (show_dialog(DIALOG_TYPE_YESNO, "Save changes to %s?", strrchr(hex_data.filepath, '/') + 1) &&
+				(write_buffer(hex_data.filepath, hex_data.data, hex_data.size) == SUCCESS))
+			{
+				selected_centry->options[option_index].value[menu_sel][1] = CMD_IMPORT_DATA_FILE;
+				execCodeCommand(selected_centry, selected_centry->options[option_index].value[menu_sel]+1);
+			}
+			free(hex_data.data);
+
+			SetMenu(MENU_PATCHES);
+			return;
+		}
+		else if (paddata[0].BTN_CROSS)
+		{
+			if ((hex_data.data[hex_data.pos] & (0xF0 >> hex_data.low_nibble * 4)) == (0xF0 >> hex_data.low_nibble * 4))
+				hex_data.data[hex_data.pos] &= (0x0F << hex_data.low_nibble * 4);
+			else
+				hex_data.data[hex_data.pos] += (0x10 >> hex_data.low_nibble * 4);
+		}
+		else if (paddata[0].BTN_SQUARE)
+		{
+			if ((hex_data.data[hex_data.pos] & (0xF0 >> hex_data.low_nibble * 4)) == 0)
+				hex_data.data[hex_data.pos] |= (0xF0 >> hex_data.low_nibble * 4);
+			else
+				hex_data.data[hex_data.pos] -= (0x10 >> hex_data.low_nibble * 4);
+		}
+
+		if (hex_data.pos < hex_data.start)
+			hex_data.start = (hex_data.pos) & ~15;
+
+		if (hex_data.pos >= hex_data.start + 19*0x10)
+			hex_data.start = (hex_data.pos-1) & ~15;
+	}
+
+	Draw_HexEditor(&hex_data);
+}
+
 static int count_code_lines()
 {
 	//Calc max
@@ -540,7 +644,7 @@ static void doPatchViewMenu()
 
 static void doCodeOptionsMenu()
 {
-	code_entry_t* code = list_get_item(selected_entry->codes, menu_old_sel[last_menu_id[MENU_CODE_OPTIONS]]);
+	code_entry_t* code = selected_centry;
 	// Check the pads.
 	if (readPad(0))
 	{
@@ -561,7 +665,27 @@ static void doCodeOptionsMenu()
 			code->options[option_index].sel = menu_sel;
 
 			if (code->type == PATCH_COMMAND)
+			{
+				if (code->options[option_index].value[menu_sel][0] == CMD_HEX_EDIT_FILE)
+				{
+					code->options[option_index].value[menu_sel][1] = CMD_DECRYPT_FILE;
+					execCodeCommand(code, code->options[option_index].value[menu_sel]+1);
+
+					memset(&hex_data, 0, sizeof(hex_data));
+					snprintf(hex_data.filepath, sizeof(hex_data.filepath), APOLLO_TMP_PATH "%s/%s", selected_entry->dir_name, code->options[0].name[code->options[0].sel]);
+					if (read_buffer(hex_data.filepath, &hex_data.data, &hex_data.size) < 0)
+					{
+						show_message("Unable to load\n%s", hex_data.filepath);
+						SetMenu(last_menu_id[MENU_CODE_OPTIONS]);
+						return;
+					}
+
+					SetMenu(MENU_HEX_EDITOR);
+					return;
+				}
+
 				execCodeCommand(code, code->options[option_index].value[menu_sel]);
+			}
 
 			option_index++;
 			
@@ -737,6 +861,10 @@ void drawScene()
 
 		case MENU_SAVE_DETAILS: //Save Details Menu
 			doSaveDetailsMenu();
+			break;
+
+		case MENU_HEX_EDITOR: //Hex Editor Menu
+			doHexEditor();
 			break;
 	}
 }

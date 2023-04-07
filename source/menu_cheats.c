@@ -240,7 +240,7 @@ int DrawCodes(code_entry_t* code, u8 alpha, int y_inc, int xOff, int selIndex)
     free (splitCodes);
     
     SetMonoSpace(0);
-    SetCurrentFont(0);
+    SetCurrentFont(font_adonais_regular);
     SetExtraSpace(5);
     
     return numOfLines;

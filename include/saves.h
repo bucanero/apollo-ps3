@@ -95,6 +95,7 @@ enum cmd_code_enum
     CMD_CONVERT_TO_PSV,
     CMD_COPY_DUMMY_PSV,
     CMD_IMPORT_DATA_FILE,
+    CMD_HEX_EDIT_FILE,
 
 // Bulk commands
     CMD_RESIGN_SAVES,

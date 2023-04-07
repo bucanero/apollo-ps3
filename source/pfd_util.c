@@ -76,7 +76,7 @@ static pfd_config_t config = {
 	};
 
 
-void setup_key(u8* key, int len) {
+static void setup_key(u8* key, int len) {
 	int i;
 
     for (i = 0; i < len; i++)
@@ -109,7 +109,7 @@ void pfd_util_end(void) {
 	LOG("clean up complete");
 }
 
-game_keys_t* find_game_keys(const char* game_id) {
+static game_keys_t* find_game_keys(const char* game_id) {
 	list_node_t *node;
 	game_keys_t *game;
 
@@ -283,7 +283,7 @@ int pfd_util_process(pfd_cmd_t cmd, int partial_process) {
 	return ret;
 }
 
-pfd_entry_t* _find_pfd_entry(const char* data, const char* search)
+static pfd_entry_t* _find_pfd_entry(const char* data, const char* search)
 {
 	pfd_entry_t *pfd_entry = (pfd_entry_t*)(data + 0x240);
 
@@ -294,7 +294,7 @@ pfd_entry_t* _find_pfd_entry(const char* data, const char* search)
 	return NULL;
 }
 
-int _get_aes_details_pfd(const char* path, const char* filename, const u8* secure_key, u64* file_size, u64* aligned_file_size, u8* entry_key)
+static int _get_aes_details_pfd(const char* path, const char* filename, const u8* secure_key, u64* file_size, u64* aligned_file_size, u8* entry_key)
 {
 	char *pfd_data;
 	char file_path[256];
@@ -353,7 +353,7 @@ int _get_aes_details_pfd(const char* path, const char* filename, const u8* secur
 	return 1;
 }
 
-int _update_details_pfd(const char* path, const char* filename)
+static int _update_details_pfd(const char* path, const char* filename)
 {
 	char *pfd_data;
 	char file_path[256];

@@ -1337,6 +1337,13 @@ static void encryptSaveFile(const save_entry_t* entry, const char* filename)
 		show_message("File successfully encrypted to:\n%s%s", entry->path, filename);
 	else
 		show_message("Error! File %s couldn't be encrypted", filename);
+
+	LOG("Resigning save '%s'...", entry->path);
+	if (!pfd_util_init((u8*) apollo_config.idps, apollo_config.user_id, entry->title_id, entry->path) ||
+		(pfd_util_process(PFD_CMD_UPDATE, 0) != SUCCESS))
+		LOG("Error! Save file couldn't be resigned");
+
+	pfd_util_end();
 }
 
 static void downloadLink(const char* path)

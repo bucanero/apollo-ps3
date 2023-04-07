@@ -409,13 +409,6 @@ int DrawCharSpecial(float x, float y, float z, const special_char* schr, uint8_t
 
 void DrawCharMono(float x, float y, float z, u8 chr)
 {
-	special_char* schr = GetSpecialCharFromValue(chr);
-	if (schr)
-	{
-//		DrawCharSpecial(x, y, z, schr);
-		return;
-	}
-
 	float dx = font_datas.sx, dy = font_datas.sy;
 	float dx2 = (dx * font_datas.mono) / font_datas.fonts[font_datas.current_font].w;
 	float dy2 = (float)(dy * font_datas.fonts[font_datas.current_font].bh) / (float)font_datas.fonts[font_datas.current_font].h;
@@ -641,12 +634,31 @@ float DrawFormatString(float x, float y, char *format, ...)
 {
     char buff[4096];
     va_list	opt;
-	
-	va_start(opt, format);
-	vsprintf( (void *) buff, format, opt);
-	va_end(opt);
+
+    va_start(opt, format);
+    vsprintf( (void *) buff, format, opt);
+    va_end(opt);
 
     return DrawString(x, y, buff);
+}
+
+float DrawFormatStringMono(float x, float y, char *format, ...)
+{
+    char buff[4096];
+    char *str = buff;
+    va_list	opt;
+
+    va_start(opt, format);
+    vsprintf(buff, format, opt);
+    va_end(opt);
+
+    while (*str) {
+        DrawCharMono(x, y, font_datas.Z, (u8) *str);
+        x += font_datas.sx;
+        str++;
+    }
+
+    return x;
 }
 
 indexEntry_t* getImageFontEntry(const uint8_t* imagefontRawData, uint16_t unicodeId)
