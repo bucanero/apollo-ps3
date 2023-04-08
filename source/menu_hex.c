@@ -32,14 +32,14 @@ static void _draw_HexEditor(const hexedit_data_t* hex, u8 alpha)
     {
         if (i != hex->start && !(i % 16))
         {
-            DrawFormatStringMono(MENU_ICON_OFF + MENU_TITLE_OFF, y_off, "%06X: %s | %s", i-0x10, msgout, ascii);
+            DrawFormatStringMono(MENU_ICON_OFF + MENU_TITLE_OFF, y_off, "%06X: %s \xB3 %s", i-0x10, msgout, ascii);
             y_off += 19;
         }
 
         sprintf(msgout + (i % 16)*3, "%02X ", hex->data[i]);
         sprintf(ascii  + (i % 16), "%c", hex->data[i] ? hex->data[i] : '.');
     }
-    DrawFormatStringMono(MENU_ICON_OFF + MENU_TITLE_OFF, y_off, "%06X: %-48s | %s", (i-1) & ~15, msgout, ascii);
+    DrawFormatStringMono(MENU_ICON_OFF + MENU_TITLE_OFF, y_off, "%06X: %-48s \xB3 %s", (i-1) & ~15, msgout, ascii);
 
     SetCurrentFont(font_adonais_regular);
 }

@@ -56,7 +56,7 @@ menu_option_t menu_options[] = {
 		.value = NULL, 
 		.callback = upd_appdata_callback 
 	},
-	{ .name = "Change Online DB URL",
+	{ .name = "Change Online Database URL",
 		.options = NULL,
 		.type = APP_OPTION_CALL,
 		.value = NULL,

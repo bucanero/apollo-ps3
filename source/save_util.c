@@ -380,6 +380,7 @@ int create_savegame_folder(const char* folder)
 
 static void _log_settings(app_config_t* config)
 {
+	LOG("Apollo Save Tool v%s - Patch Engine v%s", APOLLO_VERSION, APOLLO_LIB_VERSION);
     LOG("User Settings: UserID (%08d) AccountID (%016lX)", config->user_id, config->account_id);
     LOG("PSID %016lX %016lX", config->psid[0], config->psid[1]);
     LOG("IDPS %016lX %016lX", config->idps[0], config->idps[1]);

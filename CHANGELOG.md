@@ -4,6 +4,27 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.8.4](https://github.com/bucanero/apollo-ps3/releases/tag/v1.8.4) - 2023-04-08
+
+### Added
+
+* Hex Editor for save-data files
+* Improved internal Web Server (Online DB support)
+* Custom offline Account-ID activation (On-screen Keyboard)
+* User-defined Online DB URL (`Settings`)
+
+### Fixed
+
+* Fix Final Fantasy XIII save-game decryption bug
+
+### Misc
+
+* Updated Apollo patch engine v0.4.1
+  * Skip search if pattern was not found
+  * Improve code types 9, B, D
+  * Fixed Final Fantasy XIII encryption bug on PS3
+  * Add value subtraction support (BSD)
+
 ## [v1.8.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.8.0) - 2023-01-28
 
 ### Added

@@ -561,15 +561,20 @@ static void doHexEditor(void)
 		}
 		else if (paddata[0].BTN_L1)
 		{
-			hex_data.start -= 0x100;
-			if (hex_data.start < 0)
-				hex_data.start = 0;
+			hex_data.pos -= 0x130;
+			if (hex_data.pos < 0)
+				hex_data.pos = 0;
 		}
 		else if (paddata[0].BTN_R1)
 		{
-			if (hex_data.start + 0x100 < hex_data.size)
-				hex_data.start += 0x100;
+			if (hex_data.pos + 0x130 < hex_data.size)
+				hex_data.pos += 0x130;
 		}
+		else if (paddata[0].BTN_L2)
+			hex_data.pos = 0;
+
+		else if (paddata[0].BTN_R2)
+			hex_data.pos = hex_data.size - 1;
 
 		else if (paddata[0].BTN_CIRCLE)
 		{
