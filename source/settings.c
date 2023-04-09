@@ -104,6 +104,9 @@ static void db_url_callback(int sel)
 {
 	if (osk_dialog_get_text("Enter the URL of the online database", apollo_config.save_db, sizeof(apollo_config.save_db)))
 		show_message("Online database URL changed to:\n%s", apollo_config.save_db);
+	
+	if (apollo_config.save_db[strlen(apollo_config.save_db)-1] != '/')
+		strcat(apollo_config.save_db, "/");
 }
 
 static void clearcache_callback(int sel)
