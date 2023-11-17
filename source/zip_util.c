@@ -17,7 +17,7 @@ static inline uint64_t min64(uint64_t a, uint64_t b)
     return a < b ? a : b;
 }
 
-void walk_zip_directory(const char* startdir, const char* inputdir, struct zip *zipper)
+static void walk_zip_directory(const char* startdir, const char* inputdir, struct zip *zipper)
 {
 	char fullname[256];	
 	struct dirent *dirp;
@@ -217,7 +217,7 @@ int extract_zip(const char* zip_file, const char* dest_path)
 	return 1;
 }
 
-void callback_7z(const char* fileName, unsigned long fileSize, uint32_t fileNum, uint32_t numFiles)
+static void callback_7z(const char* fileName, unsigned long fileSize, uint32_t fileNum, uint32_t numFiles)
 {
     LOG("Extracted: %s (%ld bytes)", fileName, fileSize);
     update_progress_bar(fileNum, numFiles, fileName);

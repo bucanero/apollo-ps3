@@ -1,5 +1,6 @@
 void Draw_AboutMenu_Ani(void);
 void Draw_AboutMenu(void);
+void Draw_AboutMenuLL(void);
 
 void Draw_UserCheatsMenu_Ani(save_list_t * list);
 void Draw_UserCheatsMenu(save_list_t * list, int menuSel, u8 alpha);

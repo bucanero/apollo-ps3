@@ -1,14 +1,24 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
-#include <pngdec/pngdec.h>
+#include <math.h>
+#include <io/pad.h>
 
 #include "saves.h"
 #include "menu.h"
 #include "menu_gui.h"
+#include "libfont.h"
+#include "ttf_render.h"
 
-#include <tiny3d.h>
-#include <libfont.h>
+#define FONT_W  32
+#define FONT_H  31
+#define STEP_X  -2         // horizontal displacement
+#define SCREEN_WIDTH  848
+#define SCREEN_HEIGHT 512
+
+extern padData paddata[];
+
+static int sx = SCREEN_WIDTH;
 
 static char user_id_str[9] = "00000000";
 static char idps_str[] = "0000000000000000 0000000000000000";
@@ -26,7 +36,39 @@ const char * menu_about_strings_project[] = { "User ID", user_id_str,
 											"Account ID", account_id_str,
 											idps_str, psid_str, NULL };
 
-static void _setIdValues()
+/***********************************************************************
+* Draw a string of chars, amplifing y by sin(x)
+***********************************************************************/
+static void draw_sinetext(float y, const char* string)
+{
+    float x = sx;       // every call resets the initial x
+    int sl = strlen(string);
+    char tmp[2] = {0, 0};
+    float amp;
+
+    for(int i = 0; i < sl; i++)
+    {
+        amp = sinf(x      // testing sinf() from math.h
+                 * 0.02)  // it turns out in num of bends
+                 * 5;     // +/- vertical bounds over y
+
+        if((x + FONT_W) > 0 && x < SCREEN_WIDTH)
+        {
+            tmp[0] = string[i];
+            display_ttf_string(x, y + amp, tmp, 0x000000FF, 0, FONT_W, FONT_H, NULL);
+        }
+
+        x += FONT_W;
+    }
+
+    //* Move string by defined step
+    sx += STEP_X;
+
+    if(sx + (sl * FONT_W) < 0)           // horizontal bound, then loop
+        sx = SCREEN_WIDTH + FONT_W;
+}
+
+static void _setIdValues(void)
 {
 	// set to display the PSID on the About menu
 	snprintf(idps_str, sizeof(idps_str), "%016lX %016lX", apollo_config.idps[0], apollo_config.idps[1]);
@@ -84,7 +126,7 @@ void _draw_AboutMenu(u8 alpha)
 	SetFontAlign(FONT_ALIGN_LEFT);
 }
 
-void Draw_AboutMenu_Ani()
+void Draw_AboutMenu_Ani(void)
 {
 	_setIdValues();
 	for (int ani = 0; ani < MENU_ANI_MAX; ani++)
@@ -115,7 +157,29 @@ void Draw_AboutMenu_Ani()
 	}
 }
 
-void Draw_AboutMenu()
+void Draw_AboutMenuLL(void)
+{
+	for (; !paddata[0].BTN_CIRCLE; readPad(0))
+	{
+		tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
+		tiny3d_AlphaTest(1, 0x0, TINY3D_ALPHA_FUNC_GEQUAL);
+		tiny3d_BlendFunc(1, TINY3D_BLEND_FUNC_SRC_RGB_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_ALPHA_SRC_ALPHA,
+			TINY3D_BLEND_FUNC_SRC_RGB_ONE_MINUS_SRC_ALPHA | TINY3D_BLEND_FUNC_SRC_RGB_ZERO,
+			TINY3D_BLEND_RGB_FUNC_ADD | TINY3D_BLEND_ALPHA_FUNC_ADD);
+
+		tiny3d_Project2D();
+
+		DrawTexture(&menu_textures[leon_luna_jpg_index], 0, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0xFFFFFF00 | 0xFF);
+		DrawTexture(&menu_textures[help_png_index], 0, 420, 0, SCREEN_WIDTH + 20, 50, 0xFFFFFF00 | 0xFF);
+
+		draw_sinetext(430, "... in memory of Leon & Luna - may your days be filled with eternal joy ...");
+
+		tiny3d_Flip();
+	}
+	for (; paddata[0].BTN_CIRCLE; readPad(0));
+}
+
+void Draw_AboutMenu(void)
 {
 	_setIdValues();
 	DrawHeader(cat_about_png_index, 0, "About", "v" APOLLO_VERSION, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 0);

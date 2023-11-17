@@ -2,6 +2,7 @@
 #define __ARTEMIS_MENU_H__
 
 #include <pngdec/pngdec.h>
+#include <jpgdec/jpgdec.h>
 
 #include "settings.h"
 
@@ -26,8 +27,8 @@ enum menu_screen_ids
 //Textures
 enum texture_index
 {
-	leon_png_index,
-	bgimg_png_index,
+	leon_luna_jpg_index,
+	bgimg_jpg_index,
 	column_1_png_index,
 	column_2_png_index,
 	column_3_png_index,
@@ -113,7 +114,7 @@ enum texture_index
 
 //Fonts
 #define font_adonais_regular				0
-#define font_console_16x32					1
+#define font_console_10x20					1
 
 #define APP_FONT_COLOR						0xFFFFFF00
 #define APP_FONT_TAG_COLOR					0xFFFFFF00
@@ -244,7 +245,9 @@ extern void Draw_HexEditor(const hexedit_data_t* hex);
 extern void Draw_HexEditor_Ani(const hexedit_data_t* hex);
 
 void initMenuOptions(void);
+int ps3PadInit(void);
 int readPad(int port);
+int ps3PadCrossOk(void);
 
 void drawScene(void);
 void drawJars(uint8_t alpha);

@@ -12,6 +12,7 @@
 #include "pfd.h"
 #include "sfo.h"
 
+static char host_buf[256];
 
 static void _set_dest_path(char* path, int dest, const char* folder)
 {
@@ -389,6 +390,56 @@ static void enableWebServer(dWebReqHandler_t handler, void* data, int port)
 		dbg_webserver_stop();
 	}
 	else show_message("Error starting Web Server!");
+}
+
+static void* ps3_host_callback(int id, int* size)
+{
+	union net_ctl_info net_info;
+
+	memset(host_buf, 0, sizeof(host_buf));
+
+	switch (id)
+	{
+	case APOLLO_HOST_TEMP_PATH:
+		return APOLLO_LOCAL_CACHE;
+
+	case APOLLO_HOST_SYS_NAME:
+		if (sysUtilGetSystemParamString(SYSUTIL_SYSTEMPARAM_ID_NICKNAME, host_buf, SYSUTIL_SYSTEMPARAM_NICKNAME_SIZE) < 0)
+			LOG("Error getting System nickname");
+
+		if (size) *size = strlen(host_buf);
+		return host_buf;
+
+	case APOLLO_HOST_PSID:
+		memcpy(host_buf, apollo_config.psid, 16);
+		if (size) *size = 16;
+		return host_buf;
+
+	case APOLLO_HOST_ACCOUNT_ID:
+		memcpy(host_buf, &apollo_config.account_id, 8);
+		if (size) *size = 8;
+		return host_buf;
+
+	case APOLLO_HOST_USERNAME:
+		if (sysUtilGetSystemParamString(SYSUTIL_SYSTEMPARAM_ID_CURRENT_USERNAME, host_buf, SYSUTIL_SYSTEMPARAM_CURRENT_USERNAME_SIZE) < 0)
+			LOG("Error getting Username");
+
+		if (size) *size = strlen(host_buf);
+		return host_buf;
+
+	case APOLLO_HOST_LAN_ADDR:
+	case APOLLO_HOST_WLAN_ADDR:
+		memset(&net_info, 0, sizeof(net_info));
+		if (netCtlGetInfo(NET_CTL_INFO_ETHER_ADDR, &net_info) < 0)
+			LOG("Error getting Wlan Ethernet Address");
+
+		memcpy(host_buf, net_info.ether_addr.data, NET_CTL_ETHER_ADDR_LEN);
+		if (size) *size = NET_CTL_ETHER_ADDR_LEN;
+		return host_buf;
+	}
+
+	if (size) *size = 1;
+	return host_buf;
 }
 
 static void copyAllSavesHDD(const save_entry_t* save, int all)
@@ -1133,7 +1184,7 @@ static int apply_cheat_patches(const save_entry_t *entry)
 			}
 		}
 
-		if (!apply_cheat_patch_code(tmpfile, entry->title_id, code, APOLLO_LOCAL_CACHE))
+		if (!apply_cheat_patch_code(tmpfile, entry->title_id, code, &ps3_host_callback))
 		{
 			LOG("Error: failed to apply (%s)", code->name);
 			ret = 0;

@@ -236,7 +236,7 @@ void DrawHeader(int icon, int xOff, const char * hdrTitle, const char * headerSu
 
 void DrawBackgroundTexture(int x, u8 alpha)
 {
-	DrawTexture(&menu_textures[bgimg_png_index], x, 0, 0, 848 - x, 512, 0xFFFFFF00 | alpha);
+	DrawTexture(&menu_textures[bgimg_jpg_index], x, 0, 0, 848 - x, 512, 0xFFFFFF00 | alpha);
 }
 
 void DrawTexture(png_texture* tex, int x, int y, int z, int w, int h, u32 rgba)

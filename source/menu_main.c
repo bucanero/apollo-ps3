@@ -35,7 +35,7 @@ code_entry_t* selected_centry;
 int option_index = 0;
 static hexedit_data_t hex_data;
 
-void initMenuOptions()
+void initMenuOptions(void)
 {
 	menu_options_maxopt = 0;
 	while (menu_options[menu_options_maxopt].name)
@@ -98,7 +98,7 @@ static int ReloadUserSaves(save_list_t* save_list)
 	return list_count(save_list->list);
 }
 
-static code_entry_t* LoadRawPatch()
+static code_entry_t* LoadRawPatch(void)
 {
 	char patchPath[256];
 	code_entry_t* centry = calloc(1, sizeof(code_entry_t));
@@ -110,7 +110,7 @@ static code_entry_t* LoadRawPatch()
 	return centry;
 }
 
-static code_entry_t* LoadSaveDetails()
+static code_entry_t* LoadSaveDetails(void)
 {
 	char sfoPath[256];
 	code_entry_t* centry = calloc(1, sizeof(code_entry_t));
@@ -424,7 +424,7 @@ static void doSaveMenu(save_list_t * save_list)
 	Draw_UserCheatsMenu(save_list, menu_sel, 0xFF);
 }
 
-static void doMainMenu()
+static void doMainMenu(void)
 {
 	// Check the pads.
 	if (readPad(0))
@@ -445,7 +445,7 @@ static void doMainMenu()
 	Draw_MainMenu();
 }
 
-void doAboutMenu()
+void doAboutMenu(void)
 {
 	// Check the pads.
 	if (readPad(0))
@@ -455,12 +455,23 @@ void doAboutMenu()
 			SetMenu(MENU_MAIN_SCREEN);
 			return;
 		}
+		else if (paddata[0].BTN_SELECT)
+		{
+			int m = !apollo_config.music;
+
+			music_callback(0);
+			Draw_AboutMenuLL();
+			music_callback(m);
+
+			SetMenu(MENU_MAIN_SCREEN);
+			return;
+		}
 	}
 
 	Draw_AboutMenu();
 }
 
-static void doOptionsMenu()
+static void doOptionsMenu(void)
 {
 	// Check the pads.
 	if (readPad(0))
@@ -561,14 +572,14 @@ static void doHexEditor(void)
 		}
 		else if (paddata[0].BTN_L1)
 		{
-			hex_data.pos -= 0x130;
+			hex_data.pos -= 0x120;
 			if (hex_data.pos < 0)
 				hex_data.pos = 0;
 		}
 		else if (paddata[0].BTN_R1)
 		{
-			if (hex_data.pos + 0x130 < hex_data.size)
-				hex_data.pos += 0x130;
+			if (hex_data.pos + 0x120 < hex_data.size)
+				hex_data.pos += 0x120;
 		}
 		else if (paddata[0].BTN_L2)
 			hex_data.pos = 0;
@@ -604,23 +615,19 @@ static void doHexEditor(void)
 				hex_data.data[hex_data.pos] -= (0x10 >> hex_data.low_nibble * 4);
 		}
 
-		if (hex_data.pos < hex_data.start)
+		if ((hex_data.pos < hex_data.start) || (hex_data.pos >= hex_data.start + 0x120))
 			hex_data.start = (hex_data.pos) & ~15;
-
-		if (hex_data.pos >= hex_data.start + 19*0x10)
-			hex_data.start = (hex_data.pos-1) & ~15;
 	}
 
 	Draw_HexEditor(&hex_data);
 }
 
-static int count_code_lines()
+static int count_code_lines(const char * str)
 {
 	//Calc max
 	int max = 0;
-	const char * str;
 
-	for(str = selected_centry->codes; *str; ++str)
+	for(max = 0; *str; ++str)
 		max += (*str == '\n');
 
 	if (max <= 0)
@@ -629,12 +636,12 @@ static int count_code_lines()
 	return max;
 }
 
-static void doPatchViewMenu()
+static void doPatchViewMenu(void)
 {
 	// Check the pads.
 	if (readPad(0))
 	{
-		if (updatePadSelection(count_code_lines()))
+		if (updatePadSelection(count_code_lines(selected_centry->codes)))
 			(void)0;
 
 		else if (paddata[0].BTN_CIRCLE)
@@ -647,7 +654,7 @@ static void doPatchViewMenu()
 	Draw_CheatsMenu_View("Patch view");
 }
 
-static void doCodeOptionsMenu()
+static void doCodeOptionsMenu(void)
 {
 	code_entry_t* code = selected_centry;
 	// Check the pads.
@@ -707,12 +714,12 @@ static void doCodeOptionsMenu()
 	Draw_CheatsMenu_Options();
 }
 
-static void doSaveDetailsMenu()
+static void doSaveDetailsMenu(void)
 {
 	// Check the pads.
 	if (readPad(0))
 	{
-		if (updatePadSelection(count_code_lines()))
+		if (updatePadSelection(count_code_lines(selected_centry->codes)))
 			(void)0;
 
 		if (paddata[0].BTN_CIRCLE)
@@ -731,7 +738,7 @@ static void doSaveDetailsMenu()
 	Draw_CheatsMenu_View(selected_entry->name);
 }
 
-static void doPatchMenu()
+static void doPatchMenu(void)
 {
 	// Check the pads.
 	if (readPad(0))
@@ -816,7 +823,7 @@ static void doPatchMenu()
 }
 
 // Resets new frame
-void drawScene()
+void drawScene(void)
 {
 	switch (menu_id)
 	{

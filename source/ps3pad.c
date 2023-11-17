@@ -1,5 +1,6 @@
 #include <string.h>
 #include <io/pad.h>
+#include <sysutil/sysutil.h>
 
 #define ANALOG_CENTER       0x78
 #define ANALOG_THRESHOLD    0x68
@@ -11,11 +12,25 @@ padData paddata[MAX_PADS];
 extern int idle_time;
 
 //Pad stuff
+static int crossButtonOK;
 static padInfo padinfo;
 static padData padA[MAX_PADS];
 static padData padB[MAX_PADS];
 
 static int pad_time = 0, rest_time = 0, pad_held_time = 0, rest_held_time = 0;
+
+int ps3PadInit(void)
+{
+	if (sysUtilGetSystemParamInt(SYSUTIL_SYSTEMPARAM_ID_ENTER_BUTTON_ASSIGN, &crossButtonOK) < 0)
+		crossButtonOK = 1;
+
+	return (ioPadInit(7) == 0);
+}
+
+int ps3PadCrossOk(void)
+{
+	return crossButtonOK;
+}
 
 int readPad(int port)
 {
@@ -40,6 +55,12 @@ int readPad(int port)
 			
 		if (padA[port].ANA_L_H > ANALOG_MAX)
 			padA[port].BTN_RIGHT = 1;
+
+		if (!crossButtonOK)
+		{
+			padA[port].BTN_CROSS ^= 1;
+			padA[port].BTN_CIRCLE ^= 1;
+		}
 
 		//new
 		dpad = ((char)*(&padA[port].zeroes + off) << 8) >> 12;

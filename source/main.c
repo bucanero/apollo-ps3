@@ -10,7 +10,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <dirent.h>
-#include <io/pad.h>
 
 #include "saves.h"
 #include "pfd.h"
@@ -25,7 +24,7 @@
 #include "libfont.h"
 #include "ttf_render.h"
 #include "font_adonais.h"
-#include "font-16x32.h"
+#include "font-10x20.h"
 
 //Sound
 #include "spu_soundmodule_bin.h"
@@ -56,7 +55,7 @@ static sysSpuImage spu_image;
 	   extern const uint32_t name##_##type##_size; \
 	   menu_textures[name##_##type##_index].buffer = (const void*) name##_##type; \
 	   menu_textures[name##_##type##_index].size = name##_##type##_size; \
-	   LoadTexture(name##_##type##_index); \
+	   LoadTexture_##type(name##_##type##_index); \
 	})
 
 void update_usb_path(char *p);
@@ -163,7 +162,7 @@ save_list_t user_backup = {
     .UpdatePath = NULL,
 };
 
-static void release_all()
+static void release_all(void)
 {	
 	if(inited & INITED_CALLBACK)
 		sysUtilUnregisterCallback(SYSUTIL_EVENT_SLOT0);
@@ -209,9 +208,15 @@ static void sys_callback(uint64_t status, uint64_t param, void* userdata)
 	}
 }
 
-static void LoadTexture(int idx)
+static void LoadTexture_png(int idx)
 {
 	pngLoadFromBuffer(menu_textures[idx].buffer, menu_textures[idx].size, &menu_textures[idx].texture);
+	copyTexture(idx);
+}
+
+static void LoadTexture_jpg(int idx)
+{
+	jpgLoadFromBuffer(menu_textures[idx].buffer, menu_textures[idx].size, (jpgData*) &menu_textures[idx].texture);
 	copyTexture(idx);
 }
 
@@ -222,7 +227,7 @@ static void LoadImageFontTexture(const u8* rawData, uint16_t unicode, int idx)
 }
 
 // Used only in initialization. Allocates 64 mb for textures and loads the font
-static void LoadTextures_Menu()
+static void LoadTextures_Menu(void)
 {
 	texture_mem = tiny3d_AllocTexture(64*1024*1024); // alloc 64MB of space for textures (this pointer can be global)
 	menu_textures = (png_texture *)calloc(TOTAL_MENU_TEXTURES, sizeof(png_texture));
@@ -232,7 +237,7 @@ static void LoadTextures_Menu()
 	
 	ResetFont();
 	free_mem = (u32 *) AddFontFromBitmapArray((u8 *) data_font_Adonais, (u8 *) texture_mem, 0x20, 0x7e, 32, 31, 1, BIT7_FIRST_PIXEL);
-	free_mem = (u32 *) AddFontFromBitmapArray((u8 *) console_font_16x32, (u8 *) free_mem, 0, 0xFF, 16, 32, 1, BIT7_FIRST_PIXEL);
+	free_mem = (u32 *) AddFontFromBitmapArray((u8 *) console_font_10x20, (u8 *) free_mem, 0, 0xFF, 10, 20, 1, BIT7_FIRST_PIXEL);
 	
 	TTFUnloadFont();
 	TTFLoadFont(0, "/dev_flash/data/font/SCE-PS3-SR-R-LATIN2.TTF", NULL, 0);
@@ -246,8 +251,8 @@ static void LoadTextures_Menu()
 //	TTFUnloadFont();
 
 	//Init Main Menu textures
-	load_menu_texture(leon, png);
-	load_menu_texture(bgimg, png);
+	load_menu_texture(leon_luna, jpg);
+	load_menu_texture(bgimg, jpg);
 	load_menu_texture(cheat, png);
 
 	load_menu_texture(circle_loading_bg, png);
@@ -351,7 +356,7 @@ static void xmp_audio_callback(int voice)
 	SND_AddVoice(voice, background_music[music_buffer], AUDIO_SAMPLES);
 }
 
-static void LoadSounds()
+static void LoadSounds(void)
 {
 	//Initialize SPU
 	u32 entry = 0;
@@ -433,7 +438,7 @@ void update_db_path(char* path)
 	strcpy(path, apollo_config.save_db);
 }
 
-static void registerSpecialChars()
+static void registerSpecialChars(void)
 {
 	// Register save tags
 	RegisterSpecialCharacter(CHAR_TAG_PS1, 2, 1.5, &menu_textures[tag_ps1_png_index]);
@@ -451,10 +456,10 @@ static void registerSpecialChars()
 	RegisterSpecialCharacter(CHAR_TAG_NET, 1, 1.2, &menu_textures[tag_net_png_index]);
 
 	// Register button icons
-	RegisterSpecialCharacter(CHAR_BTN_X, 0, 1.2, &menu_textures[footer_ico_cross_png_index]);
+	RegisterSpecialCharacter(ps3PadCrossOk() ? CHAR_BTN_X : CHAR_BTN_O, 0, 1.2, &menu_textures[footer_ico_cross_png_index]);
 	RegisterSpecialCharacter(CHAR_BTN_S, 0, 1.2, &menu_textures[footer_ico_square_png_index]);
 	RegisterSpecialCharacter(CHAR_BTN_T, 0, 1.2, &menu_textures[footer_ico_triangle_png_index]);
-	RegisterSpecialCharacter(CHAR_BTN_O, 0, 1.2, &menu_textures[footer_ico_circle_png_index]);
+	RegisterSpecialCharacter(ps3PadCrossOk() ? CHAR_BTN_O : CHAR_BTN_X, 0, 1.2, &menu_textures[footer_ico_circle_png_index]);
 
 	// Register trophy icons
 	RegisterSpecialCharacter(CHAR_TRP_BRONZE, 2, 1.0, &menu_textures[trp_bronze_img_index]);
@@ -481,9 +486,10 @@ s32 main(s32 argc, const char* argv[])
 		(float) (Video_Resolution.width / 848.0f),  (float) (Video_Resolution.height / 512.0f),   // 2D scale
 		(float) (Video_Resolution.width / 1920.0f), (float) (Video_Resolution.height / 1080.0f)); // 3D scale
 
-	ioPadInit(7);
+	ps3PadInit();
 	
 	sysModuleLoad(SYSMODULE_PNGDEC);
+	sysModuleLoad(SYSMODULE_JPGDEC);
 
 	// register exit callback
 	if(sysUtilRegisterCallback(SYSUTIL_EVENT_SLOT0, sys_callback, NULL)==0) inited |= INITED_CALLBACK;
@@ -499,7 +505,6 @@ s32 main(s32 argc, const char* argv[])
 		unzip_app_data(APOLLO_LOCAL_CACHE "appdata.zip");
 	}
 
-	menu_textures[buk_scr_png_index] = menu_textures[leon_png_index];
 	// Splash screen logo (fade-in)
 	drawSplashLogo(1);
 
@@ -525,9 +530,9 @@ s32 main(s32 argc, const char* argv[])
 	drawSplashLogo(-1);
 
 	SND_SetVoice(2, VOICE_STEREO_16BIT, SAMPLING_FREQ, 0, background_music[0], AUDIO_SAMPLES, MAX_VOLUME, MAX_VOLUME, xmp_audio_callback);
+	SND_Pause(!apollo_config.music);
 	
 	//Set options
-	music_callback(!apollo_config.music);
 	update_callback(!apollo_config.update);
 
 	Draw_MainMenu_Ani();
@@ -556,9 +561,7 @@ s32 main(s32 argc, const char* argv[])
 			if (idle_time > 80)
 			{
 				int dec = (idle_time - 80) * 4;
-				if (dec > alpha)
-					dec = alpha;
-				alpha -= dec;
+				alpha = (dec > alpha) ? 0 : (alpha - dec);
 			}
 			
 			SetFontSize(APP_FONT_SIZE_DESCRIPTION);
