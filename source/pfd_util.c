@@ -161,7 +161,7 @@ static int games_config_handler(void *user, const char *section, const char *nam
 	return 0;
 }
 
-int pfd_util_setup_keys() {
+int pfd_util_setup_keys(void) {
 	int result = 0;
 
 	setup_key(config.authentication_id, PFD_AUTHENTICATION_ID_SIZE);
@@ -393,7 +393,7 @@ static int _update_details_pfd(const char* path, const char* filename)
 	return 1;
 }
 
-int decrypt_save_file(const char* path, const char* fname, const char* outpath, u8* secure_file_key)
+int decrypt_save_file(const char* path, const char* fname, const char* outpath, const u8* secure_file_key)
 {
 	u8 entry_key[PFD_ENTRY_KEY_SIZE];
 	u64 file_size, aligned_file_size;
@@ -417,6 +417,18 @@ int decrypt_save_file(const char* path, const char* fname, const char* outpath, 
 	{
 		// The requested file is not listed in PARAM.PFD, so we assume is not encrypted
 		LOG("Error getting AES keys");
+
+		// make clean copy if requested
+		if (outpath)
+		{
+			snprintf(file_path, sizeof(file_path), "%s%s", path, fname);
+			if (read_buffer(file_path, &file_data, &file_size) < 0)
+				return 0;
+
+			snprintf(file_path, sizeof(file_path), "%s%s", outpath, fname);
+			if (write_buffer(file_path, file_data, file_size) < 0)
+				return 0;
+		}
 		return 1;
 	}
 
@@ -467,7 +479,7 @@ int decrypt_save_file(const char* path, const char* fname, const char* outpath, 
 	return 1;
 }
 
-int encrypt_save_file(const char* path, const char* fname, u8* secure_file_key)
+int encrypt_save_file(const char* path, const char* fname, const u8* secure_file_key)
 {
 	u8 entry_key[PFD_ENTRY_KEY_SIZE];
 	u64 file_size, aligned_file_size;

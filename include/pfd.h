@@ -187,8 +187,8 @@ int pfd_util_setup_keys(void);
 u8* get_secure_file_id(const char* game_id, const char* filename);
 char* get_game_title_ids(const char* game_id);
 
-int decrypt_save_file(const char* path, const char* fname, const char* outpath, u8* secure_file_key);
-int encrypt_save_file(const char* path, const char* fname, u8* secure_file_key);
+int decrypt_save_file(const char* path, const char* fname, const char* outpath, const u8* secure_file_key);
+int encrypt_save_file(const char* path, const char* fname, const u8* secure_file_key);
 
 int decrypt_trophy_trns(const char* path);
 int encrypt_trophy_trns(const char* path);
