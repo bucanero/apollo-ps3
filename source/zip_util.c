@@ -76,6 +76,7 @@ int zip_directory(const char* basedir, const char* inputdir, const char* output_
 
     walk_zip_directory(basedir, inputdir, archive);
     ret = zip_close(archive);
+	file_chmod(output_filename);
 
     return (ret == ZIP_ER_OK);
 }
@@ -205,6 +206,7 @@ int extract_zip(const char* zip_file, const char* dest_path)
 
 		zip_fclose(zfd);
 		fclose(tfd);
+		file_chmod(path);
 	}
 
 	if (archive) {

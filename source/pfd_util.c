@@ -427,7 +427,12 @@ int decrypt_save_file(const char* path, const char* fname, const char* outpath, 
 
 			snprintf(file_path, sizeof(file_path), "%s%s", outpath, fname);
 			if (write_buffer(file_path, file_data, file_size) < 0)
+			{
+				free(file_data);
 				return 0;
+			}
+
+			free(file_data);
 		}
 		return 1;
 	}

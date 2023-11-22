@@ -292,8 +292,8 @@ uint64_t get_account_id(uint32_t user_id);
 
 int create_savegame_folder(const char* folder);
 
-void ps2_encrypt_image(uint8_t dex_mode, const char* image_name, const char* data_file, char* msg_update);
-void ps2_decrypt_image(uint8_t dex_mode, const char* image_name, const char* data_file, char* msg_update);
+void ps2_encrypt_image(uint8_t cfg_file, const char* image_name, const char* data_file);
+void ps2_decrypt_image(uint8_t dex_mode, const char* image_name, const char* data_file);
 void ps2_crypt_vmc(uint8_t dex_mode, const char* vmc_path, const char* vmc_out, int crypt_mode);
 int ps2_add_vmc_ecc(const char* src, const char* dst);
 int ps2_remove_vmc_ecc(const char* src, const char* dst);

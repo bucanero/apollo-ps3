@@ -4,6 +4,48 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+
+### Added
+
+* Auto-detect `X`/`O` button settings
+* New cheat codes
+  - Assassin's Creed II
+  - Grand Theft Auto V
+  - Metal Gear Solid 5: The Phantom Pain
+* Custom decryption support
+  - Metal Gear Solid 5: The Phantom Pain
+* Custom checksum support
+  - Assassin's Creed
+  - Assassin's Creed II
+  - Assassin's Creed III
+  - Assassin's Creed IV: Black Flag
+  - Assassin's Creed: Brotherhood
+  - Assassin's Creed: Revelations
+  - Assassin's Creed Rogue
+  - Castlevania: Lords Of Shadow
+  - Castlevania: Lords Of Shadow 2
+  - Grand Theft Auto V
+  - Metal Gear Solid 5: The Phantom Pain
+
+### Fixed
+
+* Fix exported file attributes on FAT32 drives
+* Fix `BCAS20224` secure file-id key
+
+### Misc
+
+* Network HTTP proxy settings support
+* Updated [`apollo-lib`](https://github.com/bucanero/apollo-lib) Patch Engine to v0.6.0
+  - Add host callbacks (username, system name, wlan mac, psid, account id)
+  - Add `murmu3_32`, `jhash` hash functions
+  - Add Patapon 3 PSP decryption
+  - Add MGS5 decryption (PS3/PS4)
+  - Add Monster Hunter 2G/3rd PSP decryption
+  - Add Castlevania:LoS checksum
+  - Add Rockstar checksum
+  - Fix SaveWizard Code Type C
+  - Fix `right()` on little-endian platforms
+
 ## [v1.8.4](https://github.com/bucanero/apollo-ps3/releases/tag/v1.8.4) - 2023-04-08
 
 ### Added

@@ -137,6 +137,11 @@ int copy_file(const char* input, const char* output)
     return (read - written);
 }
 
+int file_chmod(const char* path)
+{
+    return sysLv2FsChmod(path, S_IFMT | 0777);
+}
+
 uint32_t file_crc32(const char* input)
 {
     char buffer[TMP_BUFF_SIZE];

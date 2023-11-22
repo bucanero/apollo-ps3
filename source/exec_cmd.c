@@ -69,9 +69,10 @@ static void _saveOwnerData(const char* path)
 	sysUtilGetSystemParamString(SYSUTIL_SYSTEMPARAM_ID_CURRENT_USERNAME, buff, SYSUTIL_SYSTEMPARAM_CURRENT_USERNAME_SIZE);
 	LOG("Saving User '%s'...", buff);
 	save_xml_owner(path, buff);
+	file_chmod(path);
 }
 
-static uint32_t get_filename_id(const char* dir)
+static uint32_t get_filename_id(const char* dir, const char* title_id)
 {
 	char path[128];
 	uint32_t tid = 0;
@@ -79,7 +80,7 @@ static uint32_t get_filename_id(const char* dir)
 	do
 	{
 		tid++;
-		snprintf(path, sizeof(path), "%s%08d.zip", dir, tid);
+		snprintf(path, sizeof(path), "%s%s-%08d.zip", dir, title_id, tid);
 	}
 	while (file_exists(path) == SUCCESS);
 
@@ -89,9 +90,10 @@ static uint32_t get_filename_id(const char* dir)
 static void zipSave(const save_entry_t* entry, int dest)
 {
 	char exp_path[256];
-	char* export_file;
+	char export_file[256];
 	char* tmp;
 	uint32_t fid;
+	int ret;
 
 	_set_dest_path(exp_path, dest, PS3_EXPORT_PATH);
 	if (mkdirs(exp_path) != SUCCESS)
@@ -102,31 +104,39 @@ static void zipSave(const save_entry_t* entry, int dest)
 
 	init_loading_screen("Exporting save game...");
 
-	fid = get_filename_id(exp_path);
-	asprintf(&export_file, "%s%08d.zip", exp_path, fid);
+	fid = get_filename_id(exp_path, entry->title_id);
+	snprintf(export_file, sizeof(export_file), "%s%s-%08d.zip", exp_path, entry->title_id, fid);
 
 	asprintf(&tmp, entry->path);
 	*strrchr(tmp, '/') = 0;
 	*strrchr(tmp, '/') = 0;
 
-	zip_directory(tmp, entry->path, export_file);
-
-	sprintf(export_file, "%s%08d.txt", exp_path, fid);
-	FILE* f = fopen(export_file, "a");
-	if (f)
-	{
-		fprintf(f, "%08d.zip=[%s] %s\n", fid, entry->title_id, entry->name);
-		fclose(f);
-	}
-
-	sprintf(export_file, "%s" OWNER_XML_FILE, exp_path);
-	_saveOwnerData(export_file);
-
-	free(export_file);
+	ret = zip_directory(tmp, entry->path, export_file);
 	free(tmp);
 
+	if (ret)
+	{
+		snprintf(export_file, sizeof(export_file), "%s%08d.txt", exp_path, apollo_config.user_id);
+		FILE* f = fopen(export_file, "a");
+		if (f)
+		{
+			fprintf(f, "%s-%08d.zip=%s\n", entry->title_id, fid, entry->name);
+			fclose(f);
+			file_chmod(export_file);
+		}
+
+		snprintf(export_file, sizeof(export_file), "%s" OWNER_XML_FILE, exp_path);
+		_saveOwnerData(export_file);
+	}
+
 	stop_loading_screen();
-	show_message("Zip file successfully saved to:\n%s%08d.zip", exp_path, fid);
+	if (!ret)
+	{
+		show_message("Error! Can't export save game to:\n%s", exp_path);
+		return;
+	}
+
+	show_message("Zip file successfully saved to:\n%s%s-%08d.zip", exp_path, entry->title_id, fid);
 }
 
 static int _copy_save_usb(const save_entry_t* save, const char* exp_path)
@@ -157,7 +167,7 @@ static void copySave(const save_entry_t* save, int dst, const char* path)
 	_copy_save_usb(save, exp_path);
 	stop_loading_screen();
 
-	show_message("Files successfully copied to:\n%s", exp_path);
+	show_message("Files successfully copied to:\n%s%s", exp_path, save->dir_name);
 }
 
 static void copyAllSavesUSB(const save_entry_t* save, int dst, int all)
@@ -536,6 +546,7 @@ static void exportLicensesZip(int dst)
 
 	sprintf(export_file, "%s" "idps.hex", exp_path);
 	write_buffer(export_file, (u8*) apollo_config.idps, 16);
+	file_chmod(export_file);
 
 	free(export_file);
 	free(lic_path);
@@ -567,6 +578,7 @@ static void exportFlashZip(int dst)
 
 	sprintf(export_file, "%s" "idps.hex", exp_path);
 	write_buffer(export_file, (u8*) apollo_config.idps, 16);
+	file_chmod(export_file);
 
 	free(export_file);
 
@@ -576,6 +588,7 @@ static void exportFlashZip(int dst)
 
 static void exportTrophiesZip(int dst)
 {
+	int ret;
 	char* export_file;
 	char* trp_path;
 	char* tmp;
@@ -596,7 +609,7 @@ static void exportTrophiesZip(int dst)
 	tmp = strdup(trp_path);
 	*strrchr(tmp, '/') = 0;
 
-	zip_directory(tmp, trp_path, export_file);
+	ret = zip_directory(tmp, trp_path, export_file);
 
 	sprintf(export_file, "%s" OWNER_XML_FILE, exp_path);
 	_saveOwnerData(export_file);
@@ -606,6 +619,12 @@ static void exportTrophiesZip(int dst)
 	free(tmp);
 
 	stop_loading_screen();
+	if (!ret)
+	{
+		show_message("Error! Failed to export Trophies to Zip");
+		return;
+	}
+
 	show_message("Trophies successfully saved to:\n%strophies_%08d.zip", exp_path, apollo_config.user_id);
 }
 
@@ -872,6 +891,7 @@ static void exportVM2raw(const char* vm2_path, const char* vm2_file, int dst)
 
 	init_loading_screen("Exporting PS2 .VM2 memory card...");
 	ps2_remove_vmc_ecc(vm2file, dstfile);
+	file_chmod(dstfile);
 	stop_loading_screen();
 
 	show_message("File successfully saved to:\n%s", dstfile);
@@ -887,9 +907,9 @@ static void importPS2classicsCfg(const char* cfg_path, const char* cfg_file)
 	*strrchr(outfile, '.') = 0;
 	strcat(outfile, ".ENC");
 
-	init_loading_screen("Encrypting PS2 CONFIG...");
-	ps2_encrypt_image(1, ps2file, outfile, NULL);
-	stop_loading_screen();
+	init_progress_bar("Encrypting PS2 CONFIG...", cfg_file);
+	ps2_encrypt_image(1, ps2file, outfile);
+	end_progress_bar();
 
 	show_message("File successfully saved to:\n%s", outfile);
 }
@@ -898,16 +918,15 @@ static void importPS2classics(const char* iso_path, const char* iso_file)
 {
 	char ps2file[256];
 	char outfile[256];
-	char msg[128] = "Encrypting PS2 ISO...";
 
 	snprintf(ps2file, sizeof(ps2file), "%s%s", iso_path, iso_file);
 	snprintf(outfile, sizeof(outfile), PS2ISO_PATH_HDD "%s", iso_file);
 	*strrchr(outfile, '.') = 0;
 	strcat(outfile, ".BIN.ENC");
 
-	init_loading_screen(msg);
-	ps2_encrypt_image(0, ps2file, outfile, msg);
-	stop_loading_screen();
+	init_progress_bar("Encrypting PS2 ISO...", iso_file);
+	ps2_encrypt_image(0, ps2file, outfile);
+	end_progress_bar();
 
 	show_message("File successfully saved to:\n%s", outfile);
 }
@@ -917,7 +936,6 @@ static void exportPS2classics(const char* enc_path, const char* enc_file, uint8_
 	char path[256];
 	char ps2file[256];
 	char outfile[256];
-	char msg[128] = "Decrypting PS2 BIN.ENC...";
 
 	if (dst != STORAGE_HDD)
 		_set_dest_path(path, dst, PS2ISO_PATH);
@@ -935,9 +953,10 @@ static void exportPS2classics(const char* enc_path, const char* enc_file, uint8_
 		return;
 	}
 
-	init_loading_screen(msg);
-	ps2_decrypt_image(0, ps2file, outfile, msg);
-	stop_loading_screen();
+	init_progress_bar("Decrypting PS2 BIN.ENC...", enc_file);
+	ps2_decrypt_image(0, ps2file, outfile);
+	file_chmod(outfile);
+	end_progress_bar();
 
 	show_message("File successfully saved to:\n%s", outfile);
 }

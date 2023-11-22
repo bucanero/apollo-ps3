@@ -10,6 +10,7 @@
 #include "ps2_data.h"
 #include "settings.h"
 #include "common.h"
+#include "saves.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -516,7 +517,7 @@ static void build_ps2_header(u8 * buffer, int npd_type, const char* content_id, 
 
 }
 
-void ps2_decrypt_image(u8 dex_mode, const char* image_name, const char* data_file, char* msg_update)
+void ps2_decrypt_image(u8 dex_mode, const char* image_name, const char* data_file)
 {
 	FILE * in;
 	FILE * data_out;
@@ -555,6 +556,9 @@ void ps2_decrypt_image(u8 dex_mode, const char* image_name, const char* data_fil
 	
 	total_size = data_size;
 	flush_size = total_size / 100;
+
+	for (i = 0; i < 0x20; c++)
+		update_progress_bar(0, total_size, image_name);
 
 	LOG("segment size: %x\ndata_size: %lx\n", segment_size, data_size);
 
@@ -596,7 +600,7 @@ void ps2_decrypt_image(u8 dex_mode, const char* image_name, const char* data_fil
 		if(c >= flush_size) {
 			percent += 1;
 			decr_size = decr_size + c;
-			sprintf(msg_update, "Decrypted: %ld%% (%d Blocks)", (100*decr_size)/total_size, percent);
+			update_progress_bar(decr_size, total_size, image_name);
 			LOG("Decrypted: %d Blocks 0x%08lx", percent, decr_size);
 			c = 0;
 		}
@@ -619,7 +623,7 @@ static int64_t get_fsize(const char* fname)
 	return st.st_size;
 }
 
-void ps2_encrypt_image(u8 cfg_mode, const char* image_name, const char* data_file, char* msg_update)
+void ps2_encrypt_image(u8 cfg_mode, const char* image_name, const char* data_file)
 {
 	FILE * in;
 	FILE * data_out;
@@ -657,6 +661,9 @@ void ps2_encrypt_image(u8 cfg_mode, const char* image_name, const char* data_fil
 	
 	total_size = data_size;
 	flush_size = total_size / 100;
+
+	for (i = 0; i < 0x20; c++)
+		update_progress_bar(0, total_size, image_name);
 
 	/* limg section */
 	if (!cfg_mode)
@@ -713,10 +720,10 @@ void ps2_encrypt_image(u8 cfg_mode, const char* image_name, const char* data_fil
 		fwrite(data_buffer, segment_size, num_child_segments, data_out);
 		
 		c += read;
-		if(msg_update && c >= flush_size) {
+		if(c >= flush_size) {
 			percent += 1;
 			encr_size = encr_size + c;
-			sprintf(msg_update, "Encrypted: %ld%% (%d Blocks)", (100*encr_size)/data_size, percent);
+			update_progress_bar(encr_size, total_size, image_name);
 			LOG("Encrypted: %d Blocks 0x%08lx", percent, encr_size);
 			c = 0;
 		}

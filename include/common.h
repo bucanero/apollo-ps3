@@ -21,6 +21,7 @@ int mkdirs(const char* dir);
 int copy_file(const char* input, const char* output);
 int copy_directory(const char* startdir, const char* inputdir, const char* outputdir);
 int clean_directory(const char* inputdir);
+int file_chmod(const char* path);
 
 //----------------------------------------
 //CONSOLE ID UTILS
