@@ -173,7 +173,7 @@ static void copySave(const save_entry_t* save, int dst, const char* path)
 static void copyAllSavesUSB(const save_entry_t* save, int dst, int all)
 {
 	char usb_path[256];
-	int err_count = 0;
+	int done = 0, err_count = 0;
 	list_node_t *node;
 	save_entry_t *item;
 	uint64_t progress = 0;
@@ -194,14 +194,11 @@ static void copyAllSavesUSB(const save_entry_t* save, int dst, int all)
 		progress++;
 		update_progress_bar(progress, list_count(list), item->name);
 		if (item->type != FILE_TYPE_MENU && (item->flags & SAVE_FLAG_PS3) && (all || item->flags & SAVE_FLAG_SELECTED))
-			err_count += ! _copy_save_usb(item, usb_path);
+			(_copy_save_usb(item, usb_path) ? done++ : err_count++);
 	}
 	end_progress_bar();
 
-	if (err_count)
-		show_message("Error: %d Saves couldn't be copied to USB", err_count);
-	else
-		show_message("All Saves copied to USB");
+	show_message("%d/%d Saves copied to USB", done, done+err_count);
 }
 
 static int _copy_save_hdd(const save_entry_t *item)
@@ -211,10 +208,7 @@ static int _copy_save_hdd(const save_entry_t *item)
 	snprintf(copy_path, sizeof(copy_path), SAVES_PATH_HDD "%s/", apollo_config.user_id, item->dir_name);
 
 	if (dir_exists(copy_path) == SUCCESS)
-	{
-		LOG("Error! Save-game folder already exists: %s", copy_path);
-		return 0;
-	}
+		LOG("Overwriting! Save-game folder already exists: %s", copy_path);
 
 	if (!create_savegame_folder(item->dir_name))
 	{
@@ -228,14 +222,24 @@ static int _copy_save_hdd(const save_entry_t *item)
 
 static void copySaveHDD(const save_entry_t* save)
 {
+	char hdd_path[256];
+
+	snprintf(hdd_path, sizeof(hdd_path), SAVES_PATH_HDD "%s/", apollo_config.user_id, save->dir_name);
+	if (dir_exists(hdd_path) == SUCCESS &&
+		!show_dialog(DIALOG_TYPE_YESNO, "Save-game %s already exists! Overwrite?", save->dir_name))
+	{
+		show_message("Error! Save-game %s already exists", save->dir_name);
+		return;
+	}
+
 	init_loading_screen("Copying save game...");
 	int ret = _copy_save_hdd(save);
 	stop_loading_screen();
 
 	if (ret)
-		show_message("Save-game copied to HDD");
+		show_message("Save-game %s copied to HDD", save->dir_name);
 	else
-		show_message("Error! Save-game folder already exists:\n%s", save->dir_name);
+		show_message("Error! Failed to copy Save-game %s", save->dir_name);
 }
 
 static int webReqHandler(dWebRequest_t* req, dWebResponse_t* out, void* list)
@@ -454,7 +458,7 @@ static void* ps3_host_callback(int id, int* size)
 
 static void copyAllSavesHDD(const save_entry_t* save, int all)
 {
-	int err_count = 0;
+	int done = 0, err_count = 0;
 	list_node_t *node;
 	save_entry_t *item;
 	uint64_t progress = 0;
@@ -468,15 +472,12 @@ static void copyAllSavesHDD(const save_entry_t* save, int all)
 		progress++;
 		update_progress_bar(progress, list_count(list), item->name);
 		if (item->type != FILE_TYPE_MENU && (item->flags & SAVE_FLAG_PS3) && (all || item->flags & SAVE_FLAG_SELECTED))
-			err_count += ! _copy_save_hdd(item);
+			(_copy_save_hdd(item) ? done++ : err_count++);
 	}
 
 	end_progress_bar();
 
-	if (err_count)
-		show_message("Error: %d Saves couldn't be copied to HDD", err_count);
-	else
-		show_message("All Saves copied to HDD");
+	show_message("%d/%d Saves copied to HDD", done, done+err_count);
 }
 
 static void extractArchive(const char* file_path)

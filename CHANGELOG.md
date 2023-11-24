@@ -4,10 +4,12 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.8.6](https://github.com/bucanero/apollo-ps3/releases/tag/v1.8.6) - 2023-11-25
 
 ### Added
 
 * Auto-detect `X`/`O` button settings
+* "Copy save to HDD" supports overwriting
 * New cheat codes
   - Assassin's Creed II
   - Grand Theft Auto V
