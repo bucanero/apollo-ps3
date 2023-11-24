@@ -224,7 +224,7 @@ int clean_directory(const char* inputdir)
 //POWER UTILS
 //----------------------------------------
 
-int sys_shutdown()
+int sys_shutdown(void)
 {   
     unlink_secure("/dev_hdd0/tmp/turnoff");
     
@@ -232,7 +232,7 @@ int sys_shutdown()
     return_to_user_prog(int);
 }
 
-int sys_reboot()
+int sys_reboot(void)
 {
     unlink_secure("/dev_hdd0/tmp/turnoff");
 
@@ -256,7 +256,7 @@ int sys_ss_get_open_psid(uint64_t psid[2])
 	return_to_user_prog(int);
 }
 
-int sys_ss_appliance_info_manager(u32 packet_id, u64 arg)
+static int sys_ss_appliance_info_manager(u32 packet_id, u64 arg)
 {
 	lv2syscall2(SYS_SS_APPLIANCE_INFO_MANAGER, (uint64_t)packet_id, (uint64_t)arg);
 	return_to_user_prog(int);
@@ -272,7 +272,7 @@ int ss_aim_get_open_psid(uint8_t *psid)
 	return sys_ss_appliance_info_manager(AIM_GET_OPEN_PSID, (uint64_t)psid);
 }
 
-int sys8_get_hen(void)
+static int sys8_get_hen(void)
 {
     lv2syscall1(8, SYSCALL8_OPCODE_IS_HEN);
     return_to_user_prog(int);

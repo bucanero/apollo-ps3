@@ -683,21 +683,22 @@ static void activateAccount(const char* ex_path)
 	}
 
 	snprintf(account_id, sizeof(account_id), "%016lx", 0x6F6C6C6F70610000 + (~apollo_config.user_id & 0xFFFF));
-	if (apollo_config.account_id != 0 ||
+	if ((apollo_config.account_id = get_account_id(apollo_config.user_id)) == 0 && (
 		!osk_dialog_get_text("Enter the Account ID", account_id, sizeof(account_id)) ||
-		!sscanf(account_id, "%lx", &apollo_config.account_id))
+		!sscanf(account_id, "%lx", &apollo_config.account_id)))
 	{
 		show_message("Error! Account ID is not valid");
 		return;
 	};
 
+	init_loading_screen("Activating PS3...");
 	if (!create_fake_account(apollo_config.user_id, apollo_config.account_id))
 	{
+		stop_loading_screen();
 		show_message("Error! Fake Account could not be assigned to xRegistry.sys");
 		return;
 	}
 
-	init_loading_screen("Activating PS3...");
 	ret = create_actdat(ex_path, apollo_config.account_id);
 	stop_loading_screen();
 

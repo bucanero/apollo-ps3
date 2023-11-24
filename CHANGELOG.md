@@ -10,6 +10,7 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 * Auto-detect `X`/`O` button settings
 * "Copy save to HDD" supports overwriting
+* Allow fake account re-activation
 * New cheat codes
   - Assassin's Creed II
   - Grand Theft Auto V

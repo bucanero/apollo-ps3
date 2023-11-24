@@ -403,7 +403,8 @@ u64 create_fake_account(u32 user_id, u64 account_id)
 
 	// Check if there is no accountID
 	memset(data, 0, 0x10);
-	if(memcmp(buffer + pos, data, 0x10) != 0)
+	sprintf(data + 0x20, "%016lx", account_id);
+	if(memcmp(buffer + pos, data, 0x10) != 0 && memcmp(buffer + pos, data + 0x20, 0x10) != 0)
 	{
 		LOG("Error: Account ID is not empty!");
 		free(buffer);

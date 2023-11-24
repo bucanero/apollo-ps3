@@ -776,6 +776,7 @@ list_t * ReadBackupList(const char* userPath)
 
 	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " Export Licenses");
 	asprintf(&item->path, EXDATA_PATH_HDD, apollo_config.user_id);
+	item->title_id = strdup("HDD");
 	item->type = FILE_TYPE_RIF;
 	list_append(list, item);
 
@@ -817,6 +818,7 @@ list_t * ReadBackupList(const char* userPath)
 
 	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " PS2 Classics: Export & Decrypt BIN.ENC images");
 	item->path = strdup(PS2ISO_PATH_HDD);
+	item->title_id = strdup("HDD");
 	item->type = FILE_TYPE_BINENC;
 	list_append(list, item);
 
@@ -831,11 +833,13 @@ list_t * ReadBackupList(const char* userPath)
 
 	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " Export PS2 .VM2 memory cards to USB");
 	item->path = strdup(VMC_PS2_PATH_HDD);
+	item->title_id = strdup("HDD");
 	item->type = FILE_TYPE_VM2;
 	list_append(list, item);
 
 	item = _createSaveEntry(0, CHAR_ICON_ZIP " Extract Archives (RAR, Zip, 7z)");
 	item->path = strdup(PS3_TMP_PATH);
+	item->title_id = strdup("HDD");
 	item->type = FILE_TYPE_ZIP;
 	list_append(list, item);
 
