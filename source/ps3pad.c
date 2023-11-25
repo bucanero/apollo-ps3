@@ -56,12 +56,6 @@ int readPad(int port)
 		if (padA[port].ANA_L_H > ANALOG_MAX)
 			padA[port].BTN_RIGHT = 1;
 
-		if (!crossButtonOK)
-		{
-			padA[port].BTN_CROSS ^= 1;
-			padA[port].BTN_CIRCLE ^= 1;
-		}
-
 		//new
 		dpad = ((char)*(&padA[port].zeroes + off) << 8) >> 12;
 		rest = ((((char)*(&padA[port].zeroes + off) & 0xF) << 8) | ((char)*(&padA[port].zeroes + off + 1) << 0));
@@ -149,6 +143,20 @@ int readPad(int port)
 	if (!retDPAD && !retREST)
 		return 0;
 	
+	if (!crossButtonOK)
+	{
+		if (paddata[port].BTN_CROSS)
+		{
+			paddata[port].BTN_CROSS = 0;
+			paddata[port].BTN_CIRCLE = 1;
+		}
+		else if (paddata[port].BTN_CIRCLE)
+		{
+			paddata[port].BTN_CIRCLE = 0;
+			paddata[port].BTN_CROSS = 1;
+		}
+	}
+
 	if (!retDPAD)
 	{
 		paddata[port].BTN_LEFT = 0;
