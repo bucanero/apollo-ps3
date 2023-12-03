@@ -557,7 +557,7 @@ void ps2_decrypt_image(u8 dex_mode, const char* image_name, const char* data_fil
 	total_size = data_size;
 	flush_size = total_size / 100;
 
-	for (i = 0; i < 0x20; c++)
+	for (i = 0; i < 0x20; i++)
 		update_progress_bar(0, total_size, image_name);
 
 	LOG("segment size: %x\ndata_size: %lx\n", segment_size, data_size);
@@ -662,7 +662,7 @@ void ps2_encrypt_image(u8 cfg_mode, const char* image_name, const char* data_fil
 	total_size = data_size;
 	flush_size = total_size / 100;
 
-	for (i = 0; i < 0x20; c++)
+	for (i = 0; i < 0x20; i++)
 		update_progress_bar(0, total_size, image_name);
 
 	/* limg section */
