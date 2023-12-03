@@ -540,6 +540,7 @@ void ps2_decrypt_image(u8 dex_mode, const char* image_name, const char* data_fil
 	int percent;
 	
 	decr_size = c = percent = 0;
+	LOG("PS2Classic decrypt '%s' -> '%s'", image_name, data_file);
 
 	if (!get_image_klicensee(image_name, klicensee))
 		return;
@@ -557,7 +558,7 @@ void ps2_decrypt_image(u8 dex_mode, const char* image_name, const char* data_fil
 	total_size = data_size;
 	flush_size = total_size / 100;
 
-	for (i = 0; i < 0x20; c++)
+	for (i = 0; i < 0x20; i++)
 		update_progress_bar(0, total_size, image_name);
 
 	LOG("segment size: %x\ndata_size: %lx\n", segment_size, data_size);
@@ -647,6 +648,7 @@ void ps2_encrypt_image(u8 cfg_mode, const char* image_name, const char* data_fil
 	int percent;
 	
 	encr_size = c = percent = 0;
+	LOG("PS2Classic encrypt '%s' -> '%s'", image_name, data_file);
 
 	//open files
 	data_out = fopen(data_file, "wb");
@@ -662,7 +664,7 @@ void ps2_encrypt_image(u8 cfg_mode, const char* image_name, const char* data_fil
 	total_size = data_size;
 	flush_size = total_size / 100;
 
-	for (i = 0; i < 0x20; c++)
+	for (i = 0; i < 0x20; i++)
 		update_progress_bar(0, total_size, image_name);
 
 	/* limg section */
