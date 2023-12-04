@@ -867,7 +867,7 @@ static int get_iso_files(save_entry_t * item)
 		{
 			if (dir->d_type == DT_REG && (endsWith(dir->d_name, ".BIN") || endsWith(dir->d_name, ".ISO") || endsWith(dir->d_name, ".CONFIG")))
 			{
-				snprintf(name, sizeof(name), "Encode %s", dir->d_name);
+				snprintf(name, sizeof(name), "Encrypt \"%s\"", dir->d_name);
 
 				cmd = _createCmdCode(PATCH_COMMAND, name, endsWith(dir->d_name, "CONFIG") ? CMD_IMP_PS2_CONFIG : CMD_IMP_PS2_ISO);
 				cmd->file = strdup(dir->d_name);
@@ -905,7 +905,7 @@ static int get_binenc_files(save_entry_t * item)
 		{
 			if (dir->d_type == DT_REG && endsWith(dir->d_name, ".BIN.ENC"))
 			{
-				snprintf(name, sizeof(name), "Decode %s to .ISO", dir->d_name);
+				snprintf(name, sizeof(name), "Decrypt \"%s\"", dir->d_name);
 
 				cmd = _createCmdCode(PATCH_COMMAND, name, CMD_CODE_NULL);
 				cmd->file = strdup(dir->d_name);

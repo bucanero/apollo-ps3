@@ -4,6 +4,21 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v1.8.7](https://github.com/bucanero/apollo-ps3/releases/tag/v1.8.7) - 2023-12-03
+
+### Added
+
+* New cheat codes
+  - Assassin's Creed II
+
+### Fixed
+
+* Fix PS2 Classics encryption/decryption progress bar
+
+### Misc
+
+* Update Web Server saves index page
+
 ## [v1.8.6](https://github.com/bucanero/apollo-ps3/releases/tag/v1.8.6) - 2023-11-25
 
 ### Added
