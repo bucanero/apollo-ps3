@@ -30,10 +30,12 @@
 #include "spu_soundmodule_bin.h"
 #include <soundlib/spu_soundlib.h>
 #include <libxmp-lite/xmp.h>
-#include "haiku_s3m.h"
 
 #define SAMPLING_FREQ       48000 /* 48khz. */
 #define AUDIO_SAMPLES       SAMPLING_FREQ * 2 /* audio buffer to decode (for 48000 samples x 0.5 seconds and 16 bit stereo as reference) */
+
+extern const uint8_t haiku_s3m[];
+extern const uint32_t haiku_s3m_size;
 
 static short *background_music[2] = {NULL, NULL};
 static xmp_context xmp = NULL;

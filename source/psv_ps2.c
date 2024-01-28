@@ -56,7 +56,7 @@ const uint8_t cbsKey[256] = {
 }; 
 
 int psv_resign(const char *src_psv);
-void write_psvheader(FILE *fp, uint32_t type);
+void write_psv_header(FILE *fp, uint32_t type);
 void get_psv_filename(char* psvName, const char* path, const char* dirName);
 
 static void printMAXHeader(const maxHeader_t *header)
@@ -231,7 +231,7 @@ int ps2_max2psv(const char *save, const char* psv_path)
     memcpy(&ps2md.modified, &fmtime, sizeof(sceMcStDateTime));
     memcpy(ps2md.filename, dirName, sizeof(ps2md.filename));
     
-    write_psvheader(psv, 2);
+    write_psv_header(psv, 2);
 
     LOG("\nSave contents:\n");
 
@@ -340,13 +340,13 @@ int ps2_psu2psv(const char *save, const char* psv_path)
     
     ps2h.numberOfFiles = ES32(numFiles);
 
-    ps2md.attribute = entry.mode;
+    ps2md.attribute = ((uint32_t)entry.mode << 16);
     ps2md.numberOfFilesInDir = entry.length;
     memcpy(&ps2md.created, &entry.created, sizeof(sceMcStDateTime));
     memcpy(&ps2md.modified, &entry.modified, sizeof(sceMcStDateTime));
     memcpy(ps2md.filename, entry.name, sizeof(ps2md.filename));
     
-    write_psvheader(psvFile, 2);
+    write_psv_header(psvFile, 2);
 
     // Skip "." and ".."
     fseek(psuFile, sizeof(ps2_McFsEntry)*2, SEEK_CUR);
@@ -387,7 +387,7 @@ int ps2_psu2psv(const char *save, const char* psv_path)
     {
         fread(&entry, 1, sizeof(ps2_McFsEntry), psuFile);
 
-        ps2fi[i].attribute = entry.mode;
+        ps2fi[i].attribute = ((uint32_t)entry.mode << 16);
         ps2fi[i].positionInFile = ES32(dataPos);
         ps2fi[i].filesize = entry.length;
         memcpy(&ps2fi[i].created, &entry.created, sizeof(sceMcStDateTime));
@@ -533,7 +533,7 @@ int ps2_cbs2psv(const char *save, const char *psv_path)
     memcpy(&ps2md.modified, &header->modified, sizeof(sceMcStDateTime));
     memcpy(ps2md.filename, header->name, sizeof(ps2md.filename));
     
-    write_psvheader(dstFile, 2);
+    write_psv_header(dstFile, 2);
 
     LOG("Save contents:\n");
 
@@ -675,7 +675,7 @@ int ps2_xps2psv(const char *save, const char *psv_path)
     memcpy(&ps2md.modified, &entry.modified, sizeof(sceMcStDateTime));
     memcpy(ps2md.filename, entry.name, sizeof(ps2md.filename));
 
-    write_psvheader(psvFile, 2);
+    write_psv_header(psvFile, 2);
 
     // Find the icon.sys (need to know the icons names)
     for(i = 0; i < numFiles; i++)
@@ -784,7 +784,7 @@ int ps2_psv2psu(const char *save, const char* psu_path)
     memcpy(&entry.created, &ps2md.created, sizeof(sceMcStDateTime));
     memcpy(&entry.modified, &ps2md.modified, sizeof(sceMcStDateTime));
     memcpy(entry.name, ps2md.filename, sizeof(entry.name));
-    entry.mode = ps2md.attribute;
+    entry.mode = (ps2md.attribute >> 16);
     entry.length = ps2md.numberOfFilesInDir;
     fwrite(&entry, sizeof(entry), 1, psuFile);
 
@@ -809,7 +809,7 @@ int ps2_psv2psu(const char *save, const char* psu_path)
         memcpy(&entry.created, &ps2fi.created, sizeof(sceMcStDateTime));
         memcpy(&entry.modified, &ps2fi.modified, sizeof(sceMcStDateTime));
         memcpy(entry.name, ps2fi.filename, sizeof(entry.name));
-        entry.mode = ps2fi.attribute;
+        entry.mode = (ps2fi.attribute >> 16);
         entry.length = ps2fi.filesize;
         fwrite(&entry, sizeof(entry), 1, psuFile);
 

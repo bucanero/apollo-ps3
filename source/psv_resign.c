@@ -192,7 +192,7 @@ void get_psv_filename(char* psvName, const char* path, const char* dirName)
 	strcat(psvName, ".PSV");
 }
 
-void write_psvheader(FILE *fp, uint32_t type)
+void write_psv_header(FILE *fp, uint32_t type)
 {
     psv_header_t ph;
 
@@ -232,7 +232,7 @@ int ps1_mcs2psv(const char* mcsfile, const char* psv_path)
 		return 0;
 	}
 	
-	write_psvheader(pf, 1);
+	write_psv_header(pf, 1);
 
 	memset(&ps1h, 0, sizeof(ps1_header_t));
 	ps1h.saveSize = ES32(sz - 0x80);
@@ -328,7 +328,7 @@ int ps1_psx2psv(const char* psxfile, const char* psv_path)
 		return 0;
 	}
 	
-	write_psvheader(pf, 1);
+	write_psv_header(pf, 1);
 
 	memset(&ps1h, 0, sizeof(ps1_header_t));
 	ps1h.saveSize = ES32(sz - 0x36);
