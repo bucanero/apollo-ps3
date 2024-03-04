@@ -298,6 +298,7 @@ void ps2_crypt_vmc(uint8_t dex_mode, const char* vmc_path, const char* vmc_out, 
 int ps2_add_vmc_ecc(const char* src, const char* dst);
 int ps2_remove_vmc_ecc(const char* src, const char* dst);
 int psv_resign(const char *src_psv);
+int vmp_resign(const char *src_vmp);
 
 int ps1_mcs2psv(const char* save, const char* psv_path);
 int ps1_psx2psv(const char* save, const char* psv_path);

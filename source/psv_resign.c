@@ -19,8 +19,12 @@
 #define PSV_SEED_OFFSET 0x8
 #define PSV_HASH_OFFSET 0x1C
 #define PSV_TYPE_OFFSET 0x3C
+#define VMP_SEED_OFFSET 0xC
+#define VMP_HASH_OFFSET 0x20
+#define VMP_MAGIC       0x00504D56
+#define VMP_SIZE        0x20080
 
-const char SJIS_REPLACEMENT_TABLE[] = 
+static const char SJIS_REPLACEMENT_TABLE[] = 
     " ,.,..:;?!\"*'`*^"
     "-_????????*---/\\"
     "~||--''\"\"()()[]{"
@@ -29,15 +33,15 @@ const char SJIS_REPLACEMENT_TABLE[] =
     "$c&%#&*@S*******"
     "*******T><^_'='";
 
-const uint8_t psv_ps2key[0x10] = {
+static const uint8_t psv_ps2key[0x10] = {
 	0xFA, 0x72, 0xCE, 0xEF, 0x59, 0xB4, 0xD2, 0x98, 0x9F, 0x11, 0x19, 0x13, 0x28, 0x7F, 0x51, 0xC7
 }; 
 
-const uint8_t psv_ps1key[0x10] = {
+static const uint8_t psv_ps1key[0x10] = {
 	0xAB, 0x5A, 0xBC, 0x9F, 0xC1, 0xF4, 0x9D, 0xE6, 0xA0, 0x51, 0xDB, 0xAE, 0xFA, 0x51, 0x88, 0x59
 };
 
-const uint8_t psv_iv[0x10] = {
+static const uint8_t psv_iv[0x10] = {
 	0xB3, 0x0F, 0xFE, 0xED, 0xB7, 0xDC, 0x5E, 0xB7, 0x13, 0x3D, 0xA6, 0x0D, 0x1B, 0x6B, 0x2C, 0xDC
 };
 
@@ -58,17 +62,17 @@ static void XorWithIv(uint8_t* buf, const uint8_t* Iv)
   }
 }
  
-static void generateHash(const uint8_t *input, uint8_t *dest, size_t sz, uint8_t type)
+static void generateHash(const uint8_t *input, uint8_t *salt_seed, uint8_t *dest, size_t sz, uint8_t type)
 {
 	aes_context aes_ctx;
 	sha1_context sha1_ctx;
 	uint8_t iv[0x10];
 	uint8_t salt[0x40];
 	uint8_t work_buf[0x14];
-	const uint8_t *salt_seed = input + PSV_SEED_OFFSET;
 
 	memset(salt , 0, sizeof(salt));
 	memset(&aes_ctx, 0, sizeof(aes_context));
+	memcpy(salt_seed, PSV_SALT, 20);
 
 	LOG("Type detected: %d", type);
 	if(type == 1)
@@ -155,12 +159,10 @@ int psv_resign(const char *src_psv)
 		LOG("%02X ", input[PSV_HASH_OFFSET + i]);
 	}
 
-	generateHash(input, input + PSV_HASH_OFFSET, sz, input[PSV_TYPE_OFFSET]);
+	generateHash(input, input + PSV_SEED_OFFSET, input + PSV_HASH_OFFSET, sz, input[PSV_TYPE_OFFSET]);
 
 	LOG("New signature: ");
-	for(int i = 0; i < 0x14; i++ ) {
-		LOG("%02X ", input[PSV_HASH_OFFSET + i]);
-	}
+	dump_data(input+PSV_HASH_OFFSET, 20);
 
 	if (write_buffer(src_psv, input, sz) < 0) {
 		LOG("Failed to open output file");
@@ -170,6 +172,41 @@ int psv_resign(const char *src_psv)
 
 	free(input);
 	LOG("PSV resigned successfully: %s\n", src_psv);
+
+	return 1;
+}
+
+int vmp_resign(const char *src_vmp)
+{
+	size_t sz;
+	uint8_t *input;
+
+	LOG("=====Vita MCR2VMP by @dots_tb=====");
+
+	if (read_buffer(src_vmp, &input, &sz) < 0) {
+		LOG("Failed to open input file");
+		return 0;
+	}
+
+	if (sz != VMP_SIZE || *(uint32_t*)input != VMP_MAGIC) {
+		LOG("Not a VMP file");
+		free(input);
+		return 0;
+	}
+
+	generateHash(input, input + VMP_SEED_OFFSET, input + VMP_HASH_OFFSET, sz, 1);
+
+	LOG("New signature:");
+	dump_data(input+VMP_HASH_OFFSET, 20);
+
+	if (write_buffer(src_vmp, input, sz) < 0) {
+		LOG("Failed to open output file");
+		free(input);
+		return 0;
+	}
+
+	free(input);
+	LOG("VMP resigned successfully: %s", src_vmp);
 
 	return 1;
 }

@@ -4,7 +4,7 @@
 #include <polarssl/sha1.h>
 
 
-void dump_data(const u8 *data, u64 size, FILE *fp) {
+void dump_data(const u8 *data, u64 size) {
 	u64 i;
 	for (i = 0; i < size; i++)
 		dbglogger_printf("%02X", data[i]);

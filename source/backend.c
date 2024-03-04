@@ -461,7 +461,7 @@ int backend_cmd_brute(backend_t *ctx, const char *file_path, u64 file_offset, s6
 			secure_file_id = (secure_file_id_t *)list_get(node);
 			if (secure_file_id && secure_file_id->found) {
 				LOG("[*]  %s: ", secure_file_id->file_name);
-				dump_data(secure_file_id->secure_file_id, PFD_SECURE_FILE_ID_SIZE, stdout);
+				dump_data(secure_file_id->secure_file_id, PFD_SECURE_FILE_ID_SIZE);
 			}
 			node = list_next(node);
 		}
