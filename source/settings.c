@@ -8,7 +8,7 @@
 #include "common.h"
 
 static uint8_t owner_sel = 0;
-static char * sort_opt[] = {"Disabled", "by Name", "by Title ID", NULL};
+static char * sort_opt[] = {"Disabled", "by Name", "by Title ID", "by Type", NULL};
 
 static void log_callback(int sel);
 static void sort_callback(int sel);

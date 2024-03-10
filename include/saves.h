@@ -38,6 +38,7 @@
 #define EXPORT_RAP_PATH_USB     USB_PATH PS3_LICENSE_PATH
 #define EXPORT_RAP_PATH_HDD     "/dev_hdd0/" PS3_LICENSE_PATH
 
+#define VMC_PS1_PATH_USB        "PS1/VMC/"
 #define VMC_PS2_PATH_USB        "PS2/VMC/"
 #define VMC_PS2_PATH_HDD        "/dev_hdd0/savedata/vmc/"
 
@@ -105,6 +106,9 @@ enum cmd_code_enum
     CMD_COPY_ALL_SAVES_USB,
     CMD_COPY_ALL_SAVES_HDD,
     CMD_SAVE_WEB_SERVER,
+    CMD_RESIGN_VMP,
+    CMD_EXP_SAVES_VMC1,
+    CMD_EXP_ALL_SAVES_VMC1,
 
 // Export commands
     CMD_EXP_EXDATA_USB,
@@ -114,12 +118,16 @@ enum cmd_code_enum
     CMD_EXP_PSV_MCS,
     CMD_EXP_PSV_PSU,
     CMD_EXP_VM2_RAW,
+    CMD_EXP_VMC1SAVE,
+    CMD_EXP_VMP2MCR,
 
 // Import commands
     CMD_IMP_EXDATA_USB,
     CMD_IMP_PS2_ISO,
     CMD_IMP_PS2_CONFIG,
     CMD_IMP_PS2VMC_USB,
+    CMD_IMP_VMC1SAVE,
+    CMD_IMP_MCR2VMP,
     CMD_CREATE_ACT_DAT,
     CMD_EXTRACT_ARCHIVE,
     CMD_URL_DOWNLOAD,
@@ -143,15 +151,18 @@ enum cmd_code_enum
 #define SAVE_FLAG_TROPHY        128
 #define SAVE_FLAG_ONLINE        256
 #define SAVE_FLAG_SELECTED      512
+#define SAVE_FLAG_VMC           1024
 
 enum save_type_enum
 {
     FILE_TYPE_NULL,
+    FILE_TYPE_MENU,
     FILE_TYPE_PSV,
     FILE_TYPE_TRP,
-    FILE_TYPE_MENU,
+    FILE_TYPE_VMC,
 
     // PS1 File Types
+    FILE_TYPE_PS1,
     FILE_TYPE_PSX,
     FILE_TYPE_MCS,
 
@@ -191,7 +202,7 @@ enum char_flag_enum
     CHAR_TAG_TRANSFER,
     CHAR_TAG_ZIP,
     CHAR_RES_CR,
-    CHAR_TAG_PCE,
+    CHAR_TAG_VMC,
     CHAR_TAG_WARNING,
     CHAR_BTN_X,
     CHAR_BTN_S,
@@ -220,6 +231,7 @@ enum save_sort_enum
     SORT_DISABLED,
     SORT_BY_NAME,
     SORT_BY_TITLE_ID,
+    SORT_BY_TYPE,
 };
 
 typedef struct save_entry
@@ -248,15 +260,18 @@ list_t * ReadUserList(const char* userPath);
 list_t * ReadOnlineList(const char* urlPath);
 list_t * ReadBackupList(const char* userPath);
 list_t * ReadTrophyList(const char* userPath);
+list_t * ReadVmc1List(const char* userPath);
 void UnloadGameList(list_t * list);
 char * readTextFile(const char * path, long* size);
 int sortSaveList_Compare(const void* A, const void* B);
+int sortSaveList_Compare_Type(const void* A, const void* B);
 int sortSaveList_Compare_TitleID(const void* A, const void* B);
 int sortCodeList_Compare(const void* A, const void* B);
 int ReadCodes(save_entry_t * save);
 int ReadTrophies(save_entry_t * game);
 int ReadOnlineSaves(save_entry_t * game);
 int ReadBackupCodes(save_entry_t * bup);
+int ReadVmc1Codes(save_entry_t * save);
 
 int http_init(void);
 void http_end(void);

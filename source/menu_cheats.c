@@ -110,14 +110,6 @@ void Draw_CheatsMenu_Options_Ani_Exit(void)
 
 		DrawTexture(&menu_textures[edit_shadow_png_index], left - menu_textures[edit_shadow_png_index].texture.width + 1, 0, 0, menu_textures[edit_shadow_png_index].texture.width, 512, icon_a);
 		DrawHeader(cat_cheats_png_index, left, selected_centry->name, "Options", APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
-/*
-		int _game_a = (int)(icon_a - (max / 2)) * 2;
-		if (_game_a > 0xFF)
-			_game_a = 0xFF;
-		u8 game_a = (u8)(_game_a < 0 ? 0 : _game_a);
-*/
-		//DrawOptions(selected_centry->options[option_index], game_a, 18, menu_old_sel[7]);
-		//DrawScrollBar2(menu_old_sel[7], selected_centry->options[option_index].size, 18, 700, game_a);
 
 		tiny3d_Flip();
 
@@ -272,12 +264,7 @@ void Draw_CheatsMenu_View_Ani_Exit(void)
 
 		DrawTexture(&menu_textures[edit_shadow_png_index], left - menu_textures[edit_shadow_png_index].texture.width + 1, 0, 0, menu_textures[edit_shadow_png_index].texture.width, 512, icon_a);
 		DrawHeader(cat_cheats_png_index, left, "Details", selected_centry->name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
-/*
-		int _game_a = (int)(icon_a - (max / 2)) * 2;
-		if (_game_a > 0xFF)
-			_game_a = 0xFF;
-		u8 game_a = (u8)(_game_a < 0 ? 0 : _game_a);
-*/
+
 		tiny3d_Flip();
 
 		if (left == 848)
@@ -391,6 +378,7 @@ void DrawGameList(int selIndex, list_t * games, u8 alpha)
 			tmp[1] = (item->flags & SAVE_FLAG_OWNER) ? CHAR_TAG_OWNER : ' ';
 			tmp[2] = (item->flags & SAVE_FLAG_LOCKED) ? CHAR_TAG_LOCKED : ' ';
 			if (item->flags & SAVE_FLAG_PSV) tmp[1] = CHAR_TAG_PSV;
+			if (item->type == FILE_TYPE_VMC) tmp[2] = CHAR_TAG_VMC;
 
 			DrawString(800 - (MENU_ICON_OFF * 1), game_y, tmp);
 			node = list_next(node);

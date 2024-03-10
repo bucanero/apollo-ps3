@@ -64,6 +64,7 @@ void update_usb_path(char *p);
 void update_hdd_path(char *p);
 void update_trophy_path(char *p);
 void update_db_path(char *p);
+void update_vmc_path(char *p);
 
 app_config_t apollo_config = {
     .app_name = "APOLLO",
@@ -162,6 +163,19 @@ save_list_t user_backup = {
     .ReadList = &ReadBackupList,
     .ReadCodes = &ReadBackupCodes,
     .UpdatePath = NULL,
+};
+
+/*
+* PS1 VMC list
+*/
+save_list_t vmc1_saves = {
+    .icon_id = cat_usb_png_index,
+    .title = "PS1 Virtual Memory Card",
+    .list = NULL,
+    .path = "",
+    .ReadList = &ReadVmc1List,
+    .ReadCodes = &ReadVmc1Codes,
+    .UpdatePath = &update_vmc_path,
 };
 
 static void release_all(void)
@@ -310,7 +324,7 @@ static void LoadTextures_Menu(void)
 	load_menu_texture(logo_text, png);
 	load_menu_texture(tag_lock, png);
 	load_menu_texture(tag_own, png);
-	load_menu_texture(tag_pce, png);
+	load_menu_texture(tag_vmc, png);
 	load_menu_texture(tag_ps1, png);
 	load_menu_texture(tag_ps2, png);
 	load_menu_texture(tag_ps3, png);
@@ -440,6 +454,14 @@ void update_db_path(char* path)
 	strcpy(path, apollo_config.save_db);
 }
 
+void update_vmc_path(char* path)
+{
+	if (file_exists(path) == SUCCESS)
+		return;
+
+	path[0] = 0;
+}
+
 static void registerSpecialChars(void)
 {
 	// Register save tags
@@ -448,7 +470,7 @@ static void registerSpecialChars(void)
 	RegisterSpecialCharacter(CHAR_TAG_PS3, 2, 1.5, &menu_textures[tag_ps3_png_index]);
 	RegisterSpecialCharacter(CHAR_TAG_PSP, 2, 1.5, &menu_textures[tag_psp_png_index]);
 	RegisterSpecialCharacter(CHAR_TAG_PSV, 2, 1.5, &menu_textures[tag_psv_png_index]);
-	RegisterSpecialCharacter(CHAR_TAG_PCE, 2, 1.5, &menu_textures[tag_pce_png_index]);
+	RegisterSpecialCharacter(CHAR_TAG_VMC, 2, 1.0, &menu_textures[tag_vmc_png_index]);
 	RegisterSpecialCharacter(CHAR_TAG_LOCKED, 0, 1.5, &menu_textures[tag_lock_png_index]);
 	RegisterSpecialCharacter(CHAR_TAG_OWNER, 0, 1.5, &menu_textures[tag_own_png_index]);
 	RegisterSpecialCharacter(CHAR_TAG_WARNING, 0, 1.5, &menu_textures[tag_warning_png_index]);

@@ -9,6 +9,7 @@
 #include "menu.h"
 #include "menu_gui.h"
 #include "ttf_render.h"
+#include "ps1card.h"
 
 #include <tiny3d.h>
 #include <libfont.h>
@@ -18,6 +19,7 @@ extern save_list_t usb_saves;
 extern save_list_t trophies;
 extern save_list_t online_saves;
 extern save_list_t user_backup;
+extern save_list_t vmc1_saves;
 
 extern int close_app;
 extern padData paddata[];
@@ -86,6 +88,8 @@ static int ReloadUserSaves(save_list_t* save_list)
 		list_bubbleSort(save_list->list, &sortSaveList_Compare);
 	else if (apollo_config.doSort == SORT_BY_TITLE_ID)
 		list_bubbleSort(save_list->list, &sortSaveList_Compare_TitleID);
+	else if (apollo_config.doSort == SORT_BY_TYPE)
+		list_bubbleSort(save_list->list, &sortSaveList_Compare_Type);
 
 	stop_loading_screen();
 
@@ -171,6 +175,15 @@ static void SetMenu(int id)
 {
 	switch (menu_id) //Leaving menu
 	{
+		case MENU_PS1VMC_SAVES:
+			if (id == MENU_MAIN_SCREEN)
+			{
+				LOG("Saving PS1 VMC changes...");
+				UnloadGameList(vmc1_saves.list);
+				vmc1_saves.list = NULL;
+				saveMemoryCard(vmc1_saves.path, 0, 0);
+			}
+
 		case MENU_MAIN_SCREEN: //Main Menu
 		case MENU_TROPHIES:
 		case MENU_USB_SAVES: //USB Saves Menu
@@ -242,6 +255,14 @@ static void SetMenu(int id)
 				Draw_UserCheatsMenu_Ani(&online_saves);
 			break;
 
+		case MENU_PS1VMC_SAVES: //VMC Menu
+			if (!vmc1_saves.list && !ReloadUserSaves(&vmc1_saves))
+				return;
+
+			if (apollo_config.doAni)
+				Draw_UserCheatsMenu_Ani(&vmc1_saves);
+			break;
+
 		case MENU_CREDITS: //About Menu
 			if (apollo_config.doAni)
 				Draw_AboutMenu_Ani();
@@ -262,7 +283,8 @@ static void SetMenu(int id)
 
 		case MENU_PATCHES: //Cheat Selection Menu
 			//if entering from game list, don't keep index, otherwise keep
-			if (menu_id == MENU_USB_SAVES || menu_id == MENU_HDD_SAVES || menu_id == MENU_ONLINE_DB || menu_id == MENU_TROPHIES)
+			if (menu_id == MENU_USB_SAVES || menu_id == MENU_HDD_SAVES || menu_id == MENU_ONLINE_DB || 
+				menu_id == MENU_TROPHIES || menu_id == MENU_PS1VMC_SAVES || menu_id == MENU_PS2VMC_SAVES)
 				menu_old_sel[MENU_PATCHES] = 0;
 
 			char iconfile[256];
@@ -273,7 +295,7 @@ static void SetMenu(int id)
 				snprintf(iconfile, sizeof(iconfile), APOLLO_LOCAL_CACHE "%s.PNG", selected_entry->title_id);
 
 				if (file_exists(iconfile) != SUCCESS)
-					http_download(selected_entry->path, "ICON0.PNG", iconfile, 0);
+					http_download(selected_entry->path, "ICON0.PNG", iconfile, 1);
 			}
 
 			if (file_exists(iconfile) == SUCCESS)
@@ -384,6 +406,16 @@ static void doSaveMenu(save_list_t * save_list)
 		else if (paddata[0].BTN_CROSS)
 		{
 			selected_entry = list_get_item(save_list->list, menu_sel);
+
+			if (selected_entry->type == FILE_TYPE_VMC && selected_entry->flags & SAVE_FLAG_VMC)
+			{
+				if (selected_entry->flags & SAVE_FLAG_PS1)
+				{
+					strncpy(vmc1_saves.path, selected_entry->path, sizeof(vmc1_saves.path));
+					SetMenu(MENU_PS1VMC_SAVES);
+				}
+				return;
+			}
 
 			if (!selected_entry->codes && !save_list->ReadCodes(selected_entry))
 			{
@@ -878,5 +910,10 @@ void drawScene(void)
 		case MENU_HEX_EDITOR: //Hex Editor Menu
 			doHexEditor();
 			break;
+
+		case MENU_PS1VMC_SAVES: //PS1 VMC Menu
+			doSaveMenu(&vmc1_saves);
+			break;
+
 	}
 }

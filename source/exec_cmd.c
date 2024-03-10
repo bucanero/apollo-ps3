@@ -11,6 +11,7 @@
 #include "util.h"
 #include "pfd.h"
 #include "sfo.h"
+#include "ps1card.h"
 
 static char host_buf[256];
 
@@ -654,6 +655,57 @@ static void importTrophy(const char* src_path)
 
 	show_message("Trophy successfully copied to:\n%s", dst_path);
 	free(tmp);
+}
+
+static void exportAllSavesVMC(const save_entry_t* save, int dev, int all)
+{
+	char outPath[256];
+	int done = 0, err_count = 0;
+	list_node_t *node;
+	save_entry_t *item;
+	uint64_t progress = 0;
+	list_t *list = ((void**)save->dir_name)[0];
+
+	init_progress_bar("Exporting all VMC saves...", save->path);
+	_set_dest_path(outPath, dev, PS1_IMP_PATH_USB);
+	mkdirs(outPath);
+
+	LOG("Exporting all saves from '%s' to %s...", save->path, outPath);
+	for (node = list_head(list); (item = list_get(node)); node = list_next(node))
+	{
+		update_progress_bar(progress++, list_count(list), item->name);
+		if (!all && !(item->flags & SAVE_FLAG_SELECTED))
+			continue;
+
+		if (item->type & FILE_TYPE_PS1)
+			(saveSingleSave(outPath, save->path[strlen(save->path)+1], PS1SAVE_PSV) ? done++ : err_count++);
+	}
+
+	end_progress_bar();
+
+	show_message("%d/%d Saves exported to\n%s", done, done+err_count, outPath);
+}
+
+static void exportVmcSave(const save_entry_t* save, int type, int dst_id)
+{
+	char outPath[256];
+	struct tm t;
+
+	_set_dest_path(outPath, dst_id, PS1_IMP_PATH_USB);
+	mkdirs(outPath);
+	if (type != PS1SAVE_PSV)
+	{
+		// build file path
+		gmtime_r(&(time_t){time(NULL)}, &t);
+		sprintf(strrchr(outPath, '/'), "/%s_%d-%02d-%02d_%02d%02d%02d.%s", save->title_id,
+			t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec,
+			(type == PS1SAVE_MCS) ? "mcs" : "psx");
+	}
+
+	if (saveSingleSave(outPath, save->path[strlen(save->path)+1], type))
+		show_message("Save successfully exported to:\n%s", outPath);
+	else
+		show_message("Error exporting save:\n%s", save->path);
 }
 
 static void resignPSVfile(const char* psv_path)
@@ -1509,6 +1561,35 @@ static void downloadLink(const char* path)
 		show_message("Error! File couldn't be downloaded");
 }
 
+static void import_mcr2vmp(const save_entry_t* save, const char* src)
+{
+	char mcrPath[256];
+	uint8_t *data = NULL;
+	size_t size = 0;
+
+	snprintf(mcrPath, sizeof(mcrPath), VMC_PS2_PATH_HDD "%s/%s", save->title_id, src);
+	read_buffer(mcrPath, &data, &size);
+
+	if (openMemoryCardStream(data, size, 0) && saveMemoryCard(save->path, 0, 0))
+		show_message("Memory card successfully imported to:\n%s", save->path);
+	else
+		show_message("Error importing memory card:\n%s", mcrPath);
+}
+
+static void export_vmp2mcr(const save_entry_t* save)
+{
+	char mcrPath[256];
+
+	snprintf(mcrPath, sizeof(mcrPath), VMC_PS2_PATH_HDD "%s/%s", save->title_id, strrchr(save->path, '/') + 1);
+	strcpy(strrchr(mcrPath, '.'), ".MCR");
+	mkdirs(mcrPath);
+
+	if (saveMemoryCard(mcrPath, PS1CARD_RAW, 0))
+		show_message("Memory card successfully exported to:\n%s", mcrPath);
+	else
+		show_message("Error exporting memory card:\n%s", save->path);
+}
+
 void execCodeCommand(code_entry_t* code, const char* codecmd)
 {
 	switch (codecmd[0])
@@ -1665,6 +1746,46 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_EXP_VM2_RAW:
 			exportVM2raw(selected_entry->path, code->file, codecmd[1]);
+			code->activated = 0;
+			break;
+
+		case CMD_RESIGN_VMP:
+			if (vmp_resign(selected_entry->path))
+				show_message("Memory card successfully resigned:\n%s", selected_entry->path);
+			else
+				show_message("Error resigning memory card:\n%s", selected_entry->path);
+			code->activated = 0;
+			break;
+
+		case CMD_EXP_VMP2MCR:
+			export_vmp2mcr(selected_entry);
+			code->activated = 0;
+			break;
+
+		case CMD_EXP_SAVES_VMC1:
+		case CMD_EXP_ALL_SAVES_VMC1:
+			exportAllSavesVMC(selected_entry, codecmd[1], codecmd[0] == CMD_EXP_ALL_SAVES_VMC1);
+			code->activated = 0;
+			break;
+
+		case CMD_EXP_VMC1SAVE:
+			exportVmcSave(selected_entry, code->options[0].id, codecmd[1]);
+			code->activated = 0;
+			break;
+
+		case CMD_IMP_VMC1SAVE:
+			if (openSingleSave(code->file, (int*) host_buf))
+			{
+				saveMemoryCard(selected_entry->dir_name, 0, 0);
+				show_message("Save successfully imported:\n%s", code->file);
+			}
+			else
+				show_message("Error! Couldn't import save:\n%s", code->file);
+			code->activated = 0;
+			break;
+
+		case CMD_IMP_MCR2VMP:
+			import_mcr2vmp(selected_entry, code->options[0].name[code->options[0].sel]);
 			code->activated = 0;
 			break;
 
