@@ -677,8 +677,11 @@ static void exportAllSavesVMC(const save_entry_t* save, int dev, int all)
 		if (!all && !(item->flags & SAVE_FLAG_SELECTED))
 			continue;
 
-		if (item->type & FILE_TYPE_PS1)
+		if (item->type == FILE_TYPE_PS1)
 			(saveSingleSave(outPath, save->path[strlen(save->path)+1], PS1SAVE_PSV) ? done++ : err_count++);
+
+		if (item->type == FILE_TYPE_PS2)
+			(vmc_export_psv(item->dir_name, outPath) ? done++ : err_count++);
 	}
 
 	end_progress_bar();
@@ -1590,6 +1593,66 @@ static void export_vmp2mcr(const save_entry_t* save)
 		show_message("Error exporting memory card:\n%s", save->path);
 }
 
+static void export_vmc2save(const save_entry_t* save, int type, int dst_id)
+{
+	int ret = 0;
+	char outPath[256];
+	struct tm t;
+
+	_set_dest_path(outPath, dst_id, (type == FILE_TYPE_PSV) ? PSV_SAVES_PATH_USB : PS2_IMP_PATH_USB);
+	mkdirs(outPath);
+	if (type != FILE_TYPE_PSV)
+	{
+		// build file path
+		gmtime_r(&(time_t){time(NULL)}, &t);
+		sprintf(strrchr(outPath, '/'), "/%s_%d-%02d-%02d_%02d%02d%02d.psu", save->title_id,
+			t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
+	}
+
+	switch (type)
+	{
+	case FILE_TYPE_PSV:
+		ret = vmc_export_psv(save->dir_name, outPath);
+		break;
+
+	case FILE_TYPE_PSU:
+		ret = vmc_export_psu(save->dir_name, outPath);
+		break;
+
+	default:
+		break;
+	}
+
+	if (ret)
+		show_message("Save successfully exported to:\n%s", outPath);
+	else
+		show_message("Error exporting save:\n%s", save->path);
+}
+
+static void import_save2vmc(const char* src, int type)
+{
+	int ret = 0;
+
+	switch (type)
+	{
+	case FILE_TYPE_PSV:
+		ret = vmc_import_psv(src);
+		break;
+
+	case FILE_TYPE_PSU:
+		ret = vmc_import_psu(src);
+		break;
+
+	default:
+		break;
+	}
+
+	if (ret)
+		show_message("Successfully imported to VMC:\n%s", src);
+	else
+		show_message("Error importing save:\n%s", src);
+}
+
 void execCodeCommand(code_entry_t* code, const char* codecmd)
 {
 	switch (codecmd[0])
@@ -1781,6 +1844,22 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			}
 			else
 				show_message("Error! Couldn't import save:\n%s", code->file);
+			code->activated = 0;
+			break;
+
+		case CMD_EXP_SAVES_VMC2:
+		case CMD_EXP_ALL_SAVES_VMC2:
+			exportAllSavesVMC(selected_entry, codecmd[1], codecmd[0] == CMD_EXP_ALL_SAVES_VMC2);
+			code->activated = 0;
+			break;
+
+		case CMD_EXP_VMC2SAVE:
+			export_vmc2save(selected_entry, code->options[0].id, codecmd[1]);
+			code->activated = 0;
+			break;
+
+		case CMD_IMP_VMC2SAVE:
+			import_save2vmc(code->file, codecmd[1]);
 			code->activated = 0;
 			break;
 

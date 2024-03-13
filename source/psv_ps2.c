@@ -312,14 +312,14 @@ int ps2_psu2psv(const char *save, const char* psv_path)
     int numFiles, next, i;
     char dstName[256];
     u8 *data;
-    ps2_McFsEntry entry;
+    McFsEntry entry;
     
     psuFile = fopen(save, "rb");
     if(!psuFile)
         return 0;
     
     // Read main directory entry
-    fread(&entry, 1, sizeof(ps2_McFsEntry), psuFile);
+    fread(&entry, 1, sizeof(McFsEntry), psuFile);
     numFiles = ES32(entry.length) - 2;
 
     get_psv_filename(dstName, psv_path, entry.name);
@@ -349,12 +349,12 @@ int ps2_psu2psv(const char *save, const char* psv_path)
     write_psv_header(psvFile, 2);
 
     // Skip "." and ".."
-    fseek(psuFile, sizeof(ps2_McFsEntry)*2, SEEK_CUR);
+    fseek(psuFile, sizeof(McFsEntry)*2, SEEK_CUR);
 
     // Find the icon.sys (need to know the icons names)
     for(i = 0; i < numFiles; i++)
     {
-        fread(&entry, 1, sizeof(ps2_McFsEntry), psuFile);
+        fread(&entry, 1, sizeof(McFsEntry), psuFile);
         entry.length = ES32(entry.length);
 
         if(strcmp(entry.name, "icon.sys") == 0)
@@ -375,7 +375,7 @@ int ps2_psu2psv(const char *save, const char* psv_path)
     ps2h.displaySize = ES32(ps2h.displaySize);
 
     // Skip "." and ".."
-    fseek(psuFile, sizeof(ps2_McFsEntry)*3, SEEK_SET);
+    fseek(psuFile, sizeof(McFsEntry)*3, SEEK_SET);
 
     // Calculate the start offset for the file's data
     dataPos = sizeof(psv_header_t) + sizeof(ps2_header_t) + sizeof(ps2_MainDirInfo_t) + sizeof(ps2_FileInfo_t)*numFiles;
@@ -385,7 +385,7 @@ int ps2_psu2psv(const char *save, const char* psv_path)
     // Build the PS2 FileInfo entries
     for(i = 0; i < numFiles; i++)
     {
-        fread(&entry, 1, sizeof(ps2_McFsEntry), psuFile);
+        fread(&entry, 1, sizeof(McFsEntry), psuFile);
 
         ps2fi[i].attribute = ((uint32_t)entry.mode << 16);
         ps2fi[i].positionInFile = ES32(dataPos);
@@ -412,12 +412,12 @@ int ps2_psu2psv(const char *save, const char* psv_path)
     free(ps2fi);
 
     // Skip "." and ".."
-    fseek(psuFile, sizeof(ps2_McFsEntry)*3, SEEK_SET);
+    fseek(psuFile, sizeof(McFsEntry)*3, SEEK_SET);
     
     // Copy each file entry
     for(i = 0; i < numFiles; i++)
     {
-        fread(&entry, 1, sizeof(ps2_McFsEntry), psuFile);
+        fread(&entry, 1, sizeof(McFsEntry), psuFile);
         entry.length = ES32(entry.length);
 
         data = malloc(entry.length);
@@ -758,7 +758,7 @@ int ps2_psv2psu(const char *save, const char* psu_path)
     int numFiles, next;
     char dstName[256];
     u8 *data;
-    ps2_McFsEntry entry;
+    McFsEntry entry;
     ps2_MainDirInfo_t ps2md;
     ps2_FileInfo_t ps2fi;
     
@@ -780,24 +780,24 @@ int ps2_psv2psu(const char *save, const char* psu_path)
     fread(&ps2md, sizeof(ps2_MainDirInfo_t), 1, psvFile);
     numFiles = ES32(ps2md.numberOfFilesInDir);
 
-    memset(&entry, 0, sizeof(entry));
+    memset(&entry, 0, sizeof(McFsEntry));
     memcpy(&entry.created, &ps2md.created, sizeof(sceMcStDateTime));
     memcpy(&entry.modified, &ps2md.modified, sizeof(sceMcStDateTime));
     memcpy(entry.name, ps2md.filename, sizeof(entry.name));
     entry.mode = (ps2md.attribute >> 16);
     entry.length = ps2md.numberOfFilesInDir;
-    fwrite(&entry, sizeof(entry), 1, psuFile);
+    fwrite(&entry, sizeof(McFsEntry), 1, psuFile);
 
     // "."
     memset(entry.name, 0, sizeof(entry.name));
     strcpy(entry.name, ".");
     entry.length = 0;
-    fwrite(&entry, sizeof(entry), 1, psuFile);
+    fwrite(&entry, sizeof(McFsEntry), 1, psuFile);
     numFiles--;
 
     // ".."
     strcpy(entry.name, "..");
-    fwrite(&entry, sizeof(entry), 1, psuFile);
+    fwrite(&entry, sizeof(McFsEntry), 1, psuFile);
     numFiles--;
 
     while (numFiles > 0)
@@ -805,13 +805,13 @@ int ps2_psv2psu(const char *save, const char* psu_path)
         fread(&ps2fi, sizeof(ps2_FileInfo_t), 1, psvFile);
         dataPos = ftell(psvFile);
 
-        memset(&entry, 0, sizeof(entry));
+        memset(&entry, 0, sizeof(McFsEntry));
         memcpy(&entry.created, &ps2fi.created, sizeof(sceMcStDateTime));
         memcpy(&entry.modified, &ps2fi.modified, sizeof(sceMcStDateTime));
         memcpy(entry.name, ps2fi.filename, sizeof(entry.name));
         entry.mode = (ps2fi.attribute >> 16);
         entry.length = ps2fi.filesize;
-        fwrite(&entry, sizeof(entry), 1, psuFile);
+        fwrite(&entry, sizeof(McFsEntry), 1, psuFile);
 
         ps2fi.positionInFile = ES32(ps2fi.positionInFile);
         ps2fi.filesize = ES32(ps2fi.filesize);

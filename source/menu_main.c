@@ -10,6 +10,7 @@
 #include "menu_gui.h"
 #include "ttf_render.h"
 #include "ps1card.h"
+#include "mcio.h"
 
 #include <tiny3d.h>
 #include <libfont.h>
@@ -20,6 +21,7 @@ extern save_list_t trophies;
 extern save_list_t online_saves;
 extern save_list_t user_backup;
 extern save_list_t vmc1_saves;
+extern save_list_t vmc2_saves;
 
 extern int close_app;
 extern padData paddata[];
@@ -184,6 +186,15 @@ static void SetMenu(int id)
 				saveMemoryCard(vmc1_saves.path, 0, 0);
 			}
 
+		case MENU_PS2VMC_SAVES:
+			if (id == MENU_MAIN_SCREEN)
+			{
+				LOG("Saving PS2 VMC changes...");
+				UnloadGameList(vmc2_saves.list);
+				vmc2_saves.list = NULL;
+				mcio_vmcFinish();
+			}
+
 		case MENU_MAIN_SCREEN: //Main Menu
 		case MENU_TROPHIES:
 		case MENU_USB_SAVES: //USB Saves Menu
@@ -261,6 +272,14 @@ static void SetMenu(int id)
 
 			if (apollo_config.doAni)
 				Draw_UserCheatsMenu_Ani(&vmc1_saves);
+			break;
+
+		case MENU_PS2VMC_SAVES: //Trophies Menu
+			if (!vmc2_saves.list && !ReloadUserSaves(&vmc2_saves))
+				return;
+
+			if (apollo_config.doAni)
+				Draw_UserCheatsMenu_Ani(&vmc2_saves);
 			break;
 
 		case MENU_CREDITS: //About Menu
@@ -414,6 +433,12 @@ static void doSaveMenu(save_list_t * save_list)
 					strncpy(vmc1_saves.path, selected_entry->path, sizeof(vmc1_saves.path));
 					SetMenu(MENU_PS1VMC_SAVES);
 				}
+				else
+				{
+					strncpy(vmc2_saves.path, selected_entry->path, sizeof(vmc2_saves.path));
+					SetMenu(MENU_PS2VMC_SAVES);
+				}
+
 				return;
 			}
 
@@ -915,5 +940,8 @@ void drawScene(void)
 			doSaveMenu(&vmc1_saves);
 			break;
 
+		case MENU_PS2VMC_SAVES: //PS2 VMC Menu
+			doSaveMenu(&vmc2_saves);
+			break;
 	}
 }

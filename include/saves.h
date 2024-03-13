@@ -109,6 +109,8 @@ enum cmd_code_enum
     CMD_RESIGN_VMP,
     CMD_EXP_SAVES_VMC1,
     CMD_EXP_ALL_SAVES_VMC1,
+    CMD_EXP_SAVES_VMC2,
+    CMD_EXP_ALL_SAVES_VMC2,
 
 // Export commands
     CMD_EXP_EXDATA_USB,
@@ -119,6 +121,7 @@ enum cmd_code_enum
     CMD_EXP_PSV_PSU,
     CMD_EXP_VM2_RAW,
     CMD_EXP_VMC1SAVE,
+    CMD_EXP_VMC2SAVE,
     CMD_EXP_VMP2MCR,
 
 // Import commands
@@ -127,6 +130,7 @@ enum cmd_code_enum
     CMD_IMP_PS2_CONFIG,
     CMD_IMP_PS2VMC_USB,
     CMD_IMP_VMC1SAVE,
+    CMD_IMP_VMC2SAVE,
     CMD_IMP_MCR2VMP,
     CMD_CREATE_ACT_DAT,
     CMD_EXTRACT_ARCHIVE,
@@ -167,6 +171,7 @@ enum save_type_enum
     FILE_TYPE_MCS,
 
     // PS2 File Types
+    FILE_TYPE_PS2,
     FILE_TYPE_PSU,
     FILE_TYPE_MAX,
     FILE_TYPE_CBS,
@@ -261,6 +266,7 @@ list_t * ReadOnlineList(const char* urlPath);
 list_t * ReadBackupList(const char* userPath);
 list_t * ReadTrophyList(const char* userPath);
 list_t * ReadVmc1List(const char* userPath);
+list_t * ReadVmc2List(const char* userPath);
 void UnloadGameList(list_t * list);
 char * readTextFile(const char * path, long* size);
 int sortSaveList_Compare(const void* A, const void* B);
@@ -272,6 +278,7 @@ int ReadTrophies(save_entry_t * game);
 int ReadOnlineSaves(save_entry_t * game);
 int ReadBackupCodes(save_entry_t * bup);
 int ReadVmc1Codes(save_entry_t * save);
+int ReadVmc2Codes(save_entry_t * save);
 
 int http_init(void);
 void http_end(void);
@@ -323,5 +330,10 @@ int ps2_cbs2psv(const char *save, const char *psv_path);
 int ps2_xps2psv(const char *save, const char *psv_path);
 int ps1_psv2mcs(const char* save, const char* mcs_path);
 int ps2_psv2psu(const char *save, const char* psu_path);
+
+int vmc_export_psv(const char* save, const char* out_path);
+int vmc_export_psu(const char* path, const char* output);
+int vmc_import_psv(const char *input);
+int vmc_import_psu(const char *input);
 
 char* sjis2utf8(char* input);

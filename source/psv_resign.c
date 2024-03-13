@@ -14,6 +14,7 @@
 #include "types.h"
 #include "util.h"
 #include "ps2mc.h"
+#include "mcio.h"
 #include "shiftjis.h"
 
 #define PSV_SEED_OFFSET 0x8
@@ -152,11 +153,6 @@ int psv_resign(const char *src_psv)
 		LOG("Not a PSV file");
 		free(input);
 		return 0;
-	}
-	
-	LOG("Old signature: ");
-	for(int i = 0; i < 0x14; i++ ) {
-		LOG("%02X ", input[PSV_HASH_OFFSET + i]);
 	}
 
 	generateHash(input, input + PSV_SEED_OFFSET, input + PSV_HASH_OFFSET, sz, input[PSV_TYPE_OFFSET]);
@@ -487,4 +483,431 @@ char* sjis2utf8(char* input)
 	//remove the unnecessary bytes
     output[indexOutput] = 0;
     return output;
+}
+
+int vmc_import_psv(const char *input)
+{
+	int fd, r;
+	uint8_t *p;
+	size_t filesize;
+	char filepath[256];
+    struct io_dirent entry;
+    ps2_MainDirInfo_t *ps2md;
+    ps2_FileInfo_t *ps2fi;
+
+	if (read_buffer(input, &p, &filesize) < 0)
+		return 0;
+
+	if (memcmp(PSV_MAGIC, p, 4) != 0 || p[0x3C] != 0x02) {
+		LOG("Not a PS2 .PSV file");
+		free(p);
+		return 0;
+	}
+
+	ps2md = (ps2_MainDirInfo_t *)&p[0x68];
+	ps2fi = (ps2_FileInfo_t *)&ps2md[1];
+
+	LOG("Writing data to: '/%s'...", ps2md->filename);
+
+	r = mcio_mcMkDir(ps2md->filename);
+	if (r < 0)
+		LOG("Error: can't create directory '%s'... (%d)", ps2md->filename, r);
+	else
+		mcio_mcClose(r);
+
+	for (int total = (read_le_uint32((uint8_t*)&ps2md->numberOfFilesInDir) - 2), i = 0; i < total; i++, ps2fi++)
+	{
+		filesize = read_le_uint32((uint8_t*)&ps2fi->filesize);
+
+		snprintf(filepath, sizeof(filepath), "%s/%s", ps2md->filename, ps2fi->filename);
+		LOG("Adding %-48s | %8d bytes", filepath, filesize);
+
+		fd = mcio_mcOpen(filepath, sceMcFileCreateFile | sceMcFileAttrWriteable | sceMcFileAttrFile);
+		if (fd < 0) {
+			free(p);
+			return 0;
+		}
+
+		r = mcio_mcWrite(fd, &p[read_le_uint32((uint8_t*)&ps2fi->positionInFile)], filesize);
+		mcio_mcClose(fd);
+		if (r != filesize) {
+			free(p);
+			return 0;
+		}
+
+		mcio_mcStat(filepath, &entry);
+		memcpy(&entry.stat.ctime, &ps2fi->created, sizeof(struct sceMcStDateTime));
+		memcpy(&entry.stat.mtime, &ps2fi->modified, sizeof(struct sceMcStDateTime));
+		entry.stat.mode = read_le_uint32((uint8_t*)&ps2fi->attribute);
+		mcio_mcSetStat(filepath, &entry);
+	}
+
+	mcio_mcStat(ps2md->filename, &entry);
+	memcpy(&entry.stat.ctime, &ps2md->created, sizeof(struct sceMcStDateTime));
+	memcpy(&entry.stat.mtime, &ps2md->modified, sizeof(struct sceMcStDateTime));
+	entry.stat.mode = read_le_uint32((uint8_t*)&ps2md->attribute);
+	mcio_mcSetStat(ps2md->filename, &entry);
+
+	free(p);
+	LOG("Save succesfully imported: %s", input);
+
+	return 1;
+}
+
+int vmc_import_psu(const char *input)
+{
+	int fd, r;
+	char filepath[256];
+	struct io_dirent entry;
+	McFsEntry psu_entry, file_entry;
+
+	FILE *fh = fopen(input, "rb");
+	if (fh == NULL)
+		return 0;
+
+	fseek(fh, 0, SEEK_END);
+	r = ftell(fh);
+
+	if (!r || r % 512) {
+		printf("Not a .PSU file");
+		fclose(fh);
+		return 0;
+	}
+
+	LOG("Reading file: '%s'...", input);
+	fseek(fh, 0, SEEK_SET);
+
+	r = fread(&psu_entry, sizeof(McFsEntry), 1, fh);
+	if (!r) {
+		fclose(fh);
+		return 0;
+	}
+
+	// Skip "." and ".."
+	fseek(fh, sizeof(McFsEntry)*2, SEEK_CUR);
+
+	LOG("Writing data to: '/%s'...", psu_entry.name);
+
+	r = mcio_mcMkDir(psu_entry.name);
+	if (r < 0)
+		LOG("Error: can't create directory '%s'... (%d)", psu_entry.name, r);
+	else
+		mcio_mcClose(r);
+
+	for (int total = (ES32(psu_entry.length) - 2), i = 0; i < total; i++)
+	{
+		fread(&file_entry, 1, sizeof(McFsEntry), fh);
+		file_entry.length = ES32(file_entry.length);
+
+		snprintf(filepath, sizeof(filepath), "%s/%s", psu_entry.name, file_entry.name);
+		LOG("Adding %-48s | %8d bytes", filepath, file_entry.length);
+
+		fd = mcio_mcOpen(filepath, sceMcFileCreateFile | sceMcFileAttrWriteable | sceMcFileAttrFile);
+		if (fd < 0)
+			return 0;
+
+		uint8_t *p = malloc(file_entry.length);
+		if (!p)
+		{
+			mcio_mcClose(fd);
+			return 0;
+		}
+
+		fread(p, 1, file_entry.length, fh);
+		r = mcio_mcWrite(fd, p, file_entry.length);
+		mcio_mcClose(fd);
+		free(p);
+
+		if (r != (int)file_entry.length)
+			return 0;
+
+		mcio_mcStat(filepath, &entry);
+		memcpy(&entry.stat.ctime, &file_entry.created, sizeof(struct sceMcStDateTime));
+		memcpy(&entry.stat.mtime, &file_entry.modified, sizeof(struct sceMcStDateTime));
+		entry.stat.mode = ES16(file_entry.mode);
+		mcio_mcSetStat(filepath, &entry);
+
+		r = 1024 - (file_entry.length % 1024);
+		if(r < 1024)
+			fseek(fh, r, SEEK_CUR);
+	}
+
+	mcio_mcStat(psu_entry.name, &entry);
+	memcpy(&entry.stat.ctime, &psu_entry.created, sizeof(struct sceMcStDateTime));
+	memcpy(&entry.stat.mtime, &psu_entry.modified, sizeof(struct sceMcStDateTime));
+	entry.stat.mode = ES16(psu_entry.mode);
+	mcio_mcSetStat(psu_entry.name, &entry);
+
+	return 1;
+}
+
+int vmc_export_psv(const char* save, const char* out_path)
+{
+	FILE *psvFile;
+	ps2_header_t ps2h;
+	ps2_FileInfo_t *ps2fi;
+	ps2_MainDirInfo_t ps2md;
+	ps2_IconSys_t iconsys;
+	uint32_t dataPos, i;
+	char filePath[256];
+	uint8_t *data;
+	int r, dd, fd;
+	struct io_dirent dirent;
+
+	snprintf(filePath, sizeof(filePath), "%s/icon.sys", save);
+	fd = mcio_mcOpen(filePath, sceMcFileAttrReadable | sceMcFileAttrFile);
+	if (fd < 0)
+	{
+		LOG("Error! '%s' not found", filePath);
+		return 0;
+	}
+
+	r = mcio_mcRead(fd, &iconsys, sizeof(ps2_IconSys_t));
+	mcio_mcClose(fd);
+
+	if (r != sizeof(ps2_IconSys_t))
+		return 0;
+
+	get_psv_filename(filePath, out_path, save);
+
+	LOG("Export %s -> %s ...", save, filePath);
+	psvFile = fopen(filePath, "wb");
+	if(!psvFile)
+		return 0;
+
+	write_psv_header(psvFile, 2);
+
+	memset(&ps2h, 0, sizeof(ps2_header_t));
+	memset(&ps2md, 0, sizeof(ps2_MainDirInfo_t));
+
+	// Read main directory entry
+	mcio_mcStat(save, &dirent);
+
+	// PSV root directory values
+	ps2h.numberOfFiles = dirent.stat.size - 2;
+	ps2md.attribute = ES32(dirent.stat.mode);
+	ps2md.numberOfFilesInDir = ES32(dirent.stat.size);
+	memcpy(&ps2md.created, &dirent.stat.ctime, sizeof(sceMcStDateTime));
+	memcpy(&ps2md.modified, &dirent.stat.mtime, sizeof(sceMcStDateTime));
+	memcpy(ps2md.filename, dirent.name, sizeof(ps2md.filename));
+
+	dd = mcio_mcDopen(save);
+	if (dd < 0)
+	{
+		fclose(psvFile);
+		return 0;
+	}
+
+	// Calculate the start offset for the file's data
+	dataPos = sizeof(psv_header_t) + sizeof(ps2_header_t) + sizeof(ps2_MainDirInfo_t) + sizeof(ps2_FileInfo_t)*ps2h.numberOfFiles;
+	ps2fi = malloc(sizeof(ps2_FileInfo_t)*ps2h.numberOfFiles);
+
+	// Build the PS2 FileInfo entries
+	i = 0;
+	do {
+		r = mcio_mcDread(dd, &dirent);
+		if (r && (strcmp(dirent.name, ".")) && (strcmp(dirent.name, "..")))
+		{
+			snprintf(filePath, sizeof(filePath), "%s/%s", save, dirent.name);
+			mcio_mcStat(filePath, &dirent);
+
+			ps2fi[i].attribute = ES32(dirent.stat.mode);
+			ps2fi[i].positionInFile = ES32(dataPos);
+			ps2fi[i].filesize = ES32(dirent.stat.size);
+			memcpy(&ps2fi[i].created, &dirent.stat.ctime, sizeof(sceMcStDateTime));
+			memcpy(&ps2fi[i].modified, &dirent.stat.mtime, sizeof(sceMcStDateTime));
+			memcpy(ps2fi[i].filename, dirent.name, sizeof(ps2fi[i].filename));
+
+			dataPos += dirent.stat.size;
+			ps2h.displaySize += dirent.stat.size;
+
+			if (strcmp(ps2fi[i].filename, iconsys.IconName) == 0)
+			{
+				ps2h.icon1Size = ps2fi[i].filesize;
+				ps2h.icon1Pos = ps2fi[i].positionInFile;
+			}
+
+			if (strcmp(ps2fi[i].filename, iconsys.copyIconName) == 0)
+			{
+				ps2h.icon2Size = ps2fi[i].filesize;
+				ps2h.icon2Pos = ps2fi[i].positionInFile;
+			}
+
+			if (strcmp(ps2fi[i].filename, iconsys.deleteIconName) == 0)
+			{
+				ps2h.icon3Size = ps2fi[i].filesize;
+				ps2h.icon3Pos = ps2fi[i].positionInFile;
+			}
+
+			if(strcmp(ps2fi[i].filename, "icon.sys") == 0)
+			{
+				ps2h.sysSize = ps2fi[i].filesize;
+				ps2h.sysPos = ps2fi[i].positionInFile;
+			}
+			i++;
+		}
+	} while (r);
+
+	mcio_mcDclose(dd);
+
+	LOG("%d Files: %8d Total bytes", i, ps2h.displaySize);
+    ps2h.displaySize = ES32(ps2h.displaySize);
+	ps2h.numberOfFiles = ES32(ps2h.numberOfFiles);
+
+	fwrite(&ps2h, sizeof(ps2_header_t), 1, psvFile);
+	fwrite(&ps2md, sizeof(ps2_MainDirInfo_t), 1, psvFile);
+	fwrite(ps2fi, sizeof(ps2_FileInfo_t), i, psvFile);
+	free(ps2fi);
+
+	// Write the file's data
+	dd = mcio_mcDopen(save);
+
+	ps2h.numberOfFiles = i;
+	i = 0;
+	do {
+		r = mcio_mcDread(dd, &dirent);
+		if (r && (strcmp(dirent.name, ".")) && (strcmp(dirent.name, "..")))
+		{
+			snprintf(filePath, sizeof(filePath), "%s/%s", save, dirent.name);
+			LOG("(%d/%d) Add '%s'", ++i, ps2h.numberOfFiles, filePath);
+
+			fd = mcio_mcOpen(filePath, sceMcFileAttrReadable | sceMcFileAttrFile);
+			if (fd < 0)
+			{
+				i = 0;
+				break;
+			}
+
+			data = malloc(dirent.stat.size);
+			if (!data)
+			{
+				i = 0;
+				break;
+			}
+
+			r = mcio_mcRead(fd, data, dirent.stat.size);
+			mcio_mcClose(fd);
+
+			if (r != (int)dirent.stat.size)
+			{
+				i = 0;
+				free(data);
+				break;
+			}
+
+			fwrite(data, 1, dirent.stat.size, psvFile);
+			free(data);
+		}
+	} while (r);
+
+	mcio_mcDclose(dd);
+
+	fclose(psvFile);
+	get_psv_filename(filePath, out_path, save);
+	psv_resign(filePath);
+
+	return (i > 0);
+}
+
+int vmc_export_psu(const char* path, const char* output)
+{
+	int r, fd, dd;
+	uint32_t total, i = 0;
+	struct io_dirent dirent;
+	McFsEntry entry;
+	char filepath[256];
+
+	LOG("Exporting '%s' to %s...", path, output);
+
+	dd = mcio_mcDopen(path);
+	if (dd < 0)
+		return 0;
+
+	FILE *fh = fopen(output, "wb");
+	if (fh == NULL) {
+		mcio_mcDclose(dd);
+		return 0;
+	}
+
+	// Read main directory entry
+	mcio_mcStat(path, &dirent);
+
+	memset(&entry, 0, sizeof(McFsEntry));
+	memcpy(&entry.created, &dirent.stat.ctime, sizeof(sceMcStDateTime));
+	memcpy(&entry.modified, &dirent.stat.mtime, sizeof(sceMcStDateTime));
+	memcpy(entry.name, dirent.name, sizeof(entry.name));
+	entry.mode = ES32(dirent.stat.mode) >> 16;
+	entry.length = ES32(dirent.stat.size);
+	fwrite(&entry, sizeof(McFsEntry), 1, fh);
+	total = dirent.stat.size - 2;
+
+	// "."
+	memset(entry.name, 0, sizeof(entry.name));
+	strncpy(entry.name, ".", sizeof(entry.name));
+	entry.length = 0;
+	fwrite(&entry, sizeof(McFsEntry), 1, fh);
+
+	// ".."
+	strncpy(entry.name, "..", sizeof(entry.name));
+	fwrite(&entry, sizeof(McFsEntry), 1, fh);
+
+	do {
+		r = mcio_mcDread(dd, &dirent);
+		if (r && (strcmp(dirent.name, ".")) && (strcmp(dirent.name, "..")))
+		{
+			snprintf(filepath, sizeof(filepath), "%s/%s", path, dirent.name);
+			LOG("Adding (%d/%d) %-40s | %8d bytes", ++i, total, filepath, dirent.stat.size);
+
+			mcio_mcStat(filepath, &dirent);
+
+			memset(&entry, 0, sizeof(McFsEntry));
+			memcpy(&entry.created, &dirent.stat.ctime, sizeof(sceMcStDateTime));
+			memcpy(&entry.modified, &dirent.stat.mtime, sizeof(sceMcStDateTime));
+			memcpy(entry.name, dirent.name, sizeof(entry.name));
+			entry.mode = ES32(dirent.stat.mode) >> 16;
+			entry.length = ES32(dirent.stat.size);
+			fwrite(&entry, sizeof(McFsEntry), 1, fh);
+
+			fd = mcio_mcOpen(filepath, sceMcFileAttrReadable | sceMcFileAttrFile);
+			if (fd < 0) {
+				i = 0;
+				break;
+			}
+
+			uint8_t *p = malloc(dirent.stat.size);
+			if (p == NULL) {
+				i = 0;
+				break;
+			}
+
+			r = mcio_mcRead(fd, p, dirent.stat.size);
+			mcio_mcClose(fd);
+
+			if (r != (int)dirent.stat.size) {
+				free(p);
+				i = 0;
+				break;
+			}
+
+			r = fwrite(p, 1, dirent.stat.size, fh);
+			if (r != (int)dirent.stat.size) {
+				fclose(fh);
+				free(p);
+				i = 0;
+				break;
+			}
+			free(p);
+
+			entry.length = 1024 - (dirent.stat.size % 1024);
+			while(--entry.length < 1023)
+				fputc(0xFF, fh);
+		}
+	} while (r);
+
+	mcio_mcDclose(dd);
+	fclose(fh);
+
+	LOG("Save succesfully exported to %s.", output);
+
+	return (i > 0);
 }

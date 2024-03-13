@@ -346,8 +346,8 @@ static int Card_GetSpecs(uint16_t *pagesize, uint16_t *blocksize, int32_t *cards
 
 	// check for non-ECC images
 	*flags = mcdi->cardflags & ((vmc_size % 0x800000 == 0) ? ~CF_USE_ECC : 0xFF);
-	*pagesize = read_le_uint16((uint8_t*)&mcdi->pagesize);
-	*blocksize = read_le_uint16((uint8_t*)&mcdi->blocksize);
+	append_le_uint16((uint8_t*)pagesize, read_le_uint16((uint8_t*)&mcdi->pagesize));
+	append_le_uint16((uint8_t*)blocksize, read_le_uint16((uint8_t*)&mcdi->blocksize));
 	*cardsize = read_le_uint32((uint8_t*)&mcdi->clusters_per_card) * read_le_uint16((uint8_t*)&mcdi->pages_per_cluster);
 
 	return sceMcResSucceed;
@@ -2585,8 +2585,9 @@ static int Card_FileOpen(const char *filename, int flags)
 	fh->fsindex = cacheDir.fsindex;
 	
 	if (r == 0) {
+		uint16_t dircache_mode = read_le_uint16((uint8_t *)&mcio_dircache[1].mode);
 
-		if ((wrflag != 0) && ((mcio_dircache[1].mode & sceMcFileAttrWriteable) == 0))
+		if ((wrflag != 0) && ((dircache_mode & sceMcFileAttrWriteable) == 0))
 			return sceMcResDeniedPermit;
 
 		r = Card_ReadDirEntry(cacheDir.cluster, 0, &fse2);
@@ -2596,20 +2597,20 @@ static int Card_FileOpen(const char *filename, int flags)
 		fh->parent_cluster = read_le_uint32((uint8_t *)&fse2->cluster);
 		fh->parent_fsindex = read_le_uint32((uint8_t *)&fse2->dir_entry);
 
-		if ((mcio_dircache[1].mode & sceMcFileAttrSubdir) != 0) {
-			if ((mcio_dircache[1].mode & sceMcFileAttrReadable) == 0)
+		if ((dircache_mode & sceMcFileAttrSubdir) != 0) {
+			if ((dircache_mode & sceMcFileAttrReadable) == 0)
 				return sceMcResDeniedPermit;
 
 			if ((flags & sceMcFileAttrSubdir) == 0)
 				return sceMcResNotFile;
 
-			fh->freeclink = mcio_dircache[1].cluster;
+			fh->freeclink = read_le_uint32((uint8_t *)&mcio_dircache[1].cluster);
 			fh->rdflag = 0;
 			fh->wrflag = 0;
 			fh->unknown1 = 0;
 			fh->drdflag = 1;
 			fh->status = 1;
-			fh->filesize = mcio_dircache[1].length;
+			fh->filesize = read_le_uint32((uint8_t *)&mcio_dircache[1].length);
 			fh->clink = fh->freeclink;
 
 			return fd;
@@ -2641,8 +2642,8 @@ static int Card_FileOpen(const char *filename, int flags)
 				cacheDir.maxent = cacheDir.fsindex;
 		}
 		else {
-			fh->freeclink = mcio_dircache[1].cluster;
-			fh->filesize = mcio_dircache[1].length;
+			fh->freeclink = read_le_uint32((uint8_t *)&mcio_dircache[1].cluster);
+			fh->filesize = read_le_uint32((uint8_t *)&mcio_dircache[1].length);
 			fh->clink = fh->freeclink;
 
 			if (fh->rdflag != 0)
@@ -2651,7 +2652,7 @@ static int Card_FileOpen(const char *filename, int flags)
 				fh->rdflag = 0;
 
 			if (fh->wrflag != 0)
-				fh->wrflag = (mcio_dircache[1].mode >> 1) & sceMcFileAttrReadable;
+				fh->wrflag = (dircache_mode >> 1) & sceMcFileAttrReadable;
 			else
 				fh->wrflag = 0;
 
@@ -2670,20 +2671,22 @@ static int Card_FileOpen(const char *filename, int flags)
 		return r;
 
 	memcpy((void *)&mcio_dircache[2], (void *)fse1, sizeof(struct MCFsEntry));
+	uint32_t dircache_length = read_le_uint32((uint8_t *)&mcio_dircache[2].length);
+	uint32_t dircache_cluster = read_le_uint32((uint8_t *)&mcio_dircache[2].cluster);
 
 	i = -1;
-	if (mcio_dircache[2].length == (uint32_t) cacheDir.maxent) {
+	if (dircache_length == (uint32_t) cacheDir.maxent) {
 
 		int32_t cluster_size = (int32_t)read_le_uint32((uint8_t *)&mcdi->cluster_size);
 
-		fsindex = mcio_dircache[2].length / (cluster_size >> 9);
-		fsoffset = mcio_dircache[2].length % (cluster_size >> 9);
+		fsindex = dircache_length / (cluster_size >> 9);
+		fsoffset = dircache_length % (cluster_size >> 9);
 
 		if (fsoffset == 0) {
-			fat_index = mcio_dircache[2].cluster;
+			fat_index = dircache_cluster;
 			i = fsindex;
 
-			if ((mcio_dircache[2].cluster == 0) && (i >= 2)) {
+			if ((dircache_cluster == 0) && (i >= 2)) {
 				if (read_le_uint32((uint8_t *)&mcio_fatcache.entry[i-1]) >= 0) {
 					fat_index = read_le_uint32((uint8_t *)&mcio_fatcache.entry[i-1]);
 					i = 1;
@@ -2727,7 +2730,8 @@ static int Card_FileOpen(const char *filename, int flags)
 
 		i = -1;
 
-		mcio_dircache[2].length++;
+		dircache_length++;
+		append_le_uint32((uint8_t *)&mcio_dircache[2].length, dircache_length);
 	}
 
 	do {
@@ -2754,7 +2758,7 @@ static int Card_FileOpen(const char *filename, int flags)
 
 	mcio_getmcrtime(&mcio_dircache[2].modified);
 
-	r = Card_ReadDirEntry(mcio_dircache[2].cluster, cacheDir.maxent, &fse2);
+	r = Card_ReadDirEntry(dircache_cluster, cacheDir.maxent, &fse2);
 	if (r != sceMcResSucceed)
 		return r;
 
@@ -2781,7 +2785,7 @@ static int Card_FileOpen(const char *filename, int flags)
 		append_le_uint32((uint8_t *)&fse2->cluster, mcfree);
 		append_le_uint32((uint8_t *)&fse2->length, 2);
 
-		r = Card_CreateDirEntry(mcio_dircache[2].cluster, cacheDir.maxent, mcfree, (struct sceMcStDateTime *)&fse2->created);
+		r = Card_CreateDirEntry(dircache_cluster, cacheDir.maxent, mcfree, (struct sceMcStDateTime *)&fse2->created);
 		if (r != sceMcResSucceed)
 			return -46;
 
@@ -2807,7 +2811,7 @@ static int Card_FileOpen(const char *filename, int flags)
 
 		append_le_uint16((uint8_t *)&fse2->mode, fmode);
 		append_le_uint32((uint8_t *)&fse2->cluster, -1);
-		fh->cluster = mcio_dircache[2].cluster;
+		fh->cluster = dircache_cluster;
 		fh->status = 1;
 		fh->fsindex = cacheDir.maxent;
 
@@ -3462,8 +3466,9 @@ int mcio_mcGetInfo(int *pagesize, int *blocksize, int *cardsize, int *cardflags)
 	if (Card_GetSpecs(&_pagesize, &_blocksize, &_cardsize, &_cardflags) != sceMcResSucceed)
 		return r;
 
+	_pagesize = read_le_uint16((uint8_t *)&_pagesize);
 	*pagesize = (int)_pagesize;
-	*blocksize = (int)_blocksize;
+	*blocksize = (int)read_le_uint16((uint8_t *)&_blocksize);
 	*cardsize = (int)_cardsize * _pagesize;
 	*cardflags = (int)_cardflags;
 

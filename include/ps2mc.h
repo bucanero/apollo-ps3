@@ -35,7 +35,7 @@ typedef struct                       // size = 512
     uint32_t unused2[7];             // 36
     char name[32];                   // 64
     uint8_t  unused3[416];           // 96
-} ps2_McFsEntry;
+} McFsEntry;
 
 typedef struct
 {

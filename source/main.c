@@ -178,6 +178,19 @@ save_list_t vmc1_saves = {
     .UpdatePath = &update_vmc_path,
 };
 
+/*
+* PS2 VMC list
+*/
+save_list_t vmc2_saves = {
+    .icon_id = cat_usb_png_index,
+    .title = "PS2 Virtual Memory Card",
+    .list = NULL,
+    .path = "",
+    .ReadList = &ReadVmc2List,
+    .ReadCodes = &ReadVmc2Codes,
+    .UpdatePath = &update_vmc_path,
+};
+
 static void release_all(void)
 {	
 	if(inited & INITED_CALLBACK)
