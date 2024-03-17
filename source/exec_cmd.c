@@ -12,6 +12,7 @@
 #include "pfd.h"
 #include "sfo.h"
 #include "ps1card.h"
+#include "mcio.h"
 
 static char host_buf[256];
 
@@ -875,45 +876,21 @@ static void convertSavePSV(const save_entry_t* save, int dst)
 	show_message("File successfully saved to:\n%s", out_path);
 }
 
-static void decryptVMEfile(const char* vme_path, const char* vme_file, uint8_t dst)
+static void importVM2file(const char* vme_file, const char* src_name)
 {
-	char vmefile[256];
-	char outfile[256];
-	char path[256];
-
-	_set_dest_path(path, dst, VMC_PS2_PATH_USB);
-	if (dst == STORAGE_HDD)
-		snprintf(path, sizeof(path), VMC_PS2_PATH_HDD);
-
-	if (mkdirs(path) != SUCCESS)
-	{
-		show_message("Error! Export folder is not available:\n%s", path);
-		return;
-	}
-
-	snprintf(vmefile, sizeof(vmefile), "%s%s", vme_path, vme_file);
-	snprintf(outfile, sizeof(outfile), "%sAPOLLO%c.VM2", path, vme_file[6]);
-
-	init_loading_screen("Decrypting VME card...");
-	ps2_crypt_vmc(0, vmefile, outfile, 0);
-	stop_loading_screen();
-
-	show_message("File successfully saved to:\n%s", outfile);
-}
-
-static void encryptVM2file(const char* vme_path, const char* vme_file, const char* src_name)
-{
-	char vmefile[256];
+	int ret;
 	char srcfile[256];
 
-	snprintf(vmefile, sizeof(vmefile), "%s%s", vme_path, vme_file);
 	snprintf(srcfile, sizeof(srcfile), "%s%s", VMC_PS2_PATH_HDD, src_name);
 
-	init_loading_screen("Encrypting VM2 card...");
-	ps2_crypt_vmc(0, srcfile, vmefile, 1);
+	init_loading_screen("Importing VM2 card...");
+	ret = mcio_vmcImportImage(srcfile);
 	stop_loading_screen();
 
-	show_message("File successfully saved to:\n%s", vmefile);
+	if (ret == sceMcResSucceed)
+		show_message("File successfully imported to:\n%s", vme_file);
+	else
+		show_message("Error! Failed to import PS2 memory card");
 }
 
 static void importPS2VMC(const char* vmc_path, const char* vmc_file)
@@ -932,9 +909,9 @@ static void importPS2VMC(const char* vmc_path, const char* vmc_file)
 	show_message("File successfully saved to:\n%s", vm2file);
 }
 
-static void exportVM2raw(const char* vm2_path, const char* vm2_file, int dst)
+static void exportVM2raw(const char* vm2_file, int dst, int ecc)
 {
-	char vm2file[256];
+	int ret;
 	char dstfile[256];
 	char dst_path[256];
 
@@ -945,15 +922,17 @@ static void exportVM2raw(const char* vm2_path, const char* vm2_file, int dst)
 		return;
 	}
 
-	snprintf(vm2file, sizeof(vm2file), "%s%s", vm2_path, vm2_file);
-	snprintf(dstfile, sizeof(dstfile), "%s%s.vmc", dst_path, vm2_file);
+	snprintf(dstfile, sizeof(dstfile), "%s%s.%s", dst_path, vm2_file, ecc ? "VM2" : "vmc");
 
-	init_loading_screen("Exporting PS2 .VM2 memory card...");
-	ps2_remove_vmc_ecc(vm2file, dstfile);
+	init_loading_screen("Exporting PS2 memory card...");
+	ret = mcio_vmcExportImage(dstfile, ecc);
 	file_chmod(dstfile);
 	stop_loading_screen();
 
-	show_message("File successfully saved to:\n%s", dstfile);
+	if (ret == sceMcResSucceed)
+		show_message("File successfully saved to:\n%s", dstfile);
+	else
+		show_message("Error! Failed to export PS2 memory card");
 }
 
 static void importPS2classicsCfg(const char* cfg_path, const char* cfg_file)
@@ -1762,13 +1741,8 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			code->activated = 0;
 			break;
 
-		case CMD_DECRYPT_PS2_VME:
-			decryptVMEfile(selected_entry->path, code->file, codecmd[1]);
-			code->activated = 0;
-			break;
-
-		case CMD_ENCRYPT_PS2_VMC:
-			encryptVM2file(selected_entry->path, code->file, code->options[0].name[code->options[0].sel]);
+		case CMD_IMP_PS2_VM2:
+			importVM2file(selected_entry->path, code->options[0].name[code->options[0].sel]);
 			code->activated = 0;
 			break;
 
@@ -1807,8 +1781,9 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			code->activated = 0;
 			break;
 
+		case CMD_EXP_PS2_VM2:
 		case CMD_EXP_VM2_RAW:
-			exportVM2raw(selected_entry->path, code->file, codecmd[1]);
+			exportVM2raw(code->file, codecmd[1], codecmd[0] == CMD_EXP_PS2_VM2);
 			code->activated = 0;
 			break;
 

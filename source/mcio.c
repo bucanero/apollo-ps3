@@ -23,6 +23,7 @@
 #include "mcio.h"
 #include "util.h"
 #include "ps2mc.h"
+#include "common.h"
 
 #include <stdio.h>
 #include <time.h>
@@ -46,6 +47,7 @@ static const char SUPERBLOCK_MAGIC[]   = "Sony PS2 Memory Card Format ";
 static const char SUPERBLOCK_VERSION[] = "1.2.0.0\0\0\0\0";
 
 static FILE *vmc_fp = NULL;
+static char vmcpath[256];
 
 struct MCDevInfo {			/* size = 384 */
 	uint8_t  magic[28];		/* Superblock magic, on PS2 MC : "Sony PS2 Memory Card Format " */
@@ -126,40 +128,7 @@ static uint8_t mcio_eccdata[512]; /* size for 32 ecc */
 static int32_t mcio_badblock = 0;
 static int32_t mcio_replacementcluster[16];
 
-static const uint8_t mcio_xortable[256] = {
-	0x00, 0x87, 0x96, 0x11, 0xA5, 0x22, 0x33, 0xB4,
-	0xB4, 0x33, 0x22, 0xA5, 0x11, 0x96, 0x87, 0x00,
-	0xC3, 0x44, 0x55, 0xD2, 0x66, 0xE1, 0xF0, 0x77,
-	0x77, 0xF0, 0xE1, 0x66, 0xD2, 0x55, 0x44, 0xC3,
-	0xD2, 0x55, 0x44, 0xC3, 0x77, 0xF0, 0xE1, 0x66,
-	0x66, 0xE1, 0xF0, 0x77, 0xC3, 0x44, 0x55, 0xD2,
-	0x11, 0x96, 0x87, 0x00, 0xB4, 0x33, 0x22, 0xA5,
-	0xA5, 0x22, 0x33, 0xB4, 0x00, 0x87, 0x96, 0x11,
-	0xE1, 0x66, 0x77, 0xF0, 0x44, 0xC3, 0xD2, 0x55,
-	0x55, 0xD2, 0xC3, 0x44, 0xF0, 0x77, 0x66, 0xE1,
-	0x22, 0xA5, 0xB4, 0x33, 0x87, 0x00, 0x11, 0x96,
-	0x96, 0x11, 0x00, 0x87, 0x33, 0xB4, 0xA5, 0x22,
-	0x33, 0xB4, 0xA5, 0x22, 0x96, 0x11, 0x00, 0x87,
-	0x87, 0x00, 0x11, 0x96, 0x22, 0xA5, 0xB4, 0x33,
-	0xF0, 0x77, 0x66, 0xE1, 0x55, 0xD2, 0xC3, 0x44,
-	0x44, 0xC3, 0xD2, 0x55, 0xE1, 0x66, 0x77, 0xF0,
-	0xF0, 0x77, 0x66, 0xE1, 0x55, 0xD2, 0xC3, 0x44,
-	0x44, 0xC3, 0xD2, 0x55, 0xE1, 0x66, 0x77, 0xF0,
-	0x33, 0xB4, 0xA5, 0x22, 0x96, 0x11, 0x00, 0x87,
-	0x87, 0x00, 0x11, 0x96, 0x22, 0xA5, 0xB4, 0x33,
-	0x22, 0xA5, 0xB4, 0x33, 0x87, 0x00, 0x11, 0x96,
-	0x96, 0x11, 0x00, 0x87, 0x33, 0xB4, 0xA5, 0x22,
-	0xE1, 0x66, 0x77, 0xF0, 0x44, 0xC3, 0xD2, 0x55,
-	0x55, 0xD2, 0xC3, 0x44, 0xF0, 0x77, 0x66, 0xE1,
-	0x11, 0x96, 0x87, 0x00, 0xB4, 0x33, 0x22, 0xA5,
-	0xA5, 0x22, 0x33, 0xB4, 0x00, 0x87, 0x96, 0x11,
-	0xD2, 0x55, 0x44, 0xC3, 0x77, 0xF0, 0xE1, 0x66,
-	0x66, 0xE1, 0xF0, 0x77, 0xC3, 0x44, 0x55, 0xD2,
-	0xC3, 0x44, 0x55, 0xD2, 0x66, 0xE1, 0xF0, 0x77,
-	0x77, 0xF0, 0xE1, 0x66, 0xD2, 0x55, 0x44, 0xC3,
-	0x00, 0x87, 0x96, 0x11, 0xA5, 0x22, 0x33, 0xB4,
-	0xB4, 0x33, 0x22, 0xA5, 0x11, 0x96, 0x87, 0x00
-};
+extern const uint8_t ECC_Table[];
 
 
 struct MCFHandle { /* size = 48 */
@@ -185,6 +154,7 @@ struct MCFHandle { /* size = 48 */
 struct MCFHandle mcio_fdhandles[MAX_FDHANDLES];
 
 static int Card_FileClose(int fd);
+void ps2_crypt_vmc(uint8_t dex_mode, const char* vmc_path, const char* vmc_out, int crypt_mode);
 
 
 static void long_multiply(uint32_t v1, uint32_t v2, uint32_t *HI, uint32_t *LO)
@@ -211,6 +181,7 @@ static void Card_DataChecksum(uint8_t *pagebuf, uint8_t *ecc)
 {
 	uint8_t *p, *p_ecc;
 	int32_t i, a2, a3, v, t0;
+	const uint8_t *mcio_xortable = ECC_Table;
 
 	p = pagebuf;
 	a2 = 0;
@@ -3009,9 +2980,18 @@ static int Card_FileWrite(int fd, void *buffer, int nbyte)
 int mcio_vmcInit(const char* vmc)
 {
 	int r;
+	vmcpath[0] = 0;
 
 	if (vmc_fp)
 		fclose(vmc_fp);
+
+	// decrypt ps2classic format
+	if (strcmp(".VME", strrchr(vmc, '.')) == 0)
+	{
+		snprintf(vmcpath, sizeof(vmcpath), "%s%s", vmc, ".out");
+		ps2_crypt_vmc(0, vmc, vmcpath, 0);
+		vmc = vmcpath;
+	}
 
 	vmc_fp = fopen(vmc, "r+b");
 	if (!vmc_fp)
@@ -3030,6 +3010,17 @@ void mcio_vmcFinish(void)
 {
 	if (vmc_fp)
 		fclose(vmc_fp);
+
+	// encrypt ps2classic format
+	if (vmcpath[0])
+	{
+		char vme[256];
+
+		strncpy(vme, vmcpath, sizeof(vme));
+		*strrchr(vme, '.') = 0;
+		ps2_crypt_vmc(0, vmcpath, vme, 1);
+		unlink_secure(vmcpath);
+	}
 
 	vmc_fp = NULL;
 }
@@ -3498,9 +3489,24 @@ int mcio_mcGetAvailableSpace(int *cardfree)
 	return 0;
 }
 
-int mcio_mcReadPage(int pagenum, void *buf)
+int mcio_mcReadPage(int pagenum, void *buf, void *ecc)
 {
-	return Card_ReadPage((int32_t)pagenum, (uint8_t *)buf);
+	int r;
+
+	r = Card_ReadPage((int32_t)pagenum, (uint8_t *)buf);
+
+	if (ecc)
+	{
+		struct MCDevInfo *mcdi = (struct MCDevInfo *)&mcio_devinfo;
+		uint16_t pagesize = read_le_uint16((uint8_t *)&mcdi->pagesize);
+		uint8_t* p_ecc = ecc;
+
+		memset(ecc, 0, pagesize >> 5);
+		for (int i = 0; i < pagesize; i += 128, p_ecc += 3)
+			Card_DataChecksum(buf + i, p_ecc);
+	}
+
+	return r;
 }
 
 int mcio_mcUnformat(void)
@@ -3565,4 +3571,82 @@ int mcio_mcRmDir(const char *dirname)
 	}
 
 	return r;
+}
+
+int mcio_vmcExportImage(const char *output, int add_ecc)
+{
+	int r;
+	int pagesize, blocksize, cardsize, cardflags;
+
+	r = mcio_mcGetInfo(&pagesize, &blocksize, &cardsize, &cardflags);
+	if (r < 0)
+		return -1;
+
+	FILE *fh = fopen(output, "wb");
+	if (fh == NULL)
+		return -2;
+
+	void *ecc = malloc(pagesize >> 5);
+	void *buf = malloc(pagesize);
+	if (buf == NULL || ecc == NULL) {
+		fclose(fh);
+		return -3;
+	}
+
+	for (int i = 0; i < (cardsize / pagesize); i++) {
+		mcio_mcReadPage(i, buf, ecc);
+		r = fwrite(buf, 1, pagesize, fh);
+		if (r != pagesize) {
+			free(buf);
+			fclose(fh);
+			return -4;
+		}
+
+		if (!add_ecc)
+			continue;
+
+		r = fwrite(ecc, 1, pagesize >> 5, fh);
+		if (r != pagesize >> 5) {
+			free(buf);
+			fclose(fh);
+			return -4;
+		}
+	}
+
+	fclose(fh);
+	free(buf);
+	free(ecc);
+
+	return sceMcResSucceed;
+}
+
+int mcio_vmcImportImage(const char *input)
+{
+	off_t size;
+	size_t r, w;
+	char tmpbuf[0x8000];
+
+	if (!vmc_fp)
+		return -1;
+
+	FILE *fh = fopen(input, "rb");
+	if (fh == NULL)
+		return -2;
+
+	fseek(fh, 0, SEEK_END);
+	size = ftell(fh);
+
+	fseek(fh, 0, SEEK_SET);
+	fseek(vmc_fp, 0, SEEK_SET);
+
+	do {
+		r = fread(tmpbuf, 1, sizeof(tmpbuf), fh);
+		w = fwrite(tmpbuf, 1, r, vmc_fp);
+	}
+	while ((r == w) && (r == sizeof(tmpbuf)));
+
+	ftruncate(fileno(vmc_fp), size);
+	fclose(fh);
+
+	return sceMcResSucceed;
 }

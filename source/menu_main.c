@@ -60,16 +60,25 @@ void initMenuOptions(void)
 	*menu_options[OWNER_SETTING].value = menu_options_maxsel[OWNER_SETTING] - 1;
 }
 
-static void LoadFileTexture(const char* fname, int idx)
+static void LoadFileTexture(const char* fname)
 {
-	if (!menu_textures[idx].buffer)
-		menu_textures[idx].buffer = free_mem;
+	pngLoadFromFile(fname, &menu_textures[icon_png_file_index].texture);
+	copyTexture(icon_png_file_index);
 
-	pngLoadFromFile(fname, &menu_textures[idx].texture);
-	copyTexture(idx);
+	menu_textures[icon_png_file_index].size = 1;
+	free_mem = (u32*) menu_textures[icon_png_file_index].buffer;
+}
 
-	menu_textures[idx].size = 1;
-	free_mem = (u32*) menu_textures[idx].buffer;
+static void LoadVmcTexture(int width, int height, uint8_t* icon)
+{
+	menu_textures[icon_png_file_index].texture.width = width;
+	menu_textures[icon_png_file_index].texture.height = height;
+	menu_textures[icon_png_file_index].texture.pitch = (width*4);
+	menu_textures[icon_png_file_index].texture.bmp_out = icon;
+	copyTexture(icon_png_file_index);
+
+	menu_textures[icon_png_file_index].size = 1;
+	free_mem = (u32*) menu_textures[icon_png_file_index].buffer;
 }
 
 static int ReloadUserSaves(save_list_t* save_list)
@@ -159,10 +168,12 @@ static code_entry_t* LoadSaveDetails(void)
 	asprintf(&centry->codes, "%s\n\n"
 		"Title: %s\n"
 		"Sub-Title: %s\n"
+		"Folder: %s\n"
 		"Lock: %s\n\n"
 		"User ID: %08d\n"
 		"Account ID: %.16s (%s)\n"
 		"PSID: %016lX %016lX\n", selected_entry->path, selected_entry->name, subtitle, 
+		selected_entry->dir_name,
 		(selected_entry->flags & SAVE_FLAG_LOCKED ? "Copying Prohibited" : "Unlocked"),
 		param_ids->user_id, param_ids->account_id, 
 		(selected_entry->flags & SAVE_FLAG_OWNER ? "Owner" : "Not Owner"),
@@ -307,6 +318,7 @@ static void SetMenu(int id)
 				menu_old_sel[MENU_PATCHES] = 0;
 
 			char iconfile[256];
+			menu_textures[icon_png_file_index].size = 0;
 			snprintf(iconfile, sizeof(iconfile), "%s" "ICON0.PNG", selected_entry->path);
 
 			if (selected_entry->flags & SAVE_FLAG_ONLINE)
@@ -317,10 +329,14 @@ static void SetMenu(int id)
 					http_download(selected_entry->path, "ICON0.PNG", iconfile, 1);
 			}
 
+			if (selected_entry->flags & SAVE_FLAG_VMC && selected_entry->type == FILE_TYPE_PS1)
+				LoadVmcTexture(16, 16, getIconRGBA(selected_entry->path[strlen(selected_entry->path)+1], 0));
+
+			if (selected_entry->flags & SAVE_FLAG_VMC && selected_entry->type == FILE_TYPE_PS2)
+				LoadVmcTexture(128, 128, getIconPS2(selected_entry->dir_name, strrchr(selected_entry->path, '\n')+1));
+
 			if (file_exists(iconfile) == SUCCESS)
-				LoadFileTexture(iconfile, icon_png_file_index);
-			else
-				menu_textures[icon_png_file_index].size = 0;
+				LoadFileTexture(iconfile);
 
 			if (apollo_config.doAni && menu_id != MENU_PATCH_VIEW && menu_id != MENU_CODE_OPTIONS)
 				Draw_CheatsMenu_Selection_Ani();

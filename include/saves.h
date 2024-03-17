@@ -91,8 +91,6 @@ enum cmd_code_enum
     CMD_VIEW_DETAILS,
     CMD_VIEW_RAW_PATCH,
     CMD_RESIGN_PSV,
-    CMD_DECRYPT_PS2_VME,
-    CMD_ENCRYPT_PS2_VMC,
     CMD_CONVERT_TO_PSV,
     CMD_COPY_DUMMY_PSV,
     CMD_IMPORT_DATA_FILE,
@@ -117,6 +115,7 @@ enum cmd_code_enum
     CMD_EXP_LICS_RAPS,
     CMD_EXP_FLASH2_USB,
     CMD_EXP_PS2_BINENC,
+    CMD_EXP_PS2_VM2,
     CMD_EXP_PSV_MCS,
     CMD_EXP_PSV_PSU,
     CMD_EXP_VM2_RAW,
@@ -126,6 +125,7 @@ enum cmd_code_enum
 
 // Import commands
     CMD_IMP_EXDATA_USB,
+    CMD_IMP_PS2_VM2,
     CMD_IMP_PS2_ISO,
     CMD_IMP_PS2_CONFIG,
     CMD_IMP_PS2VMC_USB,
@@ -262,6 +262,7 @@ typedef struct
 } save_list_t;
 
 list_t * ReadUserList(const char* userPath);
+list_t * ReadUsbList(const char* userPath);
 list_t * ReadOnlineList(const char* urlPath);
 list_t * ReadBackupList(const char* userPath);
 list_t * ReadTrophyList(const char* userPath);
@@ -318,7 +319,6 @@ void ps2_encrypt_image(uint8_t cfg_file, const char* image_name, const char* dat
 void ps2_decrypt_image(uint8_t dex_mode, const char* image_name, const char* data_file);
 void ps2_crypt_vmc(uint8_t dex_mode, const char* vmc_path, const char* vmc_out, int crypt_mode);
 int ps2_add_vmc_ecc(const char* src, const char* dst);
-int ps2_remove_vmc_ecc(const char* src, const char* dst);
 int psv_resign(const char *src_psv);
 int vmp_resign(const char *src_vmp);
 
@@ -337,3 +337,4 @@ int vmc_import_psv(const char *input);
 int vmc_import_psu(const char *input);
 
 char* sjis2utf8(char* input);
+uint8_t* getIconPS2(const char* folder, const char* iconfile);

@@ -63,6 +63,8 @@ struct io_dirent {
 } __attribute__((packed));
 
 int mcio_vmcInit(const char* vmc);
+int mcio_vmcExportImage(const char *dst, int ecc);
+int mcio_vmcImportImage(const char *src);
 void mcio_vmcFinish(void);
 int mcio_mcDetect(void);
 int mcio_mcGetInfo(int *pagesize, int *blocksize, int *cardsize, int *cardflags);
@@ -77,7 +79,7 @@ int mcio_mcDopen(const char *dirname);
 int mcio_mcDclose(int fd);
 int mcio_mcDread(int fd, struct io_dirent *dirent);
 int mcio_mcMkDir(const char *dirname);
-int mcio_mcReadPage(int pagenum, void *buf);
+int mcio_mcReadPage(int pagenum, void *buf, void *ecc);
 int mcio_mcUnformat(void);
 int mcio_mcFormat(void);
 int mcio_mcRemove(const char *filename);

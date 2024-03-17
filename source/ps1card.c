@@ -301,7 +301,7 @@ static void loadPalette(void)
             if ((redChannel | greenChannel | blueChannel | blackFlag) == 0)
                 ps1saves[slotNumber].iconPalette[colorCounter] = 0x00000000;
             else
-                ps1saves[slotNumber].iconPalette[colorCounter] = redChannel | (greenChannel << 8) | (blueChannel << 16) | 0xFF000000;
+                ps1saves[slotNumber].iconPalette[colorCounter] = blueChannel | (greenChannel << 8) | (redChannel << 16) | 0xFF000000;
 
             colorCounter++;
         }

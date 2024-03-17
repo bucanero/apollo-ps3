@@ -121,7 +121,7 @@ save_list_t usb_saves = {
 	.title = "USB Saves",
     .list = NULL,
     .path = "",
-    .ReadList = &ReadUserList,
+    .ReadList = &ReadUsbList,
     .ReadCodes = &ReadCodes,
     .UpdatePath = &update_usb_path,
 };

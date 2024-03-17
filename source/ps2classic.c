@@ -269,27 +269,6 @@ int ps2_add_vmc_ecc(const char* src, const char* dst)
 	return 1;
 }
 
-int ps2_remove_vmc_ecc(const char* src, const char* dst)
-{
-	ps2_block_t block;
-
-	FILE *in = fopen(src, "rb");
-	FILE *fo = fopen(dst, "wb");
-
-	if (!in || !fo)
-		return 0;
-
-	while(fread(&block, 1, sizeof(ps2_block_t), in) > 0)
-	{
-		fwrite(&block, PS2_VMC_DATASIZE, 1, fo);
-	}
-
-	fclose(in);
-	fclose(fo);
-
-	return 1;
-}
-
 /*
  *  ps2_iso9660_sig
  */

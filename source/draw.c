@@ -121,8 +121,9 @@ static void _drawListBackground(int off, int icon)
 
 			if (menu_textures[icon_png_file_index].size)
 			{
-				DrawTexture(&menu_textures[help_png_index], 624, help_png_y + 4, 0, 168, 98, 0xFFFFFF00 | 0xFF);
-				DrawTexture(&menu_textures[icon_png_file_index], 628, help_png_y + 8, 0, 160, 88, 0xFFFFFF00 | 0xFF);
+				int adj = (menu_textures[icon_png_file_index].texture.width == 16) ? 6 : 1; // resize PS1 icons
+				DrawTexture(&menu_textures[help_png_index], 624, help_png_y + 4, 0, (menu_textures[icon_png_file_index].texture.width / 2 * adj) + 8, (menu_textures[icon_png_file_index].texture.height / 2 * adj) + 10, 0xFFFFFF00 | 0xFF);
+				DrawTexture(&menu_textures[icon_png_file_index], 628, help_png_y + 8, 0, menu_textures[icon_png_file_index].texture.width / 2 * adj, menu_textures[icon_png_file_index].texture.height / 2 * adj, 0xFFFFFF00 | 0xFF);
 			}
 			break;
 
