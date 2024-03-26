@@ -1037,26 +1037,19 @@ int openMemoryCard(const char* fileName, int fixData)
     //Check if the Memory Card should be opened or created
     if (fileName != NULL)
     {
-        uint8_t tempData[134976];
+        uint8_t *tempData;
         int startOffset;
-        FILE* binReader;
-
-        //Check if the file is allowed to be opened
-        binReader = fopen(fileName, "rb");
+        size_t fileSize;
 
         //File cannot be opened, return error message
-        if (!binReader)
+        if (read_buffer(fileName, &tempData, &fileSize) < 0)
             return false;
 
-        //Put data into temp array
-        if (fread(tempData, 1, 134976, binReader) < PS1CARD_SIZE)
+        if (fileSize < PS1CARD_SIZE)
         {
-            fclose(binReader);
+            free(tempData);
             return false;
         }
-
-        //File is sucesfully read, close the stream
-        fclose(binReader);
 
         //Check the format of the card and if it's supported load it
         //Standard raw Memory Card
@@ -1066,7 +1059,7 @@ int openMemoryCard(const char* fileName, int fixData)
             cardType = PS1CARD_RAW;
         }
         //DexDrive GME Memory Card
-        else if (memcmp(tempData, "123-456-STD", 11) == 0)
+        else if (fileSize == 0x20F40 && memcmp(tempData, "123-456-STD", 11) == 0)
         {
             startOffset = 3904;
             cardType = PS1CARD_GME;
@@ -1076,27 +1069,33 @@ int openMemoryCard(const char* fileName, int fixData)
                 memcpy(saveComments[i], &tempData[64 + (256 * i)], 256);
         }
         //VGS Memory Card
-        else if (memcmp(tempData, "VgsM", 4) == 0)
+        else if (fileSize == 0x20040 && memcmp(tempData, "VgsM", 4) == 0)
         {
             startOffset = 64;
             cardType = PS1CARD_VGS;
         }
         //PSP virtual Memory Card
-        else if (memcmp(tempData, "\0PMV", 4) == 0)
+        else if (fileSize == 0x20080 && memcmp(tempData, "\0PMV", 4) == 0)
         {
             startOffset = 128;
             cardType = PS1CARD_VMP;
         }
-        //File type is not supported or is MCX
-        else if (IsMcxCard(tempData))
+        //PS Vita MCX PocketStation Memory Card
+        else if (fileSize == 0x200A0 && IsMcxCard(tempData))
         {
             startOffset = 128;
             cardType = PS1CARD_MCX;
         }
-        else return false;
+        //File type is not supported
+        else
+        {
+            free(tempData);
+            return false;
+        }
 
         //Copy data to rawMemoryCard array with offset from input data
         memcpy(rawMemoryCard, tempData + startOffset, PS1CARD_SIZE);
+        free(tempData);
 
         //Load Memory Card data from raw card
         loadDataFromRawCard();

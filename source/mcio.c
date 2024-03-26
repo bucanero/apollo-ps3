@@ -3645,6 +3645,7 @@ int mcio_vmcImportImage(const char *input)
 	}
 	while ((r == w) && (r == sizeof(tmpbuf)));
 
+	fflush(vmc_fp);
 	ftruncate(fileno(vmc_fp), size);
 	fclose(fh);
 

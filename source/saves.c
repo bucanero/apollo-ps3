@@ -702,6 +702,14 @@ static void add_vmc_import_saves(list_t* list, const char* path, const char* fol
 			!endsWith(dir->d_name, ".PS1") && !endsWith(dir->d_name, ".MCB") && !endsWith(dir->d_name, ".PDA"))
 			continue;
 
+		// check for PS1 PSV saves
+		if (endsWith(dir->d_name, ".PSV"))
+		{
+			snprintf(psvPath, sizeof(psvPath), "%s%s%s", path, folder, dir->d_name);
+			if (read_file(psvPath, (uint8_t*) psvPath, 0x40) < 0 || psvPath[0x3C] != 0x01)
+				continue;
+		}
+
 		snprintf(psvPath, sizeof(psvPath), "%s %s", CHAR_ICON_COPY, dir->d_name);
 		cmd = _createCmdCode(PATCH_COMMAND, psvPath, CMD_IMP_VMC1SAVE);
 		asprintf(&cmd->file, "%s%s%s", path, folder, dir->d_name);
@@ -753,6 +761,7 @@ int ReadVmc1Codes(save_entry_t * save)
 	if (save->type == FILE_TYPE_MENU)
 	{
 		add_vmc_import_saves(save->codes, save->path, PS1_IMP_PATH_USB);
+		add_vmc_import_saves(save->codes, save->path, PSV_SAVES_PATH_USB);
 		if (!list_count(save->codes))
 		{
 			list_free(save->codes);
@@ -819,8 +828,13 @@ static void add_vmc2_import_saves(list_t* list, const char* path, const char* fo
 		if (dir->d_type != DT_REG)
 			continue;
 
+		// check for PS2 PSV saves
 		if (endsWith(dir->d_name, ".PSV"))
 		{
+			snprintf(psvPath, sizeof(psvPath), "%s%s%s", path, folder, dir->d_name);
+			if (read_file(psvPath, (uint8_t*) psvPath, 0x40) < 0 || psvPath[0x3C] != 0x02)
+				continue;
+
 //			toff = 0x80;
 			type = FILE_TYPE_PSV;
 		}
@@ -1564,7 +1578,8 @@ static void read_vmc2_files(const char* userPath, list_t *list)
 
 	while ((dir = readdir(d)) != NULL)
 	{
-		if (dir->d_type != DT_REG || !(endsWith(dir->d_name, ".VMC") || endsWith(dir->d_name, ".VM2") || endsWith(dir->d_name, ".BIN") || endsWith(dir->d_name, ".PS2")))
+		if (dir->d_type != DT_REG || !(endsWith(dir->d_name, ".VMC") || endsWith(dir->d_name, ".VM2") || 
+			endsWith(dir->d_name, ".BIN") || endsWith(dir->d_name, ".PS2")|| endsWith(dir->d_name, ".VME")))
 			continue;
 
 		snprintf(psvPath, sizeof(psvPath), "%s%s", userPath, dir->d_name);
@@ -1943,7 +1958,6 @@ list_t * ReadOnlineList(const char* urlPath)
 
 list_t * ReadVmc1List(const char* userPath)
 {
-	char filePath[256];
 	save_entry_t *item;
 	code_entry_t *cmd;
 	list_t *list;
@@ -1964,14 +1978,11 @@ list_t * ReadVmc1List(const char* userPath)
 	item = _createSaveEntry(SAVE_FLAG_PS1, CHAR_ICON_VMC " Memory Card Management");
 	item->type = FILE_TYPE_MENU;
 	item->path = strdup(userPath);
+	item->title_id = strdup("VMC");
 	item->codes = list_alloc();
 	//bulk management hack
 	item->dir_name = malloc(sizeof(void**));
 	((void**)item->dir_name)[0] = list;
-
-	strncpy(filePath, userPath, sizeof(filePath));
-	strrchr(filePath, '/')[0] = 0;
-	item->title_id = strdup(strrchr(filePath, '/')+1);
 
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Export selected Saves to USB", CMD_CODE_NULL);
 	cmd->options_count = 1;
@@ -1985,9 +1996,9 @@ list_t * ReadVmc1List(const char* userPath)
 	list_append(list, item);
 
 	item = _createSaveEntry(SAVE_FLAG_PS1, CHAR_ICON_COPY " Import Saves to Virtual Card");
-	if (strncmp(filePath, USB_PATH, 8) == 0)
+	if (strncmp(userPath, USB_PATH, 8) == 0)
 	{
-		item->path = strdup(filePath);
+		item->path = strdup(userPath);
 		strchr(item->path + 1, '/')[1] = 0;
 	}
 	else

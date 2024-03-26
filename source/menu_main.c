@@ -191,20 +191,24 @@ static void SetMenu(int id)
 		case MENU_PS1VMC_SAVES:
 			if (id == MENU_MAIN_SCREEN)
 			{
-				LOG("Saving PS1 VMC changes...");
+				init_loading_screen("Saving PS1 Memory Card...");
 				UnloadGameList(vmc1_saves.list);
 				vmc1_saves.list = NULL;
 				saveMemoryCard(vmc1_saves.path, 0, 0);
+				stop_loading_screen();
 			}
+			break;
 
 		case MENU_PS2VMC_SAVES:
 			if (id == MENU_MAIN_SCREEN)
 			{
-				LOG("Saving PS2 VMC changes...");
+				init_loading_screen("Saving PS2 Memory Card...");
 				UnloadGameList(vmc2_saves.list);
 				vmc2_saves.list = NULL;
 				mcio_vmcFinish();
+				stop_loading_screen();
 			}
+			break;
 
 		case MENU_MAIN_SCREEN: //Main Menu
 		case MENU_TROPHIES:

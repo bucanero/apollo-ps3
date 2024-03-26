@@ -1612,6 +1612,7 @@ static void import_save2vmc(const char* src, int type)
 {
 	int ret = 0;
 
+	init_loading_screen("Importing PS2 save...");
 	switch (type)
 	{
 	case FILE_TYPE_PSV:
@@ -1625,6 +1626,7 @@ static void import_save2vmc(const char* src, int type)
 	default:
 		break;
 	}
+	stop_loading_screen();
 
 	if (ret)
 		show_message("Successfully imported to VMC:\n%s", src);
