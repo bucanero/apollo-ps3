@@ -86,7 +86,7 @@ uint8_t* getSaveBytes(int slotNumber, uint32_t* saveLen);
 void toggleDeleteSave(int slotNumber);
 
 //Format save
-void formatSave(int slotNumber);
+int formatSave(int slotNumber);
 
 //Get Memory Card data
 ps1mcData_t* getMemoryCardData(void);

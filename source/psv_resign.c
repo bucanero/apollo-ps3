@@ -911,3 +911,31 @@ int vmc_export_psu(const char* path, const char* output)
 
 	return (i > 0);
 }
+
+int vmc_delete_save(const char* path)
+{
+	int r, dd;
+	struct io_dirent dirent;
+	char filepath[256];
+
+	LOG("Deleting '%s'...", path);
+
+	dd = mcio_mcDopen(path);
+	if (dd < 0)
+		return 0;
+
+	do {
+		r = mcio_mcDread(dd, &dirent);
+		if (r && (strcmp(dirent.name, ".")) && (strcmp(dirent.name, "..")))
+		{
+			snprintf(filepath, sizeof(filepath), "%s/%s", path, dirent.name);
+			LOG("Deleting '%s'", filepath);
+			mcio_mcRemove(filepath);
+		}
+	} while (r);
+
+	mcio_mcDclose(dd);
+	r = mcio_mcRmDir(path);
+
+	return (r == sceMcResSucceed);
+}

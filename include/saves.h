@@ -95,6 +95,7 @@ enum cmd_code_enum
     CMD_COPY_DUMMY_PSV,
     CMD_IMPORT_DATA_FILE,
     CMD_HEX_EDIT_FILE,
+    CMD_DELETE_VMCSAVE,
 
 // Bulk commands
     CMD_RESIGN_SAVES,
@@ -105,10 +106,8 @@ enum cmd_code_enum
     CMD_COPY_ALL_SAVES_HDD,
     CMD_SAVE_WEB_SERVER,
     CMD_RESIGN_VMP,
-    CMD_EXP_SAVES_VMC1,
-    CMD_EXP_ALL_SAVES_VMC1,
-    CMD_EXP_SAVES_VMC2,
-    CMD_EXP_ALL_SAVES_VMC2,
+    CMD_EXP_SAVES_VMC,
+    CMD_EXP_ALL_SAVES_VMC,
 
 // Export commands
     CMD_EXP_EXDATA_USB,
@@ -156,11 +155,13 @@ enum cmd_code_enum
 #define SAVE_FLAG_ONLINE        256
 #define SAVE_FLAG_SELECTED      512
 #define SAVE_FLAG_VMC           1024
+#define SAVE_FLAG_UPDATED       2048
 
 enum save_type_enum
 {
     FILE_TYPE_NULL,
     FILE_TYPE_MENU,
+    FILE_TYPE_PS3,
     FILE_TYPE_PSV,
     FILE_TYPE_TRP,
     FILE_TYPE_VMC,
@@ -204,10 +205,10 @@ enum char_flag_enum
     CHAR_TAG_LOCKED,
     CHAR_TAG_NET,
     CHAR_RES_LF,
-    CHAR_TAG_TRANSFER,
+    CHAR_TAG_VMC,
     CHAR_TAG_ZIP,
     CHAR_RES_CR,
-    CHAR_TAG_VMC,
+    CHAR_TAG_TRANSFER,
     CHAR_TAG_WARNING,
     CHAR_BTN_X,
     CHAR_BTN_S,
@@ -335,6 +336,7 @@ int vmc_export_psv(const char* save, const char* out_path);
 int vmc_export_psu(const char* path, const char* output);
 int vmc_import_psv(const char *input);
 int vmc_import_psu(const char *input);
+int vmc_delete_save(const char* path);
 
 char* sjis2utf8(char* input);
 uint8_t* getIconPS2(const char* folder, const char* iconfile);

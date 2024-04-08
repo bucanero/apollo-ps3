@@ -568,13 +568,16 @@ static void formatSlot(int slotNumber)
 }
 
 //Format save
-void formatSave(int slotNumber)
+int formatSave(int slotNumber)
 {
     //Get all linked saves
     int saveSlots_Length;
     int saveSlots[PS1CARD_MAX_SLOTS];
     
     saveSlots_Length = findSaveLinks(slotNumber, saveSlots);
+
+    if (!saveSlots_Length)
+        return false;
 
     //Cycle through each slot
     for (int i = 0; i < saveSlots_Length; i++)
@@ -594,6 +597,7 @@ void formatSave(int slotNumber)
 
     //Set changedFlag to edited
     changedFlag = true;
+    return true;
 }
 
 //Find and return continuous free slots

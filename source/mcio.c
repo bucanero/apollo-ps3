@@ -47,7 +47,7 @@ static const char SUPERBLOCK_MAGIC[]   = "Sony PS2 Memory Card Format ";
 static const char SUPERBLOCK_VERSION[] = "1.2.0.0\0\0\0\0";
 
 static FILE *vmc_fp = NULL;
-static char vmcpath[256];
+static char vmcpath[256] = "";
 
 struct MCDevInfo {			/* size = 384 */
 	uint8_t  magic[28];		/* Superblock magic, on PS2 MC : "Sony PS2 Memory Card Format " */
@@ -2980,10 +2980,8 @@ static int Card_FileWrite(int fd, void *buffer, int nbyte)
 int mcio_vmcInit(const char* vmc)
 {
 	int r;
-	vmcpath[0] = 0;
 
-	if (vmc_fp)
-		fclose(vmc_fp);
+	mcio_vmcFinish();
 
 	// decrypt ps2classic format
 	if (strcmp(".VME", strrchr(vmc, '.')) == 0)
@@ -3022,6 +3020,7 @@ void mcio_vmcFinish(void)
 		unlink_secure(vmcpath);
 	}
 
+	vmcpath[0] = 0;
 	vmc_fp = NULL;
 }
 

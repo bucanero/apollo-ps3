@@ -679,7 +679,7 @@ static void exportAllSavesVMC(const save_entry_t* save, int dev, int all)
 			continue;
 
 		if (item->type == FILE_TYPE_PS1)
-			(saveSingleSave(outPath, save->path[strlen(save->path)+1], PS1SAVE_PSV) ? done++ : err_count++);
+			(saveSingleSave(outPath, save->dir_name[0], PS1SAVE_PSV) ? done++ : err_count++);
 
 		if (item->type == FILE_TYPE_PS2)
 			(vmc_export_psv(item->dir_name, outPath) ? done++ : err_count++);
@@ -695,7 +695,7 @@ static void exportVmcSave(const save_entry_t* save, int type, int dst_id)
 	char outPath[256];
 	struct tm t;
 
-	_set_dest_path(outPath, dst_id, PS1_IMP_PATH_USB);
+	_set_dest_path(outPath, dst_id, (type == PS1SAVE_PSV) ? PSV_SAVES_PATH_USB : PS1_IMP_PATH_USB);
 	mkdirs(outPath);
 	if (type != PS1SAVE_PSV)
 	{
@@ -706,7 +706,7 @@ static void exportVmcSave(const save_entry_t* save, int type, int dst_id)
 			(type == PS1SAVE_MCS) ? "mcs" : "psx");
 	}
 
-	if (saveSingleSave(outPath, save->path[strlen(save->path)+1], type))
+	if (saveSingleSave(outPath, save->dir_name[0], type))
 		show_message("Save successfully exported to:\n%s", outPath);
 	else
 		show_message("Error exporting save:\n%s", save->path);
@@ -1543,16 +1543,27 @@ static void downloadLink(const char* path)
 		show_message("Error! File couldn't be downloaded");
 }
 
+static void deleteVmcSave(const save_entry_t* save)
+{
+	if (!show_dialog(DIALOG_TYPE_YESNO, "Do you want to delete %s?", save->dir_name))
+		return;
+
+	if ((save->flags & SAVE_FLAG_PS1) ? formatSave(save->dir_name[0]) : vmc_delete_save(save->dir_name))
+		show_message("Save successfully deleted:\n%s", save->dir_name);
+	else
+		show_message("Error! Couldn't delete save:\n%s", save->dir_name);
+}
+
 static void import_mcr2vmp(const save_entry_t* save, const char* src)
 {
 	char mcrPath[256];
 	uint8_t *data = NULL;
 	size_t size = 0;
 
-	snprintf(mcrPath, sizeof(mcrPath), VMC_PS2_PATH_HDD "%s/%s", save->title_id, src);
+	snprintf(mcrPath, sizeof(mcrPath), "%s%s", VMC_PS2_PATH_HDD, src);
 	read_buffer(mcrPath, &data, &size);
 
-	if (openMemoryCardStream(data, size, 0) && saveMemoryCard(save->path, 0, 0))
+	if (openMemoryCardStream(data, size, 0))
 		show_message("Memory card successfully imported to:\n%s", save->path);
 	else
 		show_message("Error importing memory card:\n%s", mcrPath);
@@ -1562,8 +1573,8 @@ static void export_vmp2mcr(const save_entry_t* save)
 {
 	char mcrPath[256];
 
-	snprintf(mcrPath, sizeof(mcrPath), VMC_PS2_PATH_HDD "%s/%s", save->title_id, strrchr(save->path, '/') + 1);
-	strcpy(strrchr(mcrPath, '.'), ".MCR");
+	snprintf(mcrPath, sizeof(mcrPath), "%s%s", VMC_PS2_PATH_HDD, strrchr(save->path, '/') + 1);
+	strcpy(strrchr(mcrPath, '.'), ".VM1");
 	mkdirs(mcrPath);
 
 	if (saveMemoryCard(mcrPath, PS1CARD_RAW, 0))
@@ -1802,9 +1813,9 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			code->activated = 0;
 			break;
 
-		case CMD_EXP_SAVES_VMC1:
-		case CMD_EXP_ALL_SAVES_VMC1:
-			exportAllSavesVMC(selected_entry, codecmd[1], codecmd[0] == CMD_EXP_ALL_SAVES_VMC1);
+		case CMD_EXP_SAVES_VMC:
+		case CMD_EXP_ALL_SAVES_VMC:
+			exportAllSavesVMC(selected_entry, codecmd[1], codecmd[0] == CMD_EXP_ALL_SAVES_VMC);
 			code->activated = 0;
 			break;
 
@@ -1815,18 +1826,11 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_IMP_VMC1SAVE:
 			if (openSingleSave(code->file, (int*) host_buf))
-			{
-				saveMemoryCard(selected_entry->dir_name, 0, 0);
 				show_message("Save successfully imported:\n%s", code->file);
-			}
 			else
 				show_message("Error! Couldn't import save:\n%s", code->file);
-			code->activated = 0;
-			break;
 
-		case CMD_EXP_SAVES_VMC2:
-		case CMD_EXP_ALL_SAVES_VMC2:
-			exportAllSavesVMC(selected_entry, codecmd[1], codecmd[0] == CMD_EXP_ALL_SAVES_VMC2);
+			selected_entry->flags |= SAVE_FLAG_UPDATED;
 			code->activated = 0;
 			break;
 
@@ -1837,16 +1841,25 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_IMP_VMC2SAVE:
 			import_save2vmc(code->file, codecmd[1]);
+			selected_entry->flags |= SAVE_FLAG_UPDATED;
 			code->activated = 0;
 			break;
 
 		case CMD_IMP_MCR2VMP:
 			import_mcr2vmp(selected_entry, code->options[0].name[code->options[0].sel]);
+			selected_entry->flags |= SAVE_FLAG_UPDATED;
 			code->activated = 0;
 			break;
 
 		case CMD_IMP_PS2VMC_USB:
 			importPS2VMC(selected_entry->path, code->file);
+			selected_entry->flags |= SAVE_FLAG_UPDATED;
+			code->activated = 0;
+			break;
+
+		case CMD_DELETE_VMCSAVE:
+			deleteVmcSave(selected_entry);
+			selected_entry->flags |= SAVE_FLAG_UPDATED;
 			code->activated = 0;
 			break;
 

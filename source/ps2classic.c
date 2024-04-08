@@ -750,7 +750,7 @@ void ps2_crypt_vmc(u8 dex_mode, const char* vmc_path, const char* vmc_out, int c
         LOG("VMC (dex)\n");
 		memcpy(ps2_vmc_key, ps2_key_dex_vmc, 0x10);
 	}else{
-        LOG("VMC (cex)\n");
+		LOG("VMC (cex) '%s' -> '%s'", vmc_path, vmc_out);
 		memcpy(ps2_vmc_key, ps2_key_cex_vmc, 0x10);
 	}
 	

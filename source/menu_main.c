@@ -125,20 +125,59 @@ static code_entry_t* LoadRawPatch(void)
 	return centry;
 }
 
-static code_entry_t* LoadSaveDetails(void)
+static code_entry_t* LoadSaveDetails(const save_entry_t* save)
 {
 	char sfoPath[256];
 	code_entry_t* centry = calloc(1, sizeof(code_entry_t));
 
-	centry->name = strdup(selected_entry->title_id);
+	centry->name = strdup(save->title_id);
 
-	if (!(selected_entry->flags & SAVE_FLAG_PS3))
+	if(save->type == FILE_TYPE_PS1)
 	{
-		asprintf(&centry->codes, "%s\n\nTitle: %s\n", selected_entry->path, selected_entry->name);
+		asprintf(&centry->codes, "%s\n\n----- PS1 Save -----\n"
+			"Game: %s\n"
+			"Title ID: %s\n"
+			"File: %s\n",
+			save->path,
+			save->name,
+			save->title_id,
+			save->dir_name+1);
 		return(centry);
 	}
 
-	snprintf(sfoPath, sizeof(sfoPath), "%s" "PARAM.SFO", selected_entry->path);
+	if(save->type == FILE_TYPE_PS2)
+	{
+		asprintf(&centry->codes, "%s\n\n----- PS2 Save -----\n"
+			"Game: %s\n"
+			"Title ID: %s\n"
+			"Folder: %s\n"
+			"Icon: %s\n",
+			save->path,
+			save->name,
+			save->title_id,
+			save->dir_name,
+			strrchr(save->path, '\n')+1);
+		return(centry);
+	}
+
+	if(save->type == FILE_TYPE_VMC)
+	{
+		asprintf(&centry->codes, "%s\n\n----- Virtual Memory Card -----\n"
+			"File: %s\n"
+			"Folder: %s\n",
+			save->path,
+			strrchr(save->path, '/')+1,
+			save->dir_name);
+		return(centry);
+	}
+
+	if (!(save->flags & SAVE_FLAG_PS3))
+	{
+		asprintf(&centry->codes, "%s\n\nTitle: %s\n", save->path, save->name);
+		return(centry);
+	}
+
+	snprintf(sfoPath, sizeof(sfoPath), "%s" "PARAM.SFO", save->path);
 	LOG("Save Details :: Reading %s...", sfoPath);
 
 	sfo_context_t* sfo = sfo_alloc();
@@ -148,13 +187,13 @@ static code_entry_t* LoadSaveDetails(void)
 		return centry;
 	}
 
-	if (selected_entry->flags & SAVE_FLAG_TROPHY)
+	if (save->flags & SAVE_FLAG_TROPHY)
 	{
 		char* account = (char*) sfo_get_param_value(sfo, "ACCOUNTID");
 		asprintf(&centry->codes, "%s\n\n"
 			"Title: %s\n"
 			"NP Comm ID: %s\n"
-			"Account ID: %.16s\n", selected_entry->path, selected_entry->name, selected_entry->title_id, account);
+			"Account ID: %.16s\n", save->path, save->name, save->title_id, account);
 		LOG(centry->codes);
 
 		sfo_free(sfo);
@@ -172,11 +211,11 @@ static code_entry_t* LoadSaveDetails(void)
 		"Lock: %s\n\n"
 		"User ID: %08d\n"
 		"Account ID: %.16s (%s)\n"
-		"PSID: %016lX %016lX\n", selected_entry->path, selected_entry->name, subtitle, 
-		selected_entry->dir_name,
-		(selected_entry->flags & SAVE_FLAG_LOCKED ? "Copying Prohibited" : "Unlocked"),
+		"PSID: %016lX %016lX\n", save->path, save->name, subtitle, 
+		save->dir_name,
+		(save->flags & SAVE_FLAG_LOCKED ? "Copying Prohibited" : "Unlocked"),
 		param_ids->user_id, param_ids->account_id, 
-		(selected_entry->flags & SAVE_FLAG_OWNER ? "Owner" : "Not Owner"),
+		(save->flags & SAVE_FLAG_OWNER ? "Owner" : "Not Owner"),
 		param_ids->psid[0], param_ids->psid[1]);
 	LOG(centry->codes);
 
@@ -191,11 +230,8 @@ static void SetMenu(int id)
 		case MENU_PS1VMC_SAVES:
 			if (id == MENU_MAIN_SCREEN)
 			{
-				init_loading_screen("Saving PS1 Memory Card...");
 				UnloadGameList(vmc1_saves.list);
 				vmc1_saves.list = NULL;
-				saveMemoryCard(vmc1_saves.path, 0, 0);
-				stop_loading_screen();
 			}
 			break;
 
@@ -221,7 +257,21 @@ static void SetMenu(int id)
 
 		case MENU_SETTINGS: //Options Menu
 		case MENU_CREDITS: //About Menu
+			break;
+
 		case MENU_PATCHES: //Cheat Selection Menu
+			if (selected_entry->flags & SAVE_FLAG_UPDATED && id == MENU_PS1VMC_SAVES)
+			{
+				selected_entry->flags ^= SAVE_FLAG_UPDATED;
+				saveMemoryCard(vmc1_saves.path, 0, 0);
+				ReloadUserSaves(&vmc1_saves);
+			}
+
+			else if (selected_entry->flags & SAVE_FLAG_UPDATED && id == MENU_PS2VMC_SAVES)
+			{
+				selected_entry->flags ^= SAVE_FLAG_UPDATED;
+				ReloadUserSaves(&vmc2_saves);
+			}
 			break;
 
 		case MENU_SAVE_DETAILS:
@@ -334,7 +384,7 @@ static void SetMenu(int id)
 			}
 
 			if (selected_entry->flags & SAVE_FLAG_VMC && selected_entry->type == FILE_TYPE_PS1)
-				LoadVmcTexture(16, 16, getIconRGBA(selected_entry->path[strlen(selected_entry->path)+1], 0));
+				LoadVmcTexture(16, 16, getIconRGBA(selected_entry->dir_name[0], 0));
 
 			if (selected_entry->flags & SAVE_FLAG_VMC && selected_entry->type == FILE_TYPE_PS2)
 				LoadVmcTexture(128, 128, getIconPS2(selected_entry->dir_name, strrchr(selected_entry->path, '\n')+1));
@@ -480,7 +530,7 @@ static void doSaveMenu(save_list_t * save_list)
 			selected_entry = list_get_item(save_list->list, menu_sel);
 			if (selected_entry->type != FILE_TYPE_MENU)
 			{
-				selected_centry = LoadSaveDetails();
+				selected_centry = LoadSaveDetails(selected_entry);
 				SetMenu(MENU_SAVE_DETAILS);
 				return;
 			}
@@ -877,7 +927,7 @@ static void doPatchMenu(void)
 				if (selected_centry->codes[0] == CMD_VIEW_DETAILS)
 				{
 					selected_centry->activated = 0;
-					selected_centry = LoadSaveDetails();
+					selected_centry = LoadSaveDetails(selected_entry);
 					SetMenu(MENU_SAVE_DETAILS);
 					return;
 				}
