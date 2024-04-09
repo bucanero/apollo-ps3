@@ -4,6 +4,47 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v2.0.0](https://github.com/bucanero/apollo-ps3/releases/tag/v2.0.0) - 2024-04-10
+
+### Added
+
+* Manage PS1 Virtual Memory Card images (VMC)
+  - Supports `.VM1` and external formats (`.MCR`, `.VMP`, `.BIN`, `.VMC`, `.GME`, `.VGS`, `.SRM`, `.MCD`)
+  - List, import, export, and delete PS1 saves inside VMC images
+  - Import - Supported formats: `.MCS`, `.PSV`, `.PSX`, `.PS1`, `.MCB`, `.PDA`
+  - Export - Supported formats: `.MCS`, `.PSV`, `.PSX`
+* Manage PS2 Virtual Memory Card images (VMC)
+  - Supports `.VM2`, ECC and non-ECC images (`.PS2`, `.VME`, `.BIN`, `.VMC`)
+  - List, import, export, and delete PS2 saves inside VMC images
+  - Import - Supported formats: `.PSU`, `.PSV`
+  - Export - Supported formats: `.PSU`, `.PSV`
+  - Handle PS2 Classics encryption on VME images
+* Save sort option by Type (PS3/PS1/PS2/PSP/VMC)
+* Online DB: added PS1 saves listing
+* Custom save decryption support
+  - Metal Gear Solid 5: Ground Zeroes
+* New Secure file keys
+  - FIFA 18
+  - FIFA 19
+
+### Fixes
+
+* Patch Code fixes
+  - Metal Gear Solid 5: The Phantom Pain
+  - Resident Evil 6
+
+### Misc
+
+* Updated Apollo Patch Engine to v1.0.0
+  - Add `jenkins_oaat`, `lookup3_little2` hash functions
+  - Add `camellia_ecb` encryption
+  - Add RGG Studio decryption (PS4)
+  - Add Dead Rising checksum
+  - Fix SaveWizard Code Type D issue with `CRLF` line breaks
+  - Changed BSD command syntax for `decompress(offset, wbits)` and `compress(offset)`
+
+---
+
 ## [v1.8.7](https://github.com/bucanero/apollo-ps3/releases/tag/v1.8.7) - 2023-12-03
 
 ### Added
@@ -18,6 +59,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 ### Misc
 
 * Update Web Server saves index page
+
+---
 
 ## [v1.8.6](https://github.com/bucanero/apollo-ps3/releases/tag/v1.8.6) - 2023-11-25
 
@@ -64,6 +107,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
   - Fix SaveWizard Code Type C
   - Fix `right()` on little-endian platforms
 
+---
+
 ## [v1.8.4](https://github.com/bucanero/apollo-ps3/releases/tag/v1.8.4) - 2023-04-08
 
 ### Added
@@ -84,6 +129,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
   * Improve code types 9, B, D
   * Fixed Final Fantasy XIII encryption bug on PS3
   * Add value subtraction support (BSD)
+
+---
 
 ## [v1.8.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.8.0) - 2023-01-28
 
@@ -119,6 +166,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
   * Fix `sha1_xor64` custom hashing
   * Fix little-endian support for decrypters/hashes (PS4/Vita)
 
+---
+
 ## [v1.7.4](https://github.com/bucanero/apollo-ps3/releases/tag/v1.7.4) - 2022-09-28
 
 ### Added
@@ -149,6 +198,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 * Improved Account/Console ID re-detection
 
+---
+
 ## [v1.7.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.7.0) - 2022-04-28
 
 ### Added
@@ -160,6 +211,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 * New custom checksum support
   * LEGO Marvel Avengers
   * LEGO Star Wars: The Force Awakens
+
+---
 
 ## [v1.6.5](https://github.com/bucanero/apollo-ps3/releases/tag/v1.6.5) - 2022-01-22
 
@@ -181,6 +234,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 ### Misc
 
 * Use Apollo-lib (shared with Apollo PS4)
+
+---
 
 ## [v1.6.4](https://github.com/bucanero/apollo-ps3/releases/tag/v1.6.4) - 2021-07-19
 
@@ -224,6 +279,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 * Fixed freeze issue when db rebuild was scheduled
 * Fixed comments in `ps3savepatch` files
 
+---
+
 ## [v1.6.3](https://github.com/bucanero/apollo-ps3/releases/tag/v1.6.3) - 2021-07-06
 
 ### Added
@@ -258,6 +315,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
   * Sengoku Basara 4 Sumeragi
   * Transformers: Devastation
 
+---
+
 ## [v1.6.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.6.0) - 2021-05-22
 
 ### Added
@@ -270,6 +329,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 ### Fixed
 
 * Fixed `.ps3savepatch` file parsing
+
+---
 
 ## [v1.5.8](https://github.com/bucanero/apollo-ps3/releases/tag/v1.5.8) - 2021-04-03
 
@@ -286,6 +347,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 ### Fixed
 
 * Fixed `account_id` update (special case)
+
+---
 
 ## [v1.5.5](https://github.com/bucanero/apollo-ps3/releases/tag/v1.5.5) - 2021-03-17
 
@@ -349,6 +412,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 * Fixed bulk resign and bulk copy
 * Fixed Fake owner account (`ffffffffffffffff`)
 
+---
+
 ## [v1.5.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.5.0) - 2021-01-31
 
 ### Added
@@ -373,6 +438,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 * Fixed `.RAP` uppercase issue
 
+---
+
 ## [v1.4.6](https://github.com/bucanero/apollo-ps3/releases/tag/v1.4.6) - 2020-12-23
 
 ### Added
@@ -387,6 +454,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
   * Darksiders
   * Call of Juarez Bound in Blood
   * Fuse
+
+---
 
 ## [v1.4.5](https://github.com/bucanero/apollo-ps3/releases/tag/v1.4.5) - 2020-12-13
 
@@ -407,6 +476,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 * Fixed Online Database save-game download bug
 
+---
+
 ## [v1.4.2](https://github.com/bucanero/apollo-ps3/releases/tag/v1.4.2) - 2020-09-18
 
 ### Added
@@ -416,6 +487,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 * Import raw PS2 memcards to `.VM2` (ECC / non-ECC)
 * Export PS2 `.VM2` memcards to raw image
 * Added `APOLLO-99PS1.PSV` dummy save (to refresh XMB virtual memcards)
+
+---
 
 ## [v1.4.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.4.0) - 2020-09-12
 
@@ -430,6 +503,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 * Added PS2 `.max`/`.cbs`/`.xps`/`.psu`/`.sps` save conversion to `.PSV`
 * Added `APOLLO-99PS2.PSV` dummy save (to refresh XMB virtual memcards)
 
+---
+
 ## [v1.2.5](https://github.com/bucanero/apollo-ps3/releases/tag/v1.2.5) - 2020-07-26
 
 ### Added
@@ -439,6 +514,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 * Add `Zip savegame to HDD` option
 * Add bulk save-game copy to HDD support
 * Add `owners.xml` support (select owners from the Settings menu)
+
+---
 
 ## [v1.2.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.2.0) - 2020-07-18
 
@@ -458,6 +535,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 * Fix BSD cheat code applying process
 * No cheat codes selected by default
 
+---
+
 ## [v1.1.2](https://github.com/bucanero/apollo-ps3/releases/tag/v1.1.2) - 2020-07-04
 
 ### Added
@@ -466,11 +545,15 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 * Import single `.rap` file to user's `.rif` license (User Backup menu)
 * Bulk import `.rap` files to user's content `.rif` licenses (User Backup menu)
 
+---
+
 ## [v1.1.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.1.0) - 2020-06-14
 
 ### Added
 
 * Exporting user's content licenses to `.rap` files (User Backup menu)
+
+---
 
 ## [v1.0.9](https://github.com/bucanero/apollo-ps3/releases/tag/v1.0.9) - 2020-04-26
 
@@ -481,6 +564,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 * Improved save list browsing
 * Improved BSD patch code parsing
 * Reduced package installer size
+
+---
 
 ## [v1.0.2](https://github.com/bucanero/apollo-ps3/releases/tag/v1.0.2) - 2020-03-25
 
@@ -495,6 +580,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 * Fixed game listing issue (when name has a `\n`)
 * Fixed custom CRC calculation bug (BSD patches)
 
+---
+
 ## [v1.0.0](https://github.com/bucanero/apollo-ps3/releases/tag/v1.0.0) - 2020-03-15
 
 ### Added
@@ -502,6 +589,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 * [Bruteforce Save Data](https://bruteforcesavedata.forumms.net/) cheat patch support
 * Changed save-game encryption/decryption method
 * Splash screen logo
+
+---
 
 ## [v0.9.1](https://github.com/bucanero/apollo-ps3/releases/tag/v0.9.1) - 2020-03-10
 
@@ -511,6 +600,8 @@ Hot fix release.
 
 * Fixed bug when resigning a save-game on USB
 * Fixed bug when selecting `View Details` on an empty save list
+
+---
 
 ## [v0.9.0](https://github.com/bucanero/apollo-ps3/releases/tag/v0.9.0) - 2020-03-07
 
@@ -531,6 +622,8 @@ Hot fix release.
 * Solved freeze bug when using `Clear local cache`
 * UI: Fixed improper titles and messages
 
+---
+
 ## [v0.6.5](https://github.com/bucanero/apollo-ps3/releases/tag/v0.6.5) - 2020-02-17
 
 ### Added
@@ -545,6 +638,8 @@ Hot fix release.
 * Fixed patch when removing Account ID
 * Use internal PS3 fonts to fix issues with extended characters
 
+---
+
 ## [v0.5.1](https://github.com/bucanero/apollo-ps3/releases/tag/v0.5.1) - 2020-02-09
 
 Hot fix release.
@@ -552,6 +647,8 @@ Hot fix release.
 ### Fixed
 
 * Fix unzip issue when unpacking online save files
+
+---
 
 ## [v0.5.0](https://github.com/bucanero/apollo-ps3/releases/tag/v0.5.0) - 2020-02-07
 
