@@ -92,7 +92,6 @@ enum cmd_code_enum
     CMD_VIEW_RAW_PATCH,
     CMD_RESIGN_PSV,
     CMD_CONVERT_TO_PSV,
-    CMD_COPY_DUMMY_PSV,
     CMD_IMPORT_DATA_FILE,
     CMD_HEX_EDIT_FILE,
     CMD_DELETE_VMCSAVE,
@@ -115,8 +114,7 @@ enum cmd_code_enum
     CMD_EXP_FLASH2_USB,
     CMD_EXP_PS2_BINENC,
     CMD_EXP_PS2_VM2,
-    CMD_EXP_PSV_MCS,
-    CMD_EXP_PSV_PSU,
+    CMD_EXP_SAVE_PSV,
     CMD_EXP_VM2_RAW,
     CMD_EXP_VMC1SAVE,
     CMD_EXP_VMC2SAVE,
@@ -177,7 +175,6 @@ enum save_type_enum
     FILE_TYPE_MAX,
     FILE_TYPE_CBS,
     FILE_TYPE_XPS,
-    FILE_TYPE_VM2,
     FILE_TYPE_PS2RAW,
 
     // License Files

@@ -782,36 +782,11 @@ static void activateAccount(const char* ex_path)
 	show_message("Account successfully activated!\nA system reboot might be required");
 }
 
-static void copyDummyPSV(const char* psv_file, int dst)
-{
-	char *in, *out;
-	char out_path[256];
-
-	_set_dest_path(out_path, dst, PSV_SAVES_PATH_USB);
-	if (mkdirs(out_path) != SUCCESS)
-	{
-		show_message("Error! Export folder is not available:\n%s", out_path);
-		return;
-	}
-
-	asprintf(&in, APOLLO_DATA_PATH "%s", psv_file);
-	asprintf(&out, "%s%s", out_path, psv_file);
-
-	init_loading_screen("Copying PSV file...");
-	copy_file(in, out);
-	stop_loading_screen();
-
-	free(in);
-	free(out);
-
-	show_message("File successfully saved to:\n%s%s", out_path, psv_file);
-}
-
-static void exportPSVfile(const char* in_file, int dst, const char* path)
+static void exportPSVfile(const char* in_file, int type)
 {
 	char out_path[256];
 
-	_set_dest_path(out_path, dst, path);
+	snprintf(out_path, sizeof(out_path), "%s%s", selected_entry->path, (type == FILE_TYPE_MCS) ? PS1_IMP_PATH_USB : PS2_IMP_PATH_USB);
 	if (mkdirs(out_path) != SUCCESS)
 	{
 		show_message("Error! Export folder is not available:\n%s", out_path);
@@ -820,7 +795,7 @@ static void exportPSVfile(const char* in_file, int dst, const char* path)
 
 	init_loading_screen("Exporting PSV file...");
 
-	if (selected_entry->flags & SAVE_FLAG_PS1)
+	if (type == FILE_TYPE_MCS)
 		ps1_psv2mcs(in_file, out_path);
 	else
 		ps2_psv2psu(in_file, out_path);
@@ -829,11 +804,11 @@ static void exportPSVfile(const char* in_file, int dst, const char* path)
 	show_message("File successfully saved to:\n%s", out_path);
 }
 
-static void convertSavePSV(const save_entry_t* save, int dst)
+static void convertSavePSV(const char* save_path, int type)
 {
 	char out_path[256];
 
-	_set_dest_path(out_path, dst, PSV_SAVES_PATH_USB);
+	snprintf(out_path, sizeof(out_path), "%s%s", selected_entry->path, PSV_SAVES_PATH_USB);
 	if (mkdirs(out_path) != SUCCESS)
 	{
 		show_message("Error! Export folder is not available:\n%s", out_path);
@@ -842,30 +817,30 @@ static void convertSavePSV(const save_entry_t* save, int dst)
 
 	init_loading_screen("Converting Save to PSV file...");
 
-	switch (save->type)
+	switch (type)
 	{
 	case FILE_TYPE_MCS:
-		ps1_mcs2psv(save->path, out_path);
+		ps1_mcs2psv(save_path, out_path);
 		break;
 
 	case FILE_TYPE_PSX:
-		ps1_psx2psv(save->path, out_path);
+		ps1_psx2psv(save_path, out_path);
 		break;
 
 	case FILE_TYPE_MAX:
-		ps2_max2psv(save->path, out_path);
+		ps2_max2psv(save_path, out_path);
 		break;
 
 	case FILE_TYPE_PSU:
-		ps2_psu2psv(save->path, out_path);
+		ps2_psu2psv(save_path, out_path);
 		break;
 
 	case FILE_TYPE_CBS:
-		ps2_cbs2psv(save->path, out_path);
+		ps2_cbs2psv(save_path, out_path);
 		break;
 
 	case FILE_TYPE_XPS:
-		ps2_xps2psv(save->path, out_path);
+		ps2_xps2psv(save_path, out_path);
 		break;
 
 	default:
@@ -1634,6 +1609,18 @@ static void import_save2vmc(const char* src, int type)
 		ret = vmc_import_psu(src);
 		break;
 
+	case FILE_TYPE_CBS:
+		ret = (ps2_cbs2psv(src, NULL) && vmc_import_psv(APOLLO_TMP_PATH "tmp.psv"));
+		break;
+
+	case FILE_TYPE_XPS:
+		ret = (ps2_xps2psv(src, NULL) && vmc_import_psv(APOLLO_TMP_PATH "tmp.psv"));
+		break;
+
+	case FILE_TYPE_MAX:
+		ret = (ps2_max2psv(src, NULL) && vmc_import_psv(APOLLO_TMP_PATH "tmp.psv"));
+		break;
+
 	default:
 		break;
 	}
@@ -1750,7 +1737,7 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_RESIGN_PSV:
-			resignPSVfile(selected_entry->path);
+			resignPSVfile(code->file);
 			code->activated = 0;
 			break;
 
@@ -1770,12 +1757,7 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_CONVERT_TO_PSV:
-			convertSavePSV(selected_entry, codecmd[1]);
-			code->activated = 0;
-			break;
-
-		case CMD_COPY_DUMMY_PSV:
-			copyDummyPSV(code->file, codecmd[1]);
+			convertSavePSV(code->file, codecmd[1]);
 			code->activated = 0;
 			break;
 
@@ -1784,13 +1766,8 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			code->activated = 0;
 			break;
 
-		case CMD_EXP_PSV_MCS:
-			exportPSVfile(selected_entry->path, codecmd[1], PS1_IMP_PATH_USB);
-			code->activated = 0;
-			break;
-
-		case CMD_EXP_PSV_PSU:
-			exportPSVfile(selected_entry->path, codecmd[1], PS2_IMP_PATH_USB);
+		case CMD_EXP_SAVE_PSV:
+			exportPSVfile(code->file, codecmd[1]);
 			code->activated = 0;
 			break;
 

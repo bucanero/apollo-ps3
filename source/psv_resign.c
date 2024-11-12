@@ -212,6 +212,12 @@ void get_psv_filename(char* psvName, const char* path, const char* dirName)
 	char tmpName[13];
 	const char *ch = &dirName[12];
 
+	if (!path)
+	{
+		strcpy(psvName, "/dev_hdd0/tmp/apollo/tmp.psv");
+		return;
+	}
+
 	memcpy(tmpName, dirName, 12);
 	tmpName[12] = 0;
 
