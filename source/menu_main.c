@@ -171,6 +171,17 @@ static code_entry_t* LoadSaveDetails(const save_entry_t* save)
 		return(centry);
 	}
 
+	if (save->flags & SAVE_FLAG_ONLINE)
+	{
+		asprintf(&centry->codes, "%s\n----- Online Database -----\n"
+			"Game: %s\n"
+			"Title ID: %s\n",
+			save->path,
+			save->name,
+			save->title_id);
+		return(centry);
+	}
+
 	if (!(save->flags & SAVE_FLAG_PS3))
 	{
 		asprintf(&centry->codes, "%s\n\nTitle: %s\n", save->path, save->name);
@@ -260,17 +271,25 @@ static void SetMenu(int id)
 			break;
 
 		case MENU_PATCHES: //Cheat Selection Menu
-			if (selected_entry->flags & SAVE_FLAG_UPDATED && id == MENU_PS1VMC_SAVES)
+			if (selected_entry->flags & SAVE_FLAG_UPDATED)
 			{
-				selected_entry->flags ^= SAVE_FLAG_UPDATED;
-				saveMemoryCard(vmc1_saves.path, 0, 0);
-				ReloadUserSaves(&vmc1_saves);
-			}
+				switch (id)
+				{
+				case MENU_PS1VMC_SAVES:
+					saveMemoryCard(vmc1_saves.path, 0, 0);
+					ReloadUserSaves(&vmc1_saves);
+					break;
+				
+				case MENU_PS2VMC_SAVES:
+					ReloadUserSaves(&vmc2_saves);
+					break;
 
-			else if (selected_entry->flags & SAVE_FLAG_UPDATED && id == MENU_PS2VMC_SAVES)
-			{
+				case MENU_USB_SAVES:
+					ReloadUserSaves(&usb_saves);
+					break;
+				}
+
 				selected_entry->flags ^= SAVE_FLAG_UPDATED;
-				ReloadUserSaves(&vmc2_saves);
 			}
 			break;
 
@@ -380,7 +399,7 @@ static void SetMenu(int id)
 				snprintf(iconfile, sizeof(iconfile), APOLLO_LOCAL_CACHE "%s.PNG", selected_entry->title_id);
 
 				if (file_exists(iconfile) != SUCCESS)
-					http_download(selected_entry->path, "ICON0.PNG", iconfile, 1);
+					http_download(selected_entry->path, (selected_entry->flags & SAVE_FLAG_PS3) ? "ICON0.PNG" : "icon0.png", iconfile, 1);
 			}
 
 			if (selected_entry->flags & SAVE_FLAG_VMC && selected_entry->type == FILE_TYPE_PS1)
@@ -913,6 +932,13 @@ static void doPatchMenu(void)
 				{
 					option_index = 0;
 					SetMenu(MENU_CODE_OPTIONS);
+					return;
+				}
+
+				if (selected_centry->codes[0] == CMD_DELETE_SAVE)
+				{
+					selected_centry->activated = 0;
+					SetMenu(last_menu_id[MENU_PATCHES]);
 					return;
 				}
 

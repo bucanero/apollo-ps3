@@ -59,6 +59,11 @@ int unlink_secure(const char *path)
         return sysLv2FsUnlink(path);
 		//return remove(path);
     }
+    else if (dir_exists(path)==SUCCESS)
+    {
+        sysLv2FsChmod(path, 0777);
+        return sysLv2FsRmdir(path);
+    }
     return FAILED;
 }
 

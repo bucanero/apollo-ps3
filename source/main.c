@@ -89,7 +89,7 @@ const char * menu_pad_help[TOTAL_MENU_IDS] = { NULL,												//Main
 								"\x10 Select    \x13 Back    \x12 Details    \x11 Refresh",			//Trophy list
 								"\x10 Select    \x13 Back    \x12 Details    \x11 Refresh",			//USB list
 								"\x10 Select    \x13 Back    \x12 Details    \x11 Refresh",			//HDD list
-								"\x10 Select    \x13 Back    \x11 Refresh",							//Online list
+								"\x10 Select    \x13 Back    \x12 Details    \x11 Refresh",			//Online list
 								"\x10 Select    \x13 Back    \x11 Refresh",							//User backup
 								"\x10 Select    \x13 Back",											//Options
 								"\x13 Back",														//About

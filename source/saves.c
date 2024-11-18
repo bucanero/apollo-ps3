@@ -236,9 +236,15 @@ static void _addBackupCommands(save_entry_t* item)
 
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy save game", CMD_CODE_NULL);
 	cmd->options_count = 1;
-	cmd->options = _createOptions(3, "Copy Save to USB", CMD_COPY_SAVE_USB);
-	asprintf(&cmd->options->name[2], "Copy Save to HDD");
-	asprintf(&cmd->options->value[2], "%c%c", CMD_COPY_SAVE_HDD, STORAGE_HDD);
+	cmd->options = _createOptions((item->flags & SAVE_FLAG_HDD) ? 2 : 3, "Copy Save to USB", CMD_COPY_SAVE_USB);
+	if (!(item->flags & SAVE_FLAG_HDD))
+	{
+		asprintf(&cmd->options->name[2], "Copy Save to HDD");
+		asprintf(&cmd->options->value[2], "%c%c", CMD_COPY_SAVE_HDD, STORAGE_HDD);
+		list_append(item->codes, cmd);
+
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_WARN " Delete save game", CMD_DELETE_SAVE);
+	}
 	list_append(item->codes, cmd);
 
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " Export save game to Zip", CMD_CODE_NULL);
@@ -728,7 +734,7 @@ int ReadVmc1Codes(save_entry_t * save)
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " View Save Details", CMD_VIEW_DETAILS);
 	list_append(save->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_WARN " Delete Save Game", CMD_DELETE_VMCSAVE);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_WARN " Delete Save Game", CMD_DELETE_SAVE);
 	list_append(save->codes, cmd);
 
 	cmd = _createCmdCode(PATCH_NULL, "----- " UTF8_CHAR_STAR " Save Game Backup " UTF8_CHAR_STAR " -----", CMD_CODE_NULL);
@@ -864,7 +870,7 @@ int ReadVmc2Codes(save_entry_t * save)
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " View Save Details", CMD_VIEW_DETAILS);
 	list_append(save->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_WARN " Delete Save Game", CMD_DELETE_VMCSAVE);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_WARN " Delete Save Game", CMD_DELETE_SAVE);
 	list_append(save->codes, cmd);
 
 	cmd = _createCmdCode(PATCH_NULL, "----- " UTF8_CHAR_STAR " Save Game Backup " UTF8_CHAR_STAR " -----", CMD_CODE_NULL);
@@ -1624,7 +1630,7 @@ int sortSaveList_Compare_Type(const void* a, const void* b)
 	int tb = ((save_entry_t*) b)->type;
 
 	if (ta == tb)
-		return 0;
+		return sortSaveList_Compare(a, b);
 	else if (ta < tb)
 		return -1;
 	else
@@ -1642,7 +1648,9 @@ int sortSaveList_Compare_TitleID(const void* a, const void* b)
 	if (!tb)
 		return (1);
 
-	return strcasecmp(ta, tb);
+	int ret = strcasecmp(ta, tb);
+
+	return (ret ? ret : sortSaveList_Compare(a, b));
 }
 
 static void read_savegames(const char* userPath, const char* folder, list_t *list, uint32_t flag)
@@ -1791,7 +1799,7 @@ list_t * ReadUserList(const char* userPath)
 
 	list = list_alloc();
 
-	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " Bulk Save Management");
+	item = _createSaveEntry(SAVE_FLAG_PS3 | SAVE_FLAG_HDD, CHAR_ICON_COPY " Bulk Save Management");
 	item->type = FILE_TYPE_MENU;
 	item->codes = list_alloc();
 	asprintf(&item->path, "%s%s", userPath, PS3_SAVES_PATH_HDD);
@@ -1819,9 +1827,9 @@ list_t * ReadUserList(const char* userPath)
 	list_append(item->codes, cmd);
 	list_append(list, item);
 
-	read_savegames(userPath, PS3_SAVES_PATH_HDD, list, SAVE_FLAG_PS3);
-	read_savegames(userPath, PS2_SAVES_PATH_HDD, list, SAVE_FLAG_PS2);
-	read_savegames(userPath, PSP_SAVES_PATH_HDD, list, SAVE_FLAG_PSP);
+	read_savegames(userPath, PS3_SAVES_PATH_HDD, list, SAVE_FLAG_PS3 | SAVE_FLAG_HDD);
+	read_savegames(userPath, PS2_SAVES_PATH_HDD, list, SAVE_FLAG_PS2 | SAVE_FLAG_HDD);
+	read_savegames(userPath, PSP_SAVES_PATH_HDD, list, SAVE_FLAG_PSP | SAVE_FLAG_HDD);
 
 	read_vmc1_files(VMC_PS2_PATH_HDD, list);
 	read_vmc2_files(VMC_PS2_PATH_HDD, list);

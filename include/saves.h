@@ -94,7 +94,7 @@ enum cmd_code_enum
     CMD_CONVERT_TO_PSV,
     CMD_IMPORT_DATA_FILE,
     CMD_HEX_EDIT_FILE,
-    CMD_DELETE_VMCSAVE,
+    CMD_DELETE_SAVE,
 
 // Bulk commands
     CMD_RESIGN_SAVES,
@@ -148,7 +148,7 @@ enum cmd_code_enum
 #define SAVE_FLAG_PS1           8
 #define SAVE_FLAG_PS2           16
 #define SAVE_FLAG_PSP           32
-#define SAVE_FLAG_PSV           64
+#define SAVE_FLAG_HDD           64
 #define SAVE_FLAG_TROPHY        128
 #define SAVE_FLAG_ONLINE        256
 #define SAVE_FLAG_SELECTED      512

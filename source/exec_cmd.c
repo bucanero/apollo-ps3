@@ -1518,15 +1518,32 @@ static void downloadLink(const char* path)
 		show_message("Error! File couldn't be downloaded");
 }
 
-static void deleteVmcSave(const save_entry_t* save)
+static int deleteSave(const save_entry_t* save)
 {
-	if (!show_dialog(DIALOG_TYPE_YESNO, "Do you want to delete %s?", save->dir_name))
-		return;
+	int ret = 0;
 
-	if ((save->flags & SAVE_FLAG_PS1) ? formatSave(save->dir_name[0]) : vmc_delete_save(save->dir_name))
+	if (!show_dialog(DIALOG_TYPE_YESNO, "Do you want to delete %s?", save->dir_name))
+		return 0;
+
+	if (save->flags & SAVE_FLAG_PS1)
+		ret = formatSave(save->dir_name[0]);
+
+	else if (save->flags & SAVE_FLAG_PS2)
+		ret = vmc_delete_save(save->dir_name);
+
+	else if (save->flags & SAVE_FLAG_PS3)
+	{
+		// USB saves only
+		clean_directory(save->path);
+		ret = (unlink_secure(save->path) == SUCCESS);
+	}
+
+	if (ret)
 		show_message("Save successfully deleted:\n%s", save->dir_name);
 	else
 		show_message("Error! Couldn't delete save:\n%s", save->dir_name);
+
+	return ret;
 }
 
 static void import_mcr2vmp(const save_entry_t* save, const char* src)
@@ -1834,10 +1851,11 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			code->activated = 0;
 			break;
 
-		case CMD_DELETE_VMCSAVE:
-			deleteVmcSave(selected_entry);
-			selected_entry->flags |= SAVE_FLAG_UPDATED;
-			code->activated = 0;
+		case CMD_DELETE_SAVE:
+			if (deleteSave(selected_entry))
+				selected_entry->flags |= SAVE_FLAG_UPDATED;
+			else
+				code->activated = 0;
 			break;
 
 		case CMD_IMPORT_DATA_FILE:
