@@ -53,14 +53,16 @@ This homebrew application allows you to download, unlock, patch and resign save-
 
 * **VMC saves management:** quick access to all save files on Virtual Memory Cards images.
   - Supported PS1 VMC formats: `.VMP`, `.MCR`, `.VM1`, `.BIN`, `.VMC`, `.GME`, `.VGS`, `.SRM`, `.MCD`
-* **VMC saves import/export:** allows the user export saves on VMC images to `.MCS`/`.PSV`/`.PSX` formats, and import saves to VMCs from other tools and consoles (`.MCS`, `.PSV`, `.PSX`, `.PS1`, `.MCB`, `.PDA` supported).
+* **Import PS1 saves:** import saves to PS1 VMCs from other systems and consoles (`.MCS`, `.PSV`, `.PSX`, `.PS1`, `.MCB`, `.PDA` supported).
+* **Export PS1 saves:** allows the user export saves on VMC images to `.MCS`/`.PSV`/`.PSX` formats.
 
 ## PS2 Virtual Memory Card Management
 
 * **VMC saves management:** quick access to all save files on Virtual Memory Cards images.
   - Supported PS2 VMC formats: `.VM2`, `.VME`, `.BIN`, `.VMC`
-  - Supports ECC and non-ECC images, PS2 Classics encryption
-* **VMC saves import/export:** allows the user export saves on VMC images to `.PSU`, `.PSV` formats, and import saves to VMCs from other tools and consoles (`.PSU`, `.PSV` supported).
+  - Supports ECC and non-ECC images, and PS2 Classics encryption
+* **Import PS2 saves:** import saves to PS2 VMCs from other systems and consoles (`.PSU`, `.PSV`, `.XPS`, `.CBS`, `.MAX`, `.SPS` supported).
+* **Export PS2 saves:** allows the user export saves on VMC images to `.PSU` and `.PSV` formats.
 
 # Download
 

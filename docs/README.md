@@ -10,7 +10,7 @@ This homebrew application allows you to download, unlock, patch and resign save-
 
 ![image](./screenshots/screenshot_main.png)
 
-**Comments, ideas, suggestions?** You can contact [me](https://github.com/bucanero/) on [Twitter](https://twitter.com/dparrino) and on [my website](http://www.bucanero.com.ar/).
+**Comments, ideas, suggestions?** You can [contact me](https://github.com/bucanero/) on [Twitter](https://twitter.com/dparrino) and on [my website](http://www.bucanero.com.ar/).
 
 # Features
 
@@ -39,7 +39,7 @@ This homebrew application allows you to download, unlock, patch and resign save-
 
 * **Account activation:** create fake Account ID and generate offline PS3 activation (`act.dat`)
 * **License exporting:** easy backup of user licenses to `.zip` and `.rap` formats.
-* **License importing:** allows to import `.rap` files to user `.rif` licenses.
+* **License importing:** allows to import `.rap` files and generate user `.rif` licenses.
 
 ## PS2 Classics Management
 
@@ -48,6 +48,21 @@ This homebrew application allows you to download, unlock, patch and resign save-
 * **ISO importing:** import PS2 `.ISO` files to `.BIN.ENC` encrypted image format.
 * **CONFIG importing:** import PS2 `.CONFIG` files to `.ENC` encrypted format.
 * **BIN.ENC exporting:** decrypt and export `BIN.ENC` images to `.ISO`.
+
+## PS1 Virtual Memory Card Management
+
+* **VMC saves management:** quick access to all save files on Virtual Memory Cards images.
+  - Supported PS1 VMC formats: `.VMP`, `.MCR`, `.VM1`, `.BIN`, `.VMC`, `.GME`, `.VGS`, `.SRM`, `.MCD`
+* **Import PS1 saves:** import saves to PS1 VMCs from other systems and consoles (`.MCS`, `.PSV`, `.PSX`, `.PS1`, `.MCB`, `.PDA` supported).
+* **Export PS1 saves:** allows the user export saves on VMC images to `.MCS`/`.PSV`/`.PSX` formats.
+
+## PS2 Virtual Memory Card Management
+
+* **VMC saves management:** quick access to all save files on Virtual Memory Cards images.
+  - Supported PS2 VMC formats: `.VM2`, `.VME`, `.BIN`, `.VMC`
+  - Supports ECC and non-ECC images, and PS2 Classics encryption
+* **Import PS2 saves:** import saves to PS2 VMCs from other systems and consoles (`.PSU`, `.PSV`, `.XPS`, `.CBS`, `.MAX`, `.SPS` supported).
+* **Export PS2 saves:** allows the user export saves on VMC images to `.PSU` and `.PSV` formats.
 
 # Download
 
@@ -82,7 +97,7 @@ On first run, the application will detect and setup the required user settings.
 | PS2 | Folder |
 |-----|--------|
 | **USB saves** | `/dev_usb00x/PS2/SAVEDATA/` (`*.xps`, `*.max`, `*.psu`, `*.cbs`, `*.sps`) |
-| **VMC cards** | `/dev_usb00x/PS2/VMC/` (`*.vmc`) |
+| **VMC cards** | `/dev_usb00x/PS2/VMC/` (`*.vmc`, `*.vme`, `*.vm2`, `*.bin`) |
 | **VME cards** | `/dev_usb00x/PS3/EXPORT/PS2SD/` |
 | **PSV saves** | `/dev_usb00x/PS3/EXPORT/PSV/` |
 | **HDD VME cards** | `/dev_hdd0/home/000000XX/ps2emu2_savedata/`, where `XX` is the current `User ID`. |
@@ -97,6 +112,7 @@ On first run, the application will detect and setup the required user settings.
 | **USB saves** | `/dev_usb00x/PS1/SAVEDATA/` (`*.mcs`, `*.psx`) |
 | **PSV saves** | `/dev_usb00x/PS3/EXPORT/PSV/` |
 | **HDD VM1 cards** | `/dev_hdd0/savedata/vmc/` |
+| **USB VMC cards** | `/dev_usb00x/PS1/VMC/` (`*.mcr`, `*.vmp`, `*.bin`, `*.vmc`, `*.gme`, `*.vgs`, `*.srm`, `*.mcd`) |
 
 # Usage
 
@@ -177,6 +193,8 @@ Currently, the list of available games and files is limited, but the project aim
 * [flatz](https://github.com/flatz): [SFO/PFD tools](https://github.com/bucanero/pfd_sfo_tools/)
 * [aldostools](https://aldostools.org/): [Bruteforce Save Data](https://bruteforcesavedata.forumms.net/)
 * [darkautism](https://darkautism.blogspot.com/): [PS3TrophyIsGood](https://github.com/darkautism/PS3TrophyIsGood)
+* [jimmikaelkael](https://github.com/jimmikaelkael): ps3mca tool
+* [ShendoXT](https://github.com/ShendoXT): [MemcardRex](https://github.com/ShendoXT/memcardrex)
 * [Nobody/Wild Light](https://github.com/nobodo): [S3M music track](https://github.com/bucanero/apollo-ps3/blob/master/data/haiku.s3m)
 
 # Building
@@ -205,7 +223,7 @@ UDP multicast address `239.255.0.100:30000`. To receive them you can use [socat]
 
 # License
 
-[Apollo Save Tool](https://github.com/bucanero/apollo-ps3/) (PS3) - Copyright (C) 2020-2022  [Damian Parrino](https://twitter.com/dparrino)
+[Apollo Save Tool](https://github.com/bucanero/apollo-ps3/) (PS3) - Copyright (C) 2020-2024 [Damian Parrino](https://twitter.com/dparrino)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the [GNU General Public License][app_license] as published by

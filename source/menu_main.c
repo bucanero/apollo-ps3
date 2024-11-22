@@ -585,7 +585,7 @@ static void doMainMenu(void)
 		else if (paddata[0].BTN_CROSS)
 			SetMenu(menu_sel+1);
 
-		else if (paddata[0].BTN_L1 && paddata[0].BTN_START && file_exists(APOLLO_PATH "EXTRA.SELF"))
+		else if (paddata[0].BTN_L1 && paddata[0].BTN_START && (file_exists(APOLLO_PATH "EXTRA.SELF") == SUCCESS))
 			sysProcessExitSpawn2(APOLLO_PATH "EXTRA.SELF", NULL, NULL, NULL, 0, 1001, SYS_PROCESS_SPAWN_STACK_SIZE_1M);
 
 		else if(paddata[0].BTN_CIRCLE && show_dialog(DIALOG_TYPE_YESNO, "Exit to XMB?"))

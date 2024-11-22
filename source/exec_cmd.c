@@ -1627,15 +1627,15 @@ static void import_save2vmc(const char* src, int type)
 		break;
 
 	case FILE_TYPE_CBS:
-		ret = (ps2_cbs2psv(src, NULL) && vmc_import_psv(APOLLO_TMP_PATH "tmp.psv"));
+		ret = (ps2_cbs2psv(src, NULL) && vmc_import_psv(APOLLO_LOCAL_CACHE "tmp.psv"));
 		break;
 
 	case FILE_TYPE_XPS:
-		ret = (ps2_xps2psv(src, NULL) && vmc_import_psv(APOLLO_TMP_PATH "tmp.psv"));
+		ret = (ps2_xps2psv(src, NULL) && vmc_import_psv(APOLLO_LOCAL_CACHE "tmp.psv"));
 		break;
 
 	case FILE_TYPE_MAX:
-		ret = (ps2_max2psv(src, NULL) && vmc_import_psv(APOLLO_TMP_PATH "tmp.psv"));
+		ret = (ps2_max2psv(src, NULL) && vmc_import_psv(APOLLO_LOCAL_CACHE "tmp.psv"));
 		break;
 
 	default:

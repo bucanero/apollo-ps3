@@ -4,6 +4,32 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+## [v2.0.2](https://github.com/bucanero/apollo-ps3/releases/tag/v2.0.2) - 2024-11-23
+
+### Added
+
+* Delete PS3 saves from USB
+* PS2 Virtual Memory Card images (VMC)
+  - Support additional import formats: `.XPS`, `.CBS`, `.MAX`, `.SPS`
+* Online DB: show PS1 icons
+* User Tools:
+  - Convert PS1/PS2 saves to `.PSV` format
+  - Convert `.PSV` saves to `.MCS`/`.PSU` formats
+  - Re-sign `.PSV` saves
+
+### Fixed
+
+* "Copy to HDD" option now only available when browsing USB saves
+
+### Misc
+
+* Updated Apollo Patch Engine to v1.1.2
+  - Fixed SW Code search bug when bytes are not found
+* Option to launch an external app
+  - (L1 + START) executes `/dev_hdd0/game/NP0APOLLO/USRDIR/EXTRA.SELF`
+
+---
+
 ## [v2.0.0](https://github.com/bucanero/apollo-ps3/releases/tag/v2.0.0) - 2024-04-10
 
 ### Added
@@ -27,7 +53,7 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
   - FIFA 18
   - FIFA 19
 
-### Fixes
+### Fixed
 
 * Patch Code fixes
   - Metal Gear Solid 5: The Phantom Pain

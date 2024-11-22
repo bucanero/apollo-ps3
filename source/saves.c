@@ -1029,7 +1029,7 @@ list_t * ReadBackupList(const char* userPath)
 		item->type = FILE_TYPE_PS2;
 		list_append(list, item);
 
-		item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " Convert/Resign PSV saves");
+		item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " Convert/Resign .PSV saves");
 		asprintf(&item->path, USB_PATH, i);
 		asprintf(&item->title_id, "USB %d", i);
 		item->type = FILE_TYPE_PSV;
