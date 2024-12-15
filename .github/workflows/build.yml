@@ -1,70 +1,70 @@
 name: Build package
 
-on: [ push, pull_request, workflow_dispatch ]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   build_pkg:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Checkout
-      uses: actions/checkout@v3
+      - name: Checkout dbglogger repository
+        uses: actions/checkout@v4
+        with:
+          repository: bucanero/dbglogger
+          path: dbglogger
 
-    - name: Checkout dbglogger
-      uses: actions/checkout@v3
-      with:
-        repository: bucanero/dbglogger
-        path: dbglogger
+      - name: Checkout apollo-lib repository
+        uses: actions/checkout@v4
+        with:
+          repository: bucanero/apollo-lib
+          path: apollo-lib
 
-    - name: Checkout apollo-lib
-      uses: actions/checkout@v3
-      with:
-        repository: bucanero/apollo-lib
-        path: apollo-lib
+      - name: Checkout libxmp-lite-ps4 repository
+        uses: actions/checkout@v4
+        with:
+          repository: bucanero/libxmp-lite-ps4
+          path: libxmp-lite-ps4
 
-    - name: Checkout libxmp-lite-ps4
-      uses: actions/checkout@v3
-      with:
-        repository: bucanero/libxmp-lite-ps4
-        path: libxmp-lite-ps4
+      - name: Set environment variables
+        id: slug
+        run: |
+          echo "sha_name=$(echo ${GITHUB_SHA} | cut -c1-8)" >> $GITHUB_ENV
 
-    - name: Set env vars
-      id: slug
-      run: |
-        echo "sha_name=$(echo ${GITHUB_SHA} | cut -c1-8)" >> $GITHUB_ENV
+      - name: Download PSL1GHT Toolchain
+        run: |
+          curl -sL https://github.com/bucanero/ps3toolchain/releases/download/ubuntu-latest-fad3b5fb/ps3dev-ubuntu-latest-2020-08-31.tar.gz | tar xvz -C ./
+          echo "PS3DEV=${GITHUB_WORKSPACE}/ps3dev" >> $GITHUB_ENV
+          echo "PSL1GHT=${GITHUB_WORKSPACE}/ps3dev" >> $GITHUB_ENV
 
-      # using pre-compiled sdk
-    - name: Download PSL1GHT Toolchain
-      run: |
-        curl -sL https://github.com/bucanero/ps3toolchain/releases/download/ubuntu-latest-fad3b5fb/ps3dev-ubuntu-latest-2020-08-31.tar.gz | tar xvz -C ./
-        echo "PS3DEV=${GITHUB_WORKSPACE}/ps3dev" >> $GITHUB_ENV
-        echo "PSL1GHT=${GITHUB_WORKSPACE}/ps3dev" >> $GITHUB_ENV
+      - name: Install dbglogger
+        working-directory: dbglogger
+        run: |
+          make install
 
-    - name: Install dbglogger
-      working-directory: dbglogger
-      run: |
-        make install
+      - name: Install apollo-lib
+        working-directory: apollo-lib
+        run: |
+          make install
 
-    - name: Install apollo-lib
-      working-directory: apollo-lib
-      run: |
-        make install
+      - name: Install libxmp-lite
+        working-directory: libxmp-lite-ps4
+        run: |
+          make -f Makefile.ps3 install
 
-    - name: Install libxmp-lite
-      working-directory: libxmp-lite-ps4
-      run: |
-        make -f Makefile.ps3 install
+      - name: Build Apollo package
+        run: |
+          make createzip
+          make pkg
 
-    - name: Build Apollo App Package
-      run: |
-        make createzip
-        make pkg
-
-    - name: Push package artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: apollo-ps3-build_${{ env.sha_name }}
-        path: apollo-ps3.pkg
-        if-no-files-found: error
-        # don't keep artifacts for too long
-        retention-days: 7
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: apollo-ps3-build_${{ env.sha_name }}
+          path: apollo-ps3.pkg
+          if-no-files-found: error
