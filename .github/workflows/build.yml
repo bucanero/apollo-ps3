@@ -8,22 +8,22 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Checkout dbglogger
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: bucanero/dbglogger
         path: dbglogger
 
     - name: Checkout apollo-lib
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: bucanero/apollo-lib
         path: apollo-lib
 
     - name: Checkout libxmp-lite-ps4
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: bucanero/libxmp-lite-ps4
         path: libxmp-lite-ps4
@@ -61,10 +61,8 @@ jobs:
         make pkg
 
     - name: Push package artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: apollo-ps3-build_${{ env.sha_name }}
         path: apollo-ps3.pkg
         if-no-files-found: error
-        # don't keep artifacts for too long
-        retention-days: 7
