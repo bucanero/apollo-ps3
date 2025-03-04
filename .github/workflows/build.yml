@@ -20,6 +20,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: bucanero/apollo-lib
+        ref: opt-upd
         path: apollo-lib
 
     - name: Checkout libxmp-lite-ps4
