@@ -33,6 +33,7 @@ jobs:
       id: slug
       run: |
         echo "sha_name=$(echo ${GITHUB_SHA} | cut -c1-8)" >> $GITHUB_ENV
+        sudo apt install python2.7
 
       # using pre-compiled sdk
     - name: Download PSL1GHT Toolchain
