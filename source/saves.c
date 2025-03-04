@@ -839,9 +839,9 @@ static void add_vmc2_import_saves(list_t* list, const char* path, const char* fo
 		{
 			// Skip the variable size header
 			fread(&toff, 1, sizeof(int), fp);
-			fseek(fp, toff, SEEK_CUR);
+			fseek(fp, ES32(toff), SEEK_CUR);
 			fread(&toff, 1, sizeof(int), fp);
-			fseek(fp, toff + 10, SEEK_CUR);
+			fseek(fp, ES32(toff) + 10, SEEK_CUR);
 		}
 		fread(data, 1, sizeof(data), fp);
 		fclose(fp);
@@ -1477,9 +1477,9 @@ static int read_psx_savegames(save_entry_t *item, const char* folder)
 		{
 			// Skip the variable size header
 			fread(&toff, 1, sizeof(int), fp);
-			fseek(fp, toff, SEEK_CUR);
+			fseek(fp, ES32(toff), SEEK_CUR);
 			fread(&toff, 1, sizeof(int), fp);
-			fseek(fp, toff + 10, SEEK_CUR);
+			fseek(fp, ES32(toff) + 10, SEEK_CUR);
 		}
 		fread(data, 1, sizeof(data), fp);
 		fclose(fp);
