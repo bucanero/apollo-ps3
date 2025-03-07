@@ -186,16 +186,6 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 	return HTTP_SUCCESS;
 }
 
-/* <DESC>
- * Performs an FTP upload and renames the file just after a successful
- * transfer.
- * </DESC>
- */
- 
-#define UPLOAD_FILE_AS  "while-uploading.txt"
-#define RENAME_FILE_TO  "renamed-and-fine.txt"
-  
-
 int ftp_upload(const char* local_file, const char* url, const char* filename, int show_progress)
 {
 	FILE *fd;
@@ -203,12 +193,6 @@ int ftp_upload(const char* local_file, const char* url, const char* filename, in
 	CURLcode res;
 	char remote_url[1024];
 	unsigned long fsize;
-
-	struct curl_slist *headerlist = NULL;
-	static const char buf_1 [] = "RNFR " UPLOAD_FILE_AS;
-	static const char buf_2 [] = "RNTO " RENAME_FILE_TO;
-
-//	curl_global_init(CURL_GLOBAL_ALL);
 
 	/* get a curl handle */
 	curl = curl_easy_init();
@@ -235,10 +219,6 @@ int ftp_upload(const char* local_file, const char* url, const char* filename, in
 
 	LOG("Local file size: %lu bytes.", fsize);
 	LOG("Uploading (%s) -> (%s)", local_file, remote_url);
-	
-	/* build a list of commands to pass to libcurl */
-	headerlist = curl_slist_append(headerlist, buf_1);
-	headerlist = curl_slist_append(headerlist, buf_2);
 
 	set_curl_opts(curl);
 	/* enable uploading */
@@ -252,9 +232,6 @@ int ftp_upload(const char* local_file, const char* url, const char* filename, in
 
 	/* please ignore the IP in the PASV response */
 	curl_easy_setopt(curl, CURLOPT_FTP_SKIP_PASV_IP, 1L);
-
-	/* pass in that last of FTP commands to run after the transfer */
-//	curl_easy_setopt(curl, CURLOPT_POSTQUOTE, headerlist);
 
 	/* we want to use our own read function */
 	curl_easy_setopt(curl, CURLOPT_READFUNCTION, fread);
@@ -285,9 +262,6 @@ int ftp_upload(const char* local_file, const char* url, const char* filename, in
 
 	/* close the local file */
 	fclose(fd);
-
-	/* clean up the FTP commands list */
-	curl_slist_free_all(headerlist);
 
 	/* always cleanup */
 	curl_easy_cleanup(curl);
