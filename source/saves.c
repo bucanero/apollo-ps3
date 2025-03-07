@@ -239,6 +239,12 @@ static void _addBackupCommands(save_entry_t* item)
 
 		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_WARN " Delete save game", CMD_DELETE_SAVE);
 	}
+	else if (apollo_config.ftp_server[0])
+	{
+		list_append(item->codes, cmd);
+
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " Upload save backup to FTP", CMD_UPLOAD_SAVE);
+	}
 	list_append(item->codes, cmd);
 
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " Export save game to Zip", CMD_CODE_NULL);
@@ -932,7 +938,7 @@ int ReadOnlineSaves(save_entry_t * game)
 	char path[256];
 	snprintf(path, sizeof(path), APOLLO_LOCAL_CACHE "%s.txt", game->title_id);
 
-	if (file_exists(path) == SUCCESS && strcmp(apollo_config.save_db, ONLINE_URL) == 0)
+	if (file_exists(path) == SUCCESS && strncmp(game->path, ONLINE_URL, strlen(ONLINE_URL)) == 0)
 	{
 		struct stat stats;
 		stat(path, &stats);
@@ -943,12 +949,14 @@ int ReadOnlineSaves(save_entry_t * game)
 	else
 	{
 		if (!http_download(game->path, "saves.txt", path, 1))
-			return -1;
+			return 0;
 	}
 
 	long fsize;
 	char *data = readTextFile(path, &fsize);
-	
+	if (!data)
+		return 0;
+
 	char *ptr = data;
 	char *end = data + fsize;
 
@@ -956,7 +964,7 @@ int ReadOnlineSaves(save_entry_t * game)
 
 	while (ptr < end && *ptr)
 	{
-		const char* content = ptr;
+		char *tmp, *content = ptr;
 
 		while (ptr < end && *ptr != '\n' && *ptr != '\r')
 		{
@@ -964,11 +972,12 @@ int ReadOnlineSaves(save_entry_t * game)
 		}
 		*ptr++ = 0;
 
-		if (content[12] == '=')
+		if ((tmp = strchr(content, '=')) != NULL)
 		{
-			snprintf(path, sizeof(path), CHAR_ICON_ZIP " %s", content + 13);
+			*tmp++ = 0;
+			snprintf(path, sizeof(path), CHAR_ICON_ZIP " %s", tmp);
 			item = _createCmdCode(PATCH_COMMAND, path, CMD_CODE_NULL);
-			asprintf(&item->file, "%.12s", content);
+			item->file = strdup(content);
 
 			item->options_count = 1;
 			item->options = _createOptions(1, "Download to USB", CMD_DOWNLOAD_USB);
@@ -991,7 +1000,7 @@ int ReadOnlineSaves(save_entry_t * game)
 		}
 	}
 
-	if (data) free(data);
+	free(data);
 
 	return (list_count(game->codes));
 }
@@ -1953,7 +1962,7 @@ static void _ReadOnlineListEx(const char* urlPath, uint16_t flag, list_t *list)
 
 	snprintf(path, sizeof(path), APOLLO_LOCAL_CACHE "%04X_games.txt", flag);
 
-	if (file_exists(path) == SUCCESS && strcmp(apollo_config.save_db, ONLINE_URL) == 0)
+	if (file_exists(path) == SUCCESS && strncmp(urlPath, ONLINE_URL, strlen(ONLINE_URL)) == 0)
 	{
 		struct stat stats;
 		stat(path, &stats);
@@ -1969,6 +1978,8 @@ static void _ReadOnlineListEx(const char* urlPath, uint16_t flag, list_t *list)
 	
 	long fsize;
 	char *data = readTextFile(path, &fsize);
+	if (!data)
+		return;
 	
 	char *ptr = data;
 	char *end = data + fsize;
@@ -2004,7 +2015,7 @@ static void _ReadOnlineListEx(const char* urlPath, uint16_t flag, list_t *list)
 		}
 	}
 
-	if (data) free(data);
+	free(data);
 }
 
 list_t * ReadOnlineList(const char* urlPath)

@@ -1120,7 +1120,7 @@ static int apply_sfo_patches(save_entry_t* entry, sfo_patch_t* patch)
             break;
 
         case SFO_REMOVE_PSID:
-            bzero(tmp_psid, SFO_PSID_SIZE);
+            memset(tmp_psid, 0, SFO_PSID_SIZE);
             patch->psid = tmp_psid;
             break;
 
@@ -1552,6 +1552,97 @@ static int deleteSave(const save_entry_t* save)
 	return ret;
 }
 
+static void uploadSaveFTP(const save_entry_t* save)
+{
+	FILE* fp;
+	char *tmp;
+	char remote[256];
+	char local[256];
+	int ret = 0;
+	struct tm t;
+
+	if (!show_dialog(DIALOG_TYPE_YESNO, "Do you want to upload %s?", save->dir_name))
+		return;
+
+	init_loading_screen("Sync with FTP Server...");
+
+	snprintf(remote, sizeof(remote), "%s%016" PRIX64 "/PS3/", apollo_config.ftp_server, apollo_config.account_id);
+	http_download(remote, "games.txt", APOLLO_TMP_PATH "games.ftp", 0);
+
+	snprintf(remote, sizeof(remote), "%s%016" PRIX64 "/PS3/%s/", apollo_config.ftp_server, apollo_config.account_id, save->title_id);
+	http_download(remote, "saves.txt", APOLLO_TMP_PATH "saves.ftp", 0);
+	http_download(remote, "checksum.sfv", APOLLO_TMP_PATH "sfv.ftp", 0);
+
+	asprintf(&tmp, save->path);
+	*strrchr(tmp, '/') = 0;
+	*strrchr(tmp, '/') = 0;
+
+	gmtime_r(&(time_t){time(NULL)}, &t);
+	snprintf(local, sizeof(local), APOLLO_TMP_PATH "%s_%d-%02d-%02d-%02d%02d%02d.zip", save->dir_name,
+			t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
+	ret = zip_directory(tmp, save->path, local);
+	free(tmp);
+
+	stop_loading_screen();
+	if (!ret)
+	{
+		show_message("Error! Couldn't zip save:\n%s", save->dir_name);
+		return;
+	}
+
+	tmp = strrchr(local, '/')+1;
+	uint32_t crc = file_crc32(local);
+
+	LOG("Updating %s save index...", save->title_id);
+	fp = fopen(APOLLO_TMP_PATH "saves.ftp", "a");
+	if (fp)
+	{
+		fprintf(fp, "%s=[%s] %d-%02d-%02d %02d:%02d:%02d %s (CRC32:%08X)\r\n", tmp, save->dir_name, 
+				t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec, save->name, crc);
+		fclose(fp);
+	}
+
+	LOG("Updating .sfv CRC32: %08X", crc);
+	fp = fopen(APOLLO_TMP_PATH "sfv.ftp", "a");
+	if (fp)
+	{
+		fprintf(fp, "%s %08X\n", tmp, crc);
+		fclose(fp);
+	}
+
+	ret = ftp_upload(local, remote, tmp, 1);
+
+	ret &= ftp_upload(APOLLO_TMP_PATH "saves.ftp", remote, "saves.txt", 1);
+
+	ret &= ftp_upload(APOLLO_TMP_PATH "sfv.ftp", remote, "checksum.sfv", 1);
+
+	tmp = readTextFile(APOLLO_TMP_PATH "games.ftp", NULL);
+	if (!tmp)
+		tmp = strdup("");
+
+	if (strstr(tmp, save->title_id) == NULL)
+	{
+		LOG("Updating games index...");
+		fp = fopen(APOLLO_TMP_PATH "games.ftp", "a");
+		if (fp)
+		{
+			fprintf(fp, "%s=%s\r\n", save->title_id, "Some Game Name");
+			fclose(fp);
+		}
+
+		snprintf(remote, sizeof(remote), "%s%016" PRIX64 "/PS3/", apollo_config.ftp_server, apollo_config.account_id);
+		ret &= ftp_upload(APOLLO_TMP_PATH "games.ftp", remote, "games.txt", 1);
+	}
+	free(tmp);
+
+	if (ret)
+		show_message("Save successfully uploaded:\n%s", save->dir_name);
+	else
+		show_message("Error! Couldn't upload save:\n%s", save->dir_name);
+
+	return;
+}
+
 static void import_mcr2vmp(const save_entry_t* save, const char* src)
 {
 	char mcrPath[256];
@@ -1690,6 +1781,11 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_COPY_SAVE_HDD:
 			copySaveHDD(selected_entry);
+			code->activated = 0;
+			break;
+
+			case CMD_UPLOAD_SAVE:
+			uploadSaveFTP(selected_entry);
 			code->activated = 0;
 			break;
 

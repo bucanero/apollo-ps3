@@ -70,6 +70,7 @@ app_config_t apollo_config = {
     .app_name = "APOLLO",
     .app_ver = APOLLO_VERSION,
     .save_db = ONLINE_URL,
+    .ftp_server = "",
     .music = 1,
     .doSort = 1,
     .doAni = 1,
@@ -464,6 +465,12 @@ void update_trophy_path(char* path)
 
 void update_db_path(char* path)
 {
+	if (apollo_config.ftp_server[0] && show_dialog(DIALOG_TYPE_YESNO, "Do you want to connect to your FTP server?"))
+	{
+		sprintf(path, "%s%016lX/", apollo_config.ftp_server, apollo_config.account_id);
+		return;
+	}
+
 	strcpy(path, apollo_config.save_db);
 }
 

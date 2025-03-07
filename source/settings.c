@@ -15,6 +15,7 @@ static void sort_callback(int sel);
 static void ani_callback(int sel);
 static void owner_callback(int sel);
 static void db_url_callback(int sel);
+static void ftp_url_callback(int sel);
 static void redetect_callback(int sel);
 static void clearcache_callback(int sel);
 static void upd_appdata_callback(int sel);
@@ -37,6 +38,12 @@ menu_option_t menu_options[] = {
 		.type = APP_OPTION_LIST,
 		.value = &apollo_config.doSort,
 		.callback = sort_callback
+	},
+	{ .name = "Set User FTP Server URL",
+		.options = NULL,
+		.type = APP_OPTION_CALL,
+		.value = NULL,
+		.callback = ftp_url_callback
 	},
 	{ .name = "\nVersion Update Check", 
 		.options = NULL, 
@@ -102,11 +109,28 @@ static void ani_callback(int sel)
 
 static void db_url_callback(int sel)
 {
-	if (osk_dialog_get_text("Enter the URL of the online database", apollo_config.save_db, sizeof(apollo_config.save_db)))
-		show_message("Online database URL changed to:\n%s", apollo_config.save_db);
+	if (!osk_dialog_get_text("Enter the URL of the online database", apollo_config.save_db, sizeof(apollo_config.save_db)))
+		return;
+
+	show_message("Online database URL changed to:\n%s", apollo_config.save_db);
 	
 	if (apollo_config.save_db[strlen(apollo_config.save_db)-1] != '/')
 		strcat(apollo_config.save_db, "/");
+}
+
+static void ftp_url_callback(int sel)
+{
+	char tmp[512];
+
+	strncpy(tmp, apollo_config.ftp_server[0] ? apollo_config.ftp_server : "ftp://user:pass@192.168.0.10:21/folder/", sizeof(tmp));
+	if (!osk_dialog_get_text("Enter the URL of the FTP server", tmp, sizeof(tmp)))
+		return;
+
+	strncpy(apollo_config.ftp_server, tmp, sizeof(apollo_config.ftp_server));
+	show_message("FTP server URL changed to:\n%s", apollo_config.ftp_server);
+	
+	if (apollo_config.ftp_server[strlen(apollo_config.ftp_server)-1] != '/')
+		strcat(apollo_config.ftp_server, "/");
 }
 
 static void clearcache_callback(int sel)

@@ -6,7 +6,7 @@
 #define MENU_ANI_MAX 			0x80        //Max animation number
 #define MENU_SPLIT_OFF			200			//Offset from left of sub/split menu to start drawing
 #define OPTION_ITEM_OFF         730         //Offset from left of settings item/value
-#define OWNER_SETTING           7           //Index of owner setting in menu_options
+#define OWNER_SETTING           8           //Index of owner setting in menu_options
 
 enum app_option_type
 {
@@ -39,6 +39,7 @@ typedef struct
     uint64_t psid[2];
     uint64_t account_id;
     char save_db[256];
+    char ftp_server[512];
 } app_config_t;
 
 extern menu_option_t menu_options[];
