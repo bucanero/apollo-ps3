@@ -1372,19 +1372,18 @@ static int read_psv_savegames(save_entry_t *item, const char* folder)
 		if (type == 1)
 		{
 			cmd->options = _createOptions(1, "Export Save to .MCS format - USB", CMD_EXP_SAVE_PSV);
-			optval = list_get_item(cmd->options[0].opts, 0);
-			optval->value[1] = FILE_TYPE_MCS;
+			cmd->options[0].id = FILE_TYPE_MCS;
 		}
 		else
 		{
 			cmd->options = _createOptions(1, "Export Save to .PSU format - USB", CMD_EXP_SAVE_PSV);
-			optval = list_get_item(cmd->options[0].opts, 0);
-			optval->value[1] = FILE_TYPE_PSU;
+			cmd->options[0].id = FILE_TYPE_PSU;
 		}
 
-		optval = list_get_item(cmd->options[0].opts, 1);
-		sprintf(optval->name, "Resign .PSV Save");
-		sprintf(optval->value, "%c", CMD_RESIGN_PSV);
+		optval = malloc(sizeof(option_value_t));
+		asprintf(&optval->name, "Resign .PSV Save");
+		asprintf(&optval->value, "%c", CMD_RESIGN_PSV);
+		list_append(cmd->options[0].opts, optval);
 
 		//PS2 Title offset 0xC0
 		//PS1 Title offset 0x04
