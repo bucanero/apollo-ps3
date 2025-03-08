@@ -782,11 +782,12 @@ static void activateAccount(const char* ex_path)
 	show_message("Account successfully activated!\nA system reboot might be required");
 }
 
-static void exportPSVfile(const char* in_file, int type)
+static void exportPSVfile(const char* in_file, int type, uint8_t dst)
 {
+	int ret;
 	char out_path[256];
 
-	snprintf(out_path, sizeof(out_path), "%s%s", selected_entry->path, (type == FILE_TYPE_MCS) ? PS1_IMP_PATH_USB : PS2_IMP_PATH_USB);
+	_set_dest_path(out_path, dst, (type == FILE_TYPE_MCS) ? PS1_IMP_PATH_USB : PS2_IMP_PATH_USB);
 	if (mkdirs(out_path) != SUCCESS)
 	{
 		show_message("Error! Export folder is not available:\n%s", out_path);
@@ -796,16 +797,20 @@ static void exportPSVfile(const char* in_file, int type)
 	init_loading_screen("Exporting PSV file...");
 
 	if (type == FILE_TYPE_MCS)
-		ps1_psv2mcs(in_file, out_path);
+		ret = ps1_psv2mcs(in_file, out_path);
 	else
-		ps2_psv2psu(in_file, out_path);
+		ret = ps2_psv2psu(in_file, out_path);
 
 	stop_loading_screen();
-	show_message("File successfully saved to:\n%s", out_path);
+	if (ret)
+		show_message("File successfully saved to:\n%s", out_path);
+	else
+		show_message("Error! Failed to export .%s file", (type == FILE_TYPE_MCS) ? "MCS" : "PSU");
 }
 
 static void convertSavePSV(const char* save_path, int type)
 {
+	int ret;
 	char out_path[256];
 
 	snprintf(out_path, sizeof(out_path), "%s%s", selected_entry->path, PSV_SAVES_PATH_USB);
@@ -820,35 +825,39 @@ static void convertSavePSV(const char* save_path, int type)
 	switch (type)
 	{
 	case FILE_TYPE_MCS:
-		ps1_mcs2psv(save_path, out_path);
+		ret = ps1_mcs2psv(save_path, out_path);
 		break;
 
 	case FILE_TYPE_PSX:
-		ps1_psx2psv(save_path, out_path);
+		ret = ps1_psx2psv(save_path, out_path);
 		break;
 
 	case FILE_TYPE_MAX:
-		ps2_max2psv(save_path, out_path);
+		ret = ps2_max2psv(save_path, out_path);
 		break;
 
 	case FILE_TYPE_PSU:
-		ps2_psu2psv(save_path, out_path);
+		ret = ps2_psu2psv(save_path, out_path);
 		break;
 
 	case FILE_TYPE_CBS:
-		ps2_cbs2psv(save_path, out_path);
+		ret = ps2_cbs2psv(save_path, out_path);
 		break;
 
 	case FILE_TYPE_XPS:
-		ps2_xps2psv(save_path, out_path);
+		ret = ps2_xps2psv(save_path, out_path);
 		break;
 
 	default:
+		ret = 0;
 		break;
 	}
 
 	stop_loading_screen();
-	show_message("File successfully saved to:\n%s", out_path);
+	if (ret)
+		show_message("File successfully saved to:\n%s", out_path);
+	else
+		show_message("Error! Failed to convert save file");
 }
 
 static void importVM2file(const char* vme_file, const char* src_name)
@@ -1890,7 +1899,7 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_EXP_SAVE_PSV:
-			exportPSVfile(code->file, codecmd[1]);
+			exportPSVfile(code->file, code->options[0].id, codecmd[1]);
 			code->activated = 0;
 			break;
 
