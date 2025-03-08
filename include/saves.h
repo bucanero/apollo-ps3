@@ -337,5 +337,6 @@ int vmc_import_psv(const char *input);
 int vmc_import_psu(const char *input);
 int vmc_delete_save(const char* path);
 
+char* get_xml_title_name(const char *xmlfile);
 char* sjis2utf8(char* input);
 uint8_t* getIconPS2(const char* folder, const char* iconfile);

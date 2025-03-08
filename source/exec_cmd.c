@@ -1561,6 +1561,37 @@ static int deleteSave(const save_entry_t* save)
 	return ret;
 }
 
+static char* get_title_name_icon(const save_entry_t* item)
+{
+	char *ret = NULL;
+	char xml_name[32];
+	char tmdb_url[256];
+	char local_file[256];
+	uint8_t hmac[20];
+
+	snprintf(xml_name, sizeof(xml_name), "%.9s_00.xml", item->title_id);
+	calculate_hmac_hash((uint8_t*) xml_name, 12, TMDB_HMAC_Key, sizeof(TMDB_HMAC_Key), hmac);
+
+	snprintf(tmdb_url, sizeof(tmdb_url), "http://tmdb.np.dl.playstation.net/tmdb/%.9s_00_%016" PRIX64 "%016" PRIX64 "%08" PRIX32 "/", 
+		item->title_id, ((uint64_t*)hmac)[0], ((uint64_t*)hmac)[1], ((uint32_t*)hmac)[4]);
+
+	snprintf(local_file, sizeof(local_file), APOLLO_TMP_PATH "xml.ftp");
+	if (http_download(tmdb_url, xml_name, local_file, 0) && (ret = get_xml_title_name(local_file)) == NULL)
+		ret = strdup(item->name);
+
+	snprintf(local_file, sizeof(local_file), APOLLO_LOCAL_CACHE "%.9s.PNG", item->title_id);
+	if (file_exists(local_file) == SUCCESS)
+		return ret;
+
+	if (!http_download(tmdb_url, "ICON0.PNG", local_file, 1))
+	{
+		snprintf(tmdb_url, sizeof(tmdb_url), "%sICON0.PNG", item->path);
+		copy_file(tmdb_url, local_file);
+	}
+
+	return ret;
+}
+
 static void uploadSaveFTP(const save_entry_t* save)
 {
 	FILE* fp;
@@ -1606,7 +1637,7 @@ static void uploadSaveFTP(const save_entry_t* save)
 	fp = fopen(APOLLO_TMP_PATH "saves.ftp", "a");
 	if (fp)
 	{
-		fprintf(fp, "%s=[%s] %d-%02d-%02d %02d:%02d:%02d %s (CRC32:%08X)\r\n", tmp, save->dir_name, 
+		fprintf(fp, "%s=[%s] %d-%02d-%02d %02d:%02d:%02d %s (CRC: %08X)\r\n", tmp, save->dir_name, 
 				t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec, save->name, crc);
 		fclose(fp);
 	}
@@ -1620,9 +1651,7 @@ static void uploadSaveFTP(const save_entry_t* save)
 	}
 
 	ret = ftp_upload(local, remote, tmp, 1);
-
 	ret &= ftp_upload(APOLLO_TMP_PATH "saves.ftp", remote, "saves.txt", 1);
-
 	ret &= ftp_upload(APOLLO_TMP_PATH "sfv.ftp", remote, "checksum.sfv", 1);
 
 	tmp = readTextFile(APOLLO_TMP_PATH "games.ftp", NULL);
@@ -1632,10 +1661,16 @@ static void uploadSaveFTP(const save_entry_t* save)
 	if (strstr(tmp, save->title_id) == NULL)
 	{
 		LOG("Updating games index...");
+		free(tmp);
+		tmp = get_title_name_icon(save);
+
+		snprintf(local, sizeof(local), APOLLO_LOCAL_CACHE "%.9s.PNG", save->title_id);
+		ret &= ftp_upload(local, remote, "ICON0.PNG", 1);
+
 		fp = fopen(APOLLO_TMP_PATH "games.ftp", "a");
 		if (fp)
 		{
-			fprintf(fp, "%s=%s\r\n", save->title_id, "Some Game Name");
+			fprintf(fp, "%s=%s\r\n", save->title_id, tmp);
 			fclose(fp);
 		}
 
