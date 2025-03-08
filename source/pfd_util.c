@@ -23,7 +23,7 @@ static list_t *file_names = NULL;
 static u64 file_offset = 0;
 static s64 advance_offset = 1;
 
-list_t* games_keys = NULL;
+static list_t* games_keys = NULL;
 
 const uint8_t xor_key[] = { 0xD4, 0xD1, 0x6B, 0x0C, 0x5D, 0xB0, 0x87, 0x91 };
 
