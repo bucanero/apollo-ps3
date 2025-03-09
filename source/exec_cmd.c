@@ -212,7 +212,7 @@ static int _copy_save_hdd(const save_entry_t *item)
 	if (dir_exists(copy_path) == SUCCESS)
 		LOG("Overwriting! Save-game folder already exists: %s", copy_path);
 
-	if (!create_savegame_folder(item->dir_name))
+	if (!create_savegame_folder(item->dir_name, item->path))
 	{
 		LOG("Error! Can't create save folder: %s", item->dir_name);
 		return 0;

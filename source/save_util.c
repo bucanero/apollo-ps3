@@ -22,6 +22,7 @@
 #include "util.h"
 #include "settings.h"
 #include "common.h"
+#include "sfo.h"
 
 #define THREAD_STACK_SIZE 16*1024
 #define THREAD_PRIORITY 1000
@@ -40,12 +41,15 @@
 
 #define SAVE_DATA_FOLDER   "NP0APOLLO-OPTIONS"
 #define SAVE_DATA_FILENAME "SETTINGS"
+#define SAVE_DATA_TITLE    "Apollo Save Tool"
+#define SAVE_DATA_SUBTITLE "Settings"
+#define SAVE_DATA_DETAIL   "www.bucanero.com.ar"
 
 #define SAVE_UTIL_LOADING   1
 #define SAVE_UTIL_SAVING    2
 
-#define save_game_thread(folder, name)        _create_thread(SAVE_UTIL_SAVING, folder, name)
-#define load_game_thread(folder, name)        _create_thread(SAVE_UTIL_LOADING, folder, name)
+#define save_game_thread(folder, name, t, s, d)    _create_thread(SAVE_UTIL_SAVING, folder, name, t, s, d)
+#define load_game_thread(folder, name)             _create_thread(SAVE_UTIL_LOADING, folder, name, NULL, NULL, NULL)
 
 enum SaveDataMode {
 	PS3_SAVE_MODE_ICON,
@@ -57,6 +61,9 @@ enum SaveDataMode {
 typedef struct SaveData {
 	char *folder;
 	char *filename;
+	char *title;
+	char *subtitle;
+	char *detail;
 	int flags;
 	enum SaveDataMode mode;
 	u8 *icon_data;
@@ -110,7 +117,7 @@ static void saveload_game_status_cb (sysSaveCallbackResult *result, sysSaveStatu
 	{
 		LOG("  -File type : %d\n"
 			"   File size : %lu\n"
-			"   filename : %s\n",
+			"   File name : %s\n",
 			in->fileList[i].fileType,
 			in->fileList[i].fileSize,
 			in->fileList[i].filename);
@@ -167,15 +174,9 @@ static void saveload_game_status_cb (sysSaveCallbackResult *result, sysSaveStatu
 			result->missingSpaceKB  = (1024 + in->systemSizeKB) - (in->freeSpaceKB + in->sizeKB);
 		}
 
-		if (strcmp(save_data->folder, SAVE_DATA_FOLDER) == SUCCESS)
-		{
-			strncpy (in->getParam.title, "Apollo Save Tool", SYS_SAVE_MAX_TITLE);
-			strncpy (in->getParam.subtitle, "Settings", SYS_SAVE_MAX_SUBTITLE);
-		} else {
-			strncpy (in->getParam.title, save_data->folder, SYS_SAVE_MAX_TITLE);
-			strncpy (in->getParam.subtitle, "Saved by Apollo Save Tool", SYS_SAVE_MAX_SUBTITLE);
-		}
-		strncpy (in->getParam.detail, "www.bucanero.com.ar", SYS_SAVE_MAX_DETAIL);
+		strncpy(in->getParam.title, save_data->title, SYS_SAVE_MAX_TITLE);
+		strncpy(in->getParam.subtitle, save_data->subtitle, SYS_SAVE_MAX_SUBTITLE);
+		strncpy(in->getParam.detail, save_data->detail, SYS_SAVE_MAX_DETAIL);
 	}
 }
 
@@ -201,7 +202,7 @@ static void saveload_game_file_cb (sysSaveCallbackResult *result, sysSaveFileIn 
 
 		result->result = SYS_SAVE_CALLBACK_RESULT_CONTINUE;
 		result->incrementProgress = 30;
-		save_data->mode = PS3_SAVE_MODE_DATA;
+		save_data->mode = save_data->filename ? PS3_SAVE_MODE_DATA : PS3_SAVE_MODE_DONE;
 //        save_data->mode = PS3_SAVE_MODE_SCREENSHOT;
 		break;
 		}
@@ -232,7 +233,7 @@ static void saveload_game_file_cb (sysSaveCallbackResult *result, sysSaveFileIn 
 			out->fileOperation = SYS_SAVE_FILE_OPERATION_READ;
 		}
 
-		out->filename = save_data->filename; //SAVE_DATA_FILENAME;
+		out->filename = save_data->filename;
 		out->fileType = SYS_SAVE_FILETYPE_STANDARD_FILE;
 		out->size = file_size;
 		out->bufferSize = file_size;
@@ -314,7 +315,7 @@ end:
 	sysThreadExit (0);
 }
 
-static int _create_thread (int flags, const char *folder, const char *filename)
+static int _create_thread (int flags, const char *folder, const char *filename, char* title, char* subtitle, char* detail)
 {
 	s32 ret;
 
@@ -328,6 +329,9 @@ static int _create_thread (int flags, const char *folder, const char *filename)
 	save_data->flags = flags;
 	save_data->folder = (char*) folder;
 	save_data->filename = (char*) filename;
+	save_data->title = title ? title : "";
+	save_data->subtitle = subtitle ? subtitle : "";
+	save_data->detail = detail ? detail : "";
 	ret = sysThreadCreate (&save_tid, saveload_settings_thread, NULL, THREAD_PRIORITY, THREAD_STACK_SIZE, 0, "save_thread");
 
 	if (ret < 0)
@@ -364,17 +368,35 @@ static uint32_t get_userid_dir(uint32_t tid)
 	return tid;
 }
 
-int create_savegame_folder(const char* folder)
+int create_savegame_folder(const char* folder, const char* path)
 {
-	u8 tmp[10] = "APOLLOPS3";
+	char sfoPath[256];
 
-	file_data = tmp;
-	file_size = 10;
+	snprintf(sfoPath, sizeof(sfoPath), "%sPARAM.SFO", path);
+	LOG("Reading %s...", sfoPath);
 
-	if (!save_game_thread(folder, "ICON0.PNG"))
+	sfo_context_t* sfo = sfo_alloc();
+	if (sfo_read(sfo, sfoPath) < 0) {
+		LOG("Unable to read from '%s'", sfoPath);
+		sfo_free(sfo);
 		return FALSE;
+	}
+
+	file_data = (u8*) sfoPath;
+	file_size = sizeof(sfoPath);
+
+	if (!save_game_thread(folder, NULL,
+			(char*) sfo_get_param_value(sfo, "TITLE"),
+			(char*) sfo_get_param_value(sfo, "SUB_TITLE"),
+			(char*) sfo_get_param_value(sfo, "DETAIL")))
+	{
+		sfo_free(sfo);
+		return FALSE;
+	}
  
 	wait_save_thread();
+	sfo_free(sfo);
+
 	return TRUE;
 }
 
@@ -393,7 +415,7 @@ int save_app_settings(app_config_t* config)
     file_size = sizeof(app_config_t);
     _log_settings(config);
 
-    return save_game_thread(SAVE_DATA_FOLDER, SAVE_DATA_FILENAME);
+    return save_game_thread(SAVE_DATA_FOLDER, SAVE_DATA_FILENAME, SAVE_DATA_TITLE, SAVE_DATA_SUBTITLE, SAVE_DATA_DETAIL);
 }
 
 int load_app_settings(app_config_t* config)
@@ -425,7 +447,7 @@ int load_app_settings(app_config_t* config)
     ss_aim_get_device_id((u8*) config->idps);
     ss_aim_get_open_psid((u8*) config->psid);
 
-    if (!save_game_thread(SAVE_DATA_FOLDER, SAVE_DATA_FILENAME))
+    if (!save_game_thread(SAVE_DATA_FOLDER, SAVE_DATA_FILENAME, SAVE_DATA_TITLE, SAVE_DATA_SUBTITLE, SAVE_DATA_DETAIL))
         return FALSE;
 
     wait_save_thread();

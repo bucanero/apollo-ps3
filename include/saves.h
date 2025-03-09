@@ -313,7 +313,7 @@ int create_actdat(const char* exdata_path, uint64_t account_id);
 uint64_t create_fake_account(uint32_t user_id, uint64_t account_id);
 uint64_t get_account_id(uint32_t user_id);
 
-int create_savegame_folder(const char* folder);
+int create_savegame_folder(const char* folder, const char* path);
 
 void ps2_encrypt_image(uint8_t cfg_file, const char* image_name, const char* data_file);
 void ps2_decrypt_image(uint8_t dex_mode, const char* image_name, const char* data_file);
