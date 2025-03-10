@@ -1828,7 +1828,7 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			code->activated = 0;
 			break;
 
-			case CMD_UPLOAD_SAVE:
+		case CMD_UPLOAD_SAVE:
 			uploadSaveFTP(selected_entry);
 			code->activated = 0;
 			break;
