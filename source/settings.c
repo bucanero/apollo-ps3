@@ -76,8 +76,8 @@ menu_option_t menu_options[] = {
 	},
 	{ .name = "Enable Debug Log",
 		.options = NULL,
-		.type = APP_OPTION_CALL,
-		.value = NULL,
+		.type = APP_OPTION_BOOL,
+		.value = &apollo_config.dbglog,
 		.callback = log_callback 
 	},
 	{ .name = NULL }
@@ -218,8 +218,17 @@ static void owner_callback(int sel)
 
 static void log_callback(int sel)
 {
+	apollo_config.dbglog = !sel;
+
+	if (!apollo_config.dbglog)
+	{
+		dbglogger_stop();
+		show_message("Debug Logging Disabled");
+		return;
+	}
+
 	dbglogger_init_mode(FILE_LOGGER, "/dev_hdd0/tmp/apollo.log", 1);
-	show_message("Debug Logging Enabled!\n\n/dev_hdd0/tmp/apollo.log");
+	show_message("Debug Logging Enabled!\n\n%s", "/dev_hdd0/tmp/apollo.log");
 }
 
 static void redetect_callback(int sel)
