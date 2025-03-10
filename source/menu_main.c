@@ -84,8 +84,6 @@ static void LoadVmcTexture(int width, int height, uint8_t* icon)
 
 static int ReloadUserSaves(save_list_t* save_list)
 {
-	init_loading_screen("Loading save games...");
-
 	if (save_list->list)
 	{
 		UnloadGameList(save_list->list);
@@ -94,6 +92,8 @@ static int ReloadUserSaves(save_list_t* save_list)
 
 	if (save_list->UpdatePath)
 		save_list->UpdatePath(save_list->path);
+
+	init_loading_screen("Loading save games...");
 
 	save_list->list = save_list->ReadList(save_list->path);
 	if (apollo_config.doSort == SORT_BY_NAME)

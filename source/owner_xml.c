@@ -258,3 +258,40 @@ int save_xml_owner(const char *xmlfile, const char *username)
 
     return(0);
 }
+
+char* get_xml_title_name(const char *xmlfile)
+{
+    xmlDoc *doc = NULL;
+    xmlNode *root_element = NULL;
+    xmlNode *cur_node = NULL;
+    char *ret = NULL;
+
+    /*parse the file and get the DOM */
+    doc = xmlParseFile(xmlfile);
+    if (!doc)
+    {
+        LOG("XML: could not parse file %s", xmlfile);
+        return NULL;
+    }
+
+    /*Get the root element node */
+    root_element = xmlDocGetRootElement(doc);
+
+    for (cur_node = root_element->children; cur_node; cur_node = cur_node->next)
+    {
+        if (cur_node->type != XML_ELEMENT_NODE)
+            continue;
+
+        if (xmlStrcasecmp(cur_node->name, BAD_CAST "name") == 0)
+        {
+            ret = strdup((char*) xmlNodeGetContent(cur_node));
+            break;
+        }
+    }
+
+    /*free the document */
+    xmlFreeDoc(doc);
+    xmlCleanupParser();
+
+    return ret;
+}

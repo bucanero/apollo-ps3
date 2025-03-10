@@ -95,6 +95,7 @@ enum cmd_code_enum
     CMD_IMPORT_DATA_FILE,
     CMD_HEX_EDIT_FILE,
     CMD_DELETE_SAVE,
+    CMD_UPLOAD_SAVE,
 
 // Bulk commands
     CMD_RESIGN_SAVES,
@@ -282,6 +283,7 @@ int ReadVmc2Codes(save_entry_t * save);
 int http_init(void);
 void http_end(void);
 int http_download(const char* url, const char* filename, const char* local_dst, int show_progress);
+int ftp_upload(const char* local_file, const char* url, const char* filename, int show_progress);
 
 int extract_rar(const char* rar_file, const char* dest_path);
 int extract_7zip(const char* zip_file, const char* dest_path);
@@ -311,7 +313,7 @@ int create_actdat(const char* exdata_path, uint64_t account_id);
 uint64_t create_fake_account(uint32_t user_id, uint64_t account_id);
 uint64_t get_account_id(uint32_t user_id);
 
-int create_savegame_folder(const char* folder);
+int create_savegame_folder(const char* folder, const char* path);
 
 void ps2_encrypt_image(uint8_t cfg_file, const char* image_name, const char* data_file);
 void ps2_decrypt_image(uint8_t dex_mode, const char* image_name, const char* data_file);
@@ -335,5 +337,6 @@ int vmc_import_psv(const char *input);
 int vmc_import_psu(const char *input);
 int vmc_delete_save(const char* path);
 
+char* get_xml_title_name(const char *xmlfile);
 char* sjis2utf8(char* input);
 uint8_t* getIconPS2(const char* folder, const char* iconfile);
