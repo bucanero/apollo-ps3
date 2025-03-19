@@ -13,6 +13,7 @@
 #include "sfo.h"
 #include "ps1card.h"
 #include "mcio.h"
+#include "svpng.h"
 
 static char host_buf[256];
 
@@ -1569,6 +1570,7 @@ static char* get_title_name_icon(const save_entry_t* item)
 	char local_file[256];
 	uint8_t hmac[20];
 
+	LOG("Getting data for '%s'...", item->title_id);
 	snprintf(xml_name, sizeof(xml_name), "%.9s_00.xml", item->title_id);
 	calculate_hmac_hash((uint8_t*) xml_name, 12, TMDB_HMAC_Key, sizeof(TMDB_HMAC_Key), hmac);
 
@@ -1579,6 +1581,7 @@ static char* get_title_name_icon(const save_entry_t* item)
 	if (http_download(tmdb_url, xml_name, local_file, 0) && (ret = get_xml_title_name(local_file)) == NULL)
 		ret = strdup(item->name);
 
+	LOG("Get PS%d icon %s (%s)", item->type, item->title_id, ret);
 	snprintf(local_file, sizeof(local_file), APOLLO_LOCAL_CACHE "%.9s.PNG", item->title_id);
 	if (file_exists(local_file) == SUCCESS)
 		return ret;
@@ -1588,6 +1591,52 @@ static char* get_title_name_icon(const save_entry_t* item)
 		snprintf(tmdb_url, sizeof(tmdb_url), "%sICON0.PNG", item->path);
 		copy_file(tmdb_url, local_file);
 	}
+
+	return ret;
+}
+
+static char* get_title_icon_psx(const save_entry_t* entry)
+{
+	FILE* fp;
+	uint8_t* icon = NULL;
+	char *ret = NULL;
+	char path[256];
+
+	LOG("Getting data for '%s'...", entry->title_id);
+	snprintf(path, sizeof(path), APOLLO_DATA_PATH "ps%dtitleid.txt", entry->type);
+	fp = fopen(path, "r");
+	if (fp)
+	{
+		while(!ret && fgets(path, sizeof(path), fp))
+		{
+			if (strncmp(path, entry->title_id, 9) != 0)
+				continue;
+
+			path[strlen(path)-1] = 0;
+			ret = strdup(path+10);
+		}
+		fclose(fp);
+	}
+	else ret = strdup(entry->name);
+
+	LOG("Get PS%d icon %s (%s)", entry->type, entry->title_id, ret);
+	snprintf(path, sizeof(path), APOLLO_LOCAL_CACHE "%.9s.PNG", entry->title_id);
+	if (file_exists(path) == SUCCESS)
+		return ret;
+
+	fp = fopen(path, "wb");
+	if (entry->type == FILE_TYPE_PS1)
+	{
+		icon = getIconRGBA(entry->blocks, 0);
+		svpng(fp, 16, 16, icon, 1);
+	}
+	else
+	{
+		icon = getIconPS2(entry->dir_name, strrchr(entry->path, '\n')+1);
+		svpng(fp, 128, 128, icon, 1);
+	}
+	free(icon);
+	fclose(fp);
 
 	return ret;
 }
