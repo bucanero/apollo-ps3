@@ -128,6 +128,40 @@ int zip_savegame(const char* folder, const char* inputdir, const char* output_fi
 	return (zip_close(archive) == ZIP_ER_OK);
 }
 
+int zip_file(const char* input_file, const char* output_filename)
+{
+	char *fname;
+	struct zip* archive;
+
+	unlink_secure(output_filename);
+	archive = zip_open(output_filename, ZIP_CREATE, NULL);
+	if (!archive) {
+		LOG("Failed to create zip file '%s'", output_filename);
+		return 0;
+	}
+
+	LOG("Zipping <%s> to %s...", input_file, output_filename);
+	struct zip_source *source = zip_source_file(archive, input_file, 0, 0);
+	if (!source) {
+		LOG("Failed to source file to zip: %s", input_file);
+		return 0;
+	}
+
+	fname = strrchr(input_file, '/');
+	if (!fname)
+		fname = (char*)input_file;
+	else
+		fname++;
+
+	LOG("Adding file '%s'", fname);
+	if (zip_add(archive, fname, source) < 0) {
+		zip_source_free(source);
+		LOG("Failed to add file to zip: %s", input_file);
+	}
+
+	return (zip_close(archive) == ZIP_ER_OK);
+}
+
 int extract_zip(const char* zip_file, const char* dest_path)
 {
 	char path[256];

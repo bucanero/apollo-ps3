@@ -159,19 +159,19 @@ enum cmd_code_enum
 enum save_type_enum
 {
     FILE_TYPE_NULL,
-    FILE_TYPE_MENU,
+    FILE_TYPE_PS1,
+    FILE_TYPE_PS2,
     FILE_TYPE_PS3,
     FILE_TYPE_PSV,
     FILE_TYPE_TRP,
     FILE_TYPE_VMC,
+    FILE_TYPE_MENU,
 
     // PS1 File Types
-    FILE_TYPE_PS1,
     FILE_TYPE_PSX,
     FILE_TYPE_MCS,
 
     // PS2 File Types
-    FILE_TYPE_PS2,
     FILE_TYPE_PSU,
     FILE_TYPE_MAX,
     FILE_TYPE_CBS,
@@ -241,10 +241,11 @@ enum save_sort_enum
 typedef struct save_entry
 {
     char * name;
-	char * title_id;
+    char * title_id;
     char * dir_name;
-	char * path;
-	uint16_t flags;
+    char * path;
+    uint32_t blocks;
+    uint16_t flags;
     uint16_t type;
     list_t * codes;
 } save_entry_t;
@@ -290,6 +291,7 @@ int extract_7zip(const char* zip_file, const char* dest_path);
 int extract_zip(const char* zip_file, const char* dest_path);
 int zip_directory(const char* basedir, const char* inputdir, const char* output_zipfile);
 int zip_savegame(const char* basedir, const char* inputdir, const char* output_zipfile);
+int zip_file(const char* input, const char* output_zipfile);
 
 int show_dialog(int dialog_type, const char * format, ...);
 int osk_dialog_get_text(const char* title, char* text, uint32_t size);
@@ -299,7 +301,7 @@ void end_progress_bar(void);
 #define show_message(...)	show_dialog(DIALOG_TYPE_OK, __VA_ARGS__)
 
 int init_loading_screen(const char* msg);
-void stop_loading_screen();
+void stop_loading_screen(void);
 
 void execCodeCommand(code_entry_t* code, const char* codecmd);
 

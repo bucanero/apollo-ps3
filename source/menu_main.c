@@ -142,7 +142,7 @@ static code_entry_t* LoadSaveDetails(const save_entry_t* save)
 			save->path,
 			save->name,
 			save->title_id,
-			save->dir_name+1);
+			save->dir_name);
 		return(centry);
 	}
 
@@ -404,7 +404,7 @@ static void SetMenu(int id)
 			}
 
 			if (selected_entry->flags & SAVE_FLAG_VMC && selected_entry->type == FILE_TYPE_PS1)
-				LoadVmcTexture(16, 16, getIconRGBA(selected_entry->dir_name[0], 0));
+				LoadVmcTexture(16, 16, getIconRGBA(selected_entry->blocks, 0));
 
 			if (selected_entry->flags & SAVE_FLAG_VMC && selected_entry->type == FILE_TYPE_PS2)
 				LoadVmcTexture(128, 128, getIconPS2(selected_entry->dir_name, strrchr(selected_entry->path, '\n')+1));

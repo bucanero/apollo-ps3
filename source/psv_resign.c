@@ -17,10 +17,10 @@
 #include "mcio.h"
 #include "shiftjis.h"
 
-#define PSV_SEED_OFFSET 0x8
+#define PSV_SEED_OFFSET 0x08
 #define PSV_HASH_OFFSET 0x1C
 #define PSV_TYPE_OFFSET 0x3C
-#define VMP_SEED_OFFSET 0xC
+#define VMP_SEED_OFFSET 0x0C
 #define VMP_HASH_OFFSET 0x20
 #define VMP_MAGIC       0x00504D56
 #define VMP_SIZE        0x20080

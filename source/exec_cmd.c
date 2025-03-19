@@ -679,7 +679,7 @@ static void exportAllSavesVMC(const save_entry_t* save, int dev, int all)
 			continue;
 
 		if (item->type == FILE_TYPE_PS1)
-			(saveSingleSave(outPath, save->dir_name[0], PS1SAVE_PSV) ? done++ : err_count++);
+			(saveSingleSave(outPath, save->blocks, PS1SAVE_PSV) ? done++ : err_count++);
 
 		if (item->type == FILE_TYPE_PS2)
 			(vmc_export_psv(item->dir_name, outPath) ? done++ : err_count++);
@@ -706,7 +706,7 @@ static void exportVmcSave(const save_entry_t* save, int type, int dst_id)
 			(type == PS1SAVE_MCS) ? "mcs" : "psx");
 	}
 
-	if (saveSingleSave(outPath, save->dir_name[0], type))
+	if (saveSingleSave(outPath, save->blocks, type))
 		show_message("Save successfully exported to:\n%s", outPath);
 	else
 		show_message("Error exporting save:\n%s", save->path);
@@ -1541,7 +1541,7 @@ static int deleteSave(const save_entry_t* save)
 		return 0;
 
 	if (save->flags & SAVE_FLAG_PS1)
-		ret = formatSave(save->dir_name[0]);
+		ret = formatSave(save->blocks);
 
 	else if (save->flags & SAVE_FLAG_PS2)
 		ret = vmc_delete_save(save->dir_name);
@@ -1654,6 +1654,7 @@ static void uploadSaveFTP(const save_entry_t* save)
 	ret &= ftp_upload(APOLLO_TMP_PATH "saves.ftp", remote, "saves.txt", 1);
 	ret &= ftp_upload(APOLLO_TMP_PATH "sfv.ftp", remote, "checksum.sfv", 1);
 
+	unlink_secure(local);
 	tmp = readTextFile(APOLLO_TMP_PATH "games.ftp", NULL);
 	if (!tmp)
 		tmp = strdup("");
@@ -1662,7 +1663,7 @@ static void uploadSaveFTP(const save_entry_t* save)
 	{
 		LOG("Updating games index...");
 		free(tmp);
-		tmp = get_title_name_icon(save);
+		tmp = (save->type == FILE_TYPE_PS3) ? get_title_name_icon(save) : get_title_icon_psx(save);
 
 		snprintf(local, sizeof(local), APOLLO_LOCAL_CACHE "%.9s.PNG", save->title_id);
 		ret &= ftp_upload(local, remote, "ICON0.PNG", 1);
@@ -1674,7 +1675,7 @@ static void uploadSaveFTP(const save_entry_t* save)
 			fclose(fp);
 		}
 
-		snprintf(remote, sizeof(remote), "%s%016" PRIX64 "/PS3/", apollo_config.ftp_server, apollo_config.account_id);
+		snprintf(remote, sizeof(remote), "%s%016" PRIX64 "/PS%d/", apollo_config.ftp_server, apollo_config.account_id, save->type);
 		ret &= ftp_upload(APOLLO_TMP_PATH "games.ftp", remote, "games.txt", 1);
 	}
 	free(tmp);
