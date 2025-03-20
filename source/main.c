@@ -556,6 +556,7 @@ s32 main(s32 argc, const char* argv[])
 	// Load application settings
 	load_app_settings(&apollo_config);
 
+	mkdirs(APOLLO_TMP_PATH);
 	if (apollo_config.dbglog)
 		dbglogger_init_mode(FILE_LOGGER, "/dev_hdd0/tmp/apollo.log", 0);
 

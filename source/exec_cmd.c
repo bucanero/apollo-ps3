@@ -1617,7 +1617,9 @@ static char* get_title_icon_psx(const save_entry_t* entry)
 		}
 		fclose(fp);
 	}
-	else ret = strdup(entry->name);
+
+	if (!ret)
+		ret = strdup(entry->name);
 
 	LOG("Get PS%d icon %s (%s)", entry->type, entry->title_id, ret);
 	snprintf(path, sizeof(path), APOLLO_LOCAL_CACHE "%.9s.PNG", entry->title_id);
@@ -1819,14 +1821,17 @@ static void import_save2vmc(const char* src, int type)
 
 	case FILE_TYPE_CBS:
 		ret = (ps2_cbs2psv(src, NULL) && vmc_import_psv(APOLLO_LOCAL_CACHE "tmp.psv"));
+		unlink_secure(APOLLO_LOCAL_CACHE "tmp.psv");
 		break;
 
 	case FILE_TYPE_XPS:
 		ret = (ps2_xps2psv(src, NULL) && vmc_import_psv(APOLLO_LOCAL_CACHE "tmp.psv"));
+		unlink_secure(APOLLO_LOCAL_CACHE "tmp.psv");
 		break;
 
 	case FILE_TYPE_MAX:
 		ret = (ps2_max2psv(src, NULL) && vmc_import_psv(APOLLO_LOCAL_CACHE "tmp.psv"));
+		unlink_secure(APOLLO_LOCAL_CACHE "tmp.psv");
 		break;
 
 	default:
