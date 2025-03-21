@@ -133,7 +133,8 @@ static void ftp_url_callback(int sel)
 		strcat(apollo_config.ftp_server, "/");
 
 	// test the connection
-	ret = http_download(apollo_config.ftp_server, "apollo.txt", APOLLO_TMP_PATH "users.ftp", 1);
+	init_loading_screen("Testing connection...");
+	ret = http_download(apollo_config.ftp_server, "apollo.txt", APOLLO_TMP_PATH "users.ftp", 0);
 	char *data = readTextFile(APOLLO_TMP_PATH "users.ftp", NULL);
 	if (!data)
 		data = strdup("");
@@ -149,9 +150,10 @@ static void ftp_url_callback(int sel)
 			fclose(fp);
 		}
 
-		ret = ftp_upload(APOLLO_TMP_PATH "users.ftp", apollo_config.ftp_server, "apollo.txt", 1);
+		ret = ftp_upload(APOLLO_TMP_PATH "users.ftp", apollo_config.ftp_server, "apollo.txt", 0);
 	}
 	free(data);
+	stop_loading_screen();
 
 	if (ret)
 		show_message("FTP server URL changed to:\n%s", apollo_config.ftp_server);
