@@ -57,6 +57,42 @@ static void downloadSave(const save_entry_t* entry, const char* file, int dst, c
 		return;
 	}
 
+	if (dst == STORAGE_HDD && (entry->flags & SAVE_FLAG_PS3) && apollo_config.ftp_server[0] && 
+		strncmp(entry->path, apollo_config.ftp_server, strlen(apollo_config.ftp_server)) == 0)
+	{
+		if (!extract_sfo(APOLLO_LOCAL_CACHE "tmpsave.zip", APOLLO_TMP_PATH))
+		{
+			show_message("Error extracting save game!");
+			return;
+		}
+
+		sfo_context_t* sfo = sfo_alloc();
+		if (sfo_read(sfo, APOLLO_TMP_PATH "PARAM.SFO") < 0) {
+			LOG("Unable to read from '%s'", APOLLO_TMP_PATH);
+			sfo_free(sfo);
+			return;
+		}
+
+		char* dirname =	strdup((char*) sfo_get_param_value(sfo, "SAVEDATA_DIRECTORY"));
+		sfo_free(sfo);
+
+		snprintf(path, sizeof(path), SAVES_PATH_HDD "%s/", apollo_config.user_id, dirname);
+		if (dir_exists(path) == SUCCESS)
+		{
+			if (!show_dialog(DIALOG_TYPE_YESNO, "Save game already exists in:\n%s\n\nOverwrite?", path))
+				return;
+		}
+		else if (!create_savegame_folder(dirname, APOLLO_TMP_PATH))
+		{
+			free(dirname);
+			show_message("Error creating save game folder!");
+			return;
+		}
+
+		free(dirname);
+		snprintf(path, sizeof(path), SAVES_PATH_HDD, apollo_config.user_id);
+	}
+
 	if (extract_zip(APOLLO_LOCAL_CACHE "tmpsave.zip", path))
 		show_message("Save game successfully downloaded to:\n%s", path);
 	else
