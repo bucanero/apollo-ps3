@@ -226,26 +226,27 @@ static void _addBackupCommands(save_entry_t* item)
 	cmd = _createCmdCode(PATCH_NULL, "----- " UTF8_CHAR_STAR " File Backup " UTF8_CHAR_STAR " -----", CMD_CODE_NULL);
 	list_append(item->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy save game", CMD_CODE_NULL);
-	cmd->options_count = 1;
-	cmd->options = _createOptions(1, "Copy Save to USB", CMD_COPY_SAVE_USB);
-	if (!(item->flags & SAVE_FLAG_HDD))
+	if (item->flags & SAVE_FLAG_HDD)
 	{
-		optval = malloc(sizeof(option_value_t));
-		asprintf(&optval->name, "Copy Save to HDD");
-		asprintf(&optval->value, "%c%c", CMD_COPY_SAVE_HDD, STORAGE_HDD);
-		list_append(cmd->options[0].opts, optval);
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy save game to USB", CMD_CODE_NULL);
+		cmd->options_count = 1;
+		cmd->options = _createOptions(1, "Copy Save to USB", CMD_COPY_SAVE_USB);
+		list_append(item->codes, cmd);
+	
+		if (apollo_config.ftp_server[0])
+		{
+			cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " Upload save backup to FTP", CMD_UPLOAD_SAVE);
+			list_append(item->codes, cmd);
+		}
+	}
+	else
+	{
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy save game to HDD", CMD_COPY_SAVE_HDD);
 		list_append(item->codes, cmd);
 
 		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_WARN " Delete save game", CMD_DELETE_SAVE);
-	}
-	else if (apollo_config.ftp_server[0])
-	{
 		list_append(item->codes, cmd);
-
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " Upload save backup to FTP", CMD_UPLOAD_SAVE);
 	}
-	list_append(item->codes, cmd);
 
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " Export save game to Zip", CMD_CODE_NULL);
 	cmd->options_count = 1;

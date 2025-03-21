@@ -111,15 +111,16 @@ static void db_url_callback(int sel)
 {
 	if (!osk_dialog_get_text("Enter the URL of the online database", apollo_config.save_db, sizeof(apollo_config.save_db)))
 		return;
-
-	show_message("Online database URL changed to:\n%s", apollo_config.save_db);
 	
 	if (apollo_config.save_db[strlen(apollo_config.save_db)-1] != '/')
 		strcat(apollo_config.save_db, "/");
+
+	show_message("Online database URL changed to:\n%s", apollo_config.save_db);
 }
 
 static void ftp_url_callback(int sel)
 {
+	int ret;
 	char tmp[512];
 
 	strncpy(tmp, apollo_config.ftp_server[0] ? apollo_config.ftp_server : "ftp://user:pass@192.168.0.10:21/folder/", sizeof(tmp));
@@ -127,10 +128,35 @@ static void ftp_url_callback(int sel)
 		return;
 
 	strncpy(apollo_config.ftp_server, tmp, sizeof(apollo_config.ftp_server));
-	show_message("FTP server URL changed to:\n%s", apollo_config.ftp_server);
 	
 	if (apollo_config.ftp_server[strlen(apollo_config.ftp_server)-1] != '/')
 		strcat(apollo_config.ftp_server, "/");
+
+	// test the connection
+	ret = http_download(apollo_config.ftp_server, "apollo.txt", APOLLO_TMP_PATH "users.ftp", 1);
+	char *data = readTextFile(APOLLO_TMP_PATH "users.ftp", NULL);
+	if (!data)
+		data = strdup("");
+
+	snprintf(tmp, sizeof(tmp), "%016lX", apollo_config.account_id);
+	if (strstr(data, tmp) == NULL)
+	{
+		LOG("Updating users index...");
+		FILE* fp = fopen(APOLLO_TMP_PATH "users.ftp", "a");
+		if (fp)
+		{
+			fprintf(fp, "%s\r\n", tmp);
+			fclose(fp);
+		}
+
+		ret = ftp_upload(APOLLO_TMP_PATH "users.ftp", apollo_config.ftp_server, "apollo.txt", 1);
+	}
+	free(data);
+
+	if (ret)
+		show_message("FTP server URL changed to:\n%s", apollo_config.ftp_server);
+	else
+		show_message("Error! Couldn't connect to FTP server\n%s\n\nCheck debug logs for more information", apollo_config.ftp_server);
 }
 
 static void clearcache_callback(int sel)

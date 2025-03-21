@@ -1657,22 +1657,35 @@ static void uploadSaveFTP(const save_entry_t* save)
 
 	init_loading_screen("Sync with FTP Server...");
 
-	snprintf(remote, sizeof(remote), "%s%016" PRIX64 "/PS3/", apollo_config.ftp_server, apollo_config.account_id);
+	snprintf(remote, sizeof(remote), "%s%016" PRIX64 "/PS%d/", apollo_config.ftp_server, apollo_config.account_id, save->type);
 	http_download(remote, "games.txt", APOLLO_TMP_PATH "games.ftp", 0);
 
-	snprintf(remote, sizeof(remote), "%s%016" PRIX64 "/PS3/%s/", apollo_config.ftp_server, apollo_config.account_id, save->title_id);
+	snprintf(remote, sizeof(remote), "%s%016" PRIX64 "/PS%d/%s/", apollo_config.ftp_server, apollo_config.account_id, save->type, save->title_id);
 	http_download(remote, "saves.txt", APOLLO_TMP_PATH "saves.ftp", 0);
 	http_download(remote, "checksum.sfv", APOLLO_TMP_PATH "sfv.ftp", 0);
 
-	asprintf(&tmp, save->path);
-	*strrchr(tmp, '/') = 0;
-	*strrchr(tmp, '/') = 0;
-
 	gmtime_r(&(time_t){time(NULL)}, &t);
-	snprintf(local, sizeof(local), APOLLO_TMP_PATH "%s_%d-%02d-%02d-%02d%02d%02d.zip", save->dir_name,
+	snprintf(local, sizeof(local), APOLLO_TMP_PATH "%s_%d-%02d-%02d-%02d%02d%02d.zip",
+			(save->type == FILE_TYPE_PS3) ? save->dir_name : save->title_id,
 			t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
-	ret = zip_directory(tmp, save->path, local);
-	free(tmp);
+
+	if (save->type == FILE_TYPE_PS3)
+	{
+		ret = zip_savegame(save->dir_name, save->path, local);
+	}
+	else
+	{
+		tmp = malloc(256);
+		if (save->type == FILE_TYPE_PS2)
+			ret = vmc_export_psv(save->dir_name, APOLLO_TMP_PATH);
+		else
+			ret = saveSingleSave(APOLLO_TMP_PATH, save->blocks, PS1SAVE_PSV);
+
+		get_psv_filename(tmp, APOLLO_TMP_PATH, save->dir_name);
+		ret &= zip_file(tmp, local);
+		unlink_secure(tmp);
+		free(tmp);
+	}
 
 	stop_loading_screen();
 	if (!ret)
