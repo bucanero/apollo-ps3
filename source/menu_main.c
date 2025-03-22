@@ -56,9 +56,6 @@ void initMenuOptions(void)
 				menu_options_maxsel[i]++;
 		}
 	}
-
-	// default account owner
-	*menu_options[OWNER_SETTING].value = menu_options_maxsel[OWNER_SETTING] - 1;
 }
 
 static void LoadFileTexture(const char* fname)

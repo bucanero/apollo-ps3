@@ -6,7 +6,6 @@
 #define MENU_ANI_MAX 			0x80        //Max animation number
 #define MENU_SPLIT_OFF			200			//Offset from left of sub/split menu to start drawing
 #define OPTION_ITEM_OFF         730         //Offset from left of settings item/value
-#define OWNER_SETTING           8           //Index of owner setting in menu_options
 
 enum app_option_type
 {
@@ -34,6 +33,7 @@ typedef struct
     uint8_t doSort;
     uint8_t doAni;
     uint8_t update;
+    uint8_t db_opt;
     uint8_t dbglog;
     uint32_t user_id;
     uint64_t idps[2];

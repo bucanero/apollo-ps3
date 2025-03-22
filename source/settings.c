@@ -7,13 +7,13 @@
 #include "saves.h"
 #include "common.h"
 
-static uint8_t owner_sel = 0;
+static char * db_opt[] = {"Online DB", "FTP Server", NULL};
 static char * sort_opt[] = {"Disabled", "by Name", "by Title ID", "by Type", NULL};
 
 static void log_callback(int sel);
 static void sort_callback(int sel);
 static void ani_callback(int sel);
-static void owner_callback(int sel);
+static void server_callback(int sel);
 static void db_url_callback(int sel);
 static void ftp_url_callback(int sel);
 static void redetect_callback(int sel);
@@ -69,11 +69,11 @@ menu_option_t menu_options[] = {
 		.value = NULL,
 		.callback = db_url_callback 
 	},
-	{ .name = "\nSave Data Owner",
-		.options = NULL,
+	{ .name = "\nSaves Server",
+		.options = db_opt,
 		.type = APP_OPTION_LIST,
-		.value = &owner_sel,
-		.callback = owner_callback
+		.value = &apollo_config.db_opt,
+		.callback = server_callback
 	},
 	{ .name = "Update Account & Console IDs",
 		.options = NULL,
@@ -137,15 +137,16 @@ static void ftp_url_callback(int sel)
 	ret = http_download(apollo_config.ftp_server, "apollo.txt", APOLLO_TMP_PATH "users.ftp", 0);
 	char *data = readTextFile(APOLLO_TMP_PATH "users.ftp", NULL);
 	if (!data)
-		data = strdup("");
+		data = strdup("; Apollo Save Tool (PS3) v" APOLLO_VERSION "\r\n");
 
 	snprintf(tmp, sizeof(tmp), "%016lX", apollo_config.account_id);
 	if (strstr(data, tmp) == NULL)
 	{
 		LOG("Updating users index...");
-		FILE* fp = fopen(APOLLO_TMP_PATH "users.ftp", "a");
+		FILE* fp = fopen(APOLLO_TMP_PATH "users.ftp", "w");
 		if (fp)
 		{
+			fwrite(data, 1, strlen(data), fp);
 			fprintf(fp, "%s\r\n", tmp);
 			fclose(fp);
 		}
@@ -262,10 +263,9 @@ end_update:
 	return;
 }
 
-static void owner_callback(int sel)
+static void server_callback(int sel)
 {
-	if (file_exists(APOLLO_PATH OWNER_XML_FILE) == SUCCESS)
-		read_xml_owner(APOLLO_PATH OWNER_XML_FILE, menu_options[OWNER_SETTING].options[sel]);
+	apollo_config.db_opt = sel;
 }
 
 static void log_callback(int sel)

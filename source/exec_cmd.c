@@ -1784,8 +1784,6 @@ static void uploadSaveFTP(const save_entry_t* save)
 		show_message("Save successfully uploaded:\n%s", save->dir_name);
 	else
 		show_message("Error! Couldn't upload save:\n%s", save->dir_name);
-
-	return;
 }
 
 static void import_mcr2vmp(const save_entry_t* save, const char* src)
