@@ -165,7 +165,7 @@ static void ftp_url_callback(int sel)
 static void clearcache_callback(int sel)
 {
 	LOG("Cleaning folder '%s'...", APOLLO_LOCAL_CACHE);
-	clean_directory(APOLLO_LOCAL_CACHE);
+	clean_directory(APOLLO_LOCAL_CACHE, "");
 
 	show_message("Local cache folder cleaned:\n" APOLLO_LOCAL_CACHE);
 }
@@ -266,6 +266,9 @@ end_update:
 static void server_callback(int sel)
 {
 	apollo_config.db_opt = sel;
+
+	if (!apollo_config.db_opt)
+		clean_directory(APOLLO_LOCAL_CACHE, ".txt");
 }
 
 static void log_callback(int sel)

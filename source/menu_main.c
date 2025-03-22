@@ -81,6 +81,8 @@ static void LoadVmcTexture(int width, int height, uint8_t* icon)
 
 static int ReloadUserSaves(save_list_t* save_list)
 {
+	init_loading_screen("Loading save games...");
+
 	if (save_list->list)
 	{
 		UnloadGameList(save_list->list);
@@ -89,8 +91,6 @@ static int ReloadUserSaves(save_list_t* save_list)
 
 	if (save_list->UpdatePath)
 		save_list->UpdatePath(save_list->path);
-
-	init_loading_screen("Loading save games...");
 
 	save_list->list = save_list->ReadList(save_list->path);
 	if (apollo_config.doSort == SORT_BY_NAME)
@@ -333,14 +333,20 @@ static void SetMenu(int id)
 			break;
 
 		case MENU_HDD_SAVES: //HDD saves Menu
-			if (!hdd_saves.list)
-				ReloadUserSaves(&hdd_saves);
+			if (!hdd_saves.list && !ReloadUserSaves(&hdd_saves))
+				return;
 			
 			if (apollo_config.doAni)
 				Draw_UserCheatsMenu_Ani(&hdd_saves);
 			break;
 
 		case MENU_ONLINE_DB: //Cheats Online Menu
+			if (apollo_config.db_opt)
+			{
+				UnloadGameList(online_saves.list);
+				online_saves.list = NULL;
+			}
+
 			if (!online_saves.list && !ReloadUserSaves(&online_saves))
 				return;
 

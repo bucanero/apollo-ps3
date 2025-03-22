@@ -1586,7 +1586,7 @@ static int deleteSave(const save_entry_t* save)
 	else if (save->flags & SAVE_FLAG_PS3)
 	{
 		// USB saves only
-		clean_directory(save->path);
+		clean_directory(save->path, "");
 		ret = (unlink_secure(save->path) == SUCCESS);
 	}
 
@@ -1779,6 +1779,7 @@ static void uploadSaveFTP(const save_entry_t* save)
 		ret &= ftp_upload(APOLLO_TMP_PATH "games.ftp", remote, "games.txt", 1);
 	}
 	free(tmp);
+	clean_directory(APOLLO_TMP_PATH, ".ftp");
 
 	if (ret)
 		show_message("Save successfully uploaded:\n%s", save->dir_name);

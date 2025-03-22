@@ -951,7 +951,7 @@ int ReadOnlineSaves(save_entry_t * game)
 	char path[256];
 	snprintf(path, sizeof(path), APOLLO_LOCAL_CACHE "%s.txt", game->title_id);
 
-	if (file_exists(path) == SUCCESS && strncmp(game->path, ONLINE_URL, strlen(ONLINE_URL)) == 0)
+	if (!apollo_config.db_opt && file_exists(path) == SUCCESS)
 	{
 		struct stat stats;
 		stat(path, &stats);
@@ -1974,7 +1974,7 @@ static void _ReadOnlineListEx(const char* urlPath, uint16_t flag, list_t *list)
 
 	snprintf(path, sizeof(path), APOLLO_LOCAL_CACHE "%04X_games.txt", flag);
 
-	if (file_exists(path) == SUCCESS && strncmp(urlPath, ONLINE_URL, strlen(ONLINE_URL)) == 0)
+	if (!apollo_config.db_opt && file_exists(path) == SUCCESS)
 	{
 		struct stat stats;
 		stat(path, &stats);
