@@ -70,10 +70,12 @@ app_config_t apollo_config = {
     .app_name = "APOLLO",
     .app_ver = APOLLO_VERSION,
     .save_db = ONLINE_URL,
+    .ftp_server = "",
     .music = 1,
     .doSort = 1,
     .doAni = 1,
     .update = 1,
+    .db_opt = 0,
     .dbglog = 0,
     .user_id = 0,
     .idps = {0, 0},
@@ -465,6 +467,12 @@ void update_trophy_path(char* path)
 
 void update_db_path(char* path)
 {
+	if (apollo_config.ftp_server[0] && apollo_config.db_opt)
+	{
+		sprintf(path, "%s%016lX/", apollo_config.ftp_server, apollo_config.account_id);
+		return;
+	}
+
 	strcpy(path, apollo_config.save_db);
 }
 
@@ -539,7 +547,7 @@ s32 main(s32 argc, const char* argv[])
 	// Unpack application data on first run
 	if (file_exists(APOLLO_LOCAL_CACHE "appdata.zip") == SUCCESS)
 	{
-		clean_directory(APOLLO_DATA_PATH);
+		clean_directory(APOLLO_DATA_PATH, "");
 		unzip_app_data(APOLLO_LOCAL_CACHE "appdata.zip");
 	}
 
@@ -549,14 +557,13 @@ s32 main(s32 argc, const char* argv[])
 	// Load application settings
 	load_app_settings(&apollo_config);
 
+	mkdirs(APOLLO_TMP_PATH);
 	if (apollo_config.dbglog)
 		dbglogger_init_mode(FILE_LOGGER, "/dev_hdd0/tmp/apollo.log", 0);
 
 	if (file_exists(APOLLO_PATH OWNER_XML_FILE) == SUCCESS)
 		save_xml_owner(APOLLO_PATH OWNER_XML_FILE, NULL);
 
-	menu_options[OWNER_SETTING].options = get_xml_owners(APOLLO_PATH OWNER_XML_FILE);
- 
 	// Set PFD keys from loaded settings
 	pfd_util_setup_keys();
 

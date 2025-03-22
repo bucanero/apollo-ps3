@@ -17,10 +17,10 @@
 #include "mcio.h"
 #include "shiftjis.h"
 
-#define PSV_SEED_OFFSET 0x8
+#define PSV_SEED_OFFSET 0x08
 #define PSV_HASH_OFFSET 0x1C
 #define PSV_TYPE_OFFSET 0x3C
-#define VMP_SEED_OFFSET 0xC
+#define VMP_SEED_OFFSET 0x0C
 #define VMP_HASH_OFFSET 0x20
 #define VMP_MAGIC       0x00504D56
 #define VMP_SIZE        0x20080
@@ -209,7 +209,7 @@ int vmp_resign(const char *src_vmp)
 
 void get_psv_filename(char* psvName, const char* path, const char* dirName)
 {
-	char tmpName[13];
+	char tmpName[4];
 	const char *ch = &dirName[12];
 
 	if (!path)
@@ -218,11 +218,7 @@ void get_psv_filename(char* psvName, const char* path, const char* dirName)
 		return;
 	}
 
-	memcpy(tmpName, dirName, 12);
-	tmpName[12] = 0;
-
-	strcpy(psvName, path);
-	strcat(psvName, tmpName);
+	sprintf(psvName, "%s%.12s", path, dirName);
 	while (*ch)
 	{
 		snprintf(tmpName, sizeof(tmpName), "%02X", *ch++);

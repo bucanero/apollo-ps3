@@ -95,6 +95,7 @@ enum cmd_code_enum
     CMD_IMPORT_DATA_FILE,
     CMD_HEX_EDIT_FILE,
     CMD_DELETE_SAVE,
+    CMD_UPLOAD_SAVE,
 
 // Bulk commands
     CMD_RESIGN_SAVES,
@@ -158,19 +159,19 @@ enum cmd_code_enum
 enum save_type_enum
 {
     FILE_TYPE_NULL,
-    FILE_TYPE_MENU,
+    FILE_TYPE_PS1,
+    FILE_TYPE_PS2,
     FILE_TYPE_PS3,
     FILE_TYPE_PSV,
     FILE_TYPE_TRP,
     FILE_TYPE_VMC,
+    FILE_TYPE_MENU,
 
     // PS1 File Types
-    FILE_TYPE_PS1,
     FILE_TYPE_PSX,
     FILE_TYPE_MCS,
 
     // PS2 File Types
-    FILE_TYPE_PS2,
     FILE_TYPE_PSU,
     FILE_TYPE_MAX,
     FILE_TYPE_CBS,
@@ -240,10 +241,11 @@ enum save_sort_enum
 typedef struct save_entry
 {
     char * name;
-	char * title_id;
+    char * title_id;
     char * dir_name;
-	char * path;
-	uint16_t flags;
+    char * path;
+    uint32_t blocks;
+    uint16_t flags;
     uint16_t type;
     list_t * codes;
 } save_entry_t;
@@ -282,12 +284,15 @@ int ReadVmc2Codes(save_entry_t * save);
 int http_init(void);
 void http_end(void);
 int http_download(const char* url, const char* filename, const char* local_dst, int show_progress);
+int ftp_upload(const char* local_file, const char* url, const char* filename, int show_progress);
 
 int extract_rar(const char* rar_file, const char* dest_path);
 int extract_7zip(const char* zip_file, const char* dest_path);
 int extract_zip(const char* zip_file, const char* dest_path);
 int zip_directory(const char* basedir, const char* inputdir, const char* output_zipfile);
 int zip_savegame(const char* basedir, const char* inputdir, const char* output_zipfile);
+int zip_file(const char* input, const char* output_zipfile);
+int extract_sfo(const char* zip_file, const char* dest_path);
 
 int show_dialog(int dialog_type, const char * format, ...);
 int osk_dialog_get_text(const char* title, char* text, uint32_t size);
@@ -297,7 +302,7 @@ void end_progress_bar(void);
 #define show_message(...)	show_dialog(DIALOG_TYPE_OK, __VA_ARGS__)
 
 int init_loading_screen(const char* msg);
-void stop_loading_screen();
+void stop_loading_screen(void);
 
 void execCodeCommand(code_entry_t* code, const char* codecmd);
 
@@ -311,7 +316,7 @@ int create_actdat(const char* exdata_path, uint64_t account_id);
 uint64_t create_fake_account(uint32_t user_id, uint64_t account_id);
 uint64_t get_account_id(uint32_t user_id);
 
-int create_savegame_folder(const char* folder);
+int create_savegame_folder(const char* folder, const char* path);
 
 void ps2_encrypt_image(uint8_t cfg_file, const char* image_name, const char* data_file);
 void ps2_decrypt_image(uint8_t dex_mode, const char* image_name, const char* data_file);
@@ -335,5 +340,6 @@ int vmc_import_psv(const char *input);
 int vmc_import_psu(const char *input);
 int vmc_delete_save(const char* path);
 
+char* get_xml_title_name(const char *xmlfile);
 char* sjis2utf8(char* input);
 uint8_t* getIconPS2(const char* folder, const char* iconfile);

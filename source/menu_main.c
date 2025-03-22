@@ -56,9 +56,6 @@ void initMenuOptions(void)
 				menu_options_maxsel[i]++;
 		}
 	}
-
-	// default account owner
-	*menu_options[OWNER_SETTING].value = menu_options_maxsel[OWNER_SETTING] - 1;
 }
 
 static void LoadFileTexture(const char* fname)
@@ -142,7 +139,7 @@ static code_entry_t* LoadSaveDetails(const save_entry_t* save)
 			save->path,
 			save->name,
 			save->title_id,
-			save->dir_name+1);
+			save->dir_name);
 		return(centry);
 	}
 
@@ -336,14 +333,20 @@ static void SetMenu(int id)
 			break;
 
 		case MENU_HDD_SAVES: //HDD saves Menu
-			if (!hdd_saves.list)
-				ReloadUserSaves(&hdd_saves);
+			if (!hdd_saves.list && !ReloadUserSaves(&hdd_saves))
+				return;
 			
 			if (apollo_config.doAni)
 				Draw_UserCheatsMenu_Ani(&hdd_saves);
 			break;
 
 		case MENU_ONLINE_DB: //Cheats Online Menu
+			if (apollo_config.db_opt)
+			{
+				UnloadGameList(online_saves.list);
+				online_saves.list = NULL;
+			}
+
 			if (!online_saves.list && !ReloadUserSaves(&online_saves))
 				return;
 
@@ -404,7 +407,7 @@ static void SetMenu(int id)
 			}
 
 			if (selected_entry->flags & SAVE_FLAG_VMC && selected_entry->type == FILE_TYPE_PS1)
-				LoadVmcTexture(16, 16, getIconRGBA(selected_entry->dir_name[0], 0));
+				LoadVmcTexture(16, 16, getIconRGBA(selected_entry->blocks, 0));
 
 			if (selected_entry->flags & SAVE_FLAG_VMC && selected_entry->type == FILE_TYPE_PS2)
 				LoadVmcTexture(128, 128, getIconPS2(selected_entry->dir_name, strrchr(selected_entry->path, '\n')+1));

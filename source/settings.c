@@ -7,14 +7,15 @@
 #include "saves.h"
 #include "common.h"
 
-static uint8_t owner_sel = 0;
+static char * db_opt[] = {"Online DB", "FTP Server", NULL};
 static char * sort_opt[] = {"Disabled", "by Name", "by Title ID", "by Type", NULL};
 
 static void log_callback(int sel);
 static void sort_callback(int sel);
 static void ani_callback(int sel);
-static void owner_callback(int sel);
+static void server_callback(int sel);
 static void db_url_callback(int sel);
+static void ftp_url_callback(int sel);
 static void redetect_callback(int sel);
 static void clearcache_callback(int sel);
 static void upd_appdata_callback(int sel);
@@ -37,6 +38,12 @@ menu_option_t menu_options[] = {
 		.type = APP_OPTION_LIST,
 		.value = &apollo_config.doSort,
 		.callback = sort_callback
+	},
+	{ .name = "Set User FTP Server URL",
+		.options = NULL,
+		.type = APP_OPTION_CALL,
+		.value = NULL,
+		.callback = ftp_url_callback
 	},
 	{ .name = "\nVersion Update Check", 
 		.options = NULL, 
@@ -62,11 +69,11 @@ menu_option_t menu_options[] = {
 		.value = NULL,
 		.callback = db_url_callback 
 	},
-	{ .name = "\nSave Data Owner",
-		.options = NULL,
+	{ .name = "\nSaves Server",
+		.options = db_opt,
 		.type = APP_OPTION_LIST,
-		.value = &owner_sel,
-		.callback = owner_callback
+		.value = &apollo_config.db_opt,
+		.callback = server_callback
 	},
 	{ .name = "Update Account & Console IDs",
 		.options = NULL,
@@ -102,17 +109,63 @@ static void ani_callback(int sel)
 
 static void db_url_callback(int sel)
 {
-	if (osk_dialog_get_text("Enter the URL of the online database", apollo_config.save_db, sizeof(apollo_config.save_db)))
-		show_message("Online database URL changed to:\n%s", apollo_config.save_db);
+	if (!osk_dialog_get_text("Enter the URL of the online database", apollo_config.save_db, sizeof(apollo_config.save_db)))
+		return;
 	
 	if (apollo_config.save_db[strlen(apollo_config.save_db)-1] != '/')
 		strcat(apollo_config.save_db, "/");
+
+	show_message("Online database URL changed to:\n%s", apollo_config.save_db);
+}
+
+static void ftp_url_callback(int sel)
+{
+	int ret;
+	char tmp[512];
+
+	strncpy(tmp, apollo_config.ftp_server[0] ? apollo_config.ftp_server : "ftp://user:pass@192.168.0.10:21/folder/", sizeof(tmp));
+	if (!osk_dialog_get_text("Enter the URL of the FTP server", tmp, sizeof(tmp)))
+		return;
+
+	strncpy(apollo_config.ftp_server, tmp, sizeof(apollo_config.ftp_server));
+	
+	if (apollo_config.ftp_server[strlen(apollo_config.ftp_server)-1] != '/')
+		strcat(apollo_config.ftp_server, "/");
+
+	// test the connection
+	init_loading_screen("Testing connection...");
+	ret = http_download(apollo_config.ftp_server, "apollo.txt", APOLLO_TMP_PATH "users.ftp", 0);
+	char *data = readTextFile(APOLLO_TMP_PATH "users.ftp", NULL);
+	if (!data)
+		data = strdup("; Apollo Save Tool (PS3) v" APOLLO_VERSION "\r\n");
+
+	snprintf(tmp, sizeof(tmp), "%016lX", apollo_config.account_id);
+	if (strstr(data, tmp) == NULL)
+	{
+		LOG("Updating users index...");
+		FILE* fp = fopen(APOLLO_TMP_PATH "users.ftp", "w");
+		if (fp)
+		{
+			fwrite(data, 1, strlen(data), fp);
+			fprintf(fp, "%s\r\n", tmp);
+			fclose(fp);
+		}
+
+		ret = ftp_upload(APOLLO_TMP_PATH "users.ftp", apollo_config.ftp_server, "apollo.txt", 0);
+	}
+	free(data);
+	stop_loading_screen();
+
+	if (ret)
+		show_message("FTP server URL changed to:\n%s", apollo_config.ftp_server);
+	else
+		show_message("Error! Couldn't connect to FTP server\n%s\n\nCheck debug logs for more information", apollo_config.ftp_server);
 }
 
 static void clearcache_callback(int sel)
 {
 	LOG("Cleaning folder '%s'...", APOLLO_LOCAL_CACHE);
-	clean_directory(APOLLO_LOCAL_CACHE);
+	clean_directory(APOLLO_LOCAL_CACHE, "");
 
 	show_message("Local cache folder cleaned:\n" APOLLO_LOCAL_CACHE);
 }
@@ -210,10 +263,11 @@ end_update:
 	return;
 }
 
-static void owner_callback(int sel)
+static void server_callback(int sel)
 {
-	if (file_exists(APOLLO_PATH OWNER_XML_FILE) == SUCCESS)
-		read_xml_owner(APOLLO_PATH OWNER_XML_FILE, menu_options[OWNER_SETTING].options[sel]);
+	apollo_config.db_opt = sel;
+
+	clean_directory(APOLLO_LOCAL_CACHE, ".txt");
 }
 
 static void log_callback(int sel)
