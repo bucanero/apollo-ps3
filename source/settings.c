@@ -267,8 +267,7 @@ static void server_callback(int sel)
 {
 	apollo_config.db_opt = sel;
 
-	if (!apollo_config.db_opt)
-		clean_directory(APOLLO_LOCAL_CACHE, ".txt");
+	clean_directory(APOLLO_LOCAL_CACHE, ".txt");
 }
 
 static void log_callback(int sel)

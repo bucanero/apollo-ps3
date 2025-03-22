@@ -57,19 +57,17 @@ static void downloadSave(const save_entry_t* entry, const char* file, int dst, c
 		return;
 	}
 
-	if (dst == STORAGE_HDD && (entry->flags & SAVE_FLAG_PS3) && apollo_config.ftp_server[0] && 
-		strncmp(entry->path, apollo_config.ftp_server, strlen(apollo_config.ftp_server)) == 0)
+	if (dst == STORAGE_HDD && (entry->flags & SAVE_FLAG_PS3) && apollo_config.db_opt)
 	{
-		if (!extract_sfo(APOLLO_LOCAL_CACHE "tmpsave.zip", APOLLO_TMP_PATH))
-		{
-			show_message("Error extracting save game!");
-			return;
-		}
-
 		sfo_context_t* sfo = sfo_alloc();
-		if (sfo_read(sfo, APOLLO_TMP_PATH "PARAM.SFO") < 0) {
+
+		if (!extract_sfo(APOLLO_LOCAL_CACHE "tmpsave.zip", APOLLO_TMP_PATH) ||
+			sfo_read(sfo, APOLLO_TMP_PATH "PARAM.SFO") < 0)
+		{
 			LOG("Unable to read from '%s'", APOLLO_TMP_PATH);
 			sfo_free(sfo);
+
+			show_message("Error extracting save game!");
 			return;
 		}
 
