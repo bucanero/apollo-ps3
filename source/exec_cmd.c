@@ -59,6 +59,7 @@ static void downloadSave(const save_entry_t* entry, const char* file, int dst, c
 
 	if (dst == STORAGE_HDD && (entry->flags & SAVE_FLAG_PS3) && apollo_config.db_opt)
 	{
+		char dirname[0x30];
 		sfo_context_t* sfo = sfo_alloc();
 
 		if (!extract_sfo(APOLLO_LOCAL_CACHE "tmpsave.zip", APOLLO_TMP_PATH) ||
@@ -71,7 +72,7 @@ static void downloadSave(const save_entry_t* entry, const char* file, int dst, c
 			return;
 		}
 
-		char* dirname =	strdup((char*) sfo_get_param_value(sfo, "SAVEDATA_DIRECTORY"));
+		strncpy(dirname, (char*) sfo_get_param_value(sfo, "SAVEDATA_DIRECTORY"), sizeof(dirname));
 		sfo_free(sfo);
 
 		snprintf(path, sizeof(path), SAVES_PATH_HDD "%s/", apollo_config.user_id, dirname);
@@ -82,12 +83,10 @@ static void downloadSave(const save_entry_t* entry, const char* file, int dst, c
 		}
 		else if (!create_savegame_folder(dirname, APOLLO_TMP_PATH))
 		{
-			free(dirname);
 			show_message("Error creating save game folder!");
 			return;
 		}
 
-		free(dirname);
 		snprintf(path, sizeof(path), SAVES_PATH_HDD, apollo_config.user_id);
 	}
 
