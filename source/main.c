@@ -107,8 +107,8 @@ const char * menu_pad_help[TOTAL_MENU_IDS] = { NULL,												//Main
 * HDD save list
 */
 save_list_t hdd_saves = {
-	.icon_id = cat_hdd_png_index,
-	.title = "HDD Saves",
+    .id = MENU_HDD_SAVES,
+    .title = "HDD Saves",
     .list = NULL,
     .path = "",
     .ReadList = &ReadUserList,
@@ -120,8 +120,8 @@ save_list_t hdd_saves = {
 * USB save list
 */
 save_list_t usb_saves = {
-	.icon_id = cat_usb_png_index,
-	.title = "USB Saves",
+    .id = MENU_USB_SAVES,
+    .title = "USB Saves",
     .list = NULL,
     .path = "",
     .ReadList = &ReadUsbList,
@@ -133,8 +133,8 @@ save_list_t usb_saves = {
 * Trophy list
 */
 save_list_t trophies = {
-	.icon_id = cat_warning_png_index,
-	.title = "Trophies",
+    .id = MENU_TROPHIES,
+    .title = "Trophies",
     .list = NULL,
     .path = "",
     .ReadList = &ReadTrophyList,
@@ -146,8 +146,8 @@ save_list_t trophies = {
 * Online code list
 */
 save_list_t online_saves = {
-	.icon_id = cat_db_png_index,
-	.title = "Online Database",
+    .id = MENU_ONLINE_DB,
+    .title = "Online Database",
     .list = NULL,
     .path = ONLINE_URL,
     .ReadList = &ReadOnlineList,
@@ -159,7 +159,7 @@ save_list_t online_saves = {
 * User Backup code list
 */
 save_list_t user_backup = {
-    .icon_id = cat_bup_png_index,
+    .id = MENU_USER_BACKUP,
     .title = "User Tools",
     .list = NULL,
     .path = "",
@@ -172,7 +172,7 @@ save_list_t user_backup = {
 * PS1 VMC list
 */
 save_list_t vmc1_saves = {
-    .icon_id = cat_usb_png_index,
+    .id = MENU_PS1VMC_SAVES,
     .title = "PS1 Virtual Memory Card",
     .list = NULL,
     .path = "",
@@ -185,7 +185,7 @@ save_list_t vmc1_saves = {
 * PS2 VMC list
 */
 save_list_t vmc2_saves = {
-    .icon_id = cat_usb_png_index,
+    .id = MENU_PS2VMC_SAVES,
     .title = "PS2 Virtual Memory Card",
     .list = NULL,
     .path = "",

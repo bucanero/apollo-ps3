@@ -542,7 +542,7 @@ static void doSaveMenu(save_list_t * save_list)
 			}
 
 			if (apollo_config.doSort && 
-				((save_list->icon_id == cat_bup_png_index) || (save_list->icon_id == cat_db_png_index)))
+				((save_list->id == MENU_USER_BACKUP) || (save_list->id == MENU_ONLINE_DB)))
 				list_bubbleSort(selected_entry->codes, &sortCodeList_Compare);
 
 			SetMenu(MENU_PATCHES);
@@ -561,7 +561,7 @@ static void doSaveMenu(save_list_t * save_list)
 		else if (paddata[0].BTN_SELECT)
 		{
 			selected_entry = list_get_item(save_list->list, menu_sel);
-			if (save_list->icon_id != cat_db_png_index && save_list->icon_id != cat_bup_png_index &&
+			if (save_list->id != MENU_ONLINE_DB && save_list->id != MENU_USER_BACKUP &&
 				selected_entry->type != FILE_TYPE_MENU && (selected_entry->flags & SAVE_FLAG_PS3))
 				selected_entry->flags ^= SAVE_FLAG_SELECTED;
 		}
@@ -815,10 +815,10 @@ static void doCodeOptionsMenu(void)
 	if (readPad(0))
 	{
 		if(paddata[0].BTN_UP)
-			move_selection_back(list_count(selected_centry->options[option_index].opts), 1);
+			move_selection_back(list_count(code->options[option_index].opts), 1);
 
 		else if(paddata[0].BTN_DOWN)
-			move_selection_fwd(list_count(selected_centry->options[option_index].opts), 1);
+			move_selection_fwd(list_count(code->options[option_index].opts), 1);
 
 		else if (paddata[0].BTN_CIRCLE)
 		{

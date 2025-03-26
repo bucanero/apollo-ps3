@@ -255,7 +255,7 @@ typedef struct
     list_t * list;
     char path[128];
     char* title;
-    uint8_t icon_id;
+    uint8_t id;
     void (*UpdatePath)(char *);
     int (*ReadCodes)(save_entry_t *);
     list_t* (*ReadList)(const char*);
