@@ -57,7 +57,7 @@ static void downloadSave(const save_entry_t* entry, const char* file, int dst, c
 		return;
 	}
 
-	if (dst == STORAGE_HDD && (entry->flags & SAVE_FLAG_PS3) && apollo_config.db_opt)
+	if (dst == STORAGE_HDD && (entry->flags & SAVE_FLAG_PS3) && apollo_config.online_opt)
 	{
 		char dirname[0x30];
 		sfo_context_t* sfo = sfo_alloc();
@@ -1690,10 +1690,10 @@ static void uploadSaveFTP(const save_entry_t* save)
 
 	init_loading_screen("Sync with FTP Server...");
 
-	snprintf(remote, sizeof(remote), "%s%016" PRIX64 "/PS%d/", apollo_config.ftp_server, apollo_config.account_id, save->type);
+	snprintf(remote, sizeof(remote), "%s%016" PRIX64 "/PS%d/", apollo_config.ftp_url, apollo_config.account_id, save->type);
 	http_download(remote, "games.txt", APOLLO_TMP_PATH "games.ftp", 0);
 
-	snprintf(remote, sizeof(remote), "%s%016" PRIX64 "/PS%d/%s/", apollo_config.ftp_server, apollo_config.account_id, save->type, save->title_id);
+	snprintf(remote, sizeof(remote), "%s%016" PRIX64 "/PS%d/%s/", apollo_config.ftp_url, apollo_config.account_id, save->type, save->title_id);
 	http_download(remote, "saves.txt", APOLLO_TMP_PATH "saves.ftp", 0);
 	http_download(remote, "checksum.sfv", APOLLO_TMP_PATH "sfv.ftp", 0);
 
@@ -1772,7 +1772,7 @@ static void uploadSaveFTP(const save_entry_t* save)
 			fclose(fp);
 		}
 
-		snprintf(remote, sizeof(remote), "%s%016" PRIX64 "/PS%d/", apollo_config.ftp_server, apollo_config.account_id, save->type);
+		snprintf(remote, sizeof(remote), "%s%016" PRIX64 "/PS%d/", apollo_config.ftp_url, apollo_config.account_id, save->type);
 		ret &= ftp_upload(APOLLO_TMP_PATH "games.ftp", remote, "games.txt", 1);
 	}
 	free(tmp);

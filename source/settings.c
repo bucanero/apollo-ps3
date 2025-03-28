@@ -39,23 +39,23 @@ menu_option_t menu_options[] = {
 		.value = &apollo_config.doSort,
 		.callback = sort_callback
 	},
-	{ .name = "Set User FTP Server URL",
-		.options = NULL,
-		.type = APP_OPTION_CALL,
-		.value = NULL,
-		.callback = ftp_url_callback
-	},
-	{ .name = "\nVersion Update Check", 
+	{ .name = "Version Update Check",
 		.options = NULL, 
 		.type = APP_OPTION_BOOL, 
 		.value = &apollo_config.update, 
 		.callback = update_callback 
 	},
-	{ .name = "Clear Local Cache", 
-		.options = NULL, 
-		.type = APP_OPTION_CALL, 
-		.value = NULL, 
-		.callback = clearcache_callback 
+	{ .name = "\nSet User FTP Server URL",
+		.options = NULL,
+		.type = APP_OPTION_CALL,
+		.value = NULL,
+		.callback = ftp_url_callback
+	},
+	{ .name = "Online Saves Server",
+		.options = db_opt,
+		.type = APP_OPTION_LIST,
+		.value = &apollo_config.online_opt,
+		.callback = server_callback
 	},
 	{ .name = "Update Application Data", 
 		.options = NULL, 
@@ -69,11 +69,11 @@ menu_option_t menu_options[] = {
 		.value = NULL,
 		.callback = db_url_callback 
 	},
-	{ .name = "\nSaves Server",
-		.options = db_opt,
-		.type = APP_OPTION_LIST,
-		.value = &apollo_config.db_opt,
-		.callback = server_callback
+	{ .name = "\nClear Local Cache", 
+		.options = NULL, 
+		.type = APP_OPTION_CALL, 
+		.value = NULL, 
+		.callback = clearcache_callback 
 	},
 	{ .name = "Update Account & Console IDs",
 		.options = NULL,
@@ -123,18 +123,18 @@ static void ftp_url_callback(int sel)
 	int ret;
 	char tmp[512];
 
-	strncpy(tmp, apollo_config.ftp_server[0] ? apollo_config.ftp_server : "ftp://user:pass@192.168.0.10:21/folder/", sizeof(tmp));
+	strncpy(tmp, apollo_config.ftp_url[0] ? apollo_config.ftp_url : "ftp://user:pass@192.168.0.10:21/folder/", sizeof(tmp));
 	if (!osk_dialog_get_text("Enter the URL of the FTP server", tmp, sizeof(tmp)))
 		return;
 
-	strncpy(apollo_config.ftp_server, tmp, sizeof(apollo_config.ftp_server));
+	strncpy(apollo_config.ftp_url, tmp, sizeof(apollo_config.ftp_url));
 	
-	if (apollo_config.ftp_server[strlen(apollo_config.ftp_server)-1] != '/')
-		strcat(apollo_config.ftp_server, "/");
+	if (apollo_config.ftp_url[strlen(apollo_config.ftp_url)-1] != '/')
+		strcat(apollo_config.ftp_url, "/");
 
 	// test the connection
 	init_loading_screen("Testing connection...");
-	ret = http_download(apollo_config.ftp_server, "apollo.txt", APOLLO_TMP_PATH "users.ftp", 0);
+	ret = http_download(apollo_config.ftp_url, "apollo.txt", APOLLO_TMP_PATH "users.ftp", 0);
 	char *data = readTextFile(APOLLO_TMP_PATH "users.ftp", NULL);
 	if (!data)
 		data = strdup("; Apollo Save Tool (PS3) v" APOLLO_VERSION "\r\n");
@@ -151,15 +151,15 @@ static void ftp_url_callback(int sel)
 			fclose(fp);
 		}
 
-		ret = ftp_upload(APOLLO_TMP_PATH "users.ftp", apollo_config.ftp_server, "apollo.txt", 0);
+		ret = ftp_upload(APOLLO_TMP_PATH "users.ftp", apollo_config.ftp_url, "apollo.txt", 0);
 	}
 	free(data);
 	stop_loading_screen();
 
 	if (ret)
-		show_message("FTP server URL changed to:\n%s", apollo_config.ftp_server);
+		show_message("FTP server URL changed to:\n%s", apollo_config.ftp_url);
 	else
-		show_message("Error! Couldn't connect to FTP server\n%s\n\nCheck debug logs for more information", apollo_config.ftp_server);
+		show_message("Error! Couldn't connect to FTP server\n%s\n\nCheck debug logs for more information", apollo_config.ftp_url);
 }
 
 static void clearcache_callback(int sel)
@@ -265,7 +265,7 @@ end_update:
 
 static void server_callback(int sel)
 {
-	apollo_config.db_opt = sel;
+	apollo_config.online_opt = sel;
 
 	clean_directory(APOLLO_LOCAL_CACHE, ".txt");
 }

@@ -232,7 +232,7 @@ static void _addBackupCommands(save_entry_t* item)
 		_createOptions(cmd, "Copy Save to USB", CMD_COPY_SAVE_USB);
 		list_append(item->codes, cmd);
 	
-		if (apollo_config.ftp_server[0])
+		if (apollo_config.ftp_url[0])
 		{
 			cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " Upload save backup to FTP", CMD_UPLOAD_SAVE);
 			list_append(item->codes, cmd);
@@ -742,7 +742,7 @@ int ReadVmc1Codes(save_entry_t * save)
 	cmd = _createCmdCode(PATCH_NULL, "----- " UTF8_CHAR_STAR " Save Game Backup " UTF8_CHAR_STAR " -----", CMD_CODE_NULL);
 	list_append(save->codes, cmd);
 
-	if (apollo_config.ftp_server[0])
+	if (apollo_config.ftp_url[0])
 	{
 		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " Upload save backup to FTP", CMD_UPLOAD_SAVE);
 		list_append(save->codes, cmd);
@@ -896,7 +896,7 @@ int ReadVmc2Codes(save_entry_t * save)
 	cmd = _createCmdCode(PATCH_NULL, "----- " UTF8_CHAR_STAR " Save Game Backup " UTF8_CHAR_STAR " -----", CMD_CODE_NULL);
 	list_append(save->codes, cmd);
 
-	if (apollo_config.ftp_server[0])
+	if (apollo_config.ftp_url[0])
 	{
 		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " Upload save backup to FTP", CMD_UPLOAD_SAVE);
 		list_append(save->codes, cmd);
@@ -942,7 +942,7 @@ int ReadOnlineSaves(save_entry_t * game)
 	char path[256];
 	snprintf(path, sizeof(path), APOLLO_LOCAL_CACHE "%s.txt", game->title_id);
 
-	if (!apollo_config.db_opt && file_exists(path) == SUCCESS && strcmp(apollo_config.save_db, ONLINE_URL) == 0)
+	if (apollo_config.online_opt == 0 && file_exists(path) == SUCCESS && strcmp(apollo_config.save_db, ONLINE_URL) == 0)
 	{
 		struct stat stats;
 		stat(path, &stats);
@@ -1677,10 +1677,24 @@ int sortSaveList_Compare(const void* a, const void* b)
 	return strcasecmp(((save_entry_t*) a)->name, ((save_entry_t*) b)->name);
 }
 
+static int parseTypeFlags(int flags)
+{
+	if (flags & SAVE_FLAG_PS3)
+		return 1;
+	else if (flags & SAVE_FLAG_PS1)
+		return 2;
+	else if (flags & SAVE_FLAG_PS2)
+		return 3;
+	else if (flags & SAVE_FLAG_VMC)
+		return 4;
+
+	return 0;
+}
+
 int sortSaveList_Compare_Type(const void* a, const void* b)
 {
-	int ta = ((save_entry_t*) a)->type;
-	int tb = ((save_entry_t*) b)->type;
+	int ta = parseTypeFlags(((save_entry_t*) a)->flags);
+	int tb = parseTypeFlags(((save_entry_t*) b)->flags);
 
 	if (ta == tb)
 		return sortSaveList_Compare(a, b);
@@ -1956,7 +1970,7 @@ static void _ReadOnlineListEx(const char* urlPath, uint16_t flag, list_t *list)
 
 	snprintf(path, sizeof(path), APOLLO_LOCAL_CACHE "%04X_games.txt", flag);
 
-	if (!apollo_config.db_opt && file_exists(path) == SUCCESS && strcmp(apollo_config.save_db, ONLINE_URL) == 0)
+	if (apollo_config.online_opt == 0 && file_exists(path) == SUCCESS && strcmp(apollo_config.save_db, ONLINE_URL) == 0)
 	{
 		struct stat stats;
 		stat(path, &stats);
