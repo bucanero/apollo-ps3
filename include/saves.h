@@ -341,5 +341,7 @@ int vmc_import_psu(const char *input);
 int vmc_delete_save(const char* path);
 
 char* get_xml_title_name(const char *xmlfile);
+void add_xml_owners(const char *xmlfile, list_t* list);
+
 char* sjis2utf8(char* input);
 uint8_t* getIconPS2(const char* folder, const char* iconfile);

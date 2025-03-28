@@ -561,8 +561,7 @@ s32 main(s32 argc, const char* argv[])
 	if (apollo_config.dbglog)
 		dbglogger_init_mode(FILE_LOGGER, "/dev_hdd0/tmp/apollo.log", 0);
 
-	if (file_exists(APOLLO_PATH OWNER_XML_FILE) == SUCCESS)
-		save_xml_owner(APOLLO_PATH OWNER_XML_FILE, NULL);
+	save_xml_owner(APOLLO_PATH OWNER_XML_FILE);
 
 	// Set PFD keys from loaded settings
 	pfd_util_setup_keys();

@@ -5,59 +5,34 @@
 
 #include "menu.h"
 #include "saves.h"
+#include "common.h"
 
-#define DEFAULT_USERNAME "Saved User"
 
-
-void set_xml_owner(xmlNode * a_node)
+static char* get_xml_account_id(xmlNode * a_node)
 {
 	xmlNode *cur_node = NULL;
 	char *value;
 
-	for (cur_node = a_node; cur_node; cur_node = cur_node->next)
+	for (cur_node = a_node->children; cur_node; cur_node = cur_node->next)
 	{
 		if (cur_node->type != XML_ELEMENT_NODE)
 			continue;
 
-		LOG("node type: Element, name: %s\n", cur_node->name);
-		if (xmlStrcasecmp(cur_node->name, BAD_CAST "console") == 0)
-		{
-			value = (char*) xmlGetProp(cur_node, BAD_CAST "idps");
-			if (value)
-			{
-				sscanf(value, "%lx %lx\n", &apollo_config.idps[0], &apollo_config.idps[1]);
-				LOG("xml idps=%s", value);
-			}
-
-			value = (char*) xmlGetProp(cur_node, BAD_CAST "psid");
-			if (value)
-			{
-				sscanf(value, "%lx %lx\n", &apollo_config.psid[0], &apollo_config.psid[1]);
-				LOG("xml psid=%s", value);
-			}
-		}
-
 		if (xmlStrcasecmp(cur_node->name, BAD_CAST "user") == 0)
 		{
-			value = (char*) xmlGetProp(cur_node, BAD_CAST "id");
-			if (value)
-			{
-				sscanf(value, "%d\n", &apollo_config.user_id);
-				LOG("xml user_id=%s", value);
-			}
-
 			value = (char*) xmlGetProp(cur_node, BAD_CAST "account_id");
 			if (value)
 			{
-				sscanf(value, "%lx\n", &apollo_config.account_id);
 				LOG("xml account_id=%s", value);
+                return value;
 			}
 		}
-
 	}
+
+    return NULL;
 }
 
-xmlNode* _get_owner_node(xmlNode *a_node, xmlChar *owner_name)
+static xmlNode* _get_owner_node(xmlNode *a_node, xmlChar *owner_name)
 {
     xmlNode *cur_node = NULL;
 
@@ -74,57 +49,17 @@ xmlNode* _get_owner_node(xmlNode *a_node, xmlChar *owner_name)
 }
 
 /**
- * Simple example to parse a file called "file.xml", 
- * walk down the DOM, and print the name of the 
+ * Parse a file called "owners.xml", 
+ * walk down the DOM, and add the name/account-id of the 
  * xml elements nodes.
  */
-int read_xml_owner(const char *xmlfile, const char *owner)
-{
-    xmlDoc *doc = NULL;
-    xmlNode *root_element = NULL;
-    xmlNode *cur_node = NULL;
-
-    /*parse the file and get the DOM */
-    doc = xmlParseFile(xmlfile);
-
-    if (doc == NULL) {
-        LOG("XML error: could not parse file %s", xmlfile);
-        return -1;
-    }
-
-    /*Get the root element node */
-    root_element = xmlDocGetRootElement(doc);
-    cur_node = _get_owner_node(root_element->children, BAD_CAST owner);
-
-    LOG("Setting Owner [%s]...", owner);
-    if (cur_node)
-        set_xml_owner(cur_node->children);
-
-    /*free the document */
-    xmlFreeDoc(doc);
-
-    /*
-     *Free the global variables that may
-     *have been allocated by the parser.
-     */
-    xmlCleanupParser();
-
-    return 0;
-}
-
-/**
- * Simple example to parse a file called "file.xml", 
- * walk down the DOM, and print the name of the 
- * xml elements nodes.
- */
-char** get_xml_owners(const char *xmlfile)
+void add_xml_owners(const char *xmlfile, list_t* usr_list)
 {
     xmlDoc *doc = NULL;
     xmlNode *root_element = NULL;
     xmlNode *cur_node = NULL;
     char *value;
-    int count = 1;
-    char** ret = NULL;
+    option_value_t* optval;
 
     /*parse the file and get the DOM */
     doc = xmlParseFile(xmlfile);
@@ -132,27 +67,11 @@ char** get_xml_owners(const char *xmlfile)
     if (doc == NULL)
     {
         LOG("XML: could not parse file %s", xmlfile);
-
-        ret = calloc(1, sizeof(char*) * 2);
-        ret[0] = strdup(DEFAULT_USERNAME);
-
-        return ret;
+        return;
     }
 
     /*Get the root element node */
     root_element = xmlDocGetRootElement(doc);
-
-    for (cur_node = root_element->children; cur_node; cur_node = cur_node->next)
-    {
-        if (cur_node->type != XML_ELEMENT_NODE)
-            continue;
-
-        if ((xmlStrcasecmp(cur_node->name, BAD_CAST "owner") == 0) && xmlGetProp(cur_node, BAD_CAST "name"))
-            count++;
-    }
-
-    ret = calloc(1, sizeof(char*) * count);
-    count = 0;
 
     for (cur_node = root_element->children; cur_node; cur_node = cur_node->next)
     {
@@ -162,12 +81,18 @@ char** get_xml_owners(const char *xmlfile)
         if (xmlStrcasecmp(cur_node->name, BAD_CAST "owner") == 0)
         {
             value = (char*) xmlGetProp(cur_node, BAD_CAST "name");
-            if (value)
-            {
-                LOG("Adding Owner=%s", value);
-                ret[count] = strdup(value);
-                count++;
-            }
+            if (!value)
+                continue;
+
+            LOG("Adding Owner=%s", value);
+            char* aid = get_xml_account_id(cur_node);
+            if (!aid)
+                continue;
+
+            optval = malloc(sizeof(option_value_t));
+            optval->name = strdup(value);
+            optval->value = strdup(aid);
+            list_append(usr_list, optval);
         }
     }
 
@@ -179,20 +104,20 @@ char** get_xml_owners(const char *xmlfile)
      *have been allocated by the parser.
      */
     xmlCleanupParser();
-
-    return ret;
+    return;
 }
 
-int save_xml_owner(const char *xmlfile, const char *username)
+int save_xml_owner(const char *xmlfile)
 {
     xmlDocPtr doc = NULL;       /* document pointer */
     xmlNodePtr root_node = NULL, node = NULL, node1 = NULL;/* node pointers */
     char buff[SYSUTIL_SYSTEMPARAM_CURRENT_USERNAME_SIZE+1];
 
+    snprintf(buff, sizeof(buff), "User %08d", apollo_config.user_id);
+	sysUtilGetSystemParamString(SYSUTIL_SYSTEMPARAM_ID_CURRENT_USERNAME, buff, SYSUTIL_SYSTEMPARAM_CURRENT_USERNAME_SIZE);
+
     /*parse the file and get the DOM */
     doc = xmlReadFile(xmlfile, NULL, XML_PARSE_NONET | XML_PARSE_NOBLANKS);
-
-    snprintf(buff, sizeof(buff), "%s", (username ? username : DEFAULT_USERNAME));
 
     if (doc)
     {
@@ -255,6 +180,7 @@ int save_xml_owner(const char *xmlfile, const char *username)
      *have been allocated by the parser.
      */
     xmlCleanupParser();
+    file_chmod(xmlfile);
 
     return(0);
 }

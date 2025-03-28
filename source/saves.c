@@ -324,6 +324,8 @@ static void _addSfoCommands(save_entry_t* save)
 	optval->name = strdup("Fake Owner/Rebug");
 	optval->value = strdup("ffffffffffffffff");
 	list_append(cmd->options[0].opts, optval);
+
+	add_xml_owners(APOLLO_PATH OWNER_XML_FILE, cmd->options[0].opts);
 	list_append(save->codes, cmd);
 
 	cmd = _createCmdCode(PATCH_SFO, CHAR_ICON_USER " Remove Console ID", SFO_REMOVE_PSID);

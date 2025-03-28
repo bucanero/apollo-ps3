@@ -98,16 +98,6 @@ static void downloadSave(const save_entry_t* entry, const char* file, int dst, c
 	unlink_secure(APOLLO_LOCAL_CACHE "tmpsave.zip");
 }
 
-static void _saveOwnerData(const char* path)
-{
-	char buff[SYSUTIL_SYSTEMPARAM_CURRENT_USERNAME_SIZE+1];
-
-	sysUtilGetSystemParamString(SYSUTIL_SYSTEMPARAM_ID_CURRENT_USERNAME, buff, SYSUTIL_SYSTEMPARAM_CURRENT_USERNAME_SIZE);
-	LOG("Saving User '%s'...", buff);
-	save_xml_owner(path, buff);
-	file_chmod(path);
-}
-
 static uint32_t get_filename_id(const char* dir, const char* title_id)
 {
 	char path[128];
@@ -162,7 +152,7 @@ static void zipSave(const save_entry_t* entry, int dest)
 		}
 
 		snprintf(export_file, sizeof(export_file), "%s" OWNER_XML_FILE, exp_path);
-		_saveOwnerData(export_file);
+		save_xml_owner(export_file);
 	}
 
 	stop_loading_screen();
@@ -581,7 +571,7 @@ static void exportLicensesZip(int dst)
 	zip_directory(tmp, lic_path, export_file);
 
 	sprintf(export_file, "%s" OWNER_XML_FILE, exp_path);
-	_saveOwnerData(export_file);
+	save_xml_owner(export_file);
 
 	sprintf(export_file, "%s" "idps.hex", exp_path);
 	write_buffer(export_file, (u8*) apollo_config.idps, 16);
@@ -613,7 +603,7 @@ static void exportFlashZip(int dst)
 	zip_directory("/dev_flash2", "/dev_flash2/", export_file);
 
 	sprintf(export_file, "%s" OWNER_XML_FILE, exp_path);
-	_saveOwnerData(export_file);
+	save_xml_owner(export_file);
 
 	sprintf(export_file, "%s" "idps.hex", exp_path);
 	write_buffer(export_file, (u8*) apollo_config.idps, 16);
@@ -651,7 +641,7 @@ static void exportTrophiesZip(int dst)
 	ret = zip_directory(tmp, trp_path, export_file);
 
 	sprintf(export_file, "%s" OWNER_XML_FILE, exp_path);
-	_saveOwnerData(export_file);
+	save_xml_owner(export_file);
 
 	free(export_file);
 	free(trp_path);
