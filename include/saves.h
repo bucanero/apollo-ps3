@@ -10,8 +10,6 @@
 #define APOLLO_UPDATE_URL		"https://api.github.com/repos/bucanero/apollo-ps3/releases/latest"
 
 #define MAX_USB_DEVICES         7
-#define USB0_PATH               "/dev_usb000/"
-#define USB1_PATH               "/dev_usb001/"
 #define USB_PATH                "/dev_usb%03d/"
 #define FAKE_USB_PATH           PS3_TMP_PATH "fakeusb/"
 #define USER_PATH_HDD			"/dev_hdd0/home/%08d/"
