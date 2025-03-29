@@ -75,6 +75,7 @@ app_config_t apollo_config = {
     .doSort = 1,
     .doAni = 1,
     .update = 1,
+    .usb_dev = (MAX_USB_DEVICES+1),
     .online_opt = 0,
     .dbglog = 0,
     .user_id = 0,
@@ -440,7 +441,19 @@ static void LoadSounds(void)
 
 void update_usb_path(char* path)
 {
-	for (int i = 0; i <= MAX_USB_DEVICES; i++)
+	if (apollo_config.usb_dev < MAX_USB_DEVICES)
+	{
+		sprintf(path, USB_PATH, apollo_config.usb_dev);
+		return;
+	}
+
+	if (apollo_config.usb_dev == MAX_USB_DEVICES)
+	{
+		sprintf(path, FAKE_USB_PATH);
+		return;
+	}
+
+	for (int i = 0; i < MAX_USB_DEVICES; i++)
 	{
 		sprintf(path, USB_PATH, i);
 

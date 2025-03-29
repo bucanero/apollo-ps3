@@ -9,7 +9,9 @@
 
 static char * db_opt[] = {"Online DB", "FTP Server", NULL};
 static char * sort_opt[] = {"Disabled", "by Name", "by Title ID", "by Type", NULL};
+static char * usb_src[] = {"USB 0", "USB 1", "USB 2", "USB 3", "USB 4", "USB 5", "USB 6", "Fake USB", "Auto-detect", NULL};
 
+static void usb_callback(int sel);	
 static void log_callback(int sel);
 static void sort_callback(int sel);
 static void ani_callback(int sel);
@@ -38,6 +40,12 @@ menu_option_t menu_options[] = {
 		.type = APP_OPTION_LIST,
 		.value = &apollo_config.doSort,
 		.callback = sort_callback
+	},
+	{ .name = "USB Saves Source",
+		.options = usb_src,
+		.type = APP_OPTION_LIST,
+		.value = &apollo_config.usb_dev,
+		.callback = usb_callback
 	},
 	{ .name = "Version Update Check",
 		.options = NULL, 
@@ -105,6 +113,11 @@ static void sort_callback(int sel)
 static void ani_callback(int sel)
 {
 	apollo_config.doAni = !sel;
+}
+
+static void usb_callback(int sel)
+{
+	apollo_config.usb_dev = sel;
 }
 
 static void db_url_callback(int sel)

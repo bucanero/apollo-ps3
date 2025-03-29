@@ -35,6 +35,7 @@ typedef struct
     uint8_t update;
     uint8_t online_opt;
     uint8_t dbglog;
+    uint8_t usb_dev;
     uint32_t user_id;
     uint64_t idps[2];
     uint64_t psid[2];
