@@ -121,6 +121,7 @@ static void _createOptions(code_entry_t* code, const char* name, char value)
 {
 	char path[32];
 	option_value_t* optval;
+	code->options_count = 1;
 	code->options = _initOptions(1);
 
 	optval = malloc(sizeof(option_value_t));
