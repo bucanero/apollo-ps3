@@ -563,7 +563,8 @@ static void doSaveMenu(save_list_t * save_list)
 		{
 			selected_entry = list_get_item(save_list->list, menu_sel);
 			if (save_list->id != MENU_ONLINE_DB && save_list->id != MENU_USER_BACKUP &&
-				selected_entry->type != FILE_TYPE_MENU && (selected_entry->flags & SAVE_FLAG_PS3))
+				selected_entry->type != FILE_TYPE_MENU && selected_entry->type != FILE_TYPE_VMC &&
+				(selected_entry->flags & (SAVE_FLAG_PS3|SAVE_FLAG_PS2|SAVE_FLAG_PS1)))
 				selected_entry->flags ^= SAVE_FLAG_SELECTED;
 		}
 		else if (paddata[0].BTN_SQUARE)

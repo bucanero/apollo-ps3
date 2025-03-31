@@ -124,15 +124,10 @@ static void _createOptions(code_entry_t* code, const char* name, char value)
 	code->options_count = 1;
 	code->options = _initOptions(1);
 
-	optval = malloc(sizeof(option_value_t));
-	asprintf(&optval->name, "%s %d", name, 0);
-	asprintf(&optval->value, "%c%c", value, STORAGE_USB0);
-	list_append(code->options[0].opts, optval);
-
-	for (int i = 1; i < MAX_USB_DEVICES; i++)
+	for (int i = 0; i < MAX_USB_DEVICES; i++)
 	{
 		snprintf(path, sizeof(path), USB_PATH, i);
-		if (i == 1 || dir_exists(path) == SUCCESS)
+		if (i <= 1 || dir_exists(path) == SUCCESS)
 		{
 			optval = malloc(sizeof(option_value_t));
 			asprintf(&optval->name, "%s %d", name, i);
