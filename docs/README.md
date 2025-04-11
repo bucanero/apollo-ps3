@@ -143,8 +143,8 @@ For example:
 </apollo>
 ```
 
-The file must be saved on `/dev_hdd0/game/NP0APOLLO/USRDIR/owners.xml`. Apollo will load the hard-coded values when launched, and you should 
-select the desired Owner from the **Settings** menu.
+The file must be saved on `/dev_hdd0/game/NP0APOLLO/USRDIR/owners.xml`. Apollo will load the hard-coded values when loading a save, and you can 
+select the desired account from the **Change Account ID** menu under the `SFO Patches` options.
 
 In the `owners.xml` you need to define:
 - Owner name

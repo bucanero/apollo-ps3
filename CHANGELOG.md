@@ -4,6 +4,34 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+---
+
+## [v2.2.0](https://github.com/bucanero/apollo-ps3/releases/tag/v2.2.0) - 2025-04-12
+
+### Added
+
+* FTP Server support (Saves Cloud Backup)
+  - Zip, Upload, and backup saves to a user-defined FTP server
+  - List, Download, and restore saves from a user-defined FTP server
+  - Backup PS1, PS2, and PS3 saves
+* Improved `Copy save to HDD` option
+* Settings Menu:
+  - Added `FTP Server URL` option
+  - Added selector option (`FTP/Online DB`) for save-game downloads
+  - Added `USB Source` selector option
+  - Persistent `Debug log` option
+  - Removed `Save Owner` option
+
+### Misc
+
+* Updated Apollo Patch Engine to v1.3.0
+  - Add `djb2` hash function
+  - Add tag support for user-selected options on `.savepatch` files
+    - E.g., `{ZZ}val=name;03E7=999 gold;...;270F=9999 gold{/ZZ}`
+    - Support for SaveWizard and BSD codes with multiple options
+
+---
+
 ## [v2.0.2](https://github.com/bucanero/apollo-ps3/releases/tag/v2.0.2) - 2024-11-23
 
 ### Added

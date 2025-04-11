@@ -114,7 +114,7 @@ int save_xml_owner(const char *xmlfile)
     char buff[SYSUTIL_SYSTEMPARAM_CURRENT_USERNAME_SIZE+1];
 
     snprintf(buff, sizeof(buff), "User %08d", apollo_config.user_id);
-	sysUtilGetSystemParamString(SYSUTIL_SYSTEMPARAM_ID_CURRENT_USERNAME, buff, SYSUTIL_SYSTEMPARAM_CURRENT_USERNAME_SIZE);
+    sysUtilGetSystemParamString(SYSUTIL_SYSTEMPARAM_ID_CURRENT_USERNAME, buff, SYSUTIL_SYSTEMPARAM_CURRENT_USERNAME_SIZE);
 
     /*parse the file and get the DOM */
     doc = xmlReadFile(xmlfile, NULL, XML_PARSE_NONET | XML_PARSE_NOBLANKS);
