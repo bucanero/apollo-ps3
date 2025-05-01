@@ -148,9 +148,9 @@ static void ftp_url_callback(int sel)
 	// test the connection
 	init_loading_screen("Testing connection...");
 	ret = http_download(apollo_config.ftp_url, "apollo.txt", APOLLO_TMP_PATH "users.ftp", 0);
-	char *data = readTextFile(APOLLO_TMP_PATH "users.ftp", NULL);
+	char *data = ret ? readTextFile(APOLLO_TMP_PATH "users.ftp", NULL) : NULL;
 	if (!data)
-		data = strdup("; Apollo Save Tool (PS3) v" APOLLO_VERSION "\r\n");
+		data = strdup("; Apollo Save Tool (" APOLLO_PLATFORM ") v" APOLLO_VERSION "\r\n");
 
 	snprintf(tmp, sizeof(tmp), "%016lX", apollo_config.account_id);
 	if (strstr(data, tmp) == NULL)
@@ -159,8 +159,7 @@ static void ftp_url_callback(int sel)
 		FILE* fp = fopen(APOLLO_TMP_PATH "users.ftp", "w");
 		if (fp)
 		{
-			fwrite(data, 1, strlen(data), fp);
-			fprintf(fp, "%s\r\n", tmp);
+			fprintf(fp, "%s%s\r\n", data, tmp);
 			fclose(fp);
 		}
 
@@ -170,7 +169,10 @@ static void ftp_url_callback(int sel)
 	stop_loading_screen();
 
 	if (ret)
+	{
+		server_callback(1);
 		show_message("FTP server URL changed to:\n%s", apollo_config.ftp_url);
+	}
 	else
 		show_message("Error! Couldn't connect to FTP server\n%s\n\nCheck debug logs for more information", apollo_config.ftp_url);
 }

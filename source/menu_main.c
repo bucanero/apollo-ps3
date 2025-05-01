@@ -348,6 +348,12 @@ static void SetMenu(int id)
 			break;
 
 		case MENU_ONLINE_DB: //Cheats Online Menu
+			if (apollo_config.online_opt && online_saves.list && menu_id == MENU_MAIN_SCREEN)
+			{
+				UnloadGameList(online_saves.list);
+				online_saves.list = NULL;
+			}
+
 			if (!online_saves.list && !ReloadUserSaves(&online_saves))
 				return;
 
@@ -928,17 +934,9 @@ static void doPatchMenu(void)
 					list_node_t* node;
 
 					for (node = list_head(selected_entry->codes); (code = list_get(node)); node = list_next(node))
-						if (wildcard_match_icase(code->name, "*(REQUIRED)*") && code->options_count == 0)
+						if (code->flags & APOLLO_CODE_FLAG_REQUIRED && code->options_count == 0)
 							code->activated = 1;
 				}
-				/*
-				if (!selected_centry->options)
-				{
-					int size;
-					selected_entry->codes[menu_sel].options = ReadOptions(selected_entry->codes[menu_sel], &size);
-					selected_entry->codes[menu_sel].options_count = size;
-				}
-				*/
 				
 				if (selected_centry->options)
 				{

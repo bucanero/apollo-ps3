@@ -1601,7 +1601,7 @@ static char* get_title_name_icon(const save_entry_t* item)
 		item->title_id, ((uint64_t*)hmac)[0], ((uint64_t*)hmac)[1], ((uint32_t*)hmac)[4]);
 
 	snprintf(local_file, sizeof(local_file), APOLLO_TMP_PATH "xml.ftp");
-	if (http_download(tmdb_url, xml_name, local_file, 0) && (ret = get_xml_title_name(local_file)) == NULL)
+	if (!http_download(tmdb_url, xml_name, local_file, 0) || (ret = get_xml_title_name(local_file)) == NULL)
 		ret = strdup(item->name);
 
 	LOG("Get PS%d icon %s (%s)", item->type, item->title_id, ret);
@@ -1753,7 +1753,7 @@ static void uploadSaveFTP(const save_entry_t* save)
 		tmp = (save->type == FILE_TYPE_PS3) ? get_title_name_icon(save) : get_title_icon_psx(save);
 
 		snprintf(local, sizeof(local), APOLLO_LOCAL_CACHE "%.9s.PNG", save->title_id);
-		ret &= ftp_upload(local, remote, "ICON0.PNG", 1);
+		ret &= ftp_upload(local, remote, (save->type == FILE_TYPE_PS3) ? "ICON0.PNG" : "icon0.png", 1);
 
 		fp = fopen(APOLLO_TMP_PATH "games.ftp", "a");
 		if (fp)

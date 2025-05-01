@@ -1,4 +1,4 @@
-
+#define APOLLO_PLATFORM			"PS3"		//Apollo platform
 #define APOLLO_VERSION			"2.2.0"		//Apollo PS3 version (about menu)
 
 #define MENU_TITLE_OFF			30			//Offset of menu title text from menu mini icon
