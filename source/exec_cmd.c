@@ -4,6 +4,7 @@
 #include <net/netctl.h>
 #include <sysutil/sysutil.h>
 #include <polarssl/md5.h>
+#include <mini18n.h>
 
 #include "saves.h"
 #include "menu.h"
@@ -47,13 +48,13 @@ static void downloadSave(const save_entry_t* entry, const char* file, int dst, c
 	_set_dest_path(path, dst, folder);
 	if (mkdirs(path) != SUCCESS)
 	{
-		show_message("Error! Export folder is not available:\n%s", path);
+		show_message("%s\n%s", _("Error! Export folder is not available:"), path);
 		return;
 	}
 
 	if (!http_download(entry->path, file, APOLLO_LOCAL_CACHE "tmpsave.zip", 1))
 	{
-		show_message("Error downloading save game from:\n%s%s", entry->path, file);
+		show_message("%s\n%s%s", _("Error downloading save game from:"), entry->path, file);
 		return;
 	}
 
@@ -68,7 +69,7 @@ static void downloadSave(const save_entry_t* entry, const char* file, int dst, c
 			LOG("Unable to read from '%s'", APOLLO_TMP_PATH);
 			sfo_free(sfo);
 
-			show_message("Error extracting save game!");
+			show_message(_("Error extracting save game!"));
 			return;
 		}
 
@@ -78,12 +79,12 @@ static void downloadSave(const save_entry_t* entry, const char* file, int dst, c
 		snprintf(path, sizeof(path), SAVES_PATH_HDD "%s/", apollo_config.user_id, dirname);
 		if (dir_exists(path) == SUCCESS)
 		{
-			if (!show_dialog(DIALOG_TYPE_YESNO, "Save game already exists in:\n%s\n\nOverwrite?", path))
+			if (!show_dialog(DIALOG_TYPE_YESNO, "%s\n%s\n\n%s", _("Save game already exists in:"), path, _("Overwrite?")))
 				return;
 		}
 		else if (!create_savegame_folder(dirname, APOLLO_TMP_PATH))
 		{
-			show_message("Error creating save game folder!");
+			show_message(_("Error creating save game folder!"));
 			return;
 		}
 
@@ -91,9 +92,9 @@ static void downloadSave(const save_entry_t* entry, const char* file, int dst, c
 	}
 
 	if (extract_zip(APOLLO_LOCAL_CACHE "tmpsave.zip", path))
-		show_message("Save game successfully downloaded to:\n%s", path);
+		show_message("%s\n%s", _("Save game successfully downloaded to:"), path);
 	else
-		show_message("Error extracting save game!");
+		show_message(_("Error extracting save game!"));
 
 	unlink_secure(APOLLO_LOCAL_CACHE "tmpsave.zip");
 }
@@ -124,7 +125,7 @@ static void zipSave(const save_entry_t* entry, int dest)
 	_set_dest_path(exp_path, dest, PS3_EXPORT_PATH);
 	if (mkdirs(exp_path) != SUCCESS)
 	{
-		show_message("Error! Export folder is not available:\n%s", exp_path);
+		show_message("%s\n%s", _("Error! Export folder is not available:"), exp_path);
 		return;
 	}
 
@@ -158,11 +159,11 @@ static void zipSave(const save_entry_t* entry, int dest)
 	stop_loading_screen();
 	if (!ret)
 	{
-		show_message("Error! Can't export save game to:\n%s", exp_path);
+		show_message("%s\n%s", _("Error! Can't export save game to:"), exp_path);
 		return;
 	}
 
-	show_message("Zip file successfully saved to:\n%s%s-%08d.zip", exp_path, entry->title_id, fid);
+	show_message("%s\n%s%s-%08d.zip", _("Zip file successfully saved to:"), exp_path, entry->title_id, fid);
 }
 
 static int _copy_save_usb(const save_entry_t* save, const char* exp_path)
@@ -252,9 +253,9 @@ static void copySaveHDD(const save_entry_t* save)
 
 	snprintf(hdd_path, sizeof(hdd_path), SAVES_PATH_HDD "%s/", apollo_config.user_id, save->dir_name);
 	if (dir_exists(hdd_path) == SUCCESS &&
-		!show_dialog(DIALOG_TYPE_YESNO, "Save-game %s already exists! Overwrite?", save->dir_name))
+		!show_dialog(DIALOG_TYPE_YESNO, _("Save-game %s already exists! Overwrite?"), save->dir_name))
 	{
-		show_message("Error! Save-game %s already exists", save->dir_name);
+		show_message(_("Error! Save-game %s already exists"), save->dir_name);
 		return;
 	}
 
@@ -1461,7 +1462,7 @@ static void resignTrophy(const save_entry_t* entry)
 
     pfd_util_end();
 
-	if ((file_exists("/dev_hdd0/mms/db.err") != SUCCESS) && show_dialog(DIALOG_TYPE_YESNO, "Schedule Database rebuild on next boot?"))
+	if ((file_exists("/dev_hdd0/mms/db.err") != SUCCESS) && show_dialog(DIALOG_TYPE_YESNO, _("Schedule Database rebuild on next boot?")))
 	{
 		LOG("Creating db.err file for database rebuild...");
 		write_buffer("/dev_hdd0/mms/db.err", (u8*) "\x00\x00\x03\xE9", 4);
@@ -1561,7 +1562,7 @@ static int deleteSave(const save_entry_t* save)
 {
 	int ret = 0;
 
-	if (!show_dialog(DIALOG_TYPE_YESNO, "Do you want to delete %s?", save->dir_name))
+	if (!show_dialog(DIALOG_TYPE_YESNO, _("Do you want to delete %s?"), save->dir_name))
 		return 0;
 
 	if (save->flags & SAVE_FLAG_PS1)
@@ -1675,7 +1676,7 @@ static void uploadSaveFTP(const save_entry_t* save)
 	int ret = 0;
 	struct tm t;
 
-	if (!show_dialog(DIALOG_TYPE_YESNO, "Do you want to upload %s?", save->dir_name))
+	if (!show_dialog(DIALOG_TYPE_YESNO, _("Do you want to upload %s?"), save->dir_name))
 		return;
 
 	init_loading_screen("Sync with FTP Server...");
