@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <soundlib/audioplayer.h>
+#include <mini18n.h>
 
 #include "menu.h"
 #include "saves.h"
@@ -122,13 +123,13 @@ static void usb_callback(int sel)
 
 static void db_url_callback(int sel)
 {
-	if (!osk_dialog_get_text("Enter the URL of the online database", apollo_config.save_db, sizeof(apollo_config.save_db)))
+	if (!osk_dialog_get_text(_("Enter the URL of the online database"), apollo_config.save_db, sizeof(apollo_config.save_db)))
 		return;
 	
 	if (apollo_config.save_db[strlen(apollo_config.save_db)-1] != '/')
 		strcat(apollo_config.save_db, "/");
 
-	show_message("Online database URL changed to:\n%s", apollo_config.save_db);
+	show_message("%s\n%s", _("Online database URL changed to:"), apollo_config.save_db);
 }
 
 static void ftp_url_callback(int sel)
@@ -306,6 +307,6 @@ static void redetect_callback(int sel)
 	reset_app_settings(&apollo_config);
 	stop_loading_screen();
 
-	show_message("IDs Updated! Account ID: %016lx\nPSID: %016lX %016lX\nIDPS: %016lX %016lX", 
+	show_message("%s\nAccount ID: %016lx\nPSID: %016lX %016lX\nIDPS: %016lX %016lX", _("User IDs Updated!"),
 		apollo_config.account_id, apollo_config.psid[0], apollo_config.psid[1], apollo_config.idps[0], apollo_config.idps[1]);
 }

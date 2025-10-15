@@ -9,6 +9,7 @@
 //----------------------------------------
 int is_char_integer(char c);
 int is_char_letter(char c);
+const char * get_user_language(void);
 
 //----------------------------------------
 //FILE UTILS
