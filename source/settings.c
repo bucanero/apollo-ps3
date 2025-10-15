@@ -266,12 +266,12 @@ void update_callback(int sel)
 	*end = 0;
 	LOG("download URL is %s", start);
 
-	if (show_dialog(DIALOG_TYPE_YESNO, "New version available! Download update?"))
+	if (show_dialog(DIALOG_TYPE_YESNO, _("New version available! Download update?")))
 	{
 		if (http_download(start, NULL, "/dev_hdd0/packages/apollo-ps3.pkg", 1))
-			show_message("Update downloaded to /dev_hdd0/packages/");
+			show_message("%s\n%s", _("Update downloaded to:"), "/dev_hdd0/packages/apollo-ps3.pkg");
 		else
-			show_message("Download error!");
+			show_message(_("Download error!"));
 	}
 
 end_update:
