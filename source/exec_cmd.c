@@ -429,7 +429,7 @@ static void enableWebServer(dWebReqHandler_t handler, void* data, int port)
 
 	if (dbg_webserver_start(port, handler, data))
 	{
-		show_message("Web Server listening on http://%s:%d\nPress OK to stop the Server.", ip_info.ip_address, port);
+		show_message("%s http://%s:%d\n%s", _("Web Server listening on:"), ip_info.ip_address, port, _("Press OK to stop the Server."));
 		dbg_webserver_stop();
 	}
 	else show_message(_("Error starting Web Server!"));
@@ -767,7 +767,7 @@ static void activateAccount(const char* ex_path)
 
 	snprintf(account_id, sizeof(account_id), "%016lx", 0x6F6C6C6F70610000 + (~apollo_config.user_id & 0xFFFF));
 	if ((apollo_config.account_id = get_account_id(apollo_config.user_id)) == 0 && (
-		!osk_dialog_get_text("Enter the Account ID", account_id, sizeof(account_id)) ||
+		!osk_dialog_get_text(_("Enter the Account ID"), account_id, sizeof(account_id)) ||
 		!sscanf(account_id, "%lx", &apollo_config.account_id)))
 	{
 		show_message(_("Error! Account ID is not valid"));
@@ -804,7 +804,7 @@ static void activateAccount(const char* ex_path)
 		}
 	}
 
-	show_message("%s\n%s", _("Account successfully activated!"), _("A system reboot might be required"));
+	show_message("%s\n%s", _("Account successfully activated!"), _("A system reboot is required"));
 }
 
 static void exportPSVfile(const char* in_file, int type, uint8_t dst)
@@ -1489,7 +1489,7 @@ static void decryptSaveFile(const save_entry_t* entry, const char* filename)
 	if (_is_decrypted(NULL, filename))
 	{
 		_copy_save_file(entry->path, path, filename);
-		show_message("Save-game %s is not encrypted. File was not decrypted:\n%s%s", entry->title_id, path, filename);
+		show_message("%s %s\n%s\n%s%s", _("Save-game is not encrypted:"), entry->title_id, _("File was not decrypted:"), path, filename);
 		return;
 	}
 
@@ -1519,7 +1519,7 @@ static void encryptSaveFile(const save_entry_t* entry, const char* filename)
 	if (_is_decrypted(NULL, filename))
 	{
 		_copy_save_file(path, entry->path, filename);
-		show_message("Save-game %s is not encrypted.\nFile %s was not encrypted", entry->title_id, filename);
+		show_message("%s %s\n%s %s", _("Save-game is not encrypted:"), entry->title_id, _("File was not encrypted:"), filename);
 		return;
 	}
 
@@ -1546,7 +1546,7 @@ static void downloadLink(const char* path)
 	char url[256] = "http://";
 	char out_path[256];
 
-	if (!osk_dialog_get_text("Download URL", url, sizeof(url)))
+	if (!osk_dialog_get_text(_("Download URL"), url, sizeof(url)))
 		return;
 
 	char *fname = strrchr(url, '/');

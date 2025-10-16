@@ -123,7 +123,7 @@ static void usb_callback(int sel)
 
 static void db_url_callback(int sel)
 {
-	if (!osk_dialog_get_text(_("Enter the URL of the online database"), apollo_config.save_db, sizeof(apollo_config.save_db)))
+	if (!osk_dialog_get_text(_("Enter the Online Database URL"), apollo_config.save_db, sizeof(apollo_config.save_db)))
 		return;
 	
 	if (apollo_config.save_db[strlen(apollo_config.save_db)-1] != '/')
@@ -138,7 +138,7 @@ static void ftp_url_callback(int sel)
 	char tmp[512];
 
 	strncpy(tmp, apollo_config.ftp_url[0] ? apollo_config.ftp_url : "ftp://user:pass@192.168.0.10:21/folder/", sizeof(tmp));
-	if (!osk_dialog_get_text("Enter the URL of the FTP server", tmp, sizeof(tmp)))
+	if (!osk_dialog_get_text(_("Enter the FTP server URL"), tmp, sizeof(tmp)))
 		return;
 
 	strncpy(apollo_config.ftp_url, tmp, sizeof(apollo_config.ftp_url));
@@ -172,10 +172,10 @@ static void ftp_url_callback(int sel)
 	if (ret)
 	{
 		server_callback(1);
-		show_message("FTP server URL changed to:\n%s", apollo_config.ftp_url);
+		show_message("%s\n%s", _("FTP server URL changed to:"), apollo_config.ftp_url);
 	}
 	else
-		show_message("Error! Couldn't connect to FTP server\n%s\n\nCheck debug logs for more information", apollo_config.ftp_url);
+		show_message("%s\n%s\n\n%s", _("Error! Couldn't connect to FTP server"), apollo_config.ftp_url, _("Check debug logs for more information"));
 }
 
 static void clearcache_callback(int sel)
@@ -183,13 +183,13 @@ static void clearcache_callback(int sel)
 	LOG("Cleaning folder '%s'...", APOLLO_LOCAL_CACHE);
 	clean_directory(APOLLO_LOCAL_CACHE, "");
 
-	show_message("Local cache folder cleaned:\n" APOLLO_LOCAL_CACHE);
+	show_message("%s\n%s", _("Local cache folder cleaned:"), APOLLO_LOCAL_CACHE);
 }
 
 void unzip_app_data(const char* zip_file)
 {
 	if (extract_zip(zip_file, APOLLO_DATA_PATH))
-		show_message("Successfully installed local application data");
+		show_message(_("Successfully installed local application data"));
 
 	unlink_secure(zip_file);
 }
@@ -293,12 +293,12 @@ static void log_callback(int sel)
 	if (!apollo_config.dbglog)
 	{
 		dbglogger_stop();
-		show_message("Debug Logging Disabled");
+		show_message(_("Debug Logging Disabled"));
 		return;
 	}
 
 	dbglogger_init_mode(FILE_LOGGER, "/dev_hdd0/tmp/apollo.log", 1);
-	show_message("Debug Logging Enabled!\n\n%s", "/dev_hdd0/tmp/apollo.log");
+	show_message("%s\n\n%s", _("Debug Logging Enabled!"), "/dev_hdd0/tmp/apollo.log");
 }
 
 static void redetect_callback(int sel)
