@@ -18,8 +18,8 @@ enum app_option_type
 
 typedef struct
 {
-	char * name;
-	char * * options;
+	const char * name;
+	const char * * options;
 	int type;
 	uint8_t * value;
 	void(*callback)(int);

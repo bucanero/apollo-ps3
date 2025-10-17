@@ -2,6 +2,7 @@
 #include <string.h>
 #include <pngdec/pngdec.h>
 #include <stdio.h>
+#include <mini18n.h>
 
 #include "saves.h"
 #include "menu.h"
@@ -13,7 +14,7 @@
 static void _draw_OptionsMenu(u8 alpha)
 {
 	int c = 0, w = 0, h = 0;
-	char *option_name;
+	const char *option_name;
 
     SetFontSize(APP_FONT_SIZE_SELECTION);
     int ind = 0, y_off = 120;
@@ -73,7 +74,7 @@ void Draw_OptionsMenu_Ani(void)
         
         tiny3d_Project2D();
         
-        DrawHeader_Ani(cat_opt_png_index, "Settings", NULL, APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
+        DrawHeader_Ani(cat_opt_png_index, _("Settings"), NULL, APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
         
 		u8 icon_a = (u8)(((ani * 2) > 0xFF) ? 0xFF : (ani * 2));
         int _game_a = (int)(icon_a - (MENU_ANI_MAX / 2)) * 2;
@@ -93,6 +94,6 @@ void Draw_OptionsMenu_Ani(void)
 
 void Draw_OptionsMenu(void)
 {
-    DrawHeader(cat_opt_png_index, 0, "Settings", NULL, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 0);
+    DrawHeader(cat_opt_png_index, 0, _("Settings"), NULL, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 0);
     _draw_OptionsMenu(0xFF);
 }

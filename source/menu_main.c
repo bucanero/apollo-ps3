@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <io/pad.h>
 #include <sys/process.h>
+#include <mini18n.h>
 
 #include "sfo.h"
 #include "saves.h"
@@ -15,7 +16,6 @@
 
 #include <tiny3d.h>
 #include <libfont.h>
-#include <mini18n.h>
 
 extern save_list_t hdd_saves;
 extern save_list_t usb_saves;
@@ -45,7 +45,10 @@ void initMenuOptions(void)
 {
 	menu_options_maxopt = 0;
 	while (menu_options[menu_options_maxopt].name)
+	{
+		menu_options[menu_options_maxopt].name = _(menu_options[menu_options_maxopt].name);
 		menu_options_maxopt++;
+	}
 
 	menu_options_maxsel = (int *)calloc(menu_options_maxopt, sizeof(int));
 
@@ -54,7 +57,10 @@ void initMenuOptions(void)
 		if (menu_options[i].type == APP_OPTION_LIST)
 		{
 			while (menu_options[i].options[menu_options_maxsel[i]])
+			{
+				menu_options[i].options[menu_options_maxsel[i]] = _(menu_options[i].options[menu_options_maxsel[i]]);
 				menu_options_maxsel[i]++;
+			}
 		}
 	}
 }
