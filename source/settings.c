@@ -8,9 +8,11 @@
 #include "saves.h"
 #include "common.h"
 
-static const char * db_opt[] = {"Online DB", "FTP Server", NULL};
-static const char * sort_opt[] = {"Disabled", "by Name", "by Title ID", "by Type", NULL};
-static const char * usb_src[] = {"USB 0", "USB 1", "USB 2", "USB 3", "USB 4", "USB 5", "USB 6", "Fake USB", "Auto-detect", NULL};
+#define _i18n(str) (str)
+
+static const char * db_opt[] = {_i18n("Online DB"), _i18n("FTP Server"), NULL};
+static const char * sort_opt[] = {_i18n("Disabled"), _i18n("by Name"), _i18n("by Title ID"), _i18n("by Type"), NULL};
+static const char * usb_src[] = {"USB 0", "USB 1", "USB 2", "USB 3", "USB 4", "USB 5", "USB 6", _i18n("Fake USB"), _i18n("Auto-detect"), NULL};
 
 static void usb_callback(int sel);	
 static void log_callback(int sel);

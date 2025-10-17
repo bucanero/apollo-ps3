@@ -95,7 +95,7 @@ png_texture * menu_textures;                // png_texture array for main menu, 
 */
 save_list_t hdd_saves = {
     .id = MENU_HDD_SAVES,
-    .title = "HDD Saves",
+    .title = NULL,
     .list = NULL,
     .path = "",
     .ReadList = &ReadUserList,
@@ -108,7 +108,7 @@ save_list_t hdd_saves = {
 */
 save_list_t usb_saves = {
     .id = MENU_USB_SAVES,
-    .title = "USB Saves",
+    .title = NULL,
     .list = NULL,
     .path = "",
     .ReadList = &ReadUsbList,
@@ -121,7 +121,7 @@ save_list_t usb_saves = {
 */
 save_list_t trophies = {
     .id = MENU_TROPHIES,
-    .title = "Trophies",
+    .title = NULL,
     .list = NULL,
     .path = "",
     .ReadList = &ReadTrophyList,
@@ -134,7 +134,7 @@ save_list_t trophies = {
 */
 save_list_t online_saves = {
     .id = MENU_ONLINE_DB,
-    .title = "Online Database",
+    .title = NULL,
     .list = NULL,
     .path = ONLINE_URL,
     .ReadList = &ReadOnlineList,
@@ -147,7 +147,7 @@ save_list_t online_saves = {
 */
 save_list_t user_backup = {
     .id = MENU_USER_BACKUP,
-    .title = "User Tools",
+    .title = NULL,
     .list = NULL,
     .path = "",
     .ReadList = &ReadBackupList,
@@ -160,7 +160,7 @@ save_list_t user_backup = {
 */
 save_list_t vmc1_saves = {
     .id = MENU_PS1VMC_SAVES,
-    .title = "PS1 Virtual Memory Card",
+    .title = NULL,
     .list = NULL,
     .path = "",
     .ReadList = &ReadVmc1List,
@@ -173,7 +173,7 @@ save_list_t vmc1_saves = {
 */
 save_list_t vmc2_saves = {
     .id = MENU_PS2VMC_SAVES,
-    .title = "PS2 Virtual Memory Card",
+    .title = NULL,
     .list = NULL,
     .path = "",
     .ReadList = &ReadVmc2List,
@@ -265,6 +265,7 @@ static void release_all(void)
 	}
 
 	http_end();
+	mini18n_close();
 	wait_save_thread();
 	sysModuleUnload(SYSMODULE_PNGDEC);
 
@@ -547,6 +548,23 @@ void update_vmc_path(char* path)
 	path[0] = 0;
 }
 
+static void initLocalization(void)
+{
+	char path[256];
+
+	snprintf(path, sizeof(path), APOLLO_DATA_PATH "lang_%s.po", get_user_language());
+	if (mini18n_set_locale(path) != SUCCESS)
+		LOG("Localization file not found: %s", path);
+
+	hdd_saves.title = _("HDD Saves");
+	usb_saves.title = _("USB Saves");
+	trophies.title = _("Trophies");
+	user_backup.title = _("User Tools");
+	online_saves.title = _("Online Database");
+	vmc1_saves.title = _("PS1 Virtual Memory Card");
+	vmc2_saves.title = _("PS2 Virtual Memory Card");
+}
+
 static void registerSpecialChars(void)
 {
 	// Register save tags
@@ -634,6 +652,7 @@ s32 main(s32 argc, const char* argv[])
 	SetCurrentFont(font_adonais_regular);
 
 	registerSpecialChars();
+	initLocalization();
 	initMenuOptions();
 
 	// Splash screen logo (fade-out)
