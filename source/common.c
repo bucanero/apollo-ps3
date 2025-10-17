@@ -286,7 +286,7 @@ const char * get_user_language(void)
 
     case SYSUTIL_LANG_CHINESE_T:            // 10   Chinese (traditional)
     case SYSUTIL_LANG_CHINESE_S:            // 11   Chinese (simplified)
-        return "ch";
+        return "zh";
 
     case SYSUTIL_LANG_FINNISH:              // 12   Finnish
         return "fi";
