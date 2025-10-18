@@ -1013,3 +1013,51 @@ msgstr "デバッグログ有効!"
 #: settings.c:312
 msgid "User IDs Updated!"
 msgstr "ユーザーIDを更新しました!"
+
+#: settings.c:29
+msgid "Background Music"
+msgstr "BGM"
+
+#: settings.c:35
+msgid "Menu Animations"
+msgstr "メニューアニメーション"
+
+#: settings.c:41
+msgid "Sort Saves"
+msgstr "セーブデータを並び替える"
+
+#: settings.c:47
+msgid "USB Saves Source"
+msgstr "USBの保存元"
+
+#: settings.c:53
+msgid "Version Update Check"
+msgstr "アップデートのチェック"
+
+#: settings.c:59
+msgid "Set User FTP Server URL"
+msgstr "FTPサーバーのURLを設定する"
+
+#: settings.c:65
+msgid "Online Saves Server"
+msgstr "セーブデータのサーバー"
+
+#: settings.c:71
+msgid "Update Application Data"
+msgstr "アプリケーションデータの更新"
+
+#: settings.c:77
+msgid "Change Online Database URL"
+msgstr "オンラインデータベースのURLを変更する"
+
+#: settings.c:83
+msgid "Clear Local Cache"
+msgstr "ローカルキャッシュを消去"
+
+#: settings.c:89
+msgid "Update Account & Console IDs"
+msgstr "アカウントとコンソールIDを更新する"
+
+#: settings.c:95
+msgid "Enable Debug Log"
+msgstr "デバッグログを有効化"
