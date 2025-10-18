@@ -1013,3 +1013,51 @@ msgstr "Journalisation de débogage activée !"
 #: settings.c:312
 msgid "User IDs Updated!"
 msgstr "Identifiants utilisateur mis à jour !"
+
+#: settings.c:29
+msgid "Background Music"
+msgstr "Musique de fond"
+
+#: settings.c:35
+msgid "Menu Animations"
+msgstr "Animations du menu"
+
+#: settings.c:41
+msgid "Sort Saves"
+msgstr "Trier les sauvegardes"
+
+#: settings.c:47
+msgid "USB Saves Source"
+msgstr "Source des sauvegardes USB"
+
+#: settings.c:53
+msgid "Version Update Check"
+msgstr "Vérification de la mise à jour de la version"
+
+#: settings.c:59
+msgid "Set User FTP Server URL"
+msgstr "Définir l'URL du serveur FTP utilisateur"
+
+#: settings.c:65
+msgid "Online Saves Server"
+msgstr "Serveur de sauvegardes en ligne"
+
+#: settings.c:71
+msgid "Update Application Data"
+msgstr "Mettre à jour les données de l'application""
+
+#: settings.c:77
+msgid "Change Online Database URL"
+msgstr "Modifier la base de données en ligne URL"
+
+#: settings.c:83
+msgid "Clear Local Cache"
+msgstr "Vider le cache local"
+
+#: settings.c:89
+msgid "Update Account & Console IDs"
+msgstr "Mettre à jour Identifiants de compte et Console"
+
+#: settings.c:95
+msgid "Enable Debug Log"
+msgstr "Activer le Journal de Débogage"
