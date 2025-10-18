@@ -625,10 +625,11 @@ s32 main(s32 argc, const char* argv[])
 	LoadTextures_Menu();
 	LoadSounds();
 
+	initLocalization();
 	// Unpack application data on first run
 	if (file_exists(APOLLO_LOCAL_CACHE "appdata.zip") == SUCCESS)
 	{
-		clean_directory(APOLLO_DATA_PATH, "");
+//		clean_directory(APOLLO_DATA_PATH, "");
 		unzip_app_data(APOLLO_LOCAL_CACHE "appdata.zip");
 	}
 
@@ -652,7 +653,6 @@ s32 main(s32 argc, const char* argv[])
 	SetCurrentFont(font_adonais_regular);
 
 	registerSpecialChars();
-	initLocalization();
 	initMenuOptions();
 
 	// Splash screen logo (fade-out)
