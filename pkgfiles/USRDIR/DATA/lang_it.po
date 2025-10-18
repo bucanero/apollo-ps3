@@ -1,0 +1,1015 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Apollo Save Tool\n"
+"POT-Creation-Date: 2025-10-17 16:54-0300\n"
+"PO-Revision-Date: 2025-10-17 17:46-0300\n"
+"Last-Translator: Traduzione italiana by theheroGAC\n"
+"Language-Team: x.com/TheheroGAC\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.8\n"
+"X-Poedit-Basepath: source\n"
+"X-Poedit-KeywordsList: _;_i18n\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: exec_cmd.c:51 exec_cmd.c:128 exec_cmd.c:189 exec_cmd.c:212 exec_cmd.c:560
+#: exec_cmd.c:597 exec_cmd.c:630 exec_cmd.c:818 exec_cmd.c:844 exec_cmd.c:930
+#: exec_cmd.c:999 exec_cmd.c:1023 exec_cmd.c:1058
+msgid "Error! Export folder is not available:"
+msgstr "Errore! Cartella di esportazione non disponibile:"
+
+#: exec_cmd.c:57
+msgid "Error downloading save game from:"
+msgstr "Errore nel download del salvataggio da:"
+
+#: exec_cmd.c:72 exec_cmd.c:97
+msgid "Error extracting save game!"
+msgstr "Errore nell'estrazione del salvataggio!"
+
+#: exec_cmd.c:82
+msgid "Save game already exists in:"
+msgstr "Salvataggio già esistente in:"
+
+#: exec_cmd.c:82
+msgid "Overwrite?"
+msgstr "Sovrascrivere?"
+
+#: exec_cmd.c:87
+msgid "Error creating save game folder!"
+msgstr "Errore nella creazione della cartella del salvataggio!"
+
+#: exec_cmd.c:95
+msgid "Save game successfully downloaded to:"
+msgstr "Salvataggio scaricato con successo in:"
+
+#: exec_cmd.c:162
+msgid "Error! Can't export save game to:"
+msgstr "Errore! Impossibile esportare il salvataggio in:"
+
+#: exec_cmd.c:166
+msgid "Zip file successfully saved to:"
+msgstr "File Zip salvato con successo in:"
+
+#: exec_cmd.c:197 exec_cmd.c:1084 exec_cmd.c:1120
+msgid "Files successfully copied to:"
+msgstr "File copiati con successo in:"
+
+#: exec_cmd.c:228
+msgid "Saves copied to USB"
+msgstr "Salvataggi copiati su USB"
+
+#: exec_cmd.c:256
+#, c-format
+msgid "Save-game %s already exists! Overwrite?"
+msgstr "Salvataggio %s già esistente! Sovrascrivere?"
+
+#: exec_cmd.c:258
+#, c-format
+msgid "Error! Save-game %s already exists"
+msgstr "Errore! Salvataggio %s già esistente"
+
+#: exec_cmd.c:267
+#, c-format
+msgid "Save-game %s copied to HDD"
+msgstr "Salvataggio %s copiato su HDD"
+
+#: exec_cmd.c:269
+#, c-format
+msgid "Error! Failed to copy Save-game %s"
+msgstr "Errore! Impossibile copiare il salvataggio %s"
+
+#: exec_cmd.c:432
+msgid "Web Server listening on:"
+msgstr "Web Server in ascolto su:"
+
+#: exec_cmd.c:432
+msgid "Press OK to stop the Server."
+msgstr "Premere OK per fermare il Server."
+
+#: exec_cmd.c:435
+msgid "Error starting Web Server!"
+msgstr "Errore nell'avvio del Web Server!"
+
+#: exec_cmd.c:509
+msgid "Saves copied to HDD"
+msgstr "Salvataggi copiati su HDD"
+
+#: exec_cmd.c:545
+msgid "All files extracted to:"
+msgstr "Tutti i file estratti in:"
+
+#: exec_cmd.c:547
+#, c-format
+msgid "Error: %s couldn't be extracted"
+msgstr "Errore: %s non può essere estratto"
+
+#: exec_cmd.c:586
+msgid "Licenses successfully saved to:"
+msgstr "Licenze salvate con successo in:"
+
+#: exec_cmd.c:616
+msgid "Files successfully saved to:"
+msgstr "File salvati con successo in:"
+
+#: exec_cmd.c:654
+msgid "Error! Failed to export Trophies to Zip"
+msgstr "Errore! Impossibile esportare i Trofei in Zip"
+
+#: exec_cmd.c:658
+msgid "Trophies successfully saved to:"
+msgstr "Trofei salvati con successo in:"
+
+#: exec_cmd.c:669
+msgid "Error! Trophy folder is not available:"
+msgstr "Errore! Cartella trofei non disponibile:"
+
+#: exec_cmd.c:682
+msgid "Trophy successfully copied to:"
+msgstr "Trofeo copiato con successo in:"
+
+#: exec_cmd.c:715
+msgid "Saves exported to:"
+msgstr "Salvataggi esportati in:"
+
+#: exec_cmd.c:735 exec_cmd.c:1838
+msgid "Save successfully exported to:"
+msgstr "Salvataggio esportato con successo in:"
+
+#: exec_cmd.c:737 exec_cmd.c:1840
+msgid "Error exporting save:"
+msgstr "Errore nell'esportazione del salvataggio:"
+
+#: exec_cmd.c:746
+msgid "File successfully resigned!"
+msgstr "File re-firmato con successo!"
+
+#: exec_cmd.c:758
+msgid "Error! The account already has an act.dat"
+msgstr "Errore! L'account ha già un act.dat"
+
+#: exec_cmd.c:764
+msgid "Error! Folder is not available:"
+msgstr "Errore! Cartella non disponibile:"
+
+#: exec_cmd.c:770
+msgid "Enter the Account ID"
+msgstr "Inserisci l'ID Account"
+
+#: exec_cmd.c:773
+msgid "Error! Account ID is not valid"
+msgstr "Errore! ID Account non valido"
+
+#: exec_cmd.c:781
+msgid "Error! Fake Account could not be assigned to xRegistry.sys"
+msgstr "Errore! Impossibile assegnare l'account falso a xRegistry.sys"
+
+#: exec_cmd.c:790
+msgid "Error! Account could not be activated!"
+msgstr "Errore! Impossibile attivare l'account!"
+
+#: exec_cmd.c:807
+msgid "Account successfully activated!"
+msgstr "Account attivato con successo!"
+
+#: exec_cmd.c:807
+msgid "A system reboot is required"
+msgstr "È necessario un riavvio del sistema"
+
+#: exec_cmd.c:831 exec_cmd.c:883 exec_cmd.c:918 exec_cmd.c:942 exec_cmd.c:961
+#: exec_cmd.c:978 exec_cmd.c:1008
+msgid "File successfully saved to:"
+msgstr "File salvato con successo in:"
+
+#: exec_cmd.c:833
+#, c-format
+msgid "Error! Failed to export .%s file"
+msgstr "Errore! Impossibile esportare il file .%s"
+
+#: exec_cmd.c:885
+msgid "Error! Failed to convert save file"
+msgstr "Errore! Impossibile convertire il file di salvataggio"
+
+#: exec_cmd.c:900
+msgid "File successfully imported to:"
+msgstr "File importato con successo in:"
+
+#: exec_cmd.c:902
+msgid "Error! Failed to import PS2 memory card"
+msgstr "Errore! Impossibile importare la memory card PS2"
+
+#: exec_cmd.c:944
+msgid "Error! Failed to export PS2 memory card"
+msgstr "Errore! Impossibile esportare la memory card PS2"
+
+#: exec_cmd.c:1040
+msgid "Trophy Sets copied to:"
+msgstr "Set di trofei copiati in:"
+
+#: exec_cmd.c:1095
+msgid "Error! Import folder is not available:"
+msgstr "Errore! Cartella di importazione non disponibile:"
+
+#: exec_cmd.c:1304 exec_cmd.c:1442
+msgid "Error! Account changes couldn't be applied"
+msgstr "Errore! Impossibile applicare le modifiche all'account"
+
+#: exec_cmd.c:1308
+msgid "Error! Cheat codes couldn't be applied"
+msgstr "Errore! Impossibile applicare i cheat code"
+
+#: exec_cmd.c:1313
+#, c-format
+msgid "Error! Save %s couldn't be resigned"
+msgstr "Errore! Impossibile re-firmare il salvataggio %s"
+
+#: exec_cmd.c:1315
+#, c-format
+msgid "Save %s successfully modified!"
+msgstr "Salvataggio %s modificato con successo!"
+
+#: exec_cmd.c:1368
+#, c-format
+msgid "Error: %d Saves couldn't be resigned"
+msgstr "Errore: %d salvataggi non possono essere re-firmati"
+
+#: exec_cmd.c:1370
+msgid "All saves successfully resigned!"
+msgstr "Tutti i salvataggi re-firmati con successo!"
+
+#: exec_cmd.c:1446
+msgid "Error! Trophy changes couldn't be applied"
+msgstr "Errore! Impossibile applicare le modifiche ai trofei"
+
+#: exec_cmd.c:1459
+#, c-format
+msgid "Error! Trophy %s couldn't be resigned"
+msgstr "Errore! Impossibile re-firmare il trofeo %s"
+
+#: exec_cmd.c:1461
+#, c-format
+msgid "Trophy %s successfully modified!"
+msgstr "Trofeo %s modificato con successo!"
+
+#: exec_cmd.c:1465
+msgid "Schedule Database rebuild on next boot?"
+msgstr "Pianificare la ricostruzione del Database al prossimo avvio?"
+
+#: exec_cmd.c:1492 exec_cmd.c:1522
+msgid "Save-game is not encrypted:"
+msgstr "Il salvataggio non è criptato:"
+
+#: exec_cmd.c:1492
+msgid "File was not decrypted:"
+msgstr "File non decrittato:"
+
+#: exec_cmd.c:1501
+msgid "File successfully decrypted to:"
+msgstr "File decrittato con successo in:"
+
+#: exec_cmd.c:1503
+#, c-format
+msgid "Error! File %s couldn't be decrypted"
+msgstr "Errore! Impossibile decrittare il file %s"
+
+#: exec_cmd.c:1514
+msgid "Error! Can't find decrypted save-game file:"
+msgstr "Errore! Impossibile trovare il file di salvataggio decrittato:"
+
+#: exec_cmd.c:1522
+msgid "File was not encrypted:"
+msgstr "File non criptato:"
+
+#: exec_cmd.c:1532
+msgid "File successfully encrypted to:"
+msgstr "File criptato con successo in:"
+
+#: exec_cmd.c:1534
+#, c-format
+msgid "Error! File %s couldn't be encrypted"
+msgstr "Errore! Impossibile criptare il file %s"
+
+#: exec_cmd.c:1549
+msgid "Download URL"
+msgstr "URL Download"
+
+#: exec_cmd.c:1556
+msgid "File successfully downloaded to:"
+msgstr "File scaricato con successo in:"
+
+#: exec_cmd.c:1558
+msgid "Error! File couldn't be downloaded"
+msgstr "Errore! Impossibile scaricare il file"
+
+#: exec_cmd.c:1565
+#, c-format
+msgid "Do you want to delete %s?"
+msgstr "Vuoi eliminare %s?"
+
+#: exec_cmd.c:1582
+msgid "Save successfully deleted:"
+msgstr "Salvataggio eliminato con successo:"
+
+#: exec_cmd.c:1584
+msgid "Error! Couldn't delete save:"
+msgstr "Errore! Impossibile eliminare il salvataggio:"
+
+#: exec_cmd.c:1679
+#, c-format
+msgid "Do you want to upload %s?"
+msgstr "Vuoi caricare %s?"
+
+#: exec_cmd.c:1717
+msgid "Error! Couldn't zip save:"
+msgstr "Errore! Impossibile comprimere il salvataggio:"
+
+#: exec_cmd.c:1773
+msgid "Save successfully uploaded:"
+msgstr "Salvataggio caricato con successo:"
+
+#: exec_cmd.c:1775
+msgid "Error! Couldn't upload save:"
+msgstr "Errore! Impossibile caricare il salvataggio:"
+
+#: exec_cmd.c:1788
+msgid "Memory card successfully imported to:"
+msgstr "Memory card importata con successo in:"
+
+#: exec_cmd.c:1790
+msgid "Error importing memory card:"
+msgstr "Errore nell'importazione della memory card:"
+
+#: exec_cmd.c:1802
+msgid "Memory card successfully exported to:"
+msgstr "Memory card esportata con successo in:"
+
+#: exec_cmd.c:1804
+msgid "Error exporting memory card:"
+msgstr "Errore nell'esportazione della memory card:"
+
+#: exec_cmd.c:1879
+msgid "Successfully imported to VMC:"
+msgstr "Importato con successo in VMC:"
+
+#: exec_cmd.c:1881
+msgid "Error importing save:"
+msgstr "Errore nell'importazione del salvataggio:"
+
+#: exec_cmd.c:2040
+msgid "Memory card successfully resigned:"
+msgstr "Memory card re-firmata con successo:"
+
+#: exec_cmd.c:2042
+msgid "Error resigning memory card:"
+msgstr "Errore nel re-firmare la memory card:"
+
+#: exec_cmd.c:2064
+msgid "Save successfully imported:"
+msgstr "Salvataggio importato con successo:"
+
+#: exec_cmd.c:2066
+msgid "Error! Couldn't import save:"
+msgstr "Errore! Impossibile importare il salvataggio:"
+
+#: main.c:194 main.c:198 main.c:203 main.c:213
+msgid "Select"
+msgstr "Seleziona"
+
+#: main.c:194 main.c:198 main.c:203 main.c:209 main.c:213
+msgid "Back"
+msgstr "Indietro"
+
+#: main.c:194 menu_cheats.c:267
+msgid "Details"
+msgstr "Dettagli"
+
+#: main.c:194 main.c:198
+msgid "Refresh"
+msgstr "Aggiorna"
+
+#: main.c:213
+msgid "View Code"
+msgstr "Visualizza Codice"
+
+#: main.c:217
+msgid "Value Up"
+msgstr "Aumenta Valore"
+
+#: main.c:217
+msgid "Value Down"
+msgstr "Diminuisci Valore"
+
+#: main.c:217
+msgid "Exit"
+msgstr "Esci"
+
+#: main.c:560
+msgid "HDD Saves"
+msgstr "Salvataggi HDD"
+
+#: main.c:561
+msgid "USB Saves"
+msgstr "Salvataggi USB"
+
+#: main.c:562 saves.c:590
+msgid "Trophies"
+msgstr "Trofei"
+
+#: main.c:563
+msgid "User Tools"
+msgstr "Strumenti Utente"
+
+#: main.c:564
+msgid "Online Database"
+msgstr "Database Online"
+
+#: main.c:565
+msgid "PS1 Virtual Memory Card"
+msgstr "Memory Card Virtuale PS1"
+
+#: main.c:566
+msgid "PS2 Virtual Memory Card"
+msgstr "Memory Card Virtuale PS2"
+
+#: menu_about.c:109
+msgid "Console details:"
+msgstr "Dettagli console:"
+
+#: menu_about.c:143 menu_about.c:186
+msgid "About"
+msgstr "Informazioni"
+
+#: menu_cheats.c:115 menu_cheats.c:150 menu_cheats.c:170
+msgid "Options"
+msgstr "Opzioni"
+
+#: menu_cheats.c:214
+msgid "Target File:"
+msgstr "File di destinazione:"
+
+#: menu_cheats.c:520
+msgid "Saves"
+msgstr "Salvataggi"
+
+#: menu_cheats.c:524
+msgid "Games"
+msgstr "Giochi"
+
+#: menu_cheats.c:528
+msgid "Trophy-Sets"
+msgstr "Set-Trofei"
+
+#: menu_cheats.c:532
+msgid "Tools"
+msgstr "Strumenti"
+
+#: menu_cheats.c:536
+msgid "PS1 Saves"
+msgstr "Salvataggi PS1"
+
+#: menu_cheats.c:540
+msgid "PS2 Saves"
+msgstr "Salvataggi PS2"
+
+#: menu_hex.c:59 menu_hex.c:79
+msgid "Hex Editor"
+msgstr "Editor Esadecimale"
+
+#: menu_main.c:114
+msgid "No save-games found"
+msgstr "Nessun salvataggio trovato"
+
+#: menu_main.c:554
+msgid "No data found in folder:"
+msgstr "Nessun dato trovato nella cartella:"
+
+#: menu_main.c:609
+msgid "Exit to XMB?"
+msgstr "Uscire verso XMB?"
+
+#: menu_main.c:760
+#, c-format
+msgid "Save changes to %s?"
+msgstr "Salvare le modifiche in %s?"
+
+#: menu_main.c:861
+msgid "Failed to load:"
+msgstr "Caricamento fallito:"
+
+#: menu_options.c:77 menu_options.c:97
+msgid "Settings"
+msgstr "Impostazioni"
+
+#: saves.c:218
+msgid "Apply Changes & Resign"
+msgstr "Applica Modifiche & Re-firma"
+
+#: saves.c:221 saves.c:351 saves.c:756 saves.c:911
+msgid "View Save Details"
+msgstr "Visualizza Dettagli Salvataggio"
+
+#: saves.c:225
+msgid "File Backup"
+msgstr "Backup File"
+
+#: saves.c:230
+msgid "Copy save game to USB"
+msgstr "Copia salvataggio su USB"
+
+#: saves.c:231
+msgid "Copy Save to USB"
+msgstr "Copia Salvataggio su USB"
+
+#: saves.c:236 saves.c:768 saves.c:923
+msgid "Upload save backup to FTP"
+msgstr "Carica backup salvataggio su FTP"
+
+#: saves.c:242
+msgid "Copy save game to HDD"
+msgstr "Copia salvataggio su HDD"
+
+#: saves.c:245
+msgid "Delete save game"
+msgstr "Elimina salvataggio"
+
+#: saves.c:249
+msgid "Export save game to Zip"
+msgstr "Esporta salvataggio in Zip"
+
+#: saves.c:250
+msgid "Export Zip to USB"
+msgstr "Esporta Zip su USB"
+
+#: saves.c:252
+msgid "Export Zip to HDD"
+msgstr "Esporta Zip su HDD"
+
+#: saves.c:257
+msgid "Decrypt save game files"
+msgstr "Decritta file di salvataggio"
+
+#: saves.c:262
+msgid "Import decrypted save files"
+msgstr "Importa file di salvataggio decrittati"
+
+#: saves.c:267
+msgid "Hex Edit save game files"
+msgstr "Modifica Esadecimale file di salvataggio"
+
+#: saves.c:311
+msgid "SFO Patches"
+msgstr "Patch SFO"
+
+#: saves.c:314
+msgid "Change Account ID"
+msgstr "Cambia ID Account"
+
+#: saves.c:331
+msgid "Remove Console ID"
+msgstr "Rimuovi ID Console"
+
+#: saves.c:336
+msgid "Remove copy protection"
+msgstr "Rimuovi protezione copia"
+
+#: saves.c:340
+msgid "Change Region Title ID"
+msgstr "Cambia ID Titolo Regione"
+
+#: saves.c:362 saves.c:2196
+msgid "Virtual Memory Card"
+msgstr "Memory Card Virtuale"
+
+#: saves.c:367
+msgid "Resign Memory Card"
+msgstr "Re-firma Memory Card"
+
+#: saves.c:371
+msgid "Export Memory Card to .VM1"
+msgstr "Esporta Memory Card in .VM1"
+
+#: saves.c:375
+msgid "Import .VM1 file to"
+msgstr "Importa file .VM1 in"
+
+#: saves.c:418
+msgid "Cheats"
+msgstr "Trucchi"
+
+#: saves.c:421
+msgid "View Raw Patch File"
+msgstr "Visualizza File Patch Grezzo"
+
+#: saves.c:576
+msgid "Apply Changes & Resign Trophy Set"
+msgstr "Applica Modifiche & Re-firma Set Trofei"
+
+#: saves.c:579
+msgid "Backup Trophy Set to USB"
+msgstr "Backup Set Trofei su USB"
+
+#: saves.c:581
+msgid "Copy Trophy to USB"
+msgstr "Copia Trofeo su USB"
+
+#: saves.c:584
+msgid "Export Trophy Set to Zip"
+msgstr "Esporta Set Trofei in Zip"
+
+#: saves.c:586 saves.c:1291 saves.c:2334
+msgid "Save .Zip to USB"
+msgstr "Salva .Zip su USB"
+
+#: saves.c:759 saves.c:914
+msgid "Delete Save Game"
+msgstr "Elimina Salvataggio"
+
+#: saves.c:763 saves.c:918
+msgid "Save Game Backup"
+msgstr "Backup Salvataggio"
+
+#: saves.c:772
+msgid "Export save game to .MCS format"
+msgstr "Esporta salvataggio in formato .MCS"
+
+#: saves.c:773
+msgid "Copy .MCS Save to USB"
+msgstr "Copia Salvataggio .MCS su USB"
+
+#: saves.c:775
+msgid "Copy .MCS Save to HDD"
+msgstr "Copia Salvataggio .MCS su HDD"
+
+#: saves.c:781 saves.c:936
+msgid "Export save game to .PSV format"
+msgstr "Esporta salvataggio in formato .PSV"
+
+#: saves.c:782
+msgid "Copy .PSV Save to USB"
+msgstr "Copia Salvataggio .PSV su USB"
+
+#: saves.c:784
+msgid "Copy .PSV Save to HDD"
+msgstr "Copia Salvataggio .PSV su HDD"
+
+#: saves.c:790
+msgid "Export save game to .PSX format"
+msgstr "Esporta salvataggio in formato .PSX"
+
+#: saves.c:791
+msgid "Copy .PSX Save to USB"
+msgstr "Copia Salvataggio .PSX su USB"
+
+#: saves.c:793
+msgid "Copy .PSX Save to HDD"
+msgstr "Copia Salvataggio .PSX su HDD"
+
+#: saves.c:927
+msgid "Export save game to .PSU format"
+msgstr "Esporta salvataggio in formato .PSU"
+
+#: saves.c:928
+msgid "Export .PSU save to USB"
+msgstr "Esporta salvataggio .PSU su USB"
+
+#: saves.c:930
+msgid "Export .PSU save to HDD"
+msgstr "Esporta salvataggio .PSU su HDD"
+
+#: saves.c:937
+msgid "Export .PSV save to USB"
+msgstr "Esporta salvataggio .PSV su USB"
+
+#: saves.c:939
+msgid "Export .PSV save to HDD"
+msgstr "Esporta salvataggio .PSV su HDD"
+
+#: saves.c:1007
+msgid "Download to USB"
+msgstr "Scarica su USB"
+
+#: saves.c:1009
+msgid "Download to HDD"
+msgstr "Scarica su HDD"
+
+#: saves.c:1039
+msgid "Export Licenses"
+msgstr "Esporta Licenze"
+
+#: saves.c:1045
+msgid "Activate PS3 Account"
+msgstr "Attiva Account PS3"
+
+#: saves.c:1056
+msgid "Import Licenses"
+msgstr "Importa Licenze"
+
+#: saves.c:1062 saves.c:1093
+msgid "PS2 Classics: Import & Encrypt ISOs"
+msgstr "PS2 Classics: Importa & Cripta ISO"
+
+#: saves.c:1068
+msgid "Import PS2 raw memory cards"
+msgstr "Importa memory card PS2 grezze"
+
+#: saves.c:1074
+msgid "Convert PS1 saves to .PSV format"
+msgstr "Converti salvataggi PS1 in formato .PSV"
+
+#: saves.c:1080
+msgid "Convert PS2 saves to .PSV format"
+msgstr "Converti salvataggi PS2 in formato .PSV"
+
+#: saves.c:1086
+msgid "Convert/Resign .PSV saves"
+msgstr "Converti/Re-firma salvataggi .PSV"
+
+#: saves.c:1099
+msgid "PS2 Classics: Export & Decrypt BIN.ENC images"
+msgstr "PS2 Classics: Esporta & Decritta immagini BIN.ENC"
+
+#: saves.c:1105
+msgid "Export /dev_flash2"
+msgstr "Esporta /dev_flash2"
+
+#: saves.c:1108
+msgid "Backup /dev_flash2 to USB"
+msgstr "Backup /dev_flash2 su USB"
+
+#: saves.c:1109
+msgid "Save dev_flash2.zip to USB"
+msgstr "Salva dev_flash2.zip su USB"
+
+#: saves.c:1113
+msgid "Extract Archives (RAR, Zip, 7z)"
+msgstr "Estrai Archivi (RAR, Zip, 7z)"
+
+#: saves.c:1119
+msgid "Network Tools (Downloader, Web Server)"
+msgstr "Strumenti di Rete (Downloader, Web Server)"
+
+#: saves.c:1142
+msgid "Encrypt: "
+msgstr "Cripta: "
+
+#: saves.c:1178
+msgid "Decrypt: "
+msgstr "Decritta: "
+
+#: saves.c:1180
+msgid "Save .ISO to USB"
+msgstr "Salva .ISO su USB"
+
+#: saves.c:1182
+msgid "Save .ISO to HDD"
+msgstr "Salva .ISO su HDD"
+
+#: saves.c:1219
+#, c-format
+msgid "Import '%s' to .VM2 (HDD)"
+msgstr "Importa '%s' in .VM2 (HDD)"
+
+#: saves.c:1258
+msgid "Extract:"
+msgstr "Estrai:"
+
+#: saves.c:1290
+msgid "Backup All Licenses to .Zip"
+msgstr "Backup di Tutte le Licenze in .Zip"
+
+#: saves.c:1294
+msgid "Export All Licenses as .RAPs"
+msgstr "Esporta Tutte le Licenze come .RAP"
+
+#: saves.c:1295
+msgid "Save .RAPs to USB"
+msgstr "Salva .RAP su USB"
+
+#: saves.c:1297
+msgid "Save .RAPs to HDD"
+msgstr "Salva .RAP su HDD"
+
+#: saves.c:1305
+msgid "Import All .RAPs as .RIF Licenses"
+msgstr "Importa Tutti i .RAP come Licenze .RIF"
+
+#: saves.c:1323
+msgid "Save .RAP to USB"
+msgstr "Salva .RAP su USB"
+
+#: saves.c:1325
+msgid "Save .RAP to HDD"
+msgstr "Salva .RAP su HDD"
+
+#: saves.c:1399
+msgid "Export Save to .MCS format - USB"
+msgstr "Esporta Salvataggio in formato .MCS - USB"
+
+#: saves.c:1404
+msgid "Export Save to .PSU format - USB"
+msgstr "Esporta Salvataggio in formato .PSU - USB"
+
+#: saves.c:1409
+msgid "Resign .PSV Save"
+msgstr "Re-firma Salvataggio .PSV"
+
+#: saves.c:1566
+msgid "Activate PS3 Account (act.dat)"
+msgstr "Attiva Account PS3 (act.dat)"
+
+#: saves.c:1572
+msgid "URL link Downloader (http, https, ftp, ftps)"
+msgstr "Downloader link URL (http, https, ftp, ftps)"
+
+#: saves.c:1574
+msgid "Local Web Server (full system access)"
+msgstr "Web Server Locale (accesso completo al sistema)"
+
+#: saves.c:1888 saves.c:1936
+msgid "Bulk Save Management"
+msgstr "Gestione Salvataggi in Blocco"
+
+#: saves.c:1896 saves.c:1944
+msgid "Resign & Unlock all Saves"
+msgstr "Re-firma & Sblocca tutti i Salvataggi"
+
+#: saves.c:1899 saves.c:1947
+msgid "Resign & Unlock selected Saves"
+msgstr "Re-firma & Sblocca salvataggi selezionati"
+
+#: saves.c:1902 saves.c:2107 saves.c:2191
+msgid "Copy all Saves to USB"
+msgstr "Copia tutti i Salvataggi su USB"
+
+#: saves.c:1903 saves.c:1907
+msgid "Copy Saves to USB"
+msgstr "Copia Salvataggi su USB"
+
+#: saves.c:1906 saves.c:2104 saves.c:2188
+msgid "Copy selected Saves to USB"
+msgstr "Copia salvataggi selezionati su USB"
+
+#: saves.c:1910 saves.c:1956
+msgid "Start local Web Server"
+msgstr "Avvia Web Server locale"
+
+#: saves.c:1950
+msgid "Copy all Saves to HDD"
+msgstr "Copia tutti i Salvataggi su HDD"
+
+#: saves.c:1953
+msgid "Copy selected Saves to HDD"
+msgstr "Copia salvataggi selezionati su HDD"
+
+#: saves.c:2094 saves.c:2178
+msgid "Memory Card Management"
+msgstr "Gestione Memory Card"
+
+#: saves.c:2103 saves.c:2187
+msgid "Export selected Saves to USB"
+msgstr "Esporta salvataggi selezionati su USB"
+
+#: saves.c:2106 saves.c:2190
+msgid "Export all Saves to USB"
+msgstr "Esporta tutti i Salvataggi su USB"
+
+#: saves.c:2112 saves.c:2125 saves.c:2225 saves.c:2237
+msgid "Import Saves to Virtual Card"
+msgstr "Importa Salvataggi in Memory Card Virtuale"
+
+#: saves.c:2201
+msgid "Export Memory Card to .VM2 format"
+msgstr "Esporta Memory Card in formato .VM2"
+
+#: saves.c:2203
+msgid "Save .VM2 Memory Card to USB"
+msgstr "Salva Memory Card .VM2 su USB"
+
+#: saves.c:2205
+msgid "Save .VM2 Memory Card to HDD"
+msgstr "Salva Memory Card .VM2 su HDD"
+
+#: saves.c:2211
+msgid "Export Memory Card to .VMC format (No ECC)"
+msgstr "Esporta Memory Card in formato .VMC (No ECC)"
+
+#: saves.c:2213
+msgid "Save .VMC Memory Card to USB"
+msgstr "Salva Memory Card .VMC su USB"
+
+#: saves.c:2218
+msgid "Import a .VM2 file to Memory Card"
+msgstr "Importa un file .VM2 in Memory Card"
+
+#: saves.c:2319
+msgid "Export Trophies"
+msgstr "Esporta Trofei"
+
+#: saves.c:2327
+msgid "Backup selected Trophies to USB"
+msgstr "Backup trofei selezionati su USB"
+
+#: saves.c:2328 saves.c:2331
+msgid "Save Trophies to USB"
+msgstr "Salva Trofei su USB"
+
+#: saves.c:2330
+msgid "Backup All Trophies to USB"
+msgstr "Backup di Tutti i Trofei su USB"
+
+#: saves.c:2333
+msgid "Export All Trophies to .Zip"
+msgstr "Esporta Tutti i Trofei in .Zip"
+
+#: saves.c:2344
+msgid "Import Trophies"
+msgstr "Importa Trofei"
+
+#: settings.c:13
+msgid "Online DB"
+msgstr "DB Online"
+
+#: settings.c:13
+msgid "FTP Server"
+msgstr "Server FTP"
+
+#: settings.c:14
+msgid "Disabled"
+msgstr "Disabilitato"
+
+#: settings.c:14
+msgid "by Name"
+msgstr "per Nome"
+
+#: settings.c:14
+msgid "by Title ID"
+msgstr "per ID Titolo"
+
+#: settings.c:14
+msgid "by Type"
+msgstr "per Tipo"
+
+#: settings.c:15
+msgid "Fake USB"
+msgstr "USB Finto"
+
+#: settings.c:15
+msgid "Auto-detect"
+msgstr "Auto-rileva"
+
+#: settings.c:128
+msgid "Enter the Online Database URL"
+msgstr "Inserisci l'URL del Database Online"
+
+#: settings.c:134
+msgid "Online database URL changed to:"
+msgstr "URL database online cambiato in:"
+
+#: settings.c:143
+msgid "Enter the FTP server URL"
+msgstr "Inserisci l'URL del server FTP"
+
+#: settings.c:177
+msgid "FTP server URL changed to:"
+msgstr "URL server FTP cambiato in:"
+
+#: settings.c:180
+msgid "Error! Couldn't connect to FTP server"
+msgstr "Errore! Impossibile connettersi al server FTP"
+
+#: settings.c:180
+msgid "Check debug logs for more information"
+msgstr "Controlla i log di debug per maggiori informazioni"
+
+#: settings.c:188
+msgid "Local cache folder cleaned:"
+msgstr "Cartella cache locale pulita:"
+
+#: settings.c:194
+msgid "Successfully installed local application data"
+msgstr "Dati applicazione locale installati con successo"
+
+#: settings.c:271
+msgid "New version available! Download update?"
+msgstr "Nuova versione disponibile! Scaricare l'aggiornamento?"
+
+#: settings.c:274
+msgid "Update downloaded to:"
+msgstr "Aggiornamento scaricato in:"
+
+#: settings.c:276
+msgid "Download error!"
+msgstr "Errore di download!"
+
+#: settings.c:298
+msgid "Debug Logging Disabled"
+msgstr "Log Debug Disabilitato"
+
+#: settings.c:303
+msgid "Debug Logging Enabled!"
+msgstr "Log Debug Abilitato!"
+
+#: settings.c:312
+msgid "User IDs Updated!"
+msgstr "ID Utente Aggiornati!"
