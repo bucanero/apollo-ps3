@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Apollo Save Tool\n"
 "POT-Creation-Date: 2025-10-17 16:54-0300\n"
-"PO-Revision-Date: 2025-10-17 20:08-0300\n"
+"PO-Revision-Date: 2025-10-18 12:24-0300\n"
 "Last-Translator: Phoenixx1202\n"
 "Language-Team: github.com/Phoenixx1202\n"
 "Language: pt_BR\n"
@@ -1013,3 +1013,51 @@ msgstr "Registro de Depuração Habilitado!"
 #: settings.c:312
 msgid "User IDs Updated!"
 msgstr "IDs de Usuário Atualizados!"
+
+#: settings.c:29
+msgid "Background Music"
+msgstr "Música de Fundo"
+
+#: settings.c:35
+msgid "Menu Animations"
+msgstr "Animações do Menu"
+
+#: settings.c:41
+msgid "Sort Saves"
+msgstr "Ordenar Dados Salvos"
+
+#: settings.c:47
+msgid "USB Saves Source"
+msgstr "Fonte dos Dados Salvos no USB"
+
+#: settings.c:53
+msgid "Version Update Check"
+msgstr "Verificar Atualização da Versão"
+
+#: settings.c:59
+msgid "Set User FTP Server URL"
+msgstr "Definir URL do Servidor FTP do Usuário"
+
+#: settings.c:65
+msgid "Online Saves Server"
+msgstr "Servidor de Dados Salvos Online"
+
+#: settings.c:71
+msgid "Update Application Data"
+msgstr "Atualizar Dados do Aplicativo"
+
+#: settings.c:77
+msgid "Change Online Database URL"
+msgstr "Alterar URL do Banco de Dados Online"
+
+#: settings.c:83
+msgid "Clear Local Cache"
+msgstr "Limpar Cache Local"
+
+#: settings.c:89
+msgid "Update Account & Console IDs"
+msgstr "Atualizar IDs de Conta e Console"
+
+#: settings.c:95
+msgid "Enable Debug Log"
+msgstr "Habilitar Log de Depuração"

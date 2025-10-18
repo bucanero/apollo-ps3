@@ -486,7 +486,7 @@ msgstr "Nessun dato trovato nella cartella:"
 
 #: menu_main.c:609
 msgid "Exit to XMB?"
-msgstr "Uscire verso XMB?"
+msgstr "Uscire e ritornare alla XMB?"
 
 #: menu_main.c:760
 #, c-format
@@ -1013,3 +1013,51 @@ msgstr "Log Debug Abilitato!"
 #: settings.c:312
 msgid "User IDs Updated!"
 msgstr "ID Utente Aggiornati!"
+
+#: settings.c:29
+msgid "Background Music"
+msgstr "Musica di Sottofondo"
+
+#: settings.c:35
+msgid "Menu Animations"
+msgstr "Animazioni Menu"
+
+#: settings.c:41
+msgid "Sort Saves"
+msgstr "Ordina Salvataggi"
+
+#: settings.c:47
+msgid "USB Saves Source"
+msgstr "Sorgente Salvataggi USB"
+
+#: settings.c:53
+msgid "Version Update Check"
+msgstr "Controllo Aggiornamenti Versione"
+
+#: settings.c:59
+msgid "Set User FTP Server URL"
+msgstr "Imposta FTP URL Server"
+
+#: settings.c:65
+msgid "Online Saves Server"
+msgstr "Server Salvataggio Online"
+
+#: settings.c:71
+msgid "Update Application Data"
+msgstr "Aggiorna Dati Applicazione"
+
+#: settings.c:77
+msgid "Change Online Database URL"
+msgstr "Cambia URL Database Online"
+
+#: settings.c:83
+msgid "Clear Local Cache"
+msgstr "Svuota Cache Locale"
+
+#: settings.c:89
+msgid "Update Account & Console IDs"
+msgstr "Aggiorna ID Account & Console"
+
+#: settings.c:95
+msgid "Enable Debug Log"
+msgstr "Abilita Log Debug"
