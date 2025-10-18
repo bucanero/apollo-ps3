@@ -958,6 +958,54 @@ msgstr ""
 msgid "Auto-detect"
 msgstr ""
 
+#: settings.c:29
+msgid "Background Music"
+msgstr ""
+
+#: settings.c:35
+msgid "Menu Animations"
+msgstr ""
+
+#: settings.c:41
+msgid "Sort Saves"
+msgstr ""
+
+#: settings.c:47
+msgid "USB Saves Source"
+msgstr ""
+
+#: settings.c:53
+msgid "Version Update Check"
+msgstr ""
+
+#: settings.c:59
+msgid "Set User FTP Server URL"
+msgstr "URL del servidor FTP"
+
+#: settings.c:65
+msgid "Online Saves Server"
+msgstr ""
+
+#: settings.c:71
+msgid "Update Application Data"
+msgstr ""
+
+#: settings.c:77
+msgid "Change Online Database URL"
+msgstr ""
+
+#: settings.c:83
+msgid "Clear Local Cache"
+msgstr ""
+
+#: settings.c:89
+msgid "Update Account & Console IDs"
+msgstr ""
+
+#: settings.c:95
+msgid "Enable Debug Log"
+msgstr ""
+
 #: settings.c:128
 msgid "Enter the Online Database URL"
 msgstr ""
