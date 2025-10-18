@@ -28,6 +28,12 @@ jobs:
         repository: bucanero/libxmp-lite-ps4
         path: libxmp-lite-ps4
 
+    - name: Checkout mini18n
+      uses: actions/checkout@v4
+      with:
+        repository: bucanero/mini18n
+        path: mini18n
+
     - name: Set env vars
       id: slug
       run: |
@@ -38,6 +44,7 @@ jobs:
     - name: Download PSL1GHT Toolchain
       run: |
         curl -sL https://github.com/bucanero/ps3toolchain/releases/download/ubuntu-latest-fad3b5fb/ps3dev-ubuntu-latest-2020-08-31.tar.gz | tar xvz -C ./
+        curl -sL https://github.com/ps3dev/PSL1GHT/raw/master/ppu/include/sysutil/sysutil.h -o ps3dev/ppu/include/sysutil/sysutil.h
         echo "PS3DEV=${GITHUB_WORKSPACE}/ps3dev" >> $GITHUB_ENV
         echo "PSL1GHT=${GITHUB_WORKSPACE}/ps3dev" >> $GITHUB_ENV
 
@@ -55,6 +62,11 @@ jobs:
       working-directory: libxmp-lite-ps4
       run: |
         make -f Makefile.ps3 install
+
+    - name: Install mini18n
+      working-directory: mini18n
+      run: |
+        make install
 
     - name: Build Apollo App Package
       run: |

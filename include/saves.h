@@ -252,7 +252,7 @@ typedef struct
 {
     list_t * list;
     char path[128];
-    char* title;
+    const char* title;
     uint8_t id;
     void (*UpdatePath)(char *);
     int (*ReadCodes)(save_entry_t *);

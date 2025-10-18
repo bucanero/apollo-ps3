@@ -10,6 +10,7 @@
 #include <dirent.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
+#include <mini18n.h>
 
 #include "saves.h"
 #include "common.h"
@@ -94,12 +95,13 @@ char * readTextFile(const char * path, long* size)
 	return string;
 }
 
-static code_entry_t* _createCmdCode(uint8_t type, const char* name, char code)
+static code_entry_t* _createCmdCode(uint8_t type, const char* icon, const char* name, char code)
 {
 	code_entry_t* entry = (code_entry_t *)calloc(1, sizeof(code_entry_t));
 	entry->type = type;
-	entry->name = name ? strdup(name) : NULL;
 	asprintf(&entry->codes, "%c", code);
+	if (name)
+		asprintf(&entry->name, "%s%s", icon, name);
 
 	return entry;
 }
@@ -139,11 +141,11 @@ static void _createOptions(code_entry_t* code, const char* name, char value)
 	return;
 }
 
-static save_entry_t* _createSaveEntry(uint16_t flag, const char* name)
+static save_entry_t* _createSaveEntry(uint16_t flag, const char* icon, const char* name)
 {
 	save_entry_t* entry = (save_entry_t *)calloc(1, sizeof(save_entry_t));
 	entry->flags = flag;
-	entry->name = strdup(name);
+	asprintf(&entry->name, "%s%s", icon, name);
 
 	return entry;
 }
@@ -213,55 +215,56 @@ static void _addBackupCommands(save_entry_t* item)
 	code_entry_t* cmd;
 	option_value_t* optval;
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Apply Changes & Resign", CMD_RESIGN_SAVE);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " ", _("Apply Changes & Resign"), CMD_RESIGN_SAVE);
 	list_append(item->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " View Save Details", CMD_VIEW_DETAILS);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " ", _("View Save Details"), CMD_VIEW_DETAILS);
 	list_append(item->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_NULL, "----- " UTF8_CHAR_STAR " File Backup " UTF8_CHAR_STAR " -----", CMD_CODE_NULL);
+	cmd = _createCmdCode(PATCH_NULL, NULL, NULL, CMD_CODE_NULL);
+	asprintf(&cmd->name, "----- " UTF8_CHAR_STAR " %s " UTF8_CHAR_STAR " -----", _("File Backup"));
 	list_append(item->codes, cmd);
 
 	if (item->flags & SAVE_FLAG_HDD)
 	{
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy save game to USB", CMD_CODE_NULL);
-		_createOptions(cmd, "Copy Save to USB", CMD_COPY_SAVE_USB);
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Copy save game to USB"), CMD_CODE_NULL);
+		_createOptions(cmd, _("Copy Save to USB"), CMD_COPY_SAVE_USB);
 		list_append(item->codes, cmd);
 	
 		if (apollo_config.ftp_url[0])
 		{
-			cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " Upload save backup to FTP", CMD_UPLOAD_SAVE);
+			cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " ", _("Upload save backup to FTP"), CMD_UPLOAD_SAVE);
 			list_append(item->codes, cmd);
 		}
 	}
 	else
 	{
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy save game to HDD", CMD_COPY_SAVE_HDD);
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Copy save game to HDD"), CMD_COPY_SAVE_HDD);
 		list_append(item->codes, cmd);
 
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_WARN " Delete save game", CMD_DELETE_SAVE);
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_WARN " ", _("Delete save game"), CMD_DELETE_SAVE);
 		list_append(item->codes, cmd);
 	}
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " Export save game to Zip", CMD_CODE_NULL);
-	_createOptions(cmd, "Export Zip to USB", CMD_EXPORT_ZIP_USB);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " ", _("Export save game to Zip"), CMD_CODE_NULL);
+	_createOptions(cmd, _("Export Zip to USB"), CMD_EXPORT_ZIP_USB);
 	optval = malloc(sizeof(option_value_t));
-	asprintf(&optval->name, "Export Zip to HDD");
+	asprintf(&optval->name, "%s", _("Export Zip to HDD"));
 	asprintf(&optval->value, "%c%c", CMD_EXPORT_ZIP_HDD, STORAGE_HDD);
 	list_append(cmd->options[0].opts, optval);
 	list_append(item->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Decrypt save game files", CMD_CODE_NULL);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Decrypt save game files"), CMD_CODE_NULL);
 	cmd->options_count = 1;
 	cmd->options = _getFileOptions(item->path, "*", CMD_DECRYPT_FILE);
 	list_append(item->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Import decrypted save files", CMD_CODE_NULL);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Import decrypted save files"), CMD_CODE_NULL);
 	cmd->options_count = 1;
 	cmd->options = _getFileOptions(item->path, "*", CMD_IMPORT_DATA_FILE);
 	list_append(item->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Hex Edit save game files", CMD_CODE_NULL);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " ", _("Hex Edit save game files"), CMD_CODE_NULL);
 	cmd->options_count = 1;
 	cmd->options = _getFileOptions(item->path, "*", CMD_HEX_EDIT_FILE);
 	list_append(item->codes, cmd);
@@ -304,10 +307,11 @@ static void _addSfoCommands(save_entry_t* save)
 	code_entry_t* cmd;
 	option_value_t* optval;
 
-	cmd = _createCmdCode(PATCH_NULL, "----- " UTF8_CHAR_STAR " SFO Patches " UTF8_CHAR_STAR " -----", CMD_CODE_NULL);
+	cmd = _createCmdCode(PATCH_NULL, NULL, NULL, CMD_CODE_NULL);
+	asprintf(&cmd->name, "----- " UTF8_CHAR_STAR " %s " UTF8_CHAR_STAR " -----", _("SFO Patches"));
 	list_append(save->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_SFO, CHAR_ICON_USER " Change Account ID", SFO_CHANGE_ACCOUNT_ID);
+	cmd = _createCmdCode(PATCH_SFO, CHAR_ICON_USER " ", _("Change Account ID"), SFO_CHANGE_ACCOUNT_ID);
 	cmd->options_count = 1;
 	cmd->options = _initOptions(1);
 
@@ -324,16 +328,16 @@ static void _addSfoCommands(save_entry_t* save)
 	add_xml_owners(APOLLO_PATH OWNER_XML_FILE, cmd->options[0].opts);
 	list_append(save->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_SFO, CHAR_ICON_USER " Remove Console ID", SFO_REMOVE_PSID);
+	cmd = _createCmdCode(PATCH_SFO, CHAR_ICON_USER " ", _("Remove Console ID"), SFO_REMOVE_PSID);
 	list_append(save->codes, cmd);
 
 	if (save->flags & SAVE_FLAG_LOCKED)
 	{
-		cmd = _createCmdCode(PATCH_SFO, CHAR_ICON_LOCK " Remove copy protection", SFO_UNLOCK_COPY);
+		cmd = _createCmdCode(PATCH_SFO, CHAR_ICON_LOCK " ", _("Remove copy protection"), SFO_UNLOCK_COPY);
 		list_append(save->codes, cmd);
 	}
 
-	cmd = _createCmdCode(PATCH_SFO, CHAR_ICON_USER " Change Region Title ID", SFO_CHANGE_TITLE_ID);
+	cmd = _createCmdCode(PATCH_SFO, CHAR_ICON_USER " ", _("Change Region Title ID"), SFO_CHANGE_TITLE_ID);
 	cmd->options_count = 1;
 	cmd->options = _getSaveTitleIDs(save->title_id);
 	list_append(save->codes, cmd);
@@ -344,7 +348,7 @@ static int set_psp_codes(save_entry_t* item)
 	code_entry_t* cmd;
 	item->codes = list_alloc();
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " View Save Details", CMD_VIEW_DETAILS);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " ", _("View Save Details"), CMD_VIEW_DETAILS);
 	list_append(item->codes, cmd);
 
 	return list_count(item->codes);
@@ -354,20 +358,21 @@ static void add_vmp_commands(save_entry_t* save)
 {
 	code_entry_t* cmd;
 
-	cmd = _createCmdCode(PATCH_NULL, "----- " UTF8_CHAR_STAR " Virtual Memory Card " UTF8_CHAR_STAR " -----", CMD_CODE_NULL);
+	cmd = _createCmdCode(PATCH_NULL, NULL, NULL, CMD_CODE_NULL);
+	asprintf(&cmd->name, "----- " UTF8_CHAR_STAR " %s " UTF8_CHAR_STAR " -----", _("Virtual Memory Card"));
 	list_append(save->codes, cmd);
 
 	if (endsWith(save->path, ".VMP"))
 	{
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Resign Memory Card", CMD_RESIGN_VMP);
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " ", _("Resign Memory Card"), CMD_RESIGN_VMP);
 		list_append(save->codes, cmd);
 	}
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Export Memory Card to .VM1", CMD_EXP_VMP2MCR);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Export Memory Card to .VM1"), CMD_EXP_VMP2MCR);
 	list_append(save->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, NULL, CMD_CODE_NULL);
-	asprintf(&cmd->name, CHAR_ICON_COPY " Import .VM1 file to %s", strrchr(save->path, '/')+1);
+	cmd = _createCmdCode(PATCH_COMMAND, NULL, NULL, CMD_CODE_NULL);
+	asprintf(&cmd->name, CHAR_ICON_COPY " %s %s", _("Import .VM1 file to"), strrchr(save->path, '/')+1);
 	cmd->options_count = 1;
 	cmd->options = _getFileOptions(VMC_PS2_PATH_HDD, "*.VM1", CMD_IMP_MCR2VMP);
 	list_append(save->codes, cmd);
@@ -409,10 +414,11 @@ int ReadCodes(save_entry_t * save)
 	if ((buffer = readTextFile(filePath, NULL)) == NULL)
 		return list_count(save->codes);
 
-	code = _createCmdCode(PATCH_NULL, "----- " UTF8_CHAR_STAR " Cheats " UTF8_CHAR_STAR " -----", CMD_CODE_NULL);	
+	code = _createCmdCode(PATCH_NULL, NULL, NULL, CMD_CODE_NULL);
+	asprintf(&code->name, "----- " UTF8_CHAR_STAR " %s " UTF8_CHAR_STAR " -----", _("Cheats"));
 	list_append(save->codes, code);
 
-	code = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " View Raw Patch File", CMD_VIEW_RAW_PATCH);
+	code = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " ", _("View Raw Patch File"), CMD_VIEW_RAW_PATCH);
 	list_append(save->codes, code);
 
 	node = list_tail(save->codes);
@@ -499,9 +505,9 @@ static int get_usb_trophies(save_entry_t* item)
 		root_element = xmlDocGetRootElement(doc);
 		name = _get_xml_node_value(root_element->children, BAD_CAST "title-name");
 		commid = _get_xml_node_value(root_element->children, BAD_CAST "npcommid");
-		snprintf(filePath, sizeof(filePath), "%s (%s)", name, commid);
+		snprintf(filePath, sizeof(filePath), " (%s)", commid);
 
-		cmd = _createCmdCode(PATCH_COMMAND, filePath, CMD_IMP_TROPHY_HDD);
+		cmd = _createCmdCode(PATCH_COMMAND, name, filePath, CMD_IMP_TROPHY_HDD);
 		asprintf(&cmd->file, "%s%s/", item->path, dir->d_name);
 
 		/*free the document */
@@ -567,20 +573,21 @@ int ReadTrophies(save_entry_t * game)
 
 	game->codes = list_alloc();
 
-	trophy = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Apply Changes & Resign Trophy Set", CMD_RESIGN_TROPHY);
+	trophy = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " ", _("Apply Changes & Resign Trophy Set"), CMD_RESIGN_TROPHY);
 	list_append(game->codes, trophy);
 
-	trophy = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Backup Trophy Set to USB", CMD_CODE_NULL);
+	trophy = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Backup Trophy Set to USB"), CMD_CODE_NULL);
 	trophy->file = strdup(game->path);
-	_createOptions(trophy, "Copy Trophy to USB", CMD_EXP_TROPHY_USB);
+	_createOptions(trophy, _("Copy Trophy to USB"), CMD_EXP_TROPHY_USB);
 	list_append(game->codes, trophy);
 
-	trophy = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " Export Trophy Set to Zip", CMD_CODE_NULL);
+	trophy = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " ", _("Export Trophy Set to Zip"), CMD_CODE_NULL);
 	trophy->file = strdup(game->path);
-	_createOptions(trophy, "Save .Zip to USB", CMD_EXPORT_ZIP_USB);
+	_createOptions(trophy, _("Save .Zip to USB"), CMD_EXPORT_ZIP_USB);
 	list_append(game->codes, trophy);
 
-	trophy = _createCmdCode(PATCH_NULL, "----- " UTF8_CHAR_STAR " Trophies " UTF8_CHAR_STAR " -----", CMD_CODE_NULL);
+	trophy = _createCmdCode(PATCH_NULL, NULL, NULL, CMD_CODE_NULL);
+	asprintf(&trophy->name, "----- " UTF8_CHAR_STAR " %s " UTF8_CHAR_STAR " -----", _("Trophies"));
 	list_append(game->codes, trophy);
 
 	/*Get the root element node */
@@ -594,8 +601,7 @@ int ReadTrophies(save_entry_t * game)
 		if (xmlStrcasecmp(cur_node->name, BAD_CAST "trophy") == 0)
 		{
 			value = _get_xml_node_value(cur_node->children, BAD_CAST "name");
-			snprintf(filePath, sizeof(filePath), "   %s", value);
-			trophy = _createCmdCode(PATCH_NULL, filePath, CMD_CODE_NULL);
+			trophy = _createCmdCode(PATCH_NULL, "   ", value, CMD_CODE_NULL);
 
 			value = _get_xml_node_value(cur_node->children, BAD_CAST "detail");
 			asprintf(&trophy->codes, "%s\n", value);
@@ -682,8 +688,8 @@ static void add_vmc_import_saves(list_t* list, const char* path, const char* fol
 				continue;
 		}
 
-		snprintf(psvPath, sizeof(psvPath), CHAR_ICON_COPY "%c %s", CHAR_TAG_PS1, dir->d_name);
-		cmd = _createCmdCode(PATCH_COMMAND, psvPath, CMD_IMP_VMC1SAVE);
+		snprintf(psvPath, sizeof(psvPath), CHAR_ICON_COPY "%c ", CHAR_TAG_PS1);
+		cmd = _createCmdCode(PATCH_COMMAND, psvPath, dir->d_name, CMD_IMP_VMC1SAVE);
 		asprintf(&cmd->file, "%s%s%s", path, folder, dir->d_name);
 		cmd->codes[1] = FILE_TYPE_PS1;
 		list_append(list, cmd);
@@ -711,7 +717,7 @@ static void read_vmc1_files(const char* vmcPath, list_t* list)
 			!endsWith(dir->d_name, ".VMC") && !endsWith(dir->d_name, ".BIN") && !endsWith(dir->d_name, ".SRM"))
 			continue;
 
-		item = _createSaveEntry(SAVE_FLAG_PS1 | SAVE_FLAG_VMC, dir->d_name);
+		item = _createSaveEntry(SAVE_FLAG_PS1 | SAVE_FLAG_VMC, "", dir->d_name);
 		item->type = FILE_TYPE_VMC;
 		item->title_id = strdup("VMC");
 		item->dir_name = strdup(VMC_PS1_PATH_USB);
@@ -747,43 +753,44 @@ int ReadVmc1Codes(save_entry_t * save)
 		return list_count(save->codes);
 	}
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " View Save Details", CMD_VIEW_DETAILS);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " ", _("View Save Details"), CMD_VIEW_DETAILS);
 	list_append(save->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_WARN " Delete Save Game", CMD_DELETE_SAVE);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_WARN " ", _("Delete Save Game"), CMD_DELETE_SAVE);
 	list_append(save->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_NULL, "----- " UTF8_CHAR_STAR " Save Game Backup " UTF8_CHAR_STAR " -----", CMD_CODE_NULL);
+	cmd = _createCmdCode(PATCH_NULL, NULL, NULL, CMD_CODE_NULL);
+	asprintf(&cmd->name, "----- " UTF8_CHAR_STAR " %s " UTF8_CHAR_STAR " -----", _("Save Game Backup"));
 	list_append(save->codes, cmd);
 
 	if (apollo_config.ftp_url[0])
 	{
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " Upload save backup to FTP", CMD_UPLOAD_SAVE);
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " ", _("Upload save backup to FTP"), CMD_UPLOAD_SAVE);
 		list_append(save->codes, cmd);
 	}
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Export save game to .MCS format", CMD_CODE_NULL);
-	_createOptions(cmd, "Copy .MCS Save to USB", CMD_EXP_VMC1SAVE);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Export save game to .MCS format"), CMD_CODE_NULL);
+	_createOptions(cmd, _("Copy .MCS Save to USB"), CMD_EXP_VMC1SAVE);
 	optval = malloc(sizeof(option_value_t));
-	asprintf(&optval->name, "Copy .MCS Save to HDD");
+	asprintf(&optval->name, "%s", _("Copy .MCS Save to HDD"));
 	asprintf(&optval->value, "%c%c", CMD_EXP_VMC1SAVE, STORAGE_HDD);
 	list_append(cmd->options[0].opts, optval);
 	cmd->options[0].id = PS1SAVE_MCS;
 	list_append(save->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Export save game to .PSV format", CMD_CODE_NULL);
-	_createOptions(cmd, "Copy .PSV Save to USB", CMD_EXP_VMC1SAVE);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Export save game to .PSV format"), CMD_CODE_NULL);
+	_createOptions(cmd, _("Copy .PSV Save to USB"), CMD_EXP_VMC1SAVE);
 	optval = malloc(sizeof(option_value_t));
-	asprintf(&optval->name, "Copy .PSV Save to HDD");
+	asprintf(&optval->name, "%s", _("Copy .PSV Save to HDD"));
 	asprintf(&optval->value, "%c%c", CMD_EXP_VMC1SAVE, STORAGE_HDD);
 	list_append(cmd->options[0].opts, optval);
 	cmd->options[0].id = PS1SAVE_PSV;
 	list_append(save->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Export save game to .PSX format", CMD_CODE_NULL);
-	_createOptions(cmd, "Copy .PSX Save to USB", CMD_EXP_VMC1SAVE);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Export save game to .PSX format"), CMD_CODE_NULL);
+	_createOptions(cmd, _("Copy .PSX Save to USB"), CMD_EXP_VMC1SAVE);
 	optval = malloc(sizeof(option_value_t));
-	asprintf(&optval->name, "Copy .PSX Save to HDD");
+	asprintf(&optval->name, "%s", _("Copy .PSX Save to HDD"));
 	asprintf(&optval->value, "%c%c", CMD_EXP_VMC1SAVE, STORAGE_HDD);
 	list_append(cmd->options[0].opts, optval);
 	cmd->options[0].id = PS1SAVE_AR;
@@ -866,7 +873,7 @@ static void add_vmc2_import_saves(list_t* list, const char* path, const char* fo
 		fread(data, 1, sizeof(data), fp);
 		fclose(fp);
 
-		cmd = _createCmdCode(PATCH_COMMAND, NULL, CMD_IMP_VMC2SAVE);
+		cmd = _createCmdCode(PATCH_COMMAND, NULL, NULL, CMD_IMP_VMC2SAVE);
 		cmd->file = strdup(psvPath);
 		cmd->codes[1] = type;
 		asprintf(&cmd->name, CHAR_ICON_COPY "%c (%.10s) %s", CHAR_TAG_PS2, data + 2, dir->d_name);
@@ -901,34 +908,35 @@ int ReadVmc2Codes(save_entry_t * save)
 		return list_count(save->codes);
 	}
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " View Save Details", CMD_VIEW_DETAILS);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " ", _("View Save Details"), CMD_VIEW_DETAILS);
 	list_append(save->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_WARN " Delete Save Game", CMD_DELETE_SAVE);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_WARN " ", _("Delete Save Game"), CMD_DELETE_SAVE);
 	list_append(save->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_NULL, "----- " UTF8_CHAR_STAR " Save Game Backup " UTF8_CHAR_STAR " -----", CMD_CODE_NULL);
+	cmd = _createCmdCode(PATCH_NULL, NULL, NULL, CMD_CODE_NULL);
+	asprintf(&cmd->name, "----- " UTF8_CHAR_STAR " %s " UTF8_CHAR_STAR " -----", _("Save Game Backup"));
 	list_append(save->codes, cmd);
 
 	if (apollo_config.ftp_url[0])
 	{
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " Upload save backup to FTP", CMD_UPLOAD_SAVE);
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " ", _("Upload save backup to FTP"), CMD_UPLOAD_SAVE);
 		list_append(save->codes, cmd);
 	}
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Export save game to .PSU format", CMD_CODE_NULL);
-	_createOptions(cmd, "Export .PSU save to USB", CMD_EXP_VMC2SAVE);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Export save game to .PSU format"), CMD_CODE_NULL);
+	_createOptions(cmd, _("Export .PSU save to USB"), CMD_EXP_VMC2SAVE);
 	optval = malloc(sizeof(option_value_t));
-	asprintf(&optval->name, "Export .PSU save to HDD");
+	asprintf(&optval->name, "%s", _("Export .PSU save to HDD"));
 	asprintf(&optval->value, "%c%c", CMD_EXP_VMC2SAVE, STORAGE_HDD);
 	list_append(cmd->options[0].opts, optval);
 	cmd->options[0].id = FILE_TYPE_PSU;
 	list_append(save->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Export save game to .PSV format", CMD_CODE_NULL);
-	_createOptions(cmd, "Export .PSV save to USB", CMD_EXP_VMC2SAVE);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Export save game to .PSV format"), CMD_CODE_NULL);
+	_createOptions(cmd, _("Export .PSV save to USB"), CMD_EXP_VMC2SAVE);
 	optval = malloc(sizeof(option_value_t));
-	asprintf(&optval->name, "Export .PSV save to HDD");
+	asprintf(&optval->name, "%s", _("Export .PSV save to HDD"));
 	asprintf(&optval->value, "%c%c", CMD_EXP_VMC2SAVE, STORAGE_HDD);
 	list_append(cmd->options[0].opts, optval);
 	cmd->options[0].id = FILE_TYPE_PSV;
@@ -993,13 +1001,12 @@ int ReadOnlineSaves(save_entry_t * game)
 		if ((tmp = strchr(content, '=')) != NULL)
 		{
 			*tmp++ = 0;
-			snprintf(path, sizeof(path), CHAR_ICON_ZIP " %s", tmp);
-			item = _createCmdCode(PATCH_COMMAND, path, CMD_CODE_NULL);
+			item = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " ", tmp, CMD_CODE_NULL);
 			item->file = strdup(content);
 
-			_createOptions(item, "Download to USB", CMD_DOWNLOAD_USB);
+			_createOptions(item, _("Download to USB"), CMD_DOWNLOAD_USB);
 			optval = malloc(sizeof(option_value_t));
-			asprintf(&optval->name, "Download to HDD");
+			asprintf(&optval->name, "%s", _("Download to HDD"));
 			asprintf(&optval->value, "%c%c", CMD_DOWNLOAD_HDD, STORAGE_HDD);
 			list_append(item->options[0].opts, optval);
 			list_append(game->codes, item);
@@ -1029,13 +1036,13 @@ list_t * ReadBackupList(const char* userPath)
 	code_entry_t * cmd;
 	list_t *list = list_alloc();
 
-	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " Export Licenses");
+	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " ", _("Export Licenses"));
 	asprintf(&item->path, EXDATA_PATH_HDD, apollo_config.user_id);
 	item->title_id = strdup("HDD");
 	item->type = FILE_TYPE_RIF;
 	list_append(list, item);
 
-	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_USER " Activate PS3 Account");
+	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_USER " ", _("Activate PS3 Account"));
 	asprintf(&item->path, EXDATA_PATH_HDD, apollo_config.user_id);
 	item->type = FILE_TYPE_ACT;
 	list_append(list, item);
@@ -1046,70 +1053,70 @@ list_t * ReadBackupList(const char* userPath)
 		if (i && dir_exists(tmp) != SUCCESS)
 			continue;
 
-		item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " Import Licenses");
+		item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " ", _("Import Licenses"));
 		asprintf(&item->path, IMPORT_RAP_PATH_USB, i);
 		asprintf(&item->title_id, "USB %d", i);
 		item->type = FILE_TYPE_RAP;
 		list_append(list, item);
 
-		item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " PS2 Classics: Import & Encrypt ISOs");
+		item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " ", _("PS2 Classics: Import & Encrypt ISOs"));
 		asprintf(&item->path, PS2ISO_PATH_USB, i);
 		asprintf(&item->title_id, "USB %d", i);
 		item->type = FILE_TYPE_ISO;
 		list_append(list, item);
 
-		item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " Import PS2 raw memory cards");
+		item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " ", _("Import PS2 raw memory cards"));
 		asprintf(&item->path, IMP_PS2VMC_PATH_USB, i);
 		asprintf(&item->title_id, "USB %d", i);
 		item->type = FILE_TYPE_PS2RAW;
 		list_append(list, item);
 
-		item = _createSaveEntry(SAVE_FLAG_PS1, CHAR_ICON_COPY " Convert PS1 saves to .PSV format");
+		item = _createSaveEntry(SAVE_FLAG_PS1, CHAR_ICON_COPY " ", _("Convert PS1 saves to .PSV format"));
 		asprintf(&item->path, USB_PATH, i);
 		asprintf(&item->title_id, "USB %d", i);
 		item->type = FILE_TYPE_PS1;
 		list_append(list, item);
 
-		item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " Convert PS2 saves to .PSV format");
+		item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " ", _("Convert PS2 saves to .PSV format"));
 		asprintf(&item->path, USB_PATH, i);
 		asprintf(&item->title_id, "USB %d", i);
 		item->type = FILE_TYPE_PS2;
 		list_append(list, item);
 
-		item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " Convert/Resign .PSV saves");
+		item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " ", _("Convert/Resign .PSV saves"));
 		asprintf(&item->path, USB_PATH, i);
 		asprintf(&item->title_id, "USB %d", i);
 		item->type = FILE_TYPE_PSV;
 		list_append(list, item);
 	}
 
-	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " PS2 Classics: Import & Encrypt ISOs");
+	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " ", _("PS2 Classics: Import & Encrypt ISOs"));
 	item->path = strdup(PS2ISO_PATH_HDD);
 	item->title_id = strdup("HDD");
 	item->type = FILE_TYPE_ISO;
 	list_append(list, item);
 
-	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " PS2 Classics: Export & Decrypt BIN.ENC images");
+	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " ", _("PS2 Classics: Export & Decrypt BIN.ENC images"));
 	item->path = strdup(PS2ISO_PATH_HDD);
 	item->title_id = strdup("HDD");
 	item->type = FILE_TYPE_BINENC;
 	list_append(list, item);
 
-	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " Export /dev_flash2");
+	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " ", _("Export /dev_flash2"));
 	item->path = strdup("/dev_flash2/");
 	item->codes = list_alloc();
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " Backup /dev_flash2 to USB", CMD_CODE_NULL);
-	_createOptions(cmd, "Save dev_flash2.zip to USB", CMD_EXP_FLASH2_USB);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " ", _("Backup /dev_flash2 to USB"), CMD_CODE_NULL);
+	_createOptions(cmd, _("Save dev_flash2.zip to USB"), CMD_EXP_FLASH2_USB);
 	list_append(item->codes, cmd);
 	list_append(list, item);
 
-	item = _createSaveEntry(0, CHAR_ICON_ZIP " Extract Archives (RAR, Zip, 7z)");
+	item = _createSaveEntry(0, CHAR_ICON_ZIP " ", _("Extract Archives (RAR, Zip, 7z)"));
 	item->path = strdup(PS3_TMP_PATH);
 	item->title_id = strdup("HDD");
 	item->type = FILE_TYPE_ZIP;
 	list_append(list, item);
 
-	item = _createSaveEntry(0, CHAR_ICON_NET " Network Tools (Downloader, Web Server)");
+	item = _createSaveEntry(0, CHAR_ICON_NET " ", _("Network Tools (Downloader, Web Server)"));
 	item->path = strdup(PS3_TMP_PATH);
 	item->type = FILE_TYPE_NET;
 	list_append(list, item);
@@ -1132,8 +1139,7 @@ static int get_iso_files(save_entry_t * item)
 		{
 			if (dir->d_type == DT_REG && (endsWith(dir->d_name, ".BIN") || endsWith(dir->d_name, ".ISO") || endsWith(dir->d_name, ".CONFIG")))
 			{
-				cmd = _createCmdCode(PATCH_COMMAND, NULL, endsWith(dir->d_name, "CONFIG") ? CMD_IMP_PS2_CONFIG : CMD_IMP_PS2_ISO);
-				asprintf(&cmd->name, "Encrypt \"%s\"", dir->d_name);
+				cmd = _createCmdCode(PATCH_COMMAND, _("Encrypt: "), dir->d_name, endsWith(dir->d_name, "CONFIG") ? CMD_IMP_PS2_CONFIG : CMD_IMP_PS2_ISO);
 				cmd->file = strdup(dir->d_name);
 				list_append(item->codes, cmd);
 
@@ -1169,12 +1175,11 @@ static int get_binenc_files(save_entry_t * item)
 		{
 			if (dir->d_type == DT_REG && endsWith(dir->d_name, ".BIN.ENC"))
 			{
-				cmd = _createCmdCode(PATCH_COMMAND, NULL, CMD_CODE_NULL);
-				asprintf(&cmd->name, "Decrypt \"%s\"", dir->d_name);
+				cmd = _createCmdCode(PATCH_COMMAND, _("Decrypt: "), dir->d_name, CMD_CODE_NULL);
 				cmd->file = strdup(dir->d_name);
-				_createOptions(cmd, "Save .ISO to USB", CMD_EXP_PS2_BINENC);
+				_createOptions(cmd, _("Save .ISO to USB"), CMD_EXP_PS2_BINENC);
 				optval = malloc(sizeof(option_value_t));
-				asprintf(&optval->name, "Save .ISO to HDD");
+				asprintf(&optval->name, "%s", _("Save .ISO to HDD"));
 				asprintf(&optval->value, "%c%c", CMD_EXP_PS2_BINENC, STORAGE_HDD);
 				list_append(cmd->options[0].opts, optval);
 				list_append(item->codes, cmd);
@@ -1210,8 +1215,8 @@ static int get_ps2_raw_files(save_entry_t * item)
 		{
 			if (dir->d_type == DT_REG && endsWith(dir->d_name, ".VMC"))
 			{
-				cmd = _createCmdCode(PATCH_COMMAND, NULL, CMD_IMP_PS2VMC_USB);
-				asprintf(&cmd->name, "Import \"%s\" to .VM2 (HDD)", dir->d_name);
+				cmd = _createCmdCode(PATCH_COMMAND, NULL, NULL, CMD_IMP_PS2VMC_USB);
+				asprintf(&cmd->name, _("Import '%s' to .VM2 (HDD)"), dir->d_name);
 				cmd->file = strdup(dir->d_name);
 				list_append(item->codes, cmd);
 
@@ -1249,8 +1254,8 @@ static int get_archives(save_entry_t * item)
 				(!endsWith(dir->d_name, ".RAR") && !endsWith(dir->d_name, ".ZIP") && !endsWith(dir->d_name, ".7Z")))
 				continue;
 
-			cmd = _createCmdCode(PATCH_COMMAND, NULL, CMD_EXTRACT_ARCHIVE);
-			asprintf(&cmd->name, CHAR_ICON_ZIP " Extract %s", dir->d_name);
+			cmd = _createCmdCode(PATCH_COMMAND, NULL, NULL, CMD_EXTRACT_ARCHIVE);
+			asprintf(&cmd->name, CHAR_ICON_ZIP " %s %s", _("Extract:"), dir->d_name);
 			asprintf(&cmd->file, "%s%s", item->path, dir->d_name);
 
 			LOG("[%s] name '%s'", cmd->file, cmd->name+2);
@@ -1282,14 +1287,14 @@ static int get_license_files(save_entry_t* bup, const char* fext)
 
 	if (bup->type == FILE_TYPE_RIF)
 	{
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " Backup All Licenses to .Zip", CMD_CODE_NULL);
-		_createOptions(cmd, "Save .Zip to USB", CMD_EXP_EXDATA_USB);
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " ", _("Backup All Licenses to .Zip"), CMD_CODE_NULL);
+		_createOptions(cmd, _("Save .Zip to USB"), CMD_EXP_EXDATA_USB);
 		list_append(bup->codes, cmd);
 
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Export All Licenses as .RAPs", CMD_CODE_NULL);
-		_createOptions(cmd, "Save .RAPs to USB", CMD_EXP_LICS_RAPS);
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Export All Licenses as .RAPs"), CMD_CODE_NULL);
+		_createOptions(cmd, _("Save .RAPs to USB"), CMD_EXP_LICS_RAPS);
 		optval = malloc(sizeof(option_value_t));
-		asprintf(&optval->name, "Save .RAPs to HDD");
+		asprintf(&optval->name, "%s", _("Save .RAPs to HDD"));
 		asprintf(&optval->value, "%c%c", CMD_EXP_LICS_RAPS, STORAGE_HDD);
 		list_append(cmd->options[0].opts, optval);
 		list_append(bup->codes, cmd);
@@ -1297,7 +1302,7 @@ static int get_license_files(save_entry_t* bup, const char* fext)
 
 	if (bup->type == FILE_TYPE_RAP)
 	{
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Import All .RAPs as .RIF Licenses", CMD_IMP_EXDATA_USB);
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Import All .RAPs as .RIF Licenses"), CMD_IMP_EXDATA_USB);
 		list_append(bup->codes, cmd);
 	}
 
@@ -1310,14 +1315,14 @@ static int get_license_files(save_entry_t* bup, const char* fext)
 			if (strcmp(dir->d_name, ".") != 0 && strcmp(dir->d_name, "..") != 0  &&
 				endsWith(dir->d_name, fext))
 			{
-				cmd = _createCmdCode(PATCH_COMMAND, dir->d_name, CMD_CODE_NULL);
+				cmd = _createCmdCode(PATCH_COMMAND, "", dir->d_name, CMD_CODE_NULL);
 				*strrchr(cmd->name, '.') = 0;
 
 				if (bup->type == FILE_TYPE_RIF)
 				{
-					_createOptions(cmd, "Save .RAP to USB", CMD_EXP_LICS_RAPS);
+					_createOptions(cmd, _("Save .RAP to USB"), CMD_EXP_LICS_RAPS);
 					optval = malloc(sizeof(option_value_t));
-					asprintf(&optval->name, "Save .RAP to HDD");
+					asprintf(&optval->name, "%s", _("Save .RAP to HDD"));
 					asprintf(&optval->value, "%c%c", CMD_EXP_LICS_RAPS, STORAGE_HDD);
 					list_append(cmd->options[0].opts, optval);
 				}
@@ -1387,21 +1392,21 @@ static int read_psv_savegames(save_entry_t *item, const char* folder)
 		fread(data, 1, sizeof(data), psvf);
 		fclose(psvf);
 
-		cmd = _createCmdCode(PATCH_COMMAND, NULL, CMD_CODE_NULL);
+		cmd = _createCmdCode(PATCH_COMMAND, NULL, NULL, CMD_CODE_NULL);
 		cmd->file = strdup(psvPath);
 		if (type == 1)
 		{
-			_createOptions(cmd, "Export Save to .MCS format - USB", CMD_EXP_SAVE_PSV);
+			_createOptions(cmd, _("Export Save to .MCS format - USB"), CMD_EXP_SAVE_PSV);
 			cmd->options[0].id = FILE_TYPE_MCS;
 		}
 		else
 		{
-			_createOptions(cmd, "Export Save to .PSU format - USB", CMD_EXP_SAVE_PSV);
+			_createOptions(cmd, _("Export Save to .PSU format - USB"), CMD_EXP_SAVE_PSV);
 			cmd->options[0].id = FILE_TYPE_PSU;
 		}
 
 		optval = malloc(sizeof(option_value_t));
-		asprintf(&optval->name, "Resign .PSV Save");
+		asprintf(&optval->name, "%s", _("Resign .PSV Save"));
 		asprintf(&optval->value, "%c", CMD_RESIGN_PSV);
 		list_append(cmd->options[0].opts, optval);
 
@@ -1503,7 +1508,7 @@ static int read_psx_savegames(save_entry_t *item, const char* folder)
 		fread(data, 1, sizeof(data), fp);
 		fclose(fp);
 
-		cmd = _createCmdCode(PATCH_COMMAND, NULL, CMD_CONVERT_TO_PSV);
+		cmd = _createCmdCode(PATCH_COMMAND, NULL, NULL, CMD_CONVERT_TO_PSV);
 		cmd->codes[1] = type;
 		cmd->file = strdup(psvPath);
 		asprintf(&cmd->name, CHAR_ICON_COPY "%c (%.10s) %s", (type == FILE_TYPE_PSX || type == FILE_TYPE_MCS) ? CHAR_TAG_PS1 : CHAR_TAG_PS2, data + 2, dir->d_name);
@@ -1558,15 +1563,15 @@ int ReadBackupCodes(save_entry_t * bup)
 
 	case FILE_TYPE_ACT:
 		bup->codes = list_alloc();
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " Activate PS3 Account (act.dat)", CMD_CREATE_ACT_DAT);
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " ", _("Activate PS3 Account (act.dat)"), CMD_CREATE_ACT_DAT);
 		list_append(bup->codes, cmd);
 		return list_count(bup->codes);
 
 	case FILE_TYPE_NET:
 		bup->codes = list_alloc();
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " URL link Downloader (http, https, ftp, ftps)", CMD_URL_DOWNLOAD);
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " ", _("URL link Downloader (http, https, ftp, ftps)"), CMD_URL_DOWNLOAD);
 		list_append(bup->codes, cmd);
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " Local Web Server (full system access)", CMD_NET_WEBSERVER);
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " ", _("Local Web Server (full system access)"), CMD_NET_WEBSERVER);
 		list_append(bup->codes, cmd);
 		return list_count(bup->codes);
 
@@ -1776,14 +1781,14 @@ static void read_savegames(const char* userPath, const char* folder, list_t *lis
 				}
 
 				snprintf(sfoPath, sizeof(sfoPath), "%s (MemCard)", sfo_data);
-				item = _createSaveEntry(flag | SAVE_FLAG_VMC | SAVE_FLAG_LOCKED, sfoPath);
+				item = _createSaveEntry(flag | SAVE_FLAG_VMC | SAVE_FLAG_LOCKED, "", sfoPath);
 				item->type = FILE_TYPE_VMC;
 				asprintf(&item->path, "%s%s%s/SCEVMC0.VME", userPath, folder, dir->d_name);
 				item->title_id = strdup("VME 0");
 				item->dir_name = strdup(userPath);
 				list_append(list, item);
 
-				item = _createSaveEntry(flag | SAVE_FLAG_VMC | SAVE_FLAG_LOCKED, sfoPath);
+				item = _createSaveEntry(flag | SAVE_FLAG_VMC | SAVE_FLAG_LOCKED, "", sfoPath);
 				item->type = FILE_TYPE_VMC;
 				asprintf(&item->path, "%s%s%s/SCEVMC1.VME", userPath, folder, dir->d_name);
 				item->title_id = strdup("VME 1");
@@ -1795,7 +1800,7 @@ static void read_savegames(const char* userPath, const char* folder, list_t *lis
 				continue;
 			}
 
-			item = _createSaveEntry(flag, sfo_data);
+			item = _createSaveEntry(flag, "", sfo_data);
 			asprintf(&item->path, "%s%s%s/", userPath, folder, dir->d_name);
 			asprintf(&item->title_id, "%.9s", dir->d_name);
 			item->dir_name = strdup(dir->d_name);
@@ -1847,7 +1852,7 @@ static void read_vmc2_files(const char* userPath, list_t *list)
 		if (size % 0x840000 != 0 && size % 0x800000 != 0)
 			continue;
 
-		item = _createSaveEntry(SAVE_FLAG_PS2 | SAVE_FLAG_VMC, dir->d_name);
+		item = _createSaveEntry(SAVE_FLAG_PS2 | SAVE_FLAG_VMC, "", dir->d_name);
 		item->type = FILE_TYPE_VMC;
 		item->path = strdup(psvPath);
 		item->title_id = strdup("VMC");
@@ -1880,7 +1885,7 @@ list_t * ReadUserList(const char* userPath)
 
 	list = list_alloc();
 
-	item = _createSaveEntry(SAVE_FLAG_PS3 | SAVE_FLAG_HDD, CHAR_ICON_COPY " Bulk Save Management");
+	item = _createSaveEntry(SAVE_FLAG_PS3 | SAVE_FLAG_HDD, CHAR_ICON_COPY " ", _("Bulk Save Management"));
 	item->type = FILE_TYPE_MENU;
 	item->codes = list_alloc();
 	asprintf(&item->path, "%s%s", userPath, PS3_SAVES_PATH_HDD);
@@ -1888,21 +1893,21 @@ list_t * ReadUserList(const char* userPath)
 	item->dir_name = malloc(sizeof(void**));
 	((void**)item->dir_name)[0] = list;
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Resign & Unlock all Saves", CMD_RESIGN_ALL_SAVES);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " ", _("Resign & Unlock all Saves"), CMD_RESIGN_ALL_SAVES);
 	list_append(item->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Resign & Unlock selected Saves", CMD_RESIGN_SAVES);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " ", _("Resign & Unlock selected Saves"), CMD_RESIGN_SAVES);
 	list_append(item->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy all Saves to USB", CMD_CODE_NULL);
-	_createOptions(cmd, "Copy Saves to USB", CMD_COPY_ALL_SAVES_USB);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Copy all Saves to USB"), CMD_CODE_NULL);
+	_createOptions(cmd, _("Copy Saves to USB"), CMD_COPY_ALL_SAVES_USB);
 	list_append(item->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy selected Saves to USB", CMD_CODE_NULL);
-	_createOptions(cmd, "Copy Saves to USB", CMD_COPY_SAVES_USB);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Copy selected Saves to USB"), CMD_CODE_NULL);
+	_createOptions(cmd, _("Copy Saves to USB"), CMD_COPY_SAVES_USB);
 	list_append(item->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " Start local Web Server", CMD_SAVE_WEB_SERVER);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " ", _("Start local Web Server"), CMD_SAVE_WEB_SERVER);
 	list_append(item->codes, cmd);
 	list_append(list, item);
 
@@ -1928,7 +1933,7 @@ list_t * ReadUsbList(const char* userPath)
 
 	list = list_alloc();
 
-	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " Bulk Save Management");
+	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " ", _("Bulk Save Management"));
 	item->type = FILE_TYPE_MENU;
 	item->codes = list_alloc();
 	asprintf(&item->path, "%s%s", userPath, PS3_SAVES_PATH_USB);
@@ -1936,19 +1941,19 @@ list_t * ReadUsbList(const char* userPath)
 	item->dir_name = malloc(sizeof(void**));
 	((void**)item->dir_name)[0] = list;
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Resign & Unlock all Saves", CMD_RESIGN_ALL_SAVES);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " ", _("Resign & Unlock all Saves"), CMD_RESIGN_ALL_SAVES);
 	list_append(item->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " Resign & Unlock selected Saves", CMD_RESIGN_SAVES);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_SIGN " ", _("Resign & Unlock selected Saves"), CMD_RESIGN_SAVES);
 	list_append(item->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy all Saves to HDD", CMD_COPY_ALL_SAVES_HDD);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Copy all Saves to HDD"), CMD_COPY_ALL_SAVES_HDD);
 	list_append(item->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Copy selected Saves to HDD", CMD_COPY_SAVES_HDD);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Copy selected Saves to HDD"), CMD_COPY_SAVES_HDD);
 	list_append(item->codes, cmd);
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " Start local Web Server", CMD_SAVE_WEB_SERVER);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " ", _("Start local Web Server"), CMD_SAVE_WEB_SERVER);
 	list_append(item->codes, cmd);
 	list_append(list, item);
 
@@ -2019,7 +2024,7 @@ static void _ReadOnlineListEx(const char* urlPath, uint16_t flag, list_t *list)
 		if ((tmp = strchr(content, '=')) != NULL)
 		{
 			*tmp++ = 0;
-			item = _createSaveEntry(flag | SAVE_FLAG_ONLINE, tmp);
+			item = _createSaveEntry(flag | SAVE_FLAG_ONLINE, "", tmp);
 			item->title_id = strdup(content);
 			asprintf(&item->path, "%s%s/", urlPath, item->title_id);
 
@@ -2086,7 +2091,7 @@ list_t * ReadVmc1List(const char* userPath)
 
 	list = list_alloc();
 
-	item = _createSaveEntry(SAVE_FLAG_PS1, CHAR_ICON_VMC " Memory Card Management");
+	item = _createSaveEntry(SAVE_FLAG_PS1, CHAR_ICON_VMC " ", _("Memory Card Management"));
 	item->type = FILE_TYPE_MENU;
 	item->path = strdup(userPath);
 	item->title_id = strdup("VMC");
@@ -2095,16 +2100,16 @@ list_t * ReadVmc1List(const char* userPath)
 	item->dir_name = malloc(sizeof(void**));
 	((void**)item->dir_name)[0] = list;
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Export selected Saves to USB", CMD_CODE_NULL);
-	_createOptions(cmd, "Copy selected Saves to USB", CMD_EXP_SAVES_VMC);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Export selected Saves to USB"), CMD_CODE_NULL);
+	_createOptions(cmd, _("Copy selected Saves to USB"), CMD_EXP_SAVES_VMC);
 	list_append(item->codes, cmd);
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Export all Saves to USB", CMD_CODE_NULL);
-	_createOptions(cmd, "Copy all Saves to USB", CMD_EXP_ALL_SAVES_VMC);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Export all Saves to USB"), CMD_CODE_NULL);
+	_createOptions(cmd, _("Copy all Saves to USB"), CMD_EXP_ALL_SAVES_VMC);
 	list_append(item->codes, cmd);
 	add_vmp_commands(item);
 	list_append(list, item);
 
-	item = _createSaveEntry(SAVE_FLAG_PS1, CHAR_ICON_COPY " Import Saves to Virtual Card");
+	item = _createSaveEntry(SAVE_FLAG_PS1, CHAR_ICON_COPY " ", _("Import Saves to Virtual Card"));
 	item->path = strdup(FAKE_USB_PATH);
 	item->title_id = strdup("HDD");
 	item->dir_name = strdup(userPath);
@@ -2117,7 +2122,7 @@ list_t * ReadVmc1List(const char* userPath)
 		if (i && dir_exists(filePath) != SUCCESS)
 			continue;
 
-		item = _createSaveEntry(SAVE_FLAG_PS1, CHAR_ICON_COPY " Import Saves to Virtual Card");
+		item = _createSaveEntry(SAVE_FLAG_PS1, CHAR_ICON_COPY " ", _("Import Saves to Virtual Card"));
 		asprintf(&item->path, USB_PATH, i);
 		asprintf(&item->title_id, "USB %d", i);
 		item->dir_name = strdup(userPath);
@@ -2133,7 +2138,7 @@ list_t * ReadVmc1List(const char* userPath)
 		LOG("Reading '%s'...", mcdata[i].saveName);
 
 		char* tmp = sjis2utf8(mcdata[i].saveTitle);
-		item = _createSaveEntry(SAVE_FLAG_PS1 | SAVE_FLAG_VMC, tmp);
+		item = _createSaveEntry(SAVE_FLAG_PS1 | SAVE_FLAG_VMC, "", tmp);
 		item->type = FILE_TYPE_PS1;
 		item->blocks = i;
 		item->title_id = strdup(mcdata[i].saveProdCode);
@@ -2170,7 +2175,7 @@ list_t * ReadVmc2List(const char* userPath)
 
 	list = list_alloc();
 
-	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_VMC " Memory Card Management");
+	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_VMC " ", _("Memory Card Management"));
 	item->type = FILE_TYPE_MENU;
 	item->path = strdup(userPath);
 	item->title_id = strdup("VMC");
@@ -2179,44 +2184,45 @@ list_t * ReadVmc2List(const char* userPath)
 	item->dir_name = malloc(sizeof(void**));
 	((void**)item->dir_name)[0] = list;
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Export selected Saves to USB", CMD_CODE_NULL);
-	_createOptions(cmd, "Copy selected Saves to USB", CMD_EXP_SAVES_VMC);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Export selected Saves to USB"), CMD_CODE_NULL);
+	_createOptions(cmd, _("Copy selected Saves to USB"), CMD_EXP_SAVES_VMC);
 	list_append(item->codes, cmd);
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Export all Saves to USB", CMD_CODE_NULL);
-	_createOptions(cmd, "Copy all Saves to USB", CMD_EXP_ALL_SAVES_VMC);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Export all Saves to USB"), CMD_CODE_NULL);
+	_createOptions(cmd, _("Copy all Saves to USB"), CMD_EXP_ALL_SAVES_VMC);
 	list_append(item->codes, cmd);
 	list_append(list, item);
 
-	cmd = _createCmdCode(PATCH_NULL, "----- " UTF8_CHAR_STAR " Virtual Memory Card " UTF8_CHAR_STAR " -----", CMD_CODE_NULL);
+	cmd = _createCmdCode(PATCH_NULL, NULL, NULL, CMD_CODE_NULL);
+	asprintf(&cmd->name, "----- " UTF8_CHAR_STAR " %s " UTF8_CHAR_STAR " -----", _("Virtual Memory Card"));
 	list_append(item->codes, cmd);
 
 	if (!endsWith(userPath, ".VM2"))
 	{
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Export Memory Card to .VM2 format", CMD_CODE_NULL);
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Export Memory Card to .VM2 format"), CMD_CODE_NULL);
 		cmd->file = strdup(strrchr(userPath, '/')+1);
-		_createOptions(cmd, "Save .VM2 Memory Card to USB", CMD_EXP_PS2_VM2);
+		_createOptions(cmd, _("Save .VM2 Memory Card to USB"), CMD_EXP_PS2_VM2);
 		optval = malloc(sizeof(option_value_t));
-		asprintf(&optval->name, "Save .VM2 Memory Card to HDD");
+		asprintf(&optval->name, "%s", _("Save .VM2 Memory Card to HDD"));
 		asprintf(&optval->value, "%c%c", CMD_EXP_PS2_VM2, STORAGE_HDD);
 		list_append(cmd->options[0].opts, optval);
 		list_append(item->codes, cmd);
 	}
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Export Memory Card to .VMC format (No ECC)", CMD_CODE_NULL);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Export Memory Card to .VMC format (No ECC)"), CMD_CODE_NULL);
 	cmd->file = strdup(strrchr(userPath, '/')+1);
-	_createOptions(cmd, "Save .VMC Memory Card to USB", CMD_EXP_VM2_RAW);
+	_createOptions(cmd, _("Save .VMC Memory Card to USB"), CMD_EXP_VM2_RAW);
 	list_append(item->codes, cmd);
 
 	if (!endsWith(userPath, ".VMC"))
 	{
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Import a .VM2 file to Memory Card", CMD_CODE_NULL);
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Import a .VM2 file to Memory Card"), CMD_CODE_NULL);
 		cmd->file = strdup(strrchr(userPath, '/')+1);
 		cmd->options_count = 1;
 		cmd->options = _getFileOptions(VMC_PS2_PATH_HDD, "*.VM2", CMD_IMP_PS2_VM2);
 		list_append(item->codes, cmd);
 	}
 
-	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " Import Saves to Virtual Card");
+	item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " ", _("Import Saves to Virtual Card"));
 	item->path = strdup(FAKE_USB_PATH);
 	item->title_id = strdup("HDD");
 	item->type = FILE_TYPE_MENU;
@@ -2228,7 +2234,7 @@ list_t * ReadVmc2List(const char* userPath)
 		if (i && dir_exists(filePath) != SUCCESS)
 			continue;
 
-		item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " Import Saves to Virtual Card");
+		item = _createSaveEntry(SAVE_FLAG_PS2, CHAR_ICON_COPY " ", _("Import Saves to Virtual Card"));
 		asprintf(&item->path, USB_PATH, i);
 		asprintf(&item->title_id, "USB %d", i);
 		item->type = FILE_TYPE_MENU;
@@ -2272,7 +2278,7 @@ list_t * ReadVmc2List(const char* userPath)
 			}
 
 			char* title = sjis2utf8(iconsys.title);
-			item = _createSaveEntry(SAVE_FLAG_PS2 | SAVE_FLAG_VMC, title);
+			item = _createSaveEntry(SAVE_FLAG_PS2 | SAVE_FLAG_VMC, "", title);
 			item->type = FILE_TYPE_PS2;
 			item->dir_name = strdup(dirent.name);
 			asprintf(&item->title_id, "%.10s", dirent.name+2);
@@ -2310,7 +2316,7 @@ list_t * ReadTrophyList(const char* userPath)
 
 	list = list_alloc();
 
-	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " Export Trophies");
+	item = _createSaveEntry(SAVE_FLAG_PS3, CHAR_ICON_COPY " ", _("Export Trophies"));
 	item->type = FILE_TYPE_MENU;
 	item->path = strdup(userPath);
 	item->codes = list_alloc();
@@ -2318,14 +2324,14 @@ list_t * ReadTrophyList(const char* userPath)
 	item->dir_name = malloc(sizeof(void**));
 	((void**)item->dir_name)[0] = list;
 
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Backup selected Trophies to USB", CMD_CODE_NULL);
-	_createOptions(cmd, "Save Trophies to USB", CMD_COPY_TROPHIES_USB);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Backup selected Trophies to USB"), CMD_CODE_NULL);
+	_createOptions(cmd, _("Save Trophies to USB"), CMD_COPY_TROPHIES_USB);
 	list_append(item->codes, cmd);
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " Backup All Trophies to USB", CMD_CODE_NULL);
-	_createOptions(cmd, "Save Trophies to USB", CMD_COPY_ALL_TROP_USB);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Backup All Trophies to USB"), CMD_CODE_NULL);
+	_createOptions(cmd, _("Save Trophies to USB"), CMD_COPY_ALL_TROP_USB);
 	list_append(item->codes, cmd);
-	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " Export All Trophies to .Zip", CMD_CODE_NULL);
-	_createOptions(cmd, "Save .Zip to USB", CMD_ZIP_TROPHY_USB);
+	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " ", _("Export All Trophies to .Zip"), CMD_CODE_NULL);
+	_createOptions(cmd, _("Save .Zip to USB"), CMD_ZIP_TROPHY_USB);
 	list_append(item->codes, cmd);
 	list_append(list, item);
 
@@ -2335,7 +2341,7 @@ list_t * ReadTrophyList(const char* userPath)
 		if (i && dir_exists(filePath) != SUCCESS)
 			continue;
 
-		item = _createSaveEntry(SAVE_FLAG_PS3 | SAVE_FLAG_TROPHY, CHAR_ICON_COPY " Import Trophies");
+		item = _createSaveEntry(SAVE_FLAG_PS3 | SAVE_FLAG_TROPHY, CHAR_ICON_COPY " ", _("Import Trophies"));
 		asprintf(&item->path, USB_PATH TROPHIES_PATH_USB, i);
 		asprintf(&item->title_id, " USB %d", i);
 		item->type = FILE_TYPE_MENU;
@@ -2369,7 +2375,7 @@ list_t * ReadTrophyList(const char* userPath)
 			root_element = xmlDocGetRootElement(doc);
 			value = _get_xml_node_value(root_element->children, BAD_CAST "title-name");
 
-			item = _createSaveEntry(SAVE_FLAG_PS3 | SAVE_FLAG_TROPHY, value);
+			item = _createSaveEntry(SAVE_FLAG_PS3 | SAVE_FLAG_TROPHY, "", value);
 			asprintf(&item->path, "%s%s/", userPath, dir->d_name);
 			item->dir_name = strdup(dir->d_name);
 

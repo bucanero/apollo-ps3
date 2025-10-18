@@ -2,6 +2,7 @@
 #include <string.h>
 #include <pngdec/pngdec.h>
 #include <stdio.h>
+#include <mini18n.h>
 
 #include "saves.h"
 #include "menu.h"
@@ -13,22 +14,17 @@
 static void _draw_OptionsMenu(u8 alpha)
 {
 	int c = 0, w = 0, h = 0;
-	char *option_name;
 
     SetFontSize(APP_FONT_SIZE_SELECTION);
-    int ind = 0, y_off = 120;
-    while ((option_name = menu_options[ind].name))
+    for (int ind = 0, y_off = 120; menu_options[ind].name; ind++, y_off += 20)
     {
-        if (option_name[0] == '\n')
-        {
-            option_name++;
+        if (menu_options[ind].type & OPTION_SPACER)
             y_off += 20;
-        }
 
         SetFontColor(APP_FONT_COLOR | alpha, 0);
-        DrawString(MENU_ICON_OFF + MENU_TITLE_OFF + 50, y_off, option_name);
+        DrawString(MENU_ICON_OFF + MENU_TITLE_OFF + 50, y_off, menu_options[ind].name);
         
-		switch (menu_options[ind].type)
+		switch (menu_options[ind].type & 0xFFFF)
 		{
 			case APP_OPTION_BOOL:
 				c = (*menu_options[ind].value == 1) ? opt_on_png_index : opt_off_png_index;
@@ -55,9 +51,6 @@ static void _draw_OptionsMenu(u8 alpha)
         
         if (menu_sel == ind)
             DrawSelector(0, y_off, 0, 0, 0, alpha);
-        
-        y_off += 20;
-        ind++;
     }
 }
 
@@ -73,7 +66,7 @@ void Draw_OptionsMenu_Ani(void)
         
         tiny3d_Project2D();
         
-        DrawHeader_Ani(cat_opt_png_index, "Settings", NULL, APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
+        DrawHeader_Ani(cat_opt_png_index, _("Settings"), NULL, APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
         
 		u8 icon_a = (u8)(((ani * 2) > 0xFF) ? 0xFF : (ani * 2));
         int _game_a = (int)(icon_a - (MENU_ANI_MAX / 2)) * 2;
@@ -93,6 +86,6 @@ void Draw_OptionsMenu_Ani(void)
 
 void Draw_OptionsMenu(void)
 {
-    DrawHeader(cat_opt_png_index, 0, "Settings", NULL, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 0);
+    DrawHeader(cat_opt_png_index, 0, _("Settings"), NULL, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 0);
     _draw_OptionsMenu(0xFF);
 }

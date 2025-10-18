@@ -56,7 +56,7 @@ endif
 #---------------------------------------------------------------------------------
 LIBS	:=	-ldbglogger -ltiny3d -lfreetype -lgcm_sys -lrsx -lsysutil -lio -lnet -lxmp-lite -lspu_sound \
 			-laudio -lsysmodule -lcurl -lapollo -lzip -lpolarssl -lpngdec -lpng -lxml2 -lz -lm -lnetctl \
-			 -ljpgdec -lunrar -lun7zip -lstdc++ -lsysfs
+			-lmini18n -ljpgdec -lunrar -lun7zip -lstdc++ -lsysfs
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing

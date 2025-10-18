@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <zlib.h>
+#include <sysutil/sysutil.h>
 
 #include "common.h"
 
@@ -244,6 +245,76 @@ int sys_reboot(void)
 
     lv2syscall4(379,0x1200,0,0,0);
     return_to_user_prog(int);
+}
+
+const char * get_user_language(void)
+{
+    int language;
+
+    if(sysUtilGetSystemParamInt(SYSUTIL_SYSTEMPARAM_ID_LANG, &language) < 0)
+        return "en";
+
+    switch (language)
+    {
+    case SYSUTIL_LANG_JAPANESE:             //  0   Japanese
+        return "ja";
+
+    case SYSUTIL_LANG_ENGLISH_US:           //  1   English (United States)
+    case SYSUTIL_LANG_ENGLISH_GB:           // 18   English (United Kingdom)
+        return "en";
+
+    case SYSUTIL_LANG_FRENCH:               //  2   French
+        return "fr";
+
+    case SYSUTIL_LANG_SPANISH:              //  3   Spanish
+        return "es";
+
+    case SYSUTIL_LANG_GERMAN:               //  4   German
+        return "de";
+
+    case SYSUTIL_LANG_ITALIAN:              //  5   Italian
+        return "it";
+
+    case SYSUTIL_LANG_DUTCH:                //  6   Dutch
+        return "nl";
+
+    case SYSUTIL_LANG_RUSSIAN:              //  8   Russian
+        return "ru";
+
+    case SYSUTIL_LANG_KOREAN:               //  9   Korean
+        return "ko";
+
+    case SYSUTIL_LANG_CHINESE_T:            // 10   Chinese (traditional)
+    case SYSUTIL_LANG_CHINESE_S:            // 11   Chinese (simplified)
+        return "zh";
+
+    case SYSUTIL_LANG_FINNISH:              // 12   Finnish
+        return "fi";
+
+    case SYSUTIL_LANG_SWEDISH:              // 13   Swedish
+        return "sv";
+
+    case SYSUTIL_LANG_DANISH:               // 14   Danish
+        return "da";
+
+    case SYSUTIL_LANG_NORWEGIAN:            // 15   Norwegian
+        return "no";
+
+    case SYSUTIL_LANG_POLISH:               // 16   Polish
+        return "pl";
+
+    case SYSUTIL_LANG_PORTUGUESE_PT:        //  7   Portuguese (Portugal)
+    case SYSUTIL_LANG_PORTUGUESE_BR:        // 17   Portuguese (Brazil)
+        return "pt";
+
+    case SYSUTIL_LANG_TURKISH:              // 19   Turkish
+        return "tr";
+
+    default:
+        break;
+    }
+
+    return "en";
 }
 
 //----------------------------------------

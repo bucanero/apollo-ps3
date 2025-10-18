@@ -3,6 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include <io/pad.h>
+#include <mini18n.h>
 
 #include "saves.h"
 #include "menu.h"
@@ -105,7 +106,7 @@ void _draw_AboutMenu(u8 alpha)
 	SetFontAlign(FONT_ALIGN_SCREEN_CENTER);
 	SetFontColor(APP_FONT_COLOR | 0xFF, 0);
 	SetFontSize(APP_FONT_SIZE_DESCRIPTION);
-	DrawString(0, 150 + ((cnt + 3) * 12), "Console details:");
+	DrawString(0, 150 + ((cnt + 3) * 12), _("Console details:"));
 	SetFontSize(APP_FONT_SIZE_SELECTION);
 
 	int off = cnt + 5;
@@ -139,7 +140,7 @@ void Draw_AboutMenu_Ani(void)
 
 		tiny3d_Project2D();
 
-		DrawHeader_Ani(cat_about_png_index, "About", "v" APOLLO_VERSION, APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
+		DrawHeader_Ani(cat_about_png_index, _("About"), "v" APOLLO_VERSION, APP_FONT_TITLE_COLOR, 0xffffffff, ani, 12);
 
 		//------------- About Menu Contents
 
@@ -182,6 +183,6 @@ void Draw_AboutMenuLL(void)
 void Draw_AboutMenu(void)
 {
 	_setIdValues();
-	DrawHeader(cat_about_png_index, 0, "About", "v" APOLLO_VERSION, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 0);
+	DrawHeader(cat_about_png_index, 0, _("About"), "v" APOLLO_VERSION, APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 0);
 	_draw_AboutMenu(0xFF);
 }

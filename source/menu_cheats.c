@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <pngdec/pngdec.h>
+#include <mini18n.h>
 
 #include "saves.h"
 #include "menu.h"
@@ -111,7 +112,7 @@ void Draw_CheatsMenu_Options_Ani_Exit(void)
 		Draw_CheatsMenu_Selection(menu_old_sel[MENU_PATCHES], (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
 		DrawTexture(&menu_textures[edit_shadow_png_index], left - menu_textures[edit_shadow_png_index].texture.width + 1, 0, 0, menu_textures[edit_shadow_png_index].texture.width, 512, icon_a);
-		DrawHeader(cat_cheats_png_index, left, selected_centry->name, "Options", APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
+		DrawHeader(cat_cheats_png_index, left, selected_centry->name, _("Options"), APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 
 		tiny3d_Flip();
 
@@ -146,7 +147,7 @@ void Draw_CheatsMenu_Options_Ani(void)
 		Draw_CheatsMenu_Selection(menu_sel, (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
 		DrawTexture(&menu_textures[edit_shadow_png_index], left - menu_textures[edit_shadow_png_index].texture.width + 1, 0, 0, menu_textures[edit_shadow_png_index].texture.width, 512, icon_a);
-		DrawHeader(cat_cheats_png_index, left, selected_centry->name, "Options", APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
+		DrawHeader(cat_cheats_png_index, left, selected_centry->name, _("Options"), APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
         
 		u8 game_a = (u8)(icon_a < 0x8F ? 0 : icon_a);
 		DrawOptions(&selected_centry->options[option_index], game_a, 20, menu_old_sel[MENU_CODE_OPTIONS]);
@@ -166,7 +167,7 @@ void Draw_CheatsMenu_Options(void)
 	Draw_CheatsMenu_Selection(menu_old_sel[MENU_PATCHES], 0xD0D0D0FF);
 
 	DrawTexture(&menu_textures[edit_shadow_png_index], MENU_SPLIT_OFF - menu_textures[edit_shadow_png_index].texture.width + 1, 0, 0, menu_textures[edit_shadow_png_index].texture.width, 512, 0x000000FF);
-	DrawHeader(cat_cheats_png_index, MENU_SPLIT_OFF, selected_centry->name, "Options", APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
+	DrawHeader(cat_cheats_png_index, MENU_SPLIT_OFF, selected_centry->name, _("Options"), APP_FONT_TITLE_COLOR | 0xFF, 0xffffffff, 1);
 
 	DrawOptions(&selected_centry->options[option_index], 0xFF, 20, menu_sel);
 	DrawScrollBar(menu_sel, list_count(selected_centry->options[option_index].opts), 20, 800, 0xFF);
@@ -210,7 +211,7 @@ int DrawCodes(code_entry_t* code, u8 alpha, int y_inc, int xOff, int selIndex)
     SetFontSize(y_inc-6, y_inc-4);
 
     if (code->file && code->file[0])
-        DrawFormatString(xOff + MENU_ICON_OFF + 20, 424, "Target File: %s", code->file);
+        DrawFormatString(xOff + MENU_ICON_OFF + 20, 424, "%s %s", _("Target File:"), code->file);
 
     for (c = startDrawX; c < max; c++)
     {
@@ -263,7 +264,7 @@ void Draw_CheatsMenu_View_Ani_Exit(void)
 		Draw_CheatsMenu_Selection(menu_old_sel[MENU_PATCHES], (rgbVal << 24) | (rgbVal << 16) | (rgbVal << 8) | 0xFF);
 
 		DrawTexture(&menu_textures[edit_shadow_png_index], left - menu_textures[edit_shadow_png_index].texture.width + 1, 0, 0, menu_textures[edit_shadow_png_index].texture.width, 512, icon_a);
-		DrawHeader(cat_cheats_png_index, left, "Details", selected_centry->name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
+		DrawHeader(cat_cheats_png_index, left, _("Details"), selected_centry->name, APP_FONT_TITLE_COLOR | icon_a, 0xffffffff, 1);
 
 		tiny3d_Flip();
 
@@ -516,27 +517,27 @@ static void get_subtitle(int type, size_t count, char* sub)
     {
         case MENU_USB_SAVES:
         case MENU_HDD_SAVES:
-            sprintf(sub, "%ld Saves", count -1);
+            sprintf(sub, "%ld %s", count -1, _("Saves"));
             break;
 
         case MENU_ONLINE_DB:
-            sprintf(sub, "%ld Games", count);
+            sprintf(sub, "%ld %s", count, _("Games"));
             break;
 
         case MENU_TROPHIES:
-            sprintf(sub, "%ld Trophy-Sets", count -1);
+            sprintf(sub, "%ld %s", count -1, _("Trophy-Sets"));
             break;
 
         case MENU_USER_BACKUP:
-            sprintf(sub, "Tools");
+            sprintf(sub, "%s", _("Tools"));
             break;
 
         case MENU_PS1VMC_SAVES:
-            sprintf(sub, "PS1 Saves");
+            sprintf(sub, "%s", _("PS1 Saves"));
             break;
 
         case MENU_PS2VMC_SAVES:
-            sprintf(sub, "PS2 Saves");
+            sprintf(sub, "%s", _("PS2 Saves"));
             break;
     
         default:
