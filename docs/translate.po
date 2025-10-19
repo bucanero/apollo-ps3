@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Apollo Save Tool\n"
-"POT-Creation-Date: 2025-10-17 16:54-0300\n"
-"PO-Revision-Date: 2025-10-17 17:46-0300\n"
+"POT-Creation-Date: 2025-10-19 19:03-0300\n"
+"PO-Revision-Date: 2025-10-19 19:03-0300\n"
 "Last-Translator: \n"
 "Language-Team: github.com/bucanero\n"
 "Language: en\n"
@@ -404,31 +404,31 @@ msgstr ""
 msgid "Exit"
 msgstr ""
 
-#: main.c:560
+#: main.c:559
 msgid "HDD Saves"
 msgstr ""
 
-#: main.c:561
+#: main.c:560
 msgid "USB Saves"
 msgstr ""
 
-#: main.c:562 saves.c:590
+#: main.c:561 saves.c:590
 msgid "Trophies"
 msgstr ""
 
-#: main.c:563
+#: main.c:562
 msgid "User Tools"
 msgstr ""
 
-#: main.c:564
+#: main.c:563
 msgid "Online Database"
 msgstr ""
 
-#: main.c:565
+#: main.c:564
 msgid "PS1 Virtual Memory Card"
 msgstr ""
 
-#: main.c:566
+#: main.c:565
 msgid "PS2 Virtual Memory Card"
 msgstr ""
 
@@ -480,6 +480,10 @@ msgstr ""
 msgid "No save-games found"
 msgstr ""
 
+#: menu_main.c:439
+msgid "Patch view"
+msgstr ""
+
 #: menu_main.c:554
 msgid "No data found in folder:"
 msgstr ""
@@ -497,7 +501,7 @@ msgstr ""
 msgid "Failed to load:"
 msgstr ""
 
-#: menu_options.c:77 menu_options.c:97
+#: menu_options.c:69 menu_options.c:89
 msgid "Settings"
 msgstr ""
 
