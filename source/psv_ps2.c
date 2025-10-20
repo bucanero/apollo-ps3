@@ -487,7 +487,7 @@ int ps2_cbs2psv(const char *save, const char *psv_path)
     u8 *cbsData;
     u8 *compressed;
     u8 *decompressed;
-    cbsHeader_t *header;
+    cbsHeader_t header;
     cbsEntry_t *entryHeader;
     unsigned long decompressedSize;
     size_t cbsLen;
@@ -504,8 +504,8 @@ int ps2_cbs2psv(const char *save, const char *psv_path)
     if(read_buffer(save, &cbsData, &cbsLen) < 0)
         return 0;
 
-    header = (cbsHeader_t *)cbsData;
-    get_psv_filename(dstName, psv_path, header->name);
+    memcpy(&header, cbsData, sizeof(cbsHeader_t));
+    get_psv_filename(dstName, psv_path, header.name);
     dstFile = fopen(dstName, "wb");
 
     if (!dstFile)
@@ -520,15 +520,15 @@ int ps2_cbs2psv(const char *save, const char *psv_path)
     // Some tools create .CBS saves with an incorrect compressed size in the header.
     // It can't be trusted!
     cbsCrypt(compressed, cbsLen - sizeof(cbsHeader_t));
-    decompressedSize = ES32(header->decompressedSize);
+    decompressedSize = ES32(header.decompressedSize);
     decompressed = malloc(decompressedSize);
     int z_ret = uncompress(decompressed, &decompressedSize, compressed, cbsLen - sizeof(cbsHeader_t));
+    free(cbsData);
     
     if(z_ret != Z_OK)
     {
         // Compression failed.
         LOG("Decompression failed! (Z_ERR = %d)", z_ret);
-        free(cbsData);
         free(decompressed);
         return 0;
     }
@@ -540,11 +540,11 @@ int ps2_cbs2psv(const char *save, const char *psv_path)
     memset(&ps2h, 0, sizeof(ps2_header_t));
     memset(&ps2md, 0, sizeof(ps2_MainDirInfo_t));
 
-    ps2md.attribute = header->mode;
-    memcpy(&ps2md.created, &header->created, sizeof(sceMcStDateTime));
-    memcpy(&ps2md.modified, &header->modified, sizeof(sceMcStDateTime));
-    memcpy(ps2md.filename, header->name, sizeof(ps2md.filename));
-    
+    ps2md.attribute = header.mode;
+    memcpy(&ps2md.created, &header.created, sizeof(sceMcStDateTime));
+    memcpy(&ps2md.modified, &header.modified, sizeof(sceMcStDateTime));
+    memcpy(ps2md.filename, header.name, sizeof(ps2md.filename));
+
     write_psv_header(dstFile, 2);
 
     LOG("Save contents:\n");
@@ -620,7 +620,6 @@ int ps2_cbs2psv(const char *save, const char *psv_path)
 
     fclose(dstFile);
     free(decompressed);
-    free(cbsData);
 
     return psv_resign(dstName);
 }
