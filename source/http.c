@@ -1,7 +1,7 @@
 #include <net/net.h>
 #include <net/netctl.h>
 #include <sysmodule/sysmodule.h>
-
+#include <mini18n.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -152,7 +152,7 @@ int http_download(const char* url, const char* filename, const char* local_dst, 
 
 	if (show_progress)
 	{
-		init_progress_bar("Downloading...", filename);
+		init_progress_bar(_("Downloading..."), filename);
 		/* pass the struct pointer into the xferinfo function */
 		curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, &update_progress);
 		curl_easy_setopt(curl, CURLOPT_XFERINFODATA, (void*) filename);
@@ -244,7 +244,7 @@ int ftp_upload(const char* local_file, const char* url, const char* filename, in
 
 	if (show_progress)
 	{
-		init_progress_bar("Uploading...", filename);
+		init_progress_bar(_("Uploading..."), filename);
 		/* pass the struct pointer into the xferinfo function */
 		curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, &upload_progress);
 		curl_easy_setopt(curl, CURLOPT_XFERINFODATA, (void*) filename);
