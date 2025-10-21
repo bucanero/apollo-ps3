@@ -213,7 +213,7 @@ static void copyAllSavesUSB(const save_entry_t* save, int dst, int all)
 		return;
 	}
 
-	init_progress_bar("Copying all saves...", save->path);
+	init_progress_bar(_("Copying all saves..."), save->path);
 	LOG("Copying all saves from '%s' to USB '%s'...", save->path, usb_path);
 
 	for (node = list_head(list); (item = list_get(node)); node = list_next(node))
@@ -493,7 +493,7 @@ static void copyAllSavesHDD(const save_entry_t* save, int all)
 	uint64_t progress = 0;
 	list_t *list = ((void**)save->dir_name)[0];
 
-	init_progress_bar("Copying all saves...", save->path);
+	init_progress_bar(_("Copying all saves..."), save->path);
 
 	LOG("Copying all saves from '%s' to HDD...", save->path);
 	for (node = list_head(list); (item = list_get(node)); node = list_next(node))
@@ -692,7 +692,7 @@ static void exportAllSavesVMC(const save_entry_t* save, int dev, int all)
 	uint64_t progress = 0;
 	list_t *list = ((void**)save->dir_name)[0];
 
-	init_progress_bar("Exporting all VMC saves...", save->path);
+	init_progress_bar(_("Exporting all VMC saves..."), save->path);
 	_set_dest_path(outPath, dev, PS1_IMP_PATH_USB);
 	mkdirs(outPath);
 
@@ -954,7 +954,7 @@ static void importPS2classicsCfg(const char* cfg_path, const char* cfg_file)
 	*strrchr(outfile, '.') = 0;
 	strcat(outfile, ".ENC");
 
-	init_progress_bar("Encrypting PS2 CONFIG...", cfg_file);
+	init_progress_bar(_("Encrypting PS2 CONFIG..."), cfg_file);
 	ps2_encrypt_image(1, ps2file, outfile);
 	end_progress_bar();
 
@@ -971,7 +971,7 @@ static void importPS2classics(const char* iso_path, const char* iso_file)
 	*strrchr(outfile, '.') = 0;
 	strcat(outfile, ".BIN.ENC");
 
-	init_progress_bar("Encrypting PS2 ISO...", iso_file);
+	init_progress_bar(_("Encrypting PS2 ISO..."), iso_file);
 	ps2_encrypt_image(0, ps2file, outfile);
 	end_progress_bar();
 
@@ -1000,7 +1000,7 @@ static void exportPS2classics(const char* enc_path, const char* enc_file, uint8_
 		return;
 	}
 
-	init_progress_bar("Decrypting PS2 BIN.ENC...", enc_file);
+	init_progress_bar(_("Decrypting PS2 BIN.ENC..."), enc_file);
 	ps2_decrypt_image(0, ps2file, outfile);
 	file_chmod(outfile);
 	end_progress_bar();
@@ -1024,7 +1024,7 @@ static void copyAllTrophies(const save_entry_t* save, int dst, int all)
 		return;
 	}
 
-	init_progress_bar("Copying trophies...", exp_path);
+	init_progress_bar(_("Copying trophies..."), exp_path);
 	LOG("Copying all trophies from '%s'...", save->path);
 
 	for (node = list_head(list); (item = list_get(node)); node = list_next(node))
@@ -1337,7 +1337,7 @@ static void resignAllSaves(const save_entry_t* save, int all)
 	if (apollo_config.account_id)
 		snprintf(patch.account_id, sizeof(acct_id), "%*lx", SFO_ACCOUNT_ID_SIZE, apollo_config.account_id);
 
-	init_progress_bar("Resigning all saves...", save->path);
+	init_progress_bar(_("Resigning all saves..."), save->path);
 
 	LOG("Resigning all saves from '%s'...", save->path);
 	for (node = list_head(list); (item = list_get(node)); node = list_next(node))

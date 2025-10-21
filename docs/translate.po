@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Apollo Save Tool\n"
-"POT-Creation-Date: 2025-10-19 19:03-0300\n"
-"PO-Revision-Date: 2025-10-19 19:03-0300\n"
+"POT-Creation-Date: 2025-10-20 19:22-0300\n"
+"PO-Revision-Date: 2025-10-20 19:22-0300\n"
 "Last-Translator: \n"
 "Language-Team: github.com/bucanero\n"
 "Language: en\n"
@@ -54,6 +54,10 @@ msgstr ""
 
 #: exec_cmd.c:197 exec_cmd.c:1084 exec_cmd.c:1120
 msgid "Files successfully copied to:"
+msgstr ""
+
+#: exec_cmd.c:216 exec_cmd.c:496
+msgid "Copying all saves..."
 msgstr ""
 
 #: exec_cmd.c:228
@@ -127,6 +131,10 @@ msgstr ""
 
 #: exec_cmd.c:682
 msgid "Trophy successfully copied to:"
+msgstr ""
+
+#: exec_cmd.c:695
+msgid "Exporting all VMC saves..."
 msgstr ""
 
 #: exec_cmd.c:715
@@ -203,6 +211,22 @@ msgstr ""
 msgid "Error! Failed to export PS2 memory card"
 msgstr ""
 
+#: exec_cmd.c:957
+msgid "Encrypting PS2 CONFIG..."
+msgstr ""
+
+#: exec_cmd.c:974
+msgid "Encrypting PS2 ISO..."
+msgstr ""
+
+#: exec_cmd.c:1003
+msgid "Decrypting PS2 BIN.ENC..."
+msgstr ""
+
+#: exec_cmd.c:1027
+msgid "Copying trophies..."
+msgstr ""
+
 #: exec_cmd.c:1040
 msgid "Trophy Sets copied to:"
 msgstr ""
@@ -227,6 +251,10 @@ msgstr ""
 #: exec_cmd.c:1315
 #, c-format
 msgid "Save %s successfully modified!"
+msgstr ""
+
+#: exec_cmd.c:1340
+msgid "Resigning all saves..."
 msgstr ""
 
 #: exec_cmd.c:1368
@@ -370,6 +398,14 @@ msgstr ""
 
 #: exec_cmd.c:2066
 msgid "Error! Couldn't import save:"
+msgstr ""
+
+#: http.c:233
+msgid "Downloading..."
+msgstr ""
+
+#: http.c:325
+msgid "Uploading..."
 msgstr ""
 
 #: main.c:194 main.c:198 main.c:203 main.c:213
@@ -984,7 +1020,7 @@ msgstr ""
 
 #: settings.c:59
 msgid "Set User FTP Server URL"
-msgstr "URL del servidor FTP"
+msgstr ""
 
 #: settings.c:65
 msgid "Online Saves Server"
@@ -1064,4 +1100,8 @@ msgstr ""
 
 #: settings.c:312
 msgid "User IDs Updated!"
+msgstr ""
+
+#: zip_util.c:214 zip_util.c:297 zip_util.c:337
+msgid "Extracting files..."
 msgstr ""
