@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Apollo Save Tool\n"
 "POT-Creation-Date: 2025-10-17 16:54-0300\n"
-"PO-Revision-Date: 2025-10-17 17:46-0300\n"
+"PO-Revision-Date: 2025-10-21 19:36-0300\n"
 "Last-Translator: yyoossk\n"
 "Language-Team: x.com/Cloud0835\n"
 "Language: ja\n"
@@ -86,7 +86,7 @@ msgstr "Webサーバーがリスニングしているポート:"
 
 #: exec_cmd.c:432
 msgid "Press OK to stop the Server."
-msgstr "サーバーを停止するには、OKを押してください。""
+msgstr "サーバーを停止するには、OKを押してください。"
 
 #: exec_cmd.c:435
 msgid "Error starting Web Server!"
@@ -127,7 +127,7 @@ msgstr "エラー！トロフィーフォルダが利用できません:"
 
 #: exec_cmd.c:682
 msgid "Trophy successfully copied to:"
-msgstr "トロフィーのコピーに成功しました:""
+msgstr "トロフィーのコピーに成功しました:"
 
 #: exec_cmd.c:715
 msgid "Saves exported to:"
@@ -296,7 +296,7 @@ msgstr "ダウンロードURL"
 
 #: exec_cmd.c:1556
 msgid "File successfully downloaded to:"
-msgstr "ファイルのダウンロードに成功しました:""
+msgstr "ファイルのダウンロードに成功しました:"
 
 #: exec_cmd.c:1558
 msgid "Error! File couldn't be downloaded"
@@ -318,7 +318,7 @@ msgstr "エラー!セーブデータを削除できませんでした:"
 #: exec_cmd.c:1679
 #, c-format
 msgid "Do you want to upload %s?"
-msgstr "sをアップロードしますか?"
+msgstr "%sをアップロードしますか?"
 
 #: exec_cmd.c:1717
 msgid "Error! Couldn't zip save:"
@@ -350,7 +350,7 @@ msgstr "メモリーカードのエクスポート中にエラーが発生しま
 
 #: exec_cmd.c:1879
 msgid "Successfully imported to VMC:"
-msgstr "VMCへのインポートに成功しました:""
+msgstr "VMCへのインポートに成功しました:"
 
 #: exec_cmd.c:1881
 msgid "Error importing save:"
@@ -784,7 +784,7 @@ msgstr "すべてのライセンスを.RAP形式でエクスポート"
 
 #: saves.c:1295
 msgid "Save .RAPs to USB"
-msgstr ".RAPファイルをUSBに保存""
+msgstr ".RAPファイルをUSBに保存"
 
 #: saves.c:1297
 msgid "Save .RAPs to HDD"

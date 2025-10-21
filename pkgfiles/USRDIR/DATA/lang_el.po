@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Apollo Save Tool\n"
 "POT-Creation-Date: 2025-10-17 16:54-0300\n"
-"PO-Revision-Date: 2025-10-19 15:51+0200\n"
+"PO-Revision-Date: 2025-10-21 19:39-0300\n"
 "Last-Translator: SpyroMancer\n"
 "Language-Team: psx-place.com\n"
 "Language: el_GR\n"
@@ -14,19 +14,9 @@ msgstr ""
 "X-Poedit-KeywordsList: _;_i18n\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: exec_cmd.c:51
-#: exec_cmd.c:128
-#: exec_cmd.c:189
-#: exec_cmd.c:212
-#: exec_cmd.c:560
-#: exec_cmd.c:597
-#: exec_cmd.c:630
-#: exec_cmd.c:818
-#: exec_cmd.c:844
-#: exec_cmd.c:930
-#: exec_cmd.c:999
-#: exec_cmd.c:1023
-#: exec_cmd.c:1058
+#: exec_cmd.c:51 exec_cmd.c:128 exec_cmd.c:189 exec_cmd.c:212 exec_cmd.c:560
+#: exec_cmd.c:597 exec_cmd.c:630 exec_cmd.c:818 exec_cmd.c:844 exec_cmd.c:930
+#: exec_cmd.c:999 exec_cmd.c:1023 exec_cmd.c:1058
 msgid "Error! Export folder is not available:"
 msgstr "Σφάλμα! Ο φάκελος εξαγωγής δεν είναι διαθέσιμος:"
 
@@ -34,8 +24,7 @@ msgstr "Σφάλμα! Ο φάκελος εξαγωγής δεν είναι δι�
 msgid "Error downloading save game from:"
 msgstr "Σφάλμα λήψης δεδομένων από:"
 
-#: exec_cmd.c:72
-#: exec_cmd.c:97
+#: exec_cmd.c:72 exec_cmd.c:97
 msgid "Error extracting save game!"
 msgstr "Σφάλμα εξαγωγής δεδομένων!"
 
@@ -63,9 +52,7 @@ msgstr "Σφάλμα! Δεν γίνεται εξαγωγή δεδομένων σ
 msgid "Zip file successfully saved to:"
 msgstr "Αποθήκευση zip αρχείου επιτυχώς στο:"
 
-#: exec_cmd.c:197
-#: exec_cmd.c:1084
-#: exec_cmd.c:1120
+#: exec_cmd.c:197 exec_cmd.c:1084 exec_cmd.c:1120
 msgid "Files successfully copied to:"
 msgstr "Επιτυχημένη αντιγραφή αρχείων στο:"
 
@@ -146,13 +133,11 @@ msgstr "Επιτυχής αποθήκευση Τρόπαιου στο:"
 msgid "Saves exported to:"
 msgstr "Εξαγωγή δεδμένων στο:"
 
-#: exec_cmd.c:735
-#: exec_cmd.c:1838
+#: exec_cmd.c:735 exec_cmd.c:1838
 msgid "Save successfully exported to:"
 msgstr "Επιτυχής εξαγωγή δεδομένων στο:"
 
-#: exec_cmd.c:737
-#: exec_cmd.c:1840
+#: exec_cmd.c:737 exec_cmd.c:1840
 msgid "Error exporting save:"
 msgstr "Σφάλμα εξαγωγής δεδομένων:"
 
@@ -192,13 +177,8 @@ msgstr "Επιτυχής ενεργοποίηση λογαριασμού!"
 msgid "A system reboot is required"
 msgstr "Αναγκαστική επανεκκίνηση συστήματος"
 
-#: exec_cmd.c:831
-#: exec_cmd.c:883
-#: exec_cmd.c:918
-#: exec_cmd.c:942
-#: exec_cmd.c:961
-#: exec_cmd.c:978
-#: exec_cmd.c:1008
+#: exec_cmd.c:831 exec_cmd.c:883 exec_cmd.c:918 exec_cmd.c:942 exec_cmd.c:961
+#: exec_cmd.c:978 exec_cmd.c:1008
 msgid "File successfully saved to:"
 msgstr "Επιτυχής αποθήκευση αρχείων στο:"
 
@@ -231,8 +211,7 @@ msgstr "Αντιγραφή Σετ Τροπαίων στο:"
 msgid "Error! Import folder is not available:"
 msgstr "Σφάλμα! Μη διαθέσιμος φάκελος εισαγωγής"
 
-#: exec_cmd.c:1304
-#: exec_cmd.c:1442
+#: exec_cmd.c:1304 exec_cmd.c:1442
 msgid "Error! Account changes couldn't be applied"
 msgstr "Σφάλμα! Οι αλλαγές στο λογαριασμό δεν εφαρμόστηκαν"
 
@@ -253,7 +232,7 @@ msgstr "Τα δεδομένα %s επεξεργάστηκαν με επιτυχ�
 #: exec_cmd.c:1368
 #, c-format
 msgid "Error: %d Saves couldn't be resigned"
-msgstr "Σφάλμα! Τα %s αρχεία δεν υπογράφθηκαν"
+msgstr "Σφάλμα! Τα %d αρχεία δεν υπογράφθηκαν"
 
 #: exec_cmd.c:1370
 msgid "All saves successfully resigned!"
@@ -277,8 +256,7 @@ msgstr "Επιτυχημένη μετατροπή %s Τροπαίοιυ"
 msgid "Schedule Database rebuild on next boot?"
 msgstr "Προγραμματισμός επαλήθευσης Βάσης Δεδομένων στην επόμενη εκκίνηση;"
 
-#: exec_cmd.c:1492
-#: exec_cmd.c:1522
+#: exec_cmd.c:1492 exec_cmd.c:1522
 msgid "Save-game is not encrypted:"
 msgstr "Τα δεδομένα δεν είναι κρυπτογραφημένα:"
 
@@ -394,28 +372,19 @@ msgstr "ΔεΕπιτυχία εισαγωγής δεδομένων:"
 msgid "Error! Couldn't import save:"
 msgstr "Σφάλμα! Αποτυχία εισαγωγής δεδομένων:"
 
-#: main.c:194
-#: main.c:198
-#: main.c:203
-#: main.c:213
+#: main.c:194 main.c:198 main.c:203 main.c:213
 msgid "Select"
 msgstr "Επιλογή"
 
-#: main.c:194
-#: main.c:198
-#: main.c:203
-#: main.c:209
-#: main.c:213
+#: main.c:194 main.c:198 main.c:203 main.c:209 main.c:213
 msgid "Back"
 msgstr "Επιστροφή"
 
-#: main.c:194
-#: menu_cheats.c:267
+#: main.c:194 menu_cheats.c:267
 msgid "Details"
 msgstr "Λεπτομέρειες"
 
-#: main.c:194
-#: main.c:198
+#: main.c:194 main.c:198
 msgid "Refresh"
 msgstr "Ανανεώση"
 
@@ -443,8 +412,7 @@ msgstr "Δεδομένα HDD"
 msgid "USB Saves"
 msgstr "Δεδομένα USB"
 
-#: main.c:562
-#: saves.c:590
+#: main.c:562 saves.c:590
 msgid "Trophies"
 msgstr "Τρόπαια"
 
@@ -468,14 +436,11 @@ msgstr "Εικονική Κάρτα Μνήμης PS2"
 msgid "Console details:"
 msgstr "Πληροφορίες κονσόλας"
 
-#: menu_about.c:143
-#: menu_about.c:186
+#: menu_about.c:143 menu_about.c:186
 msgid "About"
 msgstr "Περί"
 
-#: menu_cheats.c:115
-#: menu_cheats.c:150
-#: menu_cheats.c:170
+#: menu_cheats.c:115 menu_cheats.c:150 menu_cheats.c:170
 msgid "Options"
 msgstr "Επιλογές"
 
@@ -507,8 +472,7 @@ msgstr "Δεδομένα PS1"
 msgid "PS2 Saves"
 msgstr "Δεδομένα PS2"
 
-#: menu_hex.c:59
-#: menu_hex.c:79
+#: menu_hex.c:59 menu_hex.c:79
 msgid "Hex Editor"
 msgstr "Hex Editor"
 
@@ -533,8 +497,7 @@ msgstr "Αποθήκευση αλλαγών στο %s ;"
 msgid "Failed to load:"
 msgstr "Αποτυχία φόρτωσης:"
 
-#: menu_options.c:77
-#: menu_options.c:97
+#: menu_options.c:77 menu_options.c:97
 msgid "Settings"
 msgstr "Ρυθμίσεις"
 
@@ -542,10 +505,7 @@ msgstr "Ρυθμίσεις"
 msgid "Apply Changes & Resign"
 msgstr "Εφαρμογή αλλαγών και υπογραφή"
 
-#: saves.c:221
-#: saves.c:351
-#: saves.c:756
-#: saves.c:911
+#: saves.c:221 saves.c:351 saves.c:756 saves.c:911
 msgid "View Save Details"
 msgstr "Εμφανιση λεπτομερειών δεδομένων"
 
@@ -561,9 +521,7 @@ msgstr "Αντιγραφή δεδομένων στο USB"
 msgid "Copy Save to USB"
 msgstr "Αντιγραφή δεδομένων στο USB"
 
-#: saves.c:236
-#: saves.c:768
-#: saves.c:923
+#: saves.c:236 saves.c:768 saves.c:923
 msgid "Upload save backup to FTP"
 msgstr "Ανέβασμα δεδομένων σε FTP"
 
@@ -619,8 +577,7 @@ msgstr "Αφαίρεση προστασίας αντιγραφής"
 msgid "Change Region Title ID"
 msgstr "Αλλαγή τίτλου ID Περιοχής"
 
-#: saves.c:362
-#: saves.c:2196
+#: saves.c:362 saves.c:2196
 msgid "Virtual Memory Card"
 msgstr "Εικονική Κάρτα Μνήμης"
 
@@ -660,19 +617,15 @@ msgstr "Αντιγραφή Σετ Τροπαίων σε USB"
 msgid "Export Trophy Set to Zip"
 msgstr "Εξαγωγή Σετ Τροπαίων σε USB"
 
-#: saves.c:586
-#: saves.c:1291
-#: saves.c:2334
+#: saves.c:586 saves.c:1291 saves.c:2334
 msgid "Save .Zip to USB"
 msgstr "Αποθήκευση .zip στο USB"
 
-#: saves.c:759
-#: saves.c:914
+#: saves.c:759 saves.c:914
 msgid "Delete Save Game"
 msgstr "Διαγραφή αρχείου αποθήκευσης"
 
-#: saves.c:763
-#: saves.c:918
+#: saves.c:763 saves.c:918
 msgid "Save Game Backup"
 msgstr "Αντίγραφο ασφαλείας αρχείου αποθήκευσης"
 
@@ -688,8 +641,7 @@ msgstr "Αντιγραφή .MCS στο USB"
 msgid "Copy .MCS Save to HDD"
 msgstr "Αντιγραφή .MCS στο HDD"
 
-#: saves.c:781
-#: saves.c:936
+#: saves.c:781 saves.c:936
 msgid "Export save game to .PSV format"
 msgstr "Εξαγωγή αρχείου αποθήκευσης σε .PSV αρχείο"
 
@@ -753,8 +705,7 @@ msgstr "Ενεργοποίηση λογαριασμού PS3"
 msgid "Import Licenses"
 msgstr "Εισγωγή αδειών"
 
-#: saves.c:1062
-#: saves.c:1093
+#: saves.c:1062 saves.c:1093
 msgid "PS2 Classics: Import & Encrypt ISOs"
 msgstr "PS2 Classics: Εισαγωγή και κρυπτογράφηση .ISO"
 
@@ -875,40 +826,31 @@ msgstr "Κατέβασμα συνδέσμου URL (http, https, ftp, ftps)"
 msgid "Local Web Server (full system access)"
 msgstr "Τοπικό Web Server (πρόσβαση σε όλο το σύστημα)"
 
-#: saves.c:1888
-#: saves.c:1936
+#: saves.c:1888 saves.c:1936
 msgid "Bulk Save Management"
 msgstr "Ομαδική Διαχείριση αρχείων αποθήκευσης"
 
-#: saves.c:1896
-#: saves.c:1944
+#: saves.c:1896 saves.c:1944
 msgid "Resign & Unlock all Saves"
 msgstr "Υπογραφή και ξεκλείδωμα όλων των αρχείων αποθήκευσης"
 
-#: saves.c:1899
-#: saves.c:1947
+#: saves.c:1899 saves.c:1947
 msgid "Resign & Unlock selected Saves"
 msgstr "Υπογραφή και ξεκλείδωμα επιλεγμένων αρχείων αποθήκευσης"
 
-#: saves.c:1902
-#: saves.c:2107
-#: saves.c:2191
+#: saves.c:1902 saves.c:2107 saves.c:2191
 msgid "Copy all Saves to USB"
 msgstr "Αντιγραφή όλων των αρχείων αποθήκευσης στο USB"
 
-#: saves.c:1903
-#: saves.c:1907
+#: saves.c:1903 saves.c:1907
 msgid "Copy Saves to USB"
 msgstr "Αντιγραφή αρχείων αποθήκευσης σε USB"
 
-#: saves.c:1906
-#: saves.c:2104
-#: saves.c:2188
+#: saves.c:1906 saves.c:2104 saves.c:2188
 msgid "Copy selected Saves to USB"
 msgstr "Αντιγραφή επιλεγμένων αρχείων αποθήκευσης στο USB"
 
-#: saves.c:1910
-#: saves.c:1956
+#: saves.c:1910 saves.c:1956
 msgid "Start local Web Server"
 msgstr "Έναρξη τοπικού Web Server"
 
@@ -920,25 +862,19 @@ msgstr "Αντιγραφή όλων των αρχείων αποθήκευσης
 msgid "Copy selected Saves to HDD"
 msgstr "Αντιγραφή επιλεγμένων αρχείων αποθήκευσης στο HDD"
 
-#: saves.c:2094
-#: saves.c:2178
+#: saves.c:2094 saves.c:2178
 msgid "Memory Card Management"
 msgstr "Διαχείριση Καρτών Μνήμης"
 
-#: saves.c:2103
-#: saves.c:2187
+#: saves.c:2103 saves.c:2187
 msgid "Export selected Saves to USB"
 msgstr "Αντιγραφή επιλεγμένων αρχείων αποθήκευσης στο USB"
 
-#: saves.c:2106
-#: saves.c:2190
+#: saves.c:2106 saves.c:2190
 msgid "Export all Saves to USB"
 msgstr "Αντιγραφή όλων των αρχείων αποθήκευσης στο USB"
 
-#: saves.c:2112
-#: saves.c:2125
-#: saves.c:2225
-#: saves.c:2237
+#: saves.c:2112 saves.c:2125 saves.c:2225 saves.c:2237
 msgid "Import Saves to Virtual Card"
 msgstr "Εισαγωγή αρχείων αποθήκευσης στην Εικονική Κάρτα"
 
@@ -974,8 +910,7 @@ msgstr "Εξαγωγή Τροπαίων"
 msgid "Backup selected Trophies to USB"
 msgstr "Αντίγραφο ασφαλείας επιλεγμένων τροπαίων στο USB"
 
-#: saves.c:2328
-#: saves.c:2331
+#: saves.c:2328 saves.c:2331
 msgid "Save Trophies to USB"
 msgstr "Αποθήκευση Τροπαίων στο USB"
 
