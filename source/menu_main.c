@@ -820,7 +820,7 @@ static void doPatchViewMenu(void)
 		}
 	}
 	
-	Draw_CheatsMenu_View("Patch view");
+	Draw_CheatsMenu_View(_("Patch view"));
 }
 
 static void doCodeOptionsMenu(void)
