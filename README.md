@@ -177,7 +177,7 @@ Currently, the list of available games and files is limited, but the project aim
 
 # Credits
 
-* [Bucanero](http://github.com/bucanero): [Project developer](https://bucanero.github.io/apollo-ps3/)
+* [Bucanero](https://github.com/bucanero): [Project developer](https://bucanero.github.io/apollo-ps3/)
 
 ## Acknowledgments
 
