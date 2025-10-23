@@ -3,6 +3,7 @@
 [![Downloads][img_downloads]][app_downloads] [![Release][img_latest]][app_latest] [![License][img_license]][app_license]
 [![Build package](https://github.com/bucanero/apollo-ps3/actions/workflows/build.yml/badge.svg)](https://github.com/bucanero/apollo-ps3/actions/workflows/build.yml)
 [![Twitter](https://img.shields.io/twitter/follow/dparrino?label=Follow)](https://twitter.com/dparrino)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/bucanero/apollo-ps3)
 
 **Apollo Save Tool** is an application to manage save-game files, trophies, and licenses on the PlayStation 3.
 
