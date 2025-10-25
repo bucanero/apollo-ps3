@@ -192,13 +192,9 @@ Currently, the list of available games and files is limited, but the project aim
 
 ## Localization
 
-Apollo supports multiple languages for its user interface. Currently, the following languages are available:
+Apollo supports multiple languages for its user interface. Translators:
 
-- French: by Algol
-- Italian: by [TheheroGAC](https://x.com/TheheroGAC)
-- Japanese: by [yyoossk](https://x.com/Cloud0835)
-- Portuguese: by [Phoenixx1202](https://github.com/Phoenixx1202)
-- Spanish: by [Bucanero](https://github.com/bucanero)
+- Algol (French), [Bucanero](https://github.com/bucanero) (Spanish), [TheheroGAC](https://x.com/TheheroGAC) (Italian), [yyoossk](https://x.com/Cloud0835) (Japanese), [Phoenixx1202](https://github.com/Phoenixx1202) (Portuguese)
 
 # Building
 
