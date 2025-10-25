@@ -68,7 +68,7 @@ static char* endsWith(const char * a, const char * b)
  *	path:			Path to file
  * Return:			Pointer to the newly allocated buffer
  */
-char * readTextFile(const char * path, long* size)
+char * readTextFile(const char * path)
 {
 	FILE *f = fopen(path, "rb");
 
@@ -89,8 +89,6 @@ char * readTextFile(const char * path, long* size)
 	fclose(f);
 
 	string[fsize] = 0;
-	if (size)
-		*size = fsize;
 
 	return string;
 }
@@ -411,7 +409,7 @@ int ReadCodes(save_entry_t * save)
 	_addSfoCommands(save);
 
 	snprintf(filePath, sizeof(filePath), APOLLO_DATA_PATH "%s.savepatch", save->title_id);
-	if ((buffer = readTextFile(filePath, NULL)) == NULL)
+	if ((buffer = readTextFile(filePath)) == NULL)
 		return list_count(save->codes);
 
 	code = _createCmdCode(PATCH_NULL, NULL, NULL, CMD_CODE_NULL);
@@ -471,7 +469,6 @@ static int get_usb_trophies(save_entry_t* item)
 	struct dirent *dir;
 	code_entry_t * cmd;
 	char filePath[256];
-	long bufferLen;
 	char * buffer = NULL;
 	xmlDoc *doc = NULL;
 	xmlNode *root_element = NULL;
@@ -488,12 +485,12 @@ static int get_usb_trophies(save_entry_t* item)
 			continue;
 
 		snprintf(filePath, sizeof(filePath), "%s%s/TROPCONF.SFM", item->path, dir->d_name);
-		if ((buffer = readTextFile(filePath, &bufferLen)) == NULL)
+		if ((buffer = readTextFile(filePath)) == NULL)
 			continue;
 
 		LOG("Reading %s...", filePath);
 		/*parse the file and get the DOM */
-		doc = xmlParseMemory(buffer + 0x40, bufferLen - 0x40);
+		doc = xmlParseMemory(buffer + 0x40, strlen(buffer + 0x40));
 		if (!doc)
 		{
 			LOG("XML: could not parse file %s", filePath);
@@ -529,7 +526,6 @@ int ReadTrophies(save_entry_t * game)
 	int trop_count = 0;
 	code_entry_t * trophy;
 	char filePath[256];
-	long bufferLen;
 	char * buffer = NULL;
 	xmlDoc *doc = NULL;
 	xmlNode *root_element = NULL;
@@ -543,11 +539,11 @@ int ReadTrophies(save_entry_t * game)
 		return get_usb_trophies(game);
 
 	snprintf(filePath, sizeof(filePath), "%s" "TROPCONF.SFM", game->path);
-	if ((buffer = readTextFile(filePath, &bufferLen)) == NULL)
+	if ((buffer = readTextFile(filePath)) == NULL)
 		return 0;
 
 	/*parse the file and get the DOM */
-	doc = xmlParseMemory(buffer + 0x40, bufferLen - 0x40);
+	doc = xmlParseMemory(buffer + 0x40, strlen(buffer + 0x40));
 	if (!doc)
 	{
 		LOG("XML: could not parse file %s", filePath);
@@ -978,50 +974,32 @@ int ReadOnlineSaves(save_entry_t * game)
 			return 0;
 	}
 
-	long fsize;
-	char *data = readTextFile(path, &fsize);
+	char *data = readTextFile(path);
 	if (!data)
 		return 0;
 
-	char *ptr = data;
-	char *end = data + fsize;
-
 	game->codes = list_alloc();
 
-	while (ptr < end && *ptr)
+	for (char *ptr, *line = strtok(data, "\r\n"); line; line = strtok(NULL, "\r\n"))
 	{
-		char *tmp, *content = ptr;
+		// skip invalid lines
+		if ((ptr = strchr(line, '=')) == NULL)
+			continue;
 
-		while (ptr < end && *ptr != '\n' && *ptr != '\r')
-		{
-			ptr++;
-		}
 		*ptr++ = 0;
 
-		if ((tmp = strchr(content, '=')) != NULL)
-		{
-			*tmp++ = 0;
-			item = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " ", tmp, CMD_CODE_NULL);
-			item->file = strdup(content);
 
-			_createOptions(item, _("Download to USB"), CMD_DOWNLOAD_USB);
-			optval = malloc(sizeof(option_value_t));
-			asprintf(&optval->name, "%s", _("Download to HDD"));
-			asprintf(&optval->value, "%c%c", CMD_DOWNLOAD_HDD, STORAGE_HDD);
-			list_append(item->options[0].opts, optval);
-			list_append(game->codes, item);
+		item = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " ", ptr, CMD_CODE_NULL);
+		item->file = strdup(line);
 
-			LOG("[%s%s] %s", game->path, item->file, item->name + 1);
-		}
+		_createOptions(item, _("Download to USB"), CMD_DOWNLOAD_USB);
+		optval = malloc(sizeof(option_value_t));
+		asprintf(&optval->name, "%s", _("Download to HDD"));
+		asprintf(&optval->value, "%c%c", CMD_DOWNLOAD_HDD, STORAGE_HDD);
+		list_append(item->options[0].opts, optval);
+		list_append(game->codes, item);
 
-		if (ptr < end && *ptr == '\r')
-		{
-			ptr++;
-		}
-		if (ptr < end && *ptr == '\n')
-		{
-			ptr++;
-		}
+		LOG("[%s%s] %s", game->path, item->file, item->name + 1);
 	}
 
 	free(data);
@@ -2003,43 +1981,24 @@ static void _ReadOnlineListEx(const char* urlPath, uint16_t flag, list_t *list)
 			return;
 	}
 	
-	long fsize;
-	char *data = readTextFile(path, &fsize);
+	char *data = readTextFile(path);
 	if (!data)
 		return;
 	
-	char *ptr = data;
-	char *end = data + fsize;
-
-	while (ptr < end && *ptr)
+	for (char *ptr, *line = strtok(data, "\r\n"); line; line = strtok(NULL, "\r\n"))
 	{
-		char *tmp, *content = ptr;
+		// skip invalid lines
+		if ((ptr = strchr(line, '=')) == NULL)
+			continue;
 
-		while (ptr < end && *ptr != '\n' && *ptr != '\r')
-		{
-			ptr++;
-		}
 		*ptr++ = 0;
 
-		if ((tmp = strchr(content, '=')) != NULL)
-		{
-			*tmp++ = 0;
-			item = _createSaveEntry(flag | SAVE_FLAG_ONLINE, "", tmp);
-			item->title_id = strdup(content);
-			asprintf(&item->path, "%s%s/", urlPath, item->title_id);
+		item = _createSaveEntry(flag | SAVE_FLAG_ONLINE, "", ptr);
+		item->title_id = strdup(line);
+		asprintf(&item->path, "%s%s/", urlPath, item->title_id);
 
-			LOG("+ [%s] %s", item->title_id, item->name);
-			list_append(list, item);
-		}
-
-		if (ptr < end && *ptr == '\r')
-		{
-			ptr++;
-		}
-		if (ptr < end && *ptr == '\n')
-		{
-			ptr++;
-		}
+		LOG("+ [%s] %s", item->title_id, item->name);
+		list_append(list, item);
 	}
 
 	free(data);
@@ -2309,7 +2268,6 @@ list_t * ReadTrophyList(const char* userPath)
 	xmlDoc *doc = NULL;
 	xmlNode *root_element = NULL;
 	char *value, *buffer;
-	long bufferLen;
 
 	if (dir_exists(userPath) != SUCCESS)
 		return NULL;
@@ -2359,11 +2317,11 @@ list_t * ReadTrophyList(const char* userPath)
 			continue;
 
 		snprintf(filePath, sizeof(filePath), "%s%s/TROPCONF.SFM", userPath, dir->d_name);
-		if ((buffer = readTextFile(filePath, &bufferLen)) != NULL)
+		if ((buffer = readTextFile(filePath)) != NULL)
 		{
 			LOG("Reading %s...", filePath);
 			/*parse the file and get the DOM */
-			doc = xmlParseMemory(buffer + 0x40, bufferLen - 0x40);
+			doc = xmlParseMemory(buffer + 0x40, strlen(buffer + 0x40));
 			if (!doc)
 			{
 				LOG("XML: could not parse file %s", filePath);

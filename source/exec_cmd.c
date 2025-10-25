@@ -1743,7 +1743,7 @@ static void uploadSaveFTP(const save_entry_t* save)
 	ret &= ftp_upload(APOLLO_TMP_PATH "sfv.ftp", remote, "checksum.sfv", 1);
 
 	unlink_secure(local);
-	tmp = readTextFile(APOLLO_TMP_PATH "games.ftp", NULL);
+	tmp = readTextFile(APOLLO_TMP_PATH "games.ftp");
 	if (!tmp)
 		tmp = strdup("");
 

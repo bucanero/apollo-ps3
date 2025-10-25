@@ -267,7 +267,7 @@ list_t * ReadTrophyList(const char* userPath);
 list_t * ReadVmc1List(const char* userPath);
 list_t * ReadVmc2List(const char* userPath);
 void UnloadGameList(list_t * list);
-char * readTextFile(const char * path, long* size);
+char * readTextFile(const char * path);
 int sortSaveList_Compare(const void* A, const void* B);
 int sortSaveList_Compare_Type(const void* A, const void* B);
 int sortSaveList_Compare_TitleID(const void* A, const void* B);
