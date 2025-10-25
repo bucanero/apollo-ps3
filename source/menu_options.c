@@ -18,13 +18,13 @@ static void _draw_OptionsMenu(u8 alpha)
     SetFontSize(APP_FONT_SIZE_SELECTION);
     for (int ind = 0, y_off = 120; menu_options[ind].name; ind++, y_off += 20)
     {
-        if (menu_options[ind].type & OPTION_SPACER)
+        if (menu_options[ind].spacer)
             y_off += 20;
 
         SetFontColor(APP_FONT_COLOR | alpha, 0);
         DrawString(MENU_ICON_OFF + MENU_TITLE_OFF + 50, y_off, menu_options[ind].name);
         
-		switch (menu_options[ind].type & 0xFFFF)
+		switch (menu_options[ind].type)
 		{
 			case APP_OPTION_BOOL:
 				c = (*menu_options[ind].value == 1) ? opt_on_png_index : opt_off_png_index;
@@ -32,20 +32,26 @@ static void _draw_OptionsMenu(u8 alpha)
 				h = (int)(menu_textures[c].texture.height / 1.8);
 				DrawTexture(&menu_textures[c], OPTION_ITEM_OFF - 29, y_off, 0, w, h, 0xFFFFFF00 | alpha);
 				break;
+
 			case APP_OPTION_CALL:
 				w = (int)(menu_textures[footer_ico_cross_png_index].texture.width / 1.8);
 				h = (int)(menu_textures[footer_ico_cross_png_index].texture.height / 1.8);
 				DrawTexture(&menu_textures[ps3PadCrossOk() ? footer_ico_cross_png_index : footer_ico_circle_png_index], OPTION_ITEM_OFF - 29, y_off+2, 0, w, h, 0xFFFFFF00 | alpha);
 				break;
+
 			case APP_OPTION_LIST:
 				SetFontAlign(FONT_ALIGN_CENTER);
 				DrawFormatString(OPTION_ITEM_OFF - 18, y_off, "\xe2\x97\x80 %s \xe2\x96\xb6", menu_options[ind].options[*menu_options[ind].value]);
 				SetFontAlign(FONT_ALIGN_LEFT);
 				break;
+
 			case APP_OPTION_INC:
 				SetFontAlign(FONT_ALIGN_CENTER);
 				DrawFormatString(OPTION_ITEM_OFF - 18, y_off, "- %d +", *menu_options[ind].value);
 				SetFontAlign(FONT_ALIGN_LEFT);
+				break;
+
+			default:
 				break;
 		}
         
