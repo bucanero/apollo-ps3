@@ -988,7 +988,6 @@ int ReadOnlineSaves(save_entry_t * game)
 
 		*ptr++ = 0;
 
-
 		item = _createCmdCode(PATCH_COMMAND, CHAR_ICON_ZIP " ", ptr, CMD_CODE_NULL);
 		item->file = strdup(line);
 
