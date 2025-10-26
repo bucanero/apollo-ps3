@@ -1,0 +1,1107 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Apollo Save Tool\n"
+"POT-Creation-Date: 2025-10-20 19:22-0300\n"
+"PO-Revision-Date: 2025-10-20 19:22-0300\n"
+"Last-Translator: Akela_1979\n"
+"Language-Team: x.com/Akela_1979\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.8\n"
+"X-Poedit-Basepath: source\n"
+"X-Poedit-KeywordsList: _;_i18n\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: exec_cmd.c:51 exec_cmd.c:128 exec_cmd.c:189 exec_cmd.c:212 exec_cmd.c:560
+#: exec_cmd.c:597 exec_cmd.c:630 exec_cmd.c:818 exec_cmd.c:844 exec_cmd.c:930
+#: exec_cmd.c:999 exec_cmd.c:1023 exec_cmd.c:1058
+msgid "Error! Export folder is not available:"
+msgstr "Ошибка! Папка для экспорта недоступна:"
+
+#: exec_cmd.c:57
+msgid "Error downloading save game from:"
+msgstr "Ошибка загрузки сохранения из:"
+
+#: exec_cmd.c:72 exec_cmd.c:97
+msgid "Error extracting save game!"
+msgstr "Ошибка извлечения сохранения!"
+
+#: exec_cmd.c:82
+msgid "Save game already exists in:"
+msgstr "Сохранение уже существует в:"
+
+#: exec_cmd.c:82
+msgid "Overwrite?"
+msgstr "Перезаписать?"
+
+#: exec_cmd.c:87
+msgid "Error creating save game folder!"
+msgstr "Ошибка создания папки сохранения!"
+
+#: exec_cmd.c:95
+msgid "Save game successfully downloaded to:"
+msgstr "Сохранение успешно загружено в:"
+
+#: exec_cmd.c:162
+msgid "Error! Can't export save game to:"
+msgstr "Ошибка! Не удалось экспортировать сохранение в:"
+
+#: exec_cmd.c:166
+msgid "Zip file successfully saved to:"
+msgstr "Zip-архив успешно сохранен в:"
+
+#: exec_cmd.c:197 exec_cmd.c:1084 exec_cmd.c:1120
+msgid "Files successfully copied to:"
+msgstr "Файлы успешно скопированы в:"
+
+#: exec_cmd.c:216 exec_cmd.c:496
+msgid "Copying all saves..."
+msgstr "Копирование всех сохранений..."
+
+#: exec_cmd.c:228
+msgid "Saves copied to USB"
+msgstr "Сохранения скопированы на USB"
+
+#: exec_cmd.c:256
+#, c-format
+msgid "Save-game %s already exists! Overwrite?"
+msgstr "Сохранение %s уже существует! Перезаписать?"
+
+#: exec_cmd.c:258
+#, c-format
+msgid "Error! Save-game %s already exists"
+msgstr "Ошибка! Сохранение %s уже существует"
+
+#: exec_cmd.c:267
+#, c-format
+msgid "Save-game %s copied to HDD"
+msgstr "Сохранение %s скопировано на HDD"
+
+#: exec_cmd.c:269
+#, c-format
+msgid "Error! Failed to copy Save-game %s"
+msgstr "Ошибка! Не удалось скопировать сохранение %s"
+
+#: exec_cmd.c:432
+msgid "Web Server listening on:"
+msgstr "Веб-сервер ожидает подключений на:"
+
+#: exec_cmd.c:432
+msgid "Press OK to stop the Server."
+msgstr "Нажмите OK для остановки сервера."
+
+#: exec_cmd.c:435
+msgid "Error starting Web Server!"
+msgstr "Ошибка запуска веб-сервера!"
+
+#: exec_cmd.c:509
+msgid "Saves copied to HDD"
+msgstr "Сохранения скопированы на HDD"
+
+#: exec_cmd.c:545
+msgid "All files extracted to:"
+msgstr "Все файлы извлечены в:"
+
+#: exec_cmd.c:547
+#, c-format
+msgid "Error: %s couldn't be extracted"
+msgstr "Ошибка: %s не может быть извлечен"
+
+#: exec_cmd.c:586
+msgid "Licenses successfully saved to:"
+msgstr "Лицензии успешно сохранены в:"
+
+#: exec_cmd.c:616
+msgid "Files successfully saved to:"
+msgstr "Файлы успешно сохранены в:"
+
+#: exec_cmd.c:654
+msgid "Error! Failed to export Trophies to Zip"
+msgstr "Ошибка! Не удалось экспортировать трофеи в Zip"
+
+#: exec_cmd.c:658
+msgid "Trophies successfully saved to:"
+msgstr "Трофеи успешно сохранены в:"
+
+#: exec_cmd.c:669
+msgid "Error! Trophy folder is not available:"
+msgstr "Ошибка! Папка трофеев недоступна:"
+
+#: exec_cmd.c:682
+msgid "Trophy successfully copied to:"
+msgstr "Трофеи успешно скопированы в:"
+
+#: exec_cmd.c:695
+msgid "Exporting all VMC saves..."
+msgstr "Экспорт всех сохранений VMC..."
+
+#: exec_cmd.c:715
+msgid "Saves exported to:"
+msgstr "Сохранения экспортированы в:"
+
+#: exec_cmd.c:735 exec_cmd.c:1838
+msgid "Save successfully exported to:"
+msgstr "Сохранение успешно экспортировано в:"
+
+#: exec_cmd.c:737 exec_cmd.c:1840
+msgid "Error exporting save:"
+msgstr "Ошибка экспорта сохранения:"
+
+#: exec_cmd.c:746
+msgid "File successfully resigned!"
+msgstr "Подпись файла успешно изменена!"
+
+#: exec_cmd.c:758
+msgid "Error! The account already has an act.dat"
+msgstr "Ошибка! У аккаунта уже есть файл act.dat"
+
+#: exec_cmd.c:764
+msgid "Error! Folder is not available:"
+msgstr "Ошибка! Папка недоступна:"
+
+#: exec_cmd.c:770
+msgid "Enter the Account ID"
+msgstr "Введите ID аккаунта"
+
+#: exec_cmd.c:773
+msgid "Error! Account ID is not valid"
+msgstr "Ошибка! Недопустимый ID аккаунта"
+
+#: exec_cmd.c:781
+msgid "Error! Fake Account could not be assigned to xRegistry.sys"
+msgstr "Ошибка! Не удалось назначить фейковый аккаунт в xRegistry.sys"
+
+#: exec_cmd.c:790
+msgid "Error! Account could not be activated!"
+msgstr "Ошибка! Не удалось активировать аккаунт!"
+
+#: exec_cmd.c:807
+msgid "Account successfully activated!"
+msgstr "Аккаунт успешно активирован!"
+
+#: exec_cmd.c:807
+msgid "A system reboot is required"
+msgstr "Требуется перезагрузка системы"
+
+#: exec_cmd.c:831 exec_cmd.c:883 exec_cmd.c:918 exec_cmd.c:942 exec_cmd.c:961
+#: exec_cmd.c:978 exec_cmd.c:1008
+msgid "File successfully saved to:"
+msgstr "Файл успешно сохранен в:"
+
+#: exec_cmd.c:833
+#, c-format
+msgid "Error! Failed to export .%s file"
+msgstr "Ошибка! Не удалось экспортировать файл .%s"
+
+#: exec_cmd.c:885
+msgid "Error! Failed to convert save file"
+msgstr "Ошибка! Не удалось конвертировать файл сохранения"
+
+#: exec_cmd.c:900
+msgid "File successfully imported to:"
+msgstr "Файл успешно импортирован в:"
+
+#: exec_cmd.c:902
+msgid "Error! Failed to import PS2 memory card"
+msgstr "Ошибка! Не удалось импортировать карту памяти PS2"
+
+#: exec_cmd.c:944
+msgid "Error! Failed to export PS2 memory card"
+msgstr "Ошибка! Не удалось экспортировать карту памяти PS2"
+
+#: exec_cmd.c:957
+msgid "Encrypting PS2 CONFIG..."
+msgstr "Шифрование PS2 CONFIG..."
+
+#: exec_cmd.c:974
+msgid "Encrypting PS2 ISO..."
+msgstr "Шифрование PS2 ISO..."
+
+#: exec_cmd.c:1003
+msgid "Decrypting PS2 BIN.ENC..."
+msgstr "Расшифровка PS2 BIN.ENC..."
+
+#: exec_cmd.c:1027
+msgid "Copying trophies..."
+msgstr "Копирование трофеев..."
+
+#: exec_cmd.c:1040
+msgid "Trophy Sets copied to:"
+msgstr "Наборы трофеев скопированы в:"
+
+#: exec_cmd.c:1095
+msgid "Error! Import folder is not available:"
+msgstr "Ошибка! Папка для импорта недоступна:"
+
+#: exec_cmd.c:1304 exec_cmd.c:1442
+msgid "Error! Account changes couldn't be applied"
+msgstr "Ошибка! Не удалось применить изменения аккаунта"
+
+#: exec_cmd.c:1308
+msgid "Error! Cheat codes couldn't be applied"
+msgstr "Ошибка! Не удалось применить чит-коды"
+
+#: exec_cmd.c:1313
+#, c-format
+msgid "Error! Save %s couldn't be resigned"
+msgstr "Ошибка! Не удалось изменить подпись сохранения %s"
+
+#: exec_cmd.c:1315
+#, c-format
+msgid "Save %s successfully modified!"
+msgstr "Сохранение %s успешно изменено!"
+
+#: exec_cmd.c:1340
+msgid "Resigning all saves..."
+msgstr "Изменение подписи всех сохранений..."
+
+#: exec_cmd.c:1368
+#, c-format
+msgid "Error: %d Saves couldn't be resigned"
+msgstr "Ошибка: для %d сохранений не удалось изменить подпись"
+
+#: exec_cmd.c:1370
+msgid "All saves successfully resigned!"
+msgstr "Подпись всех сохранений успешно изменена!"
+
+#: exec_cmd.c:1446
+msgid "Error! Trophy changes couldn't be applied"
+msgstr "Ошибка! Не удалось применить изменения трофеев"
+
+#: exec_cmd.c:1459
+#, c-format
+msgid "Error! Trophy %s couldn't be resigned"
+msgstr "Ошибка! Не удалось изменить подпись трофея %s"
+
+#: exec_cmd.c:1461
+#, c-format
+msgid "Trophy %s successfully modified!"
+msgstr "Трофей %s успешно изменен!"
+
+#: exec_cmd.c:1465
+msgid "Schedule Database rebuild on next boot?"
+msgstr "Запланировать перестроение базы данных при следующей загрузке?"
+
+#: exec_cmd.c:1492 exec_cmd.c:1522
+msgid "Save-game is not encrypted:"
+msgstr "Сохранение не зашифровано:"
+
+#: exec_cmd.c:1492
+msgid "File was not decrypted:"
+msgstr "Файл не был расшифрован:"
+
+#: exec_cmd.c:1501
+msgid "File successfully decrypted to:"
+msgstr "Файл успешно расшифрован в:"
+
+#: exec_cmd.c:1503
+#, c-format
+msgid "Error! File %s couldn't be decrypted"
+msgstr "Ошибка! Файл %s не удалось расшифровать"
+
+#: exec_cmd.c:1514
+msgid "Error! Can't find decrypted save-game file:"
+msgstr "Ошибка! Не удалось найти расшифрованный файл сохранения:"
+
+#: exec_cmd.c:1522
+msgid "File was not encrypted:"
+msgstr "Файл не был зашифрован:"
+
+#: exec_cmd.c:1532
+msgid "File successfully encrypted to:"
+msgstr "Файл успешно зашифрован в:"
+
+#: exec_cmd.c:1534
+#, c-format
+msgid "Error! File %s couldn't be encrypted"
+msgstr "Ошибка! Файл %s не удалось зашифровать"
+
+#: exec_cmd.c:1549
+msgid "Download URL"
+msgstr "URL для загрузки"
+
+#: exec_cmd.c:1556
+msgid "File successfully downloaded to:"
+msgstr "Файл успешно загружен в:"
+
+#: exec_cmd.c:1558
+msgid "Error! File couldn't be downloaded"
+msgstr "Ошибка! Не удалось загрузить файл"
+
+#: exec_cmd.c:1565
+#, c-format
+msgid "Do you want to delete %s?"
+msgstr "Вы хотите удалить %s?"
+
+#: exec_cmd.c:1582
+msgid "Save successfully deleted:"
+msgstr "Сохранение успешно удалено:"
+
+#: exec_cmd.c:1584
+msgid "Error! Couldn't delete save:"
+msgstr "Ошибка! Не удалось удалить сохранение:"
+
+#: exec_cmd.c:1679
+#, c-format
+msgid "Do you want to upload %s?"
+msgstr "Вы хотите загрузить %s?"
+
+#: exec_cmd.c:1717
+msgid "Error! Couldn't zip save:"
+msgstr "Ошибка! Не удалось архивировать сохранение:"
+
+#: exec_cmd.c:1773
+msgid "Save successfully uploaded:"
+msgstr "Сохранение успешно загружено:"
+
+#: exec_cmd.c:1775
+msgid "Error! Couldn't upload save:"
+msgstr "Ошибка! Не удалось загрузить сохранение:"
+
+#: exec_cmd.c:1788
+msgid "Memory card successfully imported to:"
+msgstr "Карта памяти успешно импортирована в:"
+
+#: exec_cmd.c:1790
+msgid "Error importing memory card:"
+msgstr "Ошибка импорта карты памяти:"
+
+#: exec_cmd.c:1802
+msgid "Memory card successfully exported to:"
+msgstr "Карта памяти успешно экспортирована в:"
+
+#: exec_cmd.c:1804
+msgid "Error exporting memory card:"
+msgstr "Ошибка экспорта карты памяти:"
+
+#: exec_cmd.c:1879
+msgid "Successfully imported to VMC:"
+msgstr "Успешно импортировано в VMC:"
+
+#: exec_cmd.c:1881
+msgid "Error importing save:"
+msgstr "Ошибка импорта сохранения:"
+
+#: exec_cmd.c:2040
+msgid "Memory card successfully resigned:"
+msgstr "Подпись карты памяти успешно изменена:"
+
+#: exec_cmd.c:2042
+msgid "Error resigning memory card:"
+msgstr "Ошибка изменения подписи карты памяти:"
+
+#: exec_cmd.c:2064
+msgid "Save successfully imported:"
+msgstr "Сохранение успешно импортировано:"
+
+#: exec_cmd.c:2066
+msgid "Error! Couldn't import save:"
+msgstr "Ошибка! Не удалось импортировать сохранение:"
+
+#: http.c:233
+msgid "Downloading..."
+msgstr "Загрузка..."
+
+#: http.c:325
+msgid "Uploading..."
+msgstr "Отправка..."
+
+#: main.c:194 main.c:198 main.c:203 main.c:213
+msgid "Select"
+msgstr "Выбрать"
+
+#: main.c:194 main.c:198 main.c:203 main.c:209 main.c:213
+msgid "Back"
+msgstr "Назад"
+
+#: main.c:194 menu_cheats.c:267
+msgid "Details"
+msgstr "Подробности"
+
+#: main.c:194 main.c:198
+msgid "Refresh"
+msgstr "Обновить"
+
+#: main.c:213
+msgid "View Code"
+msgstr "Просмотр кода"
+
+#: main.c:217
+msgid "Value Up"
+msgstr "Увеличить"
+
+#: main.c:217
+msgid "Value Down"
+msgstr "Уменьшить"
+
+#: main.c:217
+msgid "Exit"
+msgstr "Выход"
+
+#: main.c:559
+msgid "HDD Saves"
+msgstr "Сохранения HDD"
+
+#: main.c:560
+msgid "USB Saves"
+msgstr "Сохранения USB"
+
+#: main.c:561 saves.c:590
+msgid "Trophies"
+msgstr "Трофеи"
+
+#: main.c:562
+msgid "User Tools"
+msgstr "Пользовательские инструменты"
+
+#: main.c:563
+msgid "Online Database"
+msgstr "Онлайн-база"
+
+#: main.c:564
+msgid "PS1 Virtual Memory Card"
+msgstr "Виртуальная карта памяти PS1"
+
+#: main.c:565
+msgid "PS2 Virtual Memory Card"
+msgstr "Виртуальная карта памяти PS2"
+
+#: menu_about.c:109
+msgid "Console details:"
+msgstr "Данные консоли:"
+
+#: menu_about.c:143 menu_about.c:186
+msgid "About"
+msgstr "О программе"
+
+#: menu_cheats.c:115 menu_cheats.c:150 menu_cheats.c:170
+msgid "Options"
+msgstr "Опции"
+
+#: menu_cheats.c:214
+msgid "Target File:"
+msgstr "Целевой файл:"
+
+#: menu_cheats.c:520
+msgid "Saves"
+msgstr "Сохранения"
+
+#: menu_cheats.c:524
+msgid "Games"
+msgstr "Игры"
+
+#: menu_cheats.c:528
+msgid "Trophy-Sets"
+msgstr "Наборы трофеев"
+
+#: menu_cheats.c:532
+msgid "Tools"
+msgstr "Инструменты"
+
+#: menu_cheats.c:536
+msgid "PS1 Saves"
+msgstr "Сохранения PS1"
+
+#: menu_cheats.c:540
+msgid "PS2 Saves"
+msgstr "Сохранения PS2"
+
+#: menu_hex.c:59 menu_hex.c:79
+msgid "Hex Editor"
+msgstr "Hex-редактор"
+
+#: menu_main.c:114
+msgid "No save-games found"
+msgstr "Сохранения не найдены"
+
+#: menu_main.c:439
+msgid "Patch view"
+msgstr "Просмотр патча"
+
+#: menu_main.c:554
+msgid "No data found in folder:"
+msgstr "В папке нет данных:"
+
+#: menu_main.c:609
+msgid "Exit to XMB?"
+msgstr "Выйти в XMB?"
+
+#: menu_main.c:760
+#, c-format
+msgid "Save changes to %s?"
+msgstr "Сохранить изменения в %s?"
+
+#: menu_main.c:861
+msgid "Failed to load:"
+msgstr "Не удалось загрузить:"
+
+#: menu_options.c:69 menu_options.c:89
+msgid "Settings"
+msgstr "Настройки"
+
+#: saves.c:218
+msgid "Apply Changes & Resign"
+msgstr "Применить изменения и изменить подпись"
+
+#: saves.c:221 saves.c:351 saves.c:756 saves.c:911
+msgid "View Save Details"
+msgstr "Просмотр сведений о сохранении"
+
+#: saves.c:225
+msgid "File Backup"
+msgstr "Резервное копирование файлов"
+
+#: saves.c:230
+msgid "Copy save game to USB"
+msgstr "Скопировать сохранение на USB"
+
+#: saves.c:231
+msgid "Copy Save to USB"
+msgstr "Копировать сохранение на USB"
+
+#: saves.c:236 saves.c:768 saves.c:923
+msgid "Upload save backup to FTP"
+msgstr "Загрузить резервную копию на FTP"
+
+#: saves.c:242
+msgid "Copy save game to HDD"
+msgstr "Скопировать сохранение на HDD"
+
+#: saves.c:245
+msgid "Delete save game"
+msgstr "Удалить сохранение"
+
+#: saves.c:249
+msgid "Export save game to Zip"
+msgstr "Экспортировать сохранение в Zip"
+
+#: saves.c:250
+msgid "Export Zip to USB"
+msgstr "Экспортировать Zip на USB"
+
+#: saves.c:252
+msgid "Export Zip to HDD"
+msgstr "Экспортировать Zip на HDD"
+
+#: saves.c:257
+msgid "Decrypt save game files"
+msgstr "Расшифровать файлы сохранений"
+
+#: saves.c:262
+msgid "Import decrypted save files"
+msgstr "Импортировать расшифрованные файлы сохранений"
+
+#: saves.c:267
+msgid "Hex Edit save game files"
+msgstr "Редактировать файлы сохранений в Hex-редакторе"
+
+#: saves.c:311
+msgid "SFO Patches"
+msgstr "Патчи SFO"
+
+#: saves.c:314
+msgid "Change Account ID"
+msgstr "Изменить ID аккаунта"
+
+#: saves.c:331
+msgid "Remove Console ID"
+msgstr "Удалить ID консоли"
+
+#: saves.c:336
+msgid "Remove copy protection"
+msgstr "Удалить защиту от копирования"
+
+#: saves.c:340
+msgid "Change Region Title ID"
+msgstr "Изменить региональный Title ID"
+
+#: saves.c:362 saves.c:2196
+msgid "Virtual Memory Card"
+msgstr "Виртуальная карта памяти"
+
+#: saves.c:367
+msgid "Resign Memory Card"
+msgstr "Изменить подпись карты памяти"
+
+#: saves.c:371
+msgid "Export Memory Card to .VM1"
+msgstr "Экспортировать карту памяти в .VM1"
+
+#: saves.c:375
+msgid "Import .VM1 file to"
+msgstr "Импортировать файл .VM1 в"
+
+#: saves.c:418
+msgid "Cheats"
+msgstr "Читы"
+
+#: saves.c:421
+msgid "View Raw Patch File"
+msgstr "Просмотреть исходный файл патча"
+
+#: saves.c:576
+msgid "Apply Changes & Resign Trophy Set"
+msgstr "Применить изменения и изменить подпись набора трофеев"
+
+#: saves.c:579
+msgid "Backup Trophy Set to USB"
+msgstr "Создать резервную копию набора трофеев на USB"
+
+#: saves.c:581
+msgid "Copy Trophy to USB"
+msgstr "Копировать трофеи на USB"
+
+#: saves.c:584
+msgid "Export Trophy Set to Zip"
+msgstr "Экспортировать набор трофеев в Zip"
+
+#: saves.c:586 saves.c:1291 saves.c:2334
+msgid "Save .Zip to USB"
+msgstr "Сохранить .Zip на USB"
+
+#: saves.c:759 saves.c:914
+msgid "Delete Save Game"
+msgstr "Удалить сохранение"
+
+#: saves.c:763 saves.c:918
+msgid "Save Game Backup"
+msgstr "Резервная копия сохранения"
+
+#: saves.c:772
+msgid "Export save game to .MCS format"
+msgstr "Экспортировать сохранение в формате .MCS"
+
+#: saves.c:773
+msgid "Copy .MCS Save to USB"
+msgstr "Копировать сохранение .MCS на USB"
+
+#: saves.c:775
+msgid "Copy .MCS Save to HDD"
+msgstr "Копировать сохранение .MCS на HDD"
+
+#: saves.c:781 saves.c:936
+msgid "Export save game to .PSV format"
+msgstr "Экспортировать сохранение в формате .PSV"
+
+#: saves.c:782
+msgid "Copy .PSV Save to USB"
+msgstr "Копировать сохранение .PSV на USB"
+
+#: saves.c:784
+msgid "Copy .PSV Save to HDD"
+msgstr "Копировать сохранение .PSV на HDD"
+
+#: saves.c:790
+msgid "Export save game to .PSX format"
+msgstr "Экспортировать сохранение в формате .PSX"
+
+#: saves.c:791
+msgid "Copy .PSX Save to USB"
+msgstr "Копировать сохранение .PSX на USB"
+
+#: saves.c:793
+msgid "Copy .PSX Save to HDD"
+msgstr "Копировать сохранение .PSX на HDD"
+
+#: saves.c:927
+msgid "Export save game to .PSU format"
+msgstr "Экспортировать сохранение в формате .PSU"
+
+#: saves.c:928
+msgid "Export .PSU save to USB"
+msgstr "Экспортировать сохранение .PSU на USB"
+
+#: saves.c:930
+msgid "Export .PSU save to HDD"
+msgstr "Экспортировать сохранение .PSU на HDD"
+
+#: saves.c:937
+msgid "Export .PSV save to USB"
+msgstr "Экспортировать сохранение .PSV на USB"
+
+#: saves.c:939
+msgid "Export .PSV save to HDD"
+msgstr "Экспортировать сохранение .PSV на HDD"
+
+#: saves.c:1007
+msgid "Download to USB"
+msgstr "Загрузить на USB"
+
+#: saves.c:1009
+msgid "Download to HDD"
+msgstr "Загрузить на HDD"
+
+#: saves.c:1039
+msgid "Export Licenses"
+msgstr "Экспорт лицензий"
+
+#: saves.c:1045
+msgid "Activate PS3 Account"
+msgstr "Активировать аккаунт PS3"
+
+#: saves.c:1056
+msgid "Import Licenses"
+msgstr "Импорт лицензий"
+
+#: saves.c:1062 saves.c:1093
+msgid "PS2 Classics: Import & Encrypt ISOs"
+msgstr "PS2 Classics: Импорт и шифрование ISO"
+
+#: saves.c:1068
+msgid "Import PS2 raw memory cards"
+msgstr "Импорт сырых карт памяти PS2"
+
+#: saves.c:1074
+msgid "Convert PS1 saves to .PSV format"
+msgstr "Конвертировать сохранения PS1 в формат .PSV"
+
+#: saves.c:1080
+msgid "Convert PS2 saves to .PSV format"
+msgstr "Конвертировать сохранения PS2 в формат .PSV"
+
+#: saves.c:1086
+msgid "Convert/Resign .PSV saves"
+msgstr "Конвертировать/Изменить подпись сохранений .PSV"
+
+#: saves.c:1099
+msgid "PS2 Classics: Export & Decrypt BIN.ENC images"
+msgstr "PS2 Classics: Экспорт и расшифровка образов BIN.ENC"
+
+#: saves.c:1105
+msgid "Export /dev_flash2"
+msgstr "Экспорт /dev_flash2"
+
+#: saves.c:1108
+msgid "Backup /dev_flash2 to USB"
+msgstr "Резервное копирование /dev_flash2 на USB"
+
+#: saves.c:1109
+msgid "Save dev_flash2.zip to USB"
+msgstr "Сохранить dev_flash2.zip на USB"
+
+#: saves.c:1113
+msgid "Extract Archives (RAR, Zip, 7z)"
+msgstr "Извлечь архивы (RAR, Zip, 7z)"
+
+#: saves.c:1119
+msgid "Network Tools (Downloader, Web Server)"
+msgstr "Сетевые инструменты (Загрузчик, Веб-сервер)"
+
+#: saves.c:1142
+msgid "Encrypt: "
+msgstr "Зашифровать: "
+
+#: saves.c:1178
+msgid "Decrypt: "
+msgstr "Расшифровать: "
+
+#: saves.c:1180
+msgid "Save .ISO to USB"
+msgstr "Сохранить .ISO на USB"
+
+#: saves.c:1182
+msgid "Save .ISO to HDD"
+msgstr "Сохранить .ISO на HDD"
+
+#: saves.c:1219
+#, c-format
+msgid "Import '%s' to .VM2 (HDD)"
+msgstr "Импортировать '%s' в .VM2 (HDD)"
+
+#: saves.c:1258
+msgid "Extract:"
+msgstr "Извлечь:"
+
+#: saves.c:1290
+msgid "Backup All Licenses to .Zip"
+msgstr "Резервное копирование всех лицензий в .Zip"
+
+#: saves.c:1294
+msgid "Export All Licenses as .RAPs"
+msgstr "Экспортировать все лицензии как .RAP"
+
+#: saves.c:1295
+msgid "Save .RAPs to USB"
+msgstr "Сохранить .RAP на USB"
+
+#: saves.c:1297
+msgid "Save .RAPs to HDD"
+msgstr "Сохранить .RAP на HDD"
+
+#: saves.c:1305
+msgid "Import All .RAPs as .RIF Licenses"
+msgstr "Импортировать все .RAP как лицензии .RIF"
+
+#: saves.c:1323
+msgid "Save .RAP to USB"
+msgstr "Сохранить .RAP на USB"
+
+#: saves.c:1325
+msgid "Save .RAP to HDD"
+msgstr "Сохранить .RAP на HDD"
+
+#: saves.c:1399
+msgid "Export Save to .MCS format - USB"
+msgstr "Экспортировать сохранение в формате .MCS - USB"
+
+#: saves.c:1404
+msgid "Export Save to .PSU format - USB"
+msgstr "Экспортировать сохранение в формате .PSU - USB"
+
+#: saves.c:1409
+msgid "Resign .PSV Save"
+msgstr "Изменить подпись сохранения .PSV"
+
+#: saves.c:1566
+msgid "Activate PS3 Account (act.dat)"
+msgstr "Активировать аккаунт PS3 (act.dat)"
+
+#: saves.c:1572
+msgid "URL link Downloader (http, https, ftp, ftps)"
+msgstr "Загрузчик по URL (http, https, ftp, ftps)"
+
+#: saves.c:1574
+msgid "Local Web Server (full system access)"
+msgstr "Локальный веб-сервер (полный доступ к системе)"
+
+#: saves.c:1888 saves.c:1936
+msgid "Bulk Save Management"
+msgstr "Массовое управление сохранениями"
+
+#: saves.c:1896 saves.c:1944
+msgid "Resign & Unlock all Saves"
+msgstr "Изменить подпись и разблокировать все сохранения"
+
+#: saves.c:1899 saves.c:1947
+msgid "Resign & Unlock selected Saves"
+msgstr "Изменить подпись и разблокировать выбранные сохранения"
+
+#: saves.c:1902 saves.c:2107 saves.c:2191
+msgid "Copy all Saves to USB"
+msgstr "Скопировать все сохранения на USB"
+
+#: saves.c:1903 saves.c:1907
+msgid "Copy Saves to USB"
+msgstr "Копировать сохранения на USB"
+
+#: saves.c:1906 saves.c:2104 saves.c:2188
+msgid "Copy selected Saves to USB"
+msgstr "Скопировать выбранные сохранения на USB"
+
+#: saves.c:1910 saves.c:1956
+msgid "Start local Web Server"
+msgstr "Запустить локальный веб-сервер"
+
+#: saves.c:1950
+msgid "Copy all Saves to HDD"
+msgstr "Скопировать все сохранения на HDD"
+
+#: saves.c:1953
+msgid "Copy selected Saves to HDD"
+msgstr "Скопировать выбранные сохранения на HDD"
+
+#: saves.c:2094 saves.c:2178
+msgid "Memory Card Management"
+msgstr "Управление картой памяти"
+
+#: saves.c:2103 saves.c:2187
+msgid "Export selected Saves to USB"
+msgstr "Экспортировать выбранные сохранения на USB"
+
+#: saves.c:2106 saves.c:2190
+msgid "Export all Saves to USB"
+msgstr "Экспортировать все сохранения на USB"
+
+#: saves.c:2112 saves.c:2125 saves.c:2225 saves.c:2237
+msgid "Import Saves to Virtual Card"
+msgstr "Импортировать сохранения в виртуальную карту"
+
+#: saves.c:2201
+msgid "Export Memory Card to .VM2 format"
+msgstr "Экспортировать карту памяти в формате .VM2"
+
+#: saves.c:2203
+msgid "Save .VM2 Memory Card to USB"
+msgstr "Сохранить карту памяти .VM2 на USB"
+
+#: saves.c:2205
+msgid "Save .VM2 Memory Card to HDD"
+msgstr "Сохранить карту памяти .VM2 на HDD"
+
+#: saves.c:2211
+msgid "Export Memory Card to .VMC format (No ECC)"
+msgstr "Экспортировать карту памяти в формате .VMC (без ECC)"
+
+#: saves.c:2213
+msgid "Save .VMC Memory Card to USB"
+msgstr "Сохранить карту памяти .VMC на USB"
+
+#: saves.c:2218
+msgid "Import a .VM2 file to Memory Card"
+msgstr "Импортировать файл .VM2 в карту памяти"
+
+#: saves.c:2319
+msgid "Export Trophies"
+msgstr "Экспорт трофеев"
+
+#: saves.c:2327
+msgid "Backup selected Trophies to USB"
+msgstr "Создать резервную копию выбранных трофеев на USB"
+
+#: saves.c:2328 saves.c:2331
+msgid "Save Trophies to USB"
+msgstr "Сохранить трофеи на USB"
+
+#: saves.c:2330
+msgid "Backup All Trophies to USB"
+msgstr "Создать резервную копию всех трофеев на USB"
+
+#: saves.c:2333
+msgid "Export All Trophies to .Zip"
+msgstr "Экспортировать все трофеи в .Zip"
+
+#: saves.c:2344
+msgid "Import Trophies"
+msgstr "Импорт трофеев"
+
+#: settings.c:13
+msgid "Online DB"
+msgstr "Онлайн БД"
+
+#: settings.c:13
+msgid "FTP Server"
+msgstr "FTP-сервер"
+
+#: settings.c:14
+msgid "Disabled"
+msgstr "Отключено"
+
+#: settings.c:14
+msgid "by Name"
+msgstr "по Имени"
+
+#: settings.c:14
+msgid "by Title ID"
+msgstr "по Title ID"
+
+#: settings.c:14
+msgid "by Type"
+msgstr "по Типу"
+
+#: settings.c:15
+msgid "Fake USB"
+msgstr "Эмуляция USB"
+
+#: settings.c:15
+msgid "Auto-detect"
+msgstr "Автоопределение"
+
+#: settings.c:29
+msgid "Background Music"
+msgstr "Фоновая музыка"
+
+#: settings.c:35
+msgid "Menu Animations"
+msgstr "Анимации меню"
+
+#: settings.c:41
+msgid "Sort Saves"
+msgstr "Сортировка сохранений"
+
+#: settings.c:47
+msgid "USB Saves Source"
+msgstr "Источник сохранений USB"
+
+#: settings.c:53
+msgid "Version Update Check"
+msgstr "Проверка обновлений версии"
+
+#: settings.c:59
+msgid "Set User FTP Server URL"
+msgstr "Установить URL FTP-сервера"
+
+#: settings.c:65
+msgid "Online Saves Server"
+msgstr "Сервер онлайн-сохранений"
+
+#: settings.c:71
+msgid "Update Application Data"
+msgstr "Обновить данные приложения"
+
+#: settings.c:77
+msgid "Change Online Database URL"
+msgstr "Изменить URL онлайн-базы"
+
+#: settings.c:83
+msgid "Clear Local Cache"
+msgstr "Очистить локальный кеш"
+
+#: settings.c:89
+msgid "Update Account & Console IDs"
+msgstr "Обновить ID аккаунта и консоли"
+
+#: settings.c:95
+msgid "Enable Debug Log"
+msgstr "Включить отладочный журнал"
+
+#: settings.c:128
+msgid "Enter the Online Database URL"
+msgstr "Введите URL онлайн-базы данных"
+
+#: settings.c:134
+msgid "Online database URL changed to:"
+msgstr "URL онлайн-базы данных изменен на:"
+
+#: settings.c:143
+msgid "Enter the FTP server URL"
+msgstr "Введите URL FTP-сервера"
+
+#: settings.c:177
+msgid "FTP server URL changed to:"
+msgstr "URL FTP-сервера изменен на:"
+
+#: settings.c:180
+msgid "Error! Couldn't connect to FTP server"
+msgstr "Ошибка! Не удалось подключиться к FTP-серверу"
+
+#: settings.c:180
+msgid "Check debug logs for more information"
+msgstr "Проверьте отладочный журнал для получения дополнительной информации"
+
+#: settings.c:188
+msgid "Local cache folder cleaned:"
+msgstr "Локальный кеш очищен:"
+
+#: settings.c:194
+msgid "Successfully installed local application data"
+msgstr "Локальные данные приложения успешно установлены"
+
+#: settings.c:271
+msgid "New version available! Download update?"
+msgstr "Доступна новая версия! Загрузить обновление?"
+
+#: settings.c:274
+msgid "Update downloaded to:"
+msgstr "Обновление загружено в:"
+
+#: settings.c:276
+msgid "Download error!"
+msgstr "Ошибка загрузки!"
+
+#: settings.c:298
+msgid "Debug Logging Disabled"
+msgstr "Ведение отладочного журнала отключено"
+
+#: settings.c:303
+msgid "Debug Logging Enabled!"
+msgstr "Ведение отладочного журнала включено!"
+
+#: settings.c:312
+msgid "User IDs Updated!"
+msgstr "ID пользователя обновлены!"
+
+#: zip_util.c:214 zip_util.c:297 zip_util.c:337
+msgid "Extracting files..."
+msgstr "Извлечение файлов..."
