@@ -194,7 +194,7 @@ Currently, the list of available games and files is limited, but the project aim
 
 Apollo supports multiple languages for its user interface. Thanks to the following contributors for their help with translations:
 
-- Algol (French), [Bucanero](https://github.com/bucanero) (Spanish), [TheheroGAC](https://x.com/TheheroGAC) (Italian), [yyoossk](https://x.com/Cloud0835) (Japanese), [Phoenixx1202](https://github.com/Phoenixx1202) (Portuguese)
+- Algol (French), [Bucanero](https://github.com/bucanero) (Spanish), [TheheroGAC](https://x.com/TheheroGAC) (Italian), [yyoossk](https://x.com/Cloud0835) (Japanese), [Phoenixx1202](https://github.com/Phoenixx1202) (Portuguese), SpyroMancer (Greek)
 
 # Building
 
