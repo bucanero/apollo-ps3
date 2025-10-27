@@ -469,6 +469,7 @@ static int get_usb_trophies(save_entry_t* item)
 	struct dirent *dir;
 	code_entry_t * cmd;
 	char filePath[256];
+	size_t bufferLen;
 	char * buffer = NULL;
 	xmlDoc *doc = NULL;
 	xmlNode *root_element = NULL;
@@ -485,12 +486,12 @@ static int get_usb_trophies(save_entry_t* item)
 			continue;
 
 		snprintf(filePath, sizeof(filePath), "%s%s/TROPCONF.SFM", item->path, dir->d_name);
-		if ((buffer = readTextFile(filePath)) == NULL)
+		if (read_buffer(filePath, (uint8_t**) &buffer, &bufferLen) != SUCCESS)
 			continue;
 
 		LOG("Reading %s...", filePath);
 		/*parse the file and get the DOM */
-		doc = xmlParseMemory(buffer + 0x40, strlen(buffer + 0x40));
+		doc = xmlParseMemory(buffer + 0x40, bufferLen - 0x40);
 		if (!doc)
 		{
 			LOG("XML: could not parse file %s", filePath);
@@ -526,6 +527,7 @@ int ReadTrophies(save_entry_t * game)
 	int trop_count = 0;
 	code_entry_t * trophy;
 	char filePath[256];
+	size_t bufferLen;
 	char * buffer = NULL;
 	xmlDoc *doc = NULL;
 	xmlNode *root_element = NULL;
@@ -539,11 +541,11 @@ int ReadTrophies(save_entry_t * game)
 		return get_usb_trophies(game);
 
 	snprintf(filePath, sizeof(filePath), "%s" "TROPCONF.SFM", game->path);
-	if ((buffer = readTextFile(filePath)) == NULL)
+	if (read_buffer(filePath, (uint8_t**) &buffer, &bufferLen) != SUCCESS)
 		return 0;
 
 	/*parse the file and get the DOM */
-	doc = xmlParseMemory(buffer + 0x40, strlen(buffer + 0x40));
+	doc = xmlParseMemory(buffer + 0x40, bufferLen - 0x40);
 	if (!doc)
 	{
 		LOG("XML: could not parse file %s", filePath);
@@ -2267,6 +2269,7 @@ list_t * ReadTrophyList(const char* userPath)
 	xmlDoc *doc = NULL;
 	xmlNode *root_element = NULL;
 	char *value, *buffer;
+	size_t bufferLen;
 
 	if (dir_exists(userPath) != SUCCESS)
 		return NULL;
@@ -2316,11 +2319,11 @@ list_t * ReadTrophyList(const char* userPath)
 			continue;
 
 		snprintf(filePath, sizeof(filePath), "%s%s/TROPCONF.SFM", userPath, dir->d_name);
-		if ((buffer = readTextFile(filePath)) != NULL)
+		if (read_buffer(filePath, (uint8_t**) &buffer, &bufferLen) == SUCCESS)
 		{
 			LOG("Reading %s...", filePath);
 			/*parse the file and get the DOM */
-			doc = xmlParseMemory(buffer + 0x40, strlen(buffer + 0x40));
+			doc = xmlParseMemory(buffer + 0x40, bufferLen - 0x40);
 			if (!doc)
 			{
 				LOG("XML: could not parse file %s", filePath);
