@@ -19,7 +19,7 @@ This homebrew application allows you to download, unlock, patch and resign save-
 * **Standalone:** no computer required, everything happens on the PS3.
 * **Automatic settings:** auto-detection of PSID, IDPS and Account-ID settings.
 * **Multi-user:** supports multiple user accounts.
-* **Localization support:** French, Italian, Japanese, Portuguese, Spanish.
+* **Localization support:** French, Italian, Japanese, Portuguese, Russian, Spanish.
 
 ## Save Management
 
@@ -194,7 +194,7 @@ Currently, the list of available games and files is limited, but the project aim
 
 Apollo supports multiple languages for its user interface. Thanks to the following contributors for their help with translations:
 
-- Algol (French), [Bucanero](https://github.com/bucanero) (Spanish), [TheheroGAC](https://x.com/TheheroGAC) (Italian), [yyoossk](https://x.com/Cloud0835) (Japanese), [Phoenixx1202](https://github.com/Phoenixx1202) (Portuguese), SpyroMancer (Greek)
+- [Akela](https://x.com/Akela_1979) (Russian), Algol (French), [Bucanero](https://github.com/bucanero) (Spanish), [TheheroGAC](https://x.com/TheheroGAC) (Italian), [yyoossk](https://x.com/Cloud0835) (Japanese), [Phoenixx1202](https://github.com/Phoenixx1202) (Portuguese), SpyroMancer (Greek)
 
 # Building
 
