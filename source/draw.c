@@ -172,8 +172,7 @@ void DrawHeader_Ani(int icon, const char * hdrTitle, const char * headerSubTitle
 	{
 		int width = 800 - (MENU_ICON_OFF + MENU_TITLE_OFF + WidthFromStr(headerTitle)) - 30;
 		SetFontSize(APP_FONT_SIZE_SUBTITLE);
-		char * tName = malloc(strlen(headerSubTitle) + 1);
-		strcpy(tName, headerSubTitle);
+		char * tName = strdup(headerSubTitle);
 		while (WidthFromStr(tName) > width)
 		{
 			tName[strlen(tName) - 1] = 0;
@@ -222,8 +221,7 @@ void DrawHeader(int icon, int xOff, const char * hdrTitle, const char * headerSu
 	{
 		int width = 800 - (MENU_ICON_OFF + MENU_TITLE_OFF + WidthFromStr(headerTitle)) - 30;
 		SetFontSize(APP_FONT_SIZE_SUBTITLE);
-		char * tName = malloc(strlen(headerSubTitle) + 1);
-		strcpy(tName, headerSubTitle);
+		char * tName = strdup(headerSubTitle);
 		while (WidthFromStr(tName) > width)
 		{
 			tName[strlen(tName) - 1] = 0;
@@ -337,7 +335,7 @@ int init_loading_screen(const char* message)
     return ret;
 }
 
-void stop_loading_screen()
+void stop_loading_screen(void)
 {
     if (please_wait != 1)
         return;
@@ -452,7 +450,7 @@ void drawSplashLogo(int mode)
 	}
 }
 
-void Draw_MainMenu_Ani()
+void Draw_MainMenu_Ani(void)
 {
 	int max = MENU_ANI_MAX, ani = 0;
 	for (ani = 0; ani < max; ani++)
@@ -531,7 +529,7 @@ void Draw_MainMenu_Ani()
 	}
 }
 
-void Draw_MainMenu()
+void Draw_MainMenu(void)
 {
 	//------------ Backgrounds
 	
@@ -551,7 +549,7 @@ void Draw_MainMenu()
 
 }
 
-void drawDialogBackground()
+void drawDialogBackground(void)
 {
 	tiny3d_Clear(0xff000000, TINY3D_CLEAR_ALL);
 	tiny3d_AlphaTest(1, 0x10, TINY3D_ALPHA_FUNC_GEQUAL);
