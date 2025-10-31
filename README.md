@@ -99,7 +99,7 @@ On first run, the application will detect and setup the required user settings.
 | PS2 | Folder |
 |-----|--------|
 | **USB saves** | `/dev_usb00x/PS2/SAVEDATA/` (`*.xps`, `*.max`, `*.psu`, `*.cbs`, `*.sps`) |
-| **VMC cards** | `/dev_usb00x/PS2/VMC/` (`*.vmc`, `*.vme`, `*.vm2`, `*.bin`) |
+| **VMC cards** | `/dev_usb00x/PS2/VMC/` (`*.vmc`, `*.vme`, `*.vm2`, `*.bin`, `*.ps2`, `*.mc2`, `*.mcd`) |
 | **VME cards** | `/dev_usb00x/PS3/EXPORT/PS2SD/` |
 | **PSV saves** | `/dev_usb00x/PS3/EXPORT/PSV/` |
 | **HDD VME cards** | `/dev_hdd0/home/000000XX/ps2emu2_savedata/`, where `XX` is the current `User ID`. |
@@ -114,7 +114,7 @@ On first run, the application will detect and setup the required user settings.
 | **USB saves** | `/dev_usb00x/PS1/SAVEDATA/` (`*.mcs`, `*.psx`) |
 | **PSV saves** | `/dev_usb00x/PS3/EXPORT/PSV/` |
 | **HDD VM1 cards** | `/dev_hdd0/savedata/vmc/` |
-| **USB VMC cards** | `/dev_usb00x/PS1/VMC/` (`*.mcr`, `*.vmp`, `*.bin`, `*.vmc`, `*.gme`, `*.vgs`, `*.srm`, `*.mcd`) |
+| **USB VMC cards** | `/dev_usb00x/PS1/VMC/` (`*.mcr`, `*.vm1`, `*.vmp`, `*.bin`, `*.vmc`, `*.gme`, `*.vgs`, `*.srm`, `*.mcd`) |
 
 # Usage
 

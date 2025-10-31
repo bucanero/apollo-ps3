@@ -1821,6 +1821,7 @@ static void read_vmc2_files(const char* userPath, list_t *list)
 	while ((dir = readdir(d)) != NULL)
 	{
 		if (dir->d_type != DT_REG || !(endsWith(dir->d_name, ".VMC") || endsWith(dir->d_name, ".VM2") || 
+			endsWith(dir->d_name, ".MCD") || endsWith(dir->d_name, ".MC2") ||
 			endsWith(dir->d_name, ".BIN") || endsWith(dir->d_name, ".PS2")|| endsWith(dir->d_name, ".VME")))
 			continue;
 
