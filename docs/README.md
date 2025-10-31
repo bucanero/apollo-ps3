@@ -3,6 +3,7 @@
 [![Downloads][img_downloads]][app_downloads] [![Release][img_latest]][app_latest] [![License][img_license]][app_license]
 [![Build package](https://github.com/bucanero/apollo-ps3/actions/workflows/build.yml/badge.svg)](https://github.com/bucanero/apollo-ps3/actions/workflows/build.yml)
 [![Twitter](https://img.shields.io/twitter/follow/dparrino?label=Follow)](https://twitter.com/dparrino)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/bucanero/apollo-ps3)
 
 **Apollo Save Tool** is an application to manage save-game files, trophies, and licenses on the PlayStation 3.
 
@@ -18,6 +19,7 @@ This homebrew application allows you to download, unlock, patch and resign save-
 * **Standalone:** no computer required, everything happens on the PS3.
 * **Automatic settings:** auto-detection of PSID, IDPS and Account-ID settings.
 * **Multi-user:** supports multiple user accounts.
+* **Localization support:** English, French, Italian, Japanese, Portuguese, Russian, Spanish.
 
 ## Save Management
 
@@ -184,7 +186,7 @@ Currently, the list of available games and files is limited, but the project aim
 
 # Credits
 
-* [Bucanero](http://www.bucanero.com.ar/): [Project developer](https://github.com/bucanero)
+* [Bucanero](https://github.com/bucanero): [Project developer](https://bucanero.github.io/apollo-ps3/)
 
 ## Acknowledgments
 
@@ -197,6 +199,12 @@ Currently, the list of available games and files is limited, but the project aim
 * [ShendoXT](https://github.com/ShendoXT): [MemcardRex](https://github.com/ShendoXT/memcardrex)
 * [Nobody/Wild Light](https://github.com/nobodo): [S3M music track](https://github.com/bucanero/apollo-ps3/blob/master/data/haiku.s3m)
 
+## Translators
+
+Apollo supports multiple languages for its user interface. Thanks to the following contributors for their help with translations:
+
+- [Akela](https://x.com/Akela_1979) (Russian), Algol (French), [Bucanero](https://github.com/bucanero) (Spanish), [TheheroGAC](https://x.com/TheheroGAC) (Italian), [yyoossk](https://x.com/Cloud0835) (Japanese), [Phoenixx1202](https://github.com/Phoenixx1202) (Portuguese), SpyroMancer (Greek)
+
 # Building
 
 You need to have installed:
@@ -208,6 +216,7 @@ You need to have installed:
 - [polarSSL](https://github.com/bucanero/ps3libraries/blob/master/scripts/015-polarssl-1.3.9.sh) library
 - [libcurl](https://github.com/bucanero/ps3libraries/blob/master/scripts/016-libcurl-7.64.1.sh) library
 - [libxmp-lite](https://github.com/bucanero/libxmp-lite-ps4) library
+- [mini18n](https://github.com/bucanero/mini18n) library
 - [dbglogger](https://github.com/bucanero/dbglogger) library
 
 Run `make` to create a release build. If you want to include the latest save patches in your `.pkg` file, run `make createzip`.
