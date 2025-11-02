@@ -61,7 +61,7 @@ This homebrew application allows you to download, unlock, patch and resign save-
 ## PS2 Virtual Memory Card Management
 
 * **VMC saves management:** quick access to all save files on Virtual Memory Cards images.
-  - Supported PS2 VMC formats: `.VM2`, `.VME`, `.BIN`, `.VMC`
+  - Supported PS2 VMC formats: `.VM2`, `.VME`, `.BIN`, `.VMC`, `.PS2`, `.MC2`, `.MCD`
   - Supports ECC and non-ECC images, and PS2 Classics encryption
 * **Import PS2 saves:** import saves to PS2 VMCs from other systems and consoles (`.PSU`, `.PSV`, `.XPS`, `.CBS`, `.MAX`, `.SPS` supported).
 * **Export PS2 saves:** allows the user export saves on VMC images to `.PSU` and `.PSV` formats.
