@@ -19,7 +19,7 @@ This homebrew application allows you to download, unlock, patch and resign save-
 * **Standalone:** no computer required, everything happens on the PS3.
 * **Automatic settings:** auto-detection of PSID, IDPS and Account-ID settings.
 * **Multi-user:** supports multiple user accounts.
-* **Localization support:** English, French, Italian, Japanese, Portuguese, Russian, Spanish.
+* **Localization support:** English, French, Italian, Japanese, Polish, Portuguese, Russian, Spanish.
 
 ## Save Management
 
@@ -99,7 +99,7 @@ On first run, the application will detect and setup the required user settings.
 | PS2 | Folder |
 |-----|--------|
 | **USB saves** | `/dev_usb00x/PS2/SAVEDATA/` (`*.xps`, `*.max`, `*.psu`, `*.cbs`, `*.sps`) |
-| **VMC cards** | `/dev_usb00x/PS2/VMC/` (`*.vmc`, `*.vme`, `*.vm2`, `*.bin`) |
+| **VMC cards** | `/dev_usb00x/PS2/VMC/` (`*.vmc`, `*.vme`, `*.vm2`, `*.bin`, `*.ps2`, `*.mc2`, `*.mcd`) |
 | **VME cards** | `/dev_usb00x/PS3/EXPORT/PS2SD/` |
 | **PSV saves** | `/dev_usb00x/PS3/EXPORT/PSV/` |
 | **HDD VME cards** | `/dev_hdd0/home/000000XX/ps2emu2_savedata/`, where `XX` is the current `User ID`. |
@@ -114,7 +114,7 @@ On first run, the application will detect and setup the required user settings.
 | **USB saves** | `/dev_usb00x/PS1/SAVEDATA/` (`*.mcs`, `*.psx`) |
 | **PSV saves** | `/dev_usb00x/PS3/EXPORT/PSV/` |
 | **HDD VM1 cards** | `/dev_hdd0/savedata/vmc/` |
-| **USB VMC cards** | `/dev_usb00x/PS1/VMC/` (`*.mcr`, `*.vmp`, `*.bin`, `*.vmc`, `*.gme`, `*.vgs`, `*.srm`, `*.mcd`) |
+| **USB VMC cards** | `/dev_usb00x/PS1/VMC/` (`*.mcr`, `*.vm1`, `*.vmp`, `*.bin`, `*.vmc`, `*.gme`, `*.vgs`, `*.srm`, `*.mcd`) |
 
 # Usage
 
@@ -194,7 +194,7 @@ Currently, the list of available games and files is limited, but the project aim
 
 Apollo supports multiple languages for its user interface. Thanks to the following contributors for their help with translations:
 
-- [Akela](https://x.com/Akela_1979) (Russian), Algol (French), [Bucanero](https://github.com/bucanero) (Spanish), [TheheroGAC](https://x.com/TheheroGAC) (Italian), [yyoossk](https://x.com/Cloud0835) (Japanese), [Phoenixx1202](https://github.com/Phoenixx1202) (Portuguese), SpyroMancer (Greek)
+- [Akela](https://x.com/Akela_1979) (Russian), Algol (French), Berion (Polish), [Bucanero](https://github.com/bucanero) (Spanish), [TheheroGAC](https://x.com/TheheroGAC) (Italian), [yyoossk](https://x.com/Cloud0835) (Japanese), [Phoenixx1202](https://github.com/Phoenixx1202) (Portuguese), SpyroMancer (Greek)
 
 # Building
 

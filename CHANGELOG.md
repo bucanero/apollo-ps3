@@ -6,6 +6,26 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ---
 
+## [v2.2.4](https://github.com/bucanero/apollo-ps3/releases/tag/v2.2.4) - 2025-11-02
+
+### Added
+
+* Localization support
+  - Auto-detect system language setting
+  - Languages: English, French, Italian, Japanese, Polish, Portuguese, Russian, Spanish
+* Show save details window for items in Online DB (`Triangle` button)
+* Improved ARMax PS2 save-game conversion to `.PSV`
+
+### Misc
+
+* Updated Apollo Patch Engine to v1.4.0
+  - Update custom mod tags
+  - Support multiple mod options per line
+  - Add AES CTR, Blowfish CBC encryption
+  - Add DBZ Xenoverse 2 custom checksum
+
+---
+
 ## [v2.2.0](https://github.com/bucanero/apollo-ps3/releases/tag/v2.2.0) - 2025-04-12
 
 ### Added
