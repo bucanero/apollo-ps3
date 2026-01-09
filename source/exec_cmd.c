@@ -444,7 +444,12 @@ static void* ps3_host_callback(int id, int* size)
 	switch (id)
 	{
 	case APOLLO_HOST_TEMP_PATH:
+		if (size) *size = strlen(APOLLO_LOCAL_CACHE);
 		return APOLLO_LOCAL_CACHE;
+
+	case APOLLO_HOST_DATA_PATH:
+		if (size) *size = strlen(APOLLO_DATA_PATH);
+		return APOLLO_DATA_PATH;
 
 	case APOLLO_HOST_SYS_NAME:
 		if (sysUtilGetSystemParamString(SYSUTIL_SYSTEMPARAM_ID_NICKNAME, host_buf, SYSUTIL_SYSTEMPARAM_NICKNAME_SIZE) < 0)
@@ -1216,7 +1221,7 @@ static int apply_cheat_patches(const save_entry_t *entry)
 
 	for (node = list_head(entry->codes); (code = list_get(node)); node = list_next(node))
 	{
-		if (!code->activated || (code->type != PATCH_GAMEGENIE && code->type != PATCH_BSD))
+		if (!code->activated || (code->type != PATCH_GAMEGENIE && code->type != PATCH_BSD && code->type != PATCH_PYTHON))
 			continue;
 
     	LOG("Active code: [%s]", code->name);
@@ -1232,8 +1237,8 @@ static int apply_cheat_patches(const save_entry_t *entry)
 			filename = optval->name;
 		}
 
-		if (strstr(code->file, "~extracted\\"))
-			snprintf(tmpfile, sizeof(tmpfile), "%s[%s]%s", APOLLO_LOCAL_CACHE, entry->title_id, filename);
+		if (strncmp(code->file, "~extracted\\", 11) == 0)
+			snprintf(tmpfile, sizeof(tmpfile), "%s", code->file);
 		else
 		{
 			snprintf(tmpfile, sizeof(tmpfile), "%s%s", entry->path, filename);
@@ -1598,7 +1603,7 @@ static char* get_title_name_icon(const save_entry_t* item)
 	snprintf(xml_name, sizeof(xml_name), "%.9s_00.xml", item->title_id);
 	calculate_hmac_hash((uint8_t*) xml_name, 12, TMDB_HMAC_Key, sizeof(TMDB_HMAC_Key), hmac);
 
-	snprintf(tmdb_url, sizeof(tmdb_url), "http://tmdb.np.dl.playstation.net/tmdb/%.9s_00_%016" PRIX64 "%016" PRIX64 "%08" PRIX32 "/", 
+	snprintf(tmdb_url, sizeof(tmdb_url), "http://tmdb.np.dl.playstation.net/tmdb/%.9s_00_%016" PRIX64 "%016" PRIX64 "%08" PRIX32 "/",
 		item->title_id, ((uint64_t*)hmac)[0], ((uint64_t*)hmac)[1], ((uint32_t*)hmac)[4]);
 
 	snprintf(local_file, sizeof(local_file), APOLLO_TMP_PATH "xml.ftp");
@@ -1725,7 +1730,7 @@ static void uploadSaveFTP(const save_entry_t* save)
 	fp = fopen(APOLLO_TMP_PATH "saves.ftp", "a");
 	if (fp)
 	{
-		fprintf(fp, "%s=[%s] %d-%02d-%02d %02d:%02d:%02d %s (CRC: %08X)\r\n", tmp, save->dir_name, 
+		fprintf(fp, "%s=[%s] %d-%02d-%02d %02d:%02d:%02d %s (CRC: %08X)\r\n", tmp, save->dir_name,
 				t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec, save->name, crc);
 		fclose(fp);
 	}

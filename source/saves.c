@@ -426,7 +426,7 @@ int ReadCodes(save_entry_t * save)
 
 	// Check for any codes that are not valid for this game
 	for (node = list_next(node); (code = list_get(node)); node = list_next(node))
-		if (strchr(code->file, '\\') != NULL && code->file[1] != '~')
+		if (strchr(code->file, '\\') != NULL && code->file[0] != '~')
 		{
 			buffer = strdup(code->file);
 			strchr(buffer, '\\')[0] = 0;
@@ -1820,7 +1820,7 @@ static void read_vmc2_files(const char* userPath, list_t *list)
 
 	while ((dir = readdir(d)) != NULL)
 	{
-		if (dir->d_type != DT_REG || !(endsWith(dir->d_name, ".VMC") || endsWith(dir->d_name, ".VM2") || 
+		if (dir->d_type != DT_REG || !(endsWith(dir->d_name, ".VMC") || endsWith(dir->d_name, ".VM2") ||
 			endsWith(dir->d_name, ".MCD") || endsWith(dir->d_name, ".MC2") ||
 			endsWith(dir->d_name, ".BIN") || endsWith(dir->d_name, ".PS2")|| endsWith(dir->d_name, ".VME")))
 			continue;

@@ -145,7 +145,7 @@ static code_entry_t* LoadOnlineSaveDetails(void)
 				break;
 			}
 
-	asprintf(&centry->codes, "Game: %s\nTitle ID: %s\nFile: %s\n%s%s\n----- Details -----\n%s\n", 
+	asprintf(&centry->codes, "Game: %s\nTitle ID: %s\nFile: %s\n%s%s\n----- Details -----\n%s\n",
 		selected_entry->name, selected_entry->title_id, selected_centry->file, selected_entry->path, selected_centry->file, centry->file);
 	free(centry->file);
 	centry->file = NULL;
@@ -250,10 +250,10 @@ static code_entry_t* LoadSaveDetails(const save_entry_t* save)
 		"Lock: %s\n\n"
 		"User ID: %08d\n"
 		"Account ID: %.16s (%s)\n"
-		"PSID: %016lX %016lX\n", save->path, save->name, subtitle, 
+		"PSID: %016lX %016lX\n", save->path, save->name, subtitle,
 		save->dir_name,
 		(save->flags & SAVE_FLAG_LOCKED ? "Copying Prohibited" : "Unlocked"),
-		param_ids->user_id, param_ids->account_id, 
+		param_ids->user_id, param_ids->account_id,
 		(save->flags & SAVE_FLAG_OWNER ? "Owner" : "Not Owner"),
 		param_ids->psid[0], param_ids->psid[1]);
 	LOG(centry->codes);
@@ -579,7 +579,7 @@ static void doSaveMenu(save_list_t * save_list)
 				return;
 			}
 
-			if (apollo_config.doSort && 
+			if (apollo_config.doSort &&
 				((save_list->id == MENU_USER_BACKUP) || (save_list->id == MENU_ONLINE_DB)))
 				list_bubbleSort(selected_entry->codes, &sortCodeList_Compare);
 
@@ -959,7 +959,7 @@ static void doPatchMenu(void)
 			if (selected_centry->activated)
 			{
 				// Only activate Required codes if a cheat is selected
-				if (selected_centry->type == PATCH_GAMEGENIE || selected_centry->type == PATCH_BSD)
+				if (selected_centry->type == PATCH_GAMEGENIE || selected_centry->type == PATCH_BSD || selected_centry->type == PATCH_PYTHON)
 				{
 					code_entry_t* code;
 					list_node_t* node;
@@ -1011,7 +1011,7 @@ static void doPatchMenu(void)
 				return;
 			}
 
-			if (selected_centry->type == PATCH_GAMEGENIE || selected_centry->type == PATCH_BSD ||
+			if (selected_centry->type == PATCH_GAMEGENIE || selected_centry->type == PATCH_BSD || selected_centry->type == PATCH_PYTHON ||
 				selected_centry->type == PATCH_TROP_LOCK || selected_centry->type == PATCH_TROP_UNLOCK)
 			{
 				SetMenu(MENU_PATCH_VIEW);
