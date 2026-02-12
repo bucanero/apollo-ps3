@@ -435,7 +435,7 @@ static void enableWebServer(dWebReqHandler_t handler, void* data, int port)
 	else show_message(_("Error starting Web Server!"));
 }
 
-static void* ps3_host_callback(int id, int* size)
+static void* ps3_host_callback(int id, uint32_t* size)
 {
 	union net_ctl_info net_info;
 
