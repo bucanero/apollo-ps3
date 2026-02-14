@@ -17,12 +17,7 @@ typedef struct {
 } game_keys_t;
 
 static backend_t *backend = NULL;
-
-static char *brute_file_path = NULL;
 static list_t *file_names = NULL;
-static u64 file_offset = 0;
-static s64 advance_offset = 1;
-
 static list_t* games_keys = NULL;
 
 const uint8_t xor_key[] = { 0xD4, 0xD1, 0x6B, 0x0C, 0x5D, 0xB0, 0x87, 0x91 };
@@ -273,10 +268,6 @@ int pfd_util_process(pfd_cmd_t cmd, int partial_process) {
 
 		case PFD_CMD_DECRYPT:
 			ret = backend_cmd_decrypt(backend, file_names);
-			break;
-
-		case PFD_CMD_BRUTE:
-			ret = backend_cmd_brute(backend, brute_file_path, file_offset, advance_offset, file_names);
 			break;
 	}
 

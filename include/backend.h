@@ -22,7 +22,6 @@ extern "C" {
 #define BACKEND_VALIDATE_FLAG_PARTIAL (1U << 0)
 
 typedef struct secure_file_id_s {
-	char file_path[MAX_PATH];
 	char file_name[PFD_ENTRY_NAME_SIZE];
 	u8 secure_file_id[PFD_PARAM_SFO_KEY_SIZE];
 	u8 real_hash[PFD_HASH_SIZE];
@@ -79,7 +78,6 @@ int backend_cmd_check(backend_t *ctx, u32 options);
 int backend_cmd_update(backend_t *ctx, u32 options);
 int backend_cmd_encrypt(backend_t *ctx, list_t *file_names);
 int backend_cmd_decrypt(backend_t *ctx, list_t *file_names);
-int backend_cmd_brute(backend_t *ctx, const char *file_path, u64 file_offset, s64 advance_offset, list_t *secure_file_ids);
 
 #ifdef __cplusplus
 }

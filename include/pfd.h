@@ -62,7 +62,6 @@ typedef enum {
 	PFD_CMD_UPDATE,
 	PFD_CMD_ENCRYPT,
 	PFD_CMD_DECRYPT,
-	PFD_CMD_BRUTE,
 } pfd_cmd_t;
 
 typedef struct pfd_config_s {
