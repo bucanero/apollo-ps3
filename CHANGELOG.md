@@ -6,6 +6,39 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ---
 
+## [v2.3.0](https://github.com/bucanero/apollo-ps3/releases/tag/v2.3.0) - 2025-11-02
+
+### Added
+
+* Apollo Patch Engine v2.0.2
+* Add Python scripting support
+  - Run custom Python scripts on the console (for save-game editing)
+  - Add `apollo` module for Python scripts to interact with Apollo's features
+* Add Hex Search option to Hex Editor
+* New cheat codes
+  - Dragon Ball Xenoverse
+  - Persona 4 Arena
+  - Persona 4 Arena Ultimax
+  - The Legend of Heroes: Trails of Cold Steel
+* Custom save decryption support
+  - Max Payne 3
+  - L.A. Noire
+* Custom save decompression support
+  - Batman: Arkham Origins
+  - BioShock
+  - Sacred 2: Fallen Angel
+  - Batman: Arkham Asylum
+  - BioShock 2
+  - Batman: Arkham City
+  - BioShock Infinite
+  - I Am Alive
+  - The Legend of Heroes: Trails of Cold Steel II
+* Custom checksum support
+  - Dragon Ball Xenoverse
+  - World Soccer: Winning Eleven 2012
+
+---
+
 ## [v2.2.4](https://github.com/bucanero/apollo-ps3/releases/tag/v2.2.4) - 2025-11-02
 
 ### Added
