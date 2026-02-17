@@ -6,7 +6,7 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ---
 
-## [v2.3.0](https://github.com/bucanero/apollo-ps3/releases/tag/v2.3.0) - 2025-11-02
+## [v2.3.0](https://github.com/bucanero/apollo-ps3/releases/tag/v2.3.0) - 2026-02-22
 
 ### Added
 
