@@ -78,50 +78,6 @@ int write_file(const char *file_path, u8 *data, u64 size) {
 	return 0;
 }
 
-int mmap_file(const char *file_path, u8 **data, u64 *size) {
-	int fd;
-	struct stat stat_buf;
-	void *ptr;
-
-	if (!file_path || !data || !size)
-		return -1;
-
-	fd = open(file_path, O_RDONLY);
-	if (fd == -1)
-		return -1;
-
-	if (fstat(fd, &stat_buf) != 0) {
-		close(fd);
-		return -1;
-	}
-
-	ptr = malloc(stat_buf.st_size);
-	if (!ptr) {
-		close(fd);
-		return -1;
-	}
-
-	close(fd);
-
-	read_file(file_path, ptr, stat_buf.st_size);
-
-	*data = (u8 *)ptr;
-	*size = stat_buf.st_size;
-
-	return 0;
-}
-
-int unmmap_file(u8 *data, u64 size) {
-	if (!data || !size)
-		return -1;
-
-	free(data);
-//	if (munmap(data, size) < 0)
-//		return -1;
-
-	return 0;
-}
-
 int calculate_hmac_hash(const u8 *data, u64 size, const u8 *key, u32 key_length, u8 output[20]) {
 	sha1_context sha1;
 
