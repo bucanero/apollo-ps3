@@ -10,8 +10,6 @@
 #include "menu.h"
 #include "types.h"
 
-#define SYSUTIL_OSK_INPUT_ENTERED        0x505
-
 #define OSK_IME_DIALOG_MAX_TITLE_LENGTH  (128)
 #define OSK_IME_DIALOG_MAX_TEXT_LENGTH   (512)
 
