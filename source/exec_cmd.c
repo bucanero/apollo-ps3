@@ -1672,7 +1672,7 @@ static char* get_title_icon_psx(const save_entry_t* entry)
 	return ret;
 }
 
-static void uploadSaveFTP(const save_entry_t* save)
+static int _upload_save_ftp(const save_entry_t* save)
 {
 	FILE* fp;
 	char *tmp;
@@ -1680,9 +1680,6 @@ static void uploadSaveFTP(const save_entry_t* save)
 	char local[256];
 	int ret = 0;
 	struct tm t;
-
-	if (!show_dialog(DIALOG_TYPE_YESNO, _("Do you want to upload %s?"), save->dir_name))
-		return;
 
 	init_loading_screen("Sync with FTP Server...");
 
@@ -1719,8 +1716,8 @@ static void uploadSaveFTP(const save_entry_t* save)
 	stop_loading_screen();
 	if (!ret)
 	{
-		show_message("%s\n%s", _("Error! Couldn't zip save:"), save->dir_name);
-		return;
+		LOG("Error! Couldn't zip save: %s", save->dir_name);
+		return 0;
 	}
 
 	tmp = strrchr(local, '/')+1;
@@ -1772,12 +1769,48 @@ static void uploadSaveFTP(const save_entry_t* save)
 		ret &= ftp_upload(APOLLO_TMP_PATH "games.ftp", remote, "games.txt", 1);
 	}
 	free(tmp);
+
+	return ret;
+}
+
+static void uploadSaveFTP(const save_entry_t* save)
+{
+	int ret = 0;
+
+	if (!show_dialog(DIALOG_TYPE_YESNO, _("Do you want to upload %s?"), save->dir_name))
+		return;
+
+	ret = _upload_save_ftp(save);
 	clean_directory(APOLLO_TMP_PATH, ".ftp");
 
 	if (ret)
 		show_message("%s\n%s", _("Save successfully uploaded:"), save->dir_name);
 	else
 		show_message("%s\n%s", _("Error! Couldn't upload save:"), save->dir_name);
+}
+
+static void uploadAllSavesFTP(const save_entry_t* save, int all)
+{
+	int done = 0, err_count = 0;
+	list_node_t *node;
+	save_entry_t *item;
+	list_t *list = ((void**)save->dir_name)[0];
+
+	if (!show_dialog(DIALOG_TYPE_YESNO, _("Do you want to upload the selected saves to FTP?")))
+		return;
+
+	LOG("Uploading all saves to FTP server...");
+	for (node = list_head(list); (item = list_get(node)); node = list_next(node))
+	{
+		if (item->type != FILE_TYPE_PS3 || !(item->flags & SAVE_FLAG_HDD) || !(all || (item->flags & SAVE_FLAG_SELECTED)))
+			continue;
+
+		(_upload_save_ftp(item)) ? done++ : err_count++;
+	}
+
+	clean_directory(APOLLO_LOCAL_CACHE, ".ftp");
+
+	show_message("%d/%d %s", done, done+err_count, _("Saves uploaded to FTP"));
 }
 
 static void import_mcr2vmp(const save_entry_t* save, const char* src)
@@ -1926,6 +1959,12 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 
 		case CMD_UPLOAD_SAVE:
 			uploadSaveFTP(selected_entry);
+			code->activated = 0;
+			break;
+
+		case CMD_UPLOAD_SAVES:
+		case CMD_UPLOAD_ALL_SAVES:
+			uploadAllSavesFTP(selected_entry, codecmd[0] == CMD_UPLOAD_ALL_SAVES);
 			code->activated = 0;
 			break;
 
