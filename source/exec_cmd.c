@@ -1684,11 +1684,11 @@ static int _upload_save_ftp(const save_entry_t* save)
 	init_loading_screen("Sync with FTP Server...");
 
 	snprintf(remote, sizeof(remote), "%s%016" PRIX64 "/PS%d/", apollo_config.ftp_url, apollo_config.account_id, save->type);
-	http_download(remote, "games.txt", APOLLO_TMP_PATH "games.ftp", 0);
+	ftp_download(remote, "games.txt", APOLLO_TMP_PATH "games.ftp", 0);
 
 	snprintf(remote, sizeof(remote), "%s%016" PRIX64 "/PS%d/%s/", apollo_config.ftp_url, apollo_config.account_id, save->type, save->title_id);
-	http_download(remote, "saves.txt", APOLLO_TMP_PATH "saves.ftp", 0);
-	http_download(remote, "checksum.sfv", APOLLO_TMP_PATH "sfv.ftp", 0);
+	ftp_download(remote, "saves.txt", APOLLO_TMP_PATH "saves.ftp", 0);
+	ftp_download(remote, "checksum.sfv", APOLLO_TMP_PATH "sfv.ftp", 0);
 
 	gmtime_r(&(time_t){time(NULL)}, &t);
 	snprintf(local, sizeof(local), APOLLO_TMP_PATH "%s_%d-%02d-%02d-%02d%02d%02d.zip",
@@ -1780,8 +1780,10 @@ static void uploadSaveFTP(const save_entry_t* save)
 	if (!show_dialog(DIALOG_TYPE_YESNO, _("Do you want to upload %s?"), save->dir_name))
 		return;
 
+	ftp_init();
 	ret = _upload_save_ftp(save);
 	clean_directory(APOLLO_TMP_PATH, ".ftp");
+	ftp_end();
 
 	if (ret)
 		show_message("%s\n%s", _("Save successfully uploaded:"), save->dir_name);
@@ -1799,6 +1801,7 @@ static void uploadAllSavesFTP(const save_entry_t* save, int all)
 	if (!show_dialog(DIALOG_TYPE_YESNO, _("Do you want to upload the selected saves to FTP?")))
 		return;
 
+	ftp_init();
 	LOG("Uploading all saves to FTP server...");
 	for (node = list_head(list); (item = list_get(node)); node = list_next(node))
 	{
@@ -1809,6 +1812,7 @@ static void uploadAllSavesFTP(const save_entry_t* save, int all)
 	}
 
 	clean_directory(APOLLO_LOCAL_CACHE, ".ftp");
+	ftp_end();
 
 	show_message("%d/%d %s", done, done+err_count, _("Saves uploaded to FTP"));
 }
