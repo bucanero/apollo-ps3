@@ -102,6 +102,8 @@ enum cmd_code_enum
     CMD_COPY_SAVES_HDD,
     CMD_COPY_ALL_SAVES_USB,
     CMD_COPY_ALL_SAVES_HDD,
+    CMD_UPLOAD_SAVES,
+    CMD_UPLOAD_ALL_SAVES,
     CMD_SAVE_WEB_SERVER,
     CMD_RESIGN_VMP,
     CMD_EXP_SAVES_VMC,
@@ -283,6 +285,9 @@ int ReadVmc2Codes(save_entry_t * save);
 int http_init(void);
 void http_end(void);
 int http_download(const char* url, const char* filename, const char* local_dst, int show_progress);
+void ftp_init(void);
+void ftp_end(void);
+int ftp_download(const char* url, const char* filename, const char* local_dst, int show_progress);
 int ftp_upload(const char* local_file, const char* url, const char* filename, int show_progress);
 
 int extract_rar(const char* rar_file, const char* dest_path);
