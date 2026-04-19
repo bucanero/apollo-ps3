@@ -258,13 +258,13 @@ int ftp_upload(const char* local_file, const char* url, const char* filename, in
 	LOG("Local file size: %ld bytes.", fsize);
 	LOG("Uploading (%s) -> (%s)", local_file, remote_url);
 
-	/* specify target */
-	curl_easy_setopt(curl, CURLOPT_URL, remote_url);
-	curl_easy_setopt(curl, CURLOPT_APPEND, 0L);
-	// create missing dirs if needed
-	curl_easy_setopt(curl, CURLOPT_FTP_CREATE_MISSING_DIRS, CURLFTP_CREATE_DIR);
 	/* enable uploading */
 	curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
+	curl_easy_setopt(curl, CURLOPT_APPEND, 0L);
+	/* specify target */
+	curl_easy_setopt(curl, CURLOPT_URL, remote_url);
+	// create missing dirs if needed
+	curl_easy_setopt(curl, CURLOPT_FTP_CREATE_MISSING_DIRS, CURLFTP_CREATE_DIR);
 	/* please ignore the IP in the PASV response */
 	curl_easy_setopt(curl, CURLOPT_FTP_SKIP_PASV_IP, 1L);
 	/* we want to use our own read function */
