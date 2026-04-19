@@ -282,7 +282,11 @@ int ftp_upload(const char* local_file, const char* url, const char* filename, in
 		curl_easy_setopt(curl, CURLOPT_XFERINFODATA, (void*) filename);
 		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
 	}
-	else curl_easy_setopt(curl, CURLOPT_APPEND, 1L);
+	else
+	{
+		curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1L);
+		curl_easy_setopt(curl, CURLOPT_APPEND, 1L);
+	}
 
 	/* Now run off and do what you have been told! */
 	res = curl_easy_perform(curl);

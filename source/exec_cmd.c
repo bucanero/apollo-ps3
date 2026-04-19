@@ -1762,8 +1762,8 @@ static int _upload_save_ftp(const save_entry_t* save)
 		}
 
 		init_loading_screen("Sync with FTP Server...");
-		snprintf(remote, sizeof(remote), "%s%016" PRIX64 "/PS%d/", apollo_config.ftp_url, apollo_config.account_id, save->type);
-		ret &= ftp_upload(APOLLO_TMP_PATH "games.ftp", remote, "games.txt", 0);
+		snprintf(local, sizeof(local), "%s%016" PRIX64 "/PS%d/", apollo_config.ftp_url, apollo_config.account_id, save->type);
+		ret &= ftp_upload(APOLLO_TMP_PATH "games.ftp", local, "games.txt", 0);
 	}
 	else init_loading_screen("Sync with FTP Server...");
 
