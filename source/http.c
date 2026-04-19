@@ -230,7 +230,7 @@ int ftp_upload(const char* local_file, const char* url, const char* filename, in
 	CURL *curl;
 	CURLcode res;
 	char remote_url[1024];
-	long fsize;
+	unsigned long fsize;
 
 	/* get a curl handle */
 	curl = ftp_ctx;
@@ -255,7 +255,7 @@ int ftp_upload(const char* local_file, const char* url, const char* filename, in
 
 	snprintf(remote_url, sizeof(remote_url), "%s%s", url, filename);
 
-	LOG("Local file size: %ld bytes.", fsize);
+	LOG("Local file size: %lu bytes.", fsize);
 	LOG("Uploading (%s) -> (%s)", local_file, remote_url);
 
 	/* enable uploading */
