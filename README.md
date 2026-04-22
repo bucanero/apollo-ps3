@@ -19,7 +19,7 @@ This homebrew application allows you to download, unlock, patch and resign save-
 * **Standalone:** no computer required, everything happens on the PS3.
 * **Automatic settings:** auto-detection of PSID, IDPS and Account-ID settings.
 * **Multi-user:** supports multiple user accounts.
-* **Localization support:** Chinese, English, French, Italian, Japanese, Polish, Portuguese, Russian, Spanish.
+* **Localization support:** Chinese, English, French, German, Italian, Japanese, Korean, Polish, Portuguese, Russian, Spanish.
 
 ## Save Management
 

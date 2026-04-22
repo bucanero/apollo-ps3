@@ -6,6 +6,20 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ---
 
+## [v2.3.2](https://github.com/bucanero/apollo-ps3/releases/tag/v2.3.2) - 2026-04-26
+
+### Added
+
+* Bulk FTP upload support for PS3 saves
+  - Upload multiple saves to FTP server in a single operation
+* Localization support
+  - New languages: Chinese (Simplified), Chinese (Traditional), German, Korean
+* Apollo Patch Engine v2.0.4
+  - Add `des3_ecb`, `hmac_sha256` support
+  - Fix `offzip` decompression bug
+
+---
+
 ## [v2.3.0](https://github.com/bucanero/apollo-ps3/releases/tag/v2.3.0) - 2026-02-22
 
 ### Added
