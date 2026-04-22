@@ -1892,8 +1892,8 @@ list_t * ReadUserList(const char* userPath)
 		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " ", _("Upload selected Saves to FTP"), CMD_UPLOAD_SAVES);
 		list_append(item->codes, cmd);
 
-		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " ", _("Upload all Saves to FTP"), CMD_UPLOAD_ALL_SAVES);
-		list_append(item->codes, cmd);
+//		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " ", _("Upload all Saves to FTP"), CMD_UPLOAD_ALL_SAVES);
+//		list_append(item->codes, cmd);
 	}
 
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_NET " ", _("Start local Web Server"), CMD_SAVE_WEB_SERVER);
