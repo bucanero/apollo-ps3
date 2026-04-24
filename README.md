@@ -210,6 +210,9 @@ You need to have installed:
 - [mini18n](https://github.com/bucanero/mini18n) library
 - [dbglogger](https://github.com/bucanero/dbglogger) library
 
+> [!TIP]
+> **Developers:** You can find detailed technical documentation about the project in [this Wiki page](https://deepwiki.com/bucanero/apollo-ps3/).
+
 Run `make` to create a release build. If you want to include the latest save patches in your `.pkg` file, run `make createzip`.
 Finally, run `make pkg` to create a `.pkg` install file.
 
