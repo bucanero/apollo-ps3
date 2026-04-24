@@ -14,6 +14,12 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
   - Upload multiple saves to FTP server in a single operation
 * Localization support
   - New languages: Chinese (Simplified), Chinese (Traditional), German, Korean
+* New cheat codes
+  - Tales of Berseria Remastered
+* Custom save decryption support
+  - Tales of Berseria Remastered
+* Custom checksum support
+  - Tales of Berseria Remastered
 * Apollo Patch Engine v2.0.4
   - Add `des3_ecb`, `hmac_sha256` support
   - Fix `offzip` decompression bug
