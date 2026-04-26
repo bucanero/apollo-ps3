@@ -60,6 +60,12 @@ jobs:
         cp lib*.a $PS3DEV/portlibs/ppu/lib/
         cp -R ../include/mbedtls $PS3DEV/portlibs/ppu/include/
 
+    - name: Install cURL
+      run: |
+        curl -sL https://gist.githubusercontent.com/bucanero/c0b3e143657df54f28e2027abca13c71/raw/1670eb108f1c6e00b7bc689fc4ece873ee2b665f/curl-ps3-build.sh -o curl-ps3-build.sh
+        chmod +x curl-ps3-build.sh
+        ./curl-ps3-build.sh
+
     - name: Install dbglogger
       working-directory: dbglogger
       run: |
