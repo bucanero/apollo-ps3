@@ -18,8 +18,8 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <sys/stat.h>
-#include <polarssl/aes.h>
-#include <polarssl/sha1.h>
+#include <mbedtls/aes.h>
+#include <mbedtls/sha1.h>
 
 #define PS2_META_SEGMENT_START      1
 #define PS2_DATA_SEGMENT_START      2
@@ -63,23 +63,23 @@ static int64_t get_fsize(const char* fname);
 static void aes128cbc(const u8 *key, const u8 *iv_in, const u8 *in, u64 len, u8 *out)
 {
 	u8 iv[16];
-	aes_context ctx;
+	mbedtls_aes_context ctx;
 
 	memcpy(iv, iv_in, 16);
-	memset(&ctx, 0, sizeof(aes_context));
-	aes_setkey_dec(&ctx, key, 128);
-	aes_crypt_cbc(&ctx, AES_DECRYPT, len, iv, in, out);
+	mbedtls_aes_init(&ctx);
+	mbedtls_aes_setkey_dec(&ctx, key, 128);
+	mbedtls_aes_crypt_cbc(&ctx, MBEDTLS_AES_DECRYPT, len, iv, in, out);
 }
 
 static void aes128cbc_enc(const u8 *key, const u8 *iv_in, const u8 *in, u64 len, u8 *out)
 {
 	u8 iv[16];
-	aes_context ctx;
+	mbedtls_aes_context ctx;
 
 	memcpy(iv, iv_in, 16);
-	memset(&ctx, 0, sizeof(aes_context));
-	aes_setkey_enc(&ctx, key, 128);
-	aes_crypt_cbc(&ctx, AES_ENCRYPT, len, iv, in, out);
+	mbedtls_aes_init(&ctx);
+	mbedtls_aes_setkey_enc(&ctx, key, 128);
+	mbedtls_aes_crypt_cbc(&ctx, MBEDTLS_AES_ENCRYPT, len, iv, in, out);
 }
 
 static void rol1(u8* worthless) {
@@ -101,19 +101,19 @@ static void aesOmacMode1(u8* output, const u8* input, int len, const u8* aes_key
 	u8 running[0x10];
 	u8 hash[0x10];
 	u8 worthless[0x10];
-	aes_context ctx;
+	mbedtls_aes_context ctx;
 
 	memset(running, 0, 0x10);
-	memset(&ctx, 0, sizeof(aes_context));
+	mbedtls_aes_init(&ctx);
 
-	aes_setkey_enc(&ctx, aes_key_data, aes_key_bits);
-	aes_crypt_ecb(&ctx, AES_ENCRYPT, running, worthless);
+	mbedtls_aes_setkey_enc(&ctx, aes_key_data, aes_key_bits);
+	mbedtls_aes_crypt_ecb(&ctx, MBEDTLS_AES_ENCRYPT, running, worthless);
 	rol1(worthless);
 
 	if(len > 0x10) {
 		for(i=0;i<(len-0x10);i+=0x10) {
 			for(j=0;j<0x10;j++) hash[j] = running[j] ^ input[i+j];
-			aes_crypt_ecb(&ctx, AES_ENCRYPT, hash, running);
+			mbedtls_aes_crypt_ecb(&ctx, MBEDTLS_AES_ENCRYPT, hash, running);
 		}
 	}
 	int overrun = len&0xF;
@@ -128,7 +128,7 @@ static void aesOmacMode1(u8* output, const u8* input, int len, const u8* aes_key
 	}
 
 	for(j=0;j<0x10;j++) hash[j] ^= running[j] ^ worthless[j];
-	aes_crypt_ecb(&ctx, AES_ENCRYPT, hash, output);
+	mbedtls_aes_crypt_ecb(&ctx, MBEDTLS_AES_ENCRYPT, hash, output);
 }
 
 /*
@@ -171,7 +171,7 @@ static int vmc_hash(const char *mc_in)
         {
             fseek(f, (i * sizeof(segment_data)), SEEK_SET);
             read = fread(segment_data, 1, sizeof(segment_data), f);
-            sha1(segment_data, sizeof(segment_data), sha1_hash);
+            mbedtls_sha1(segment_data, sizeof(segment_data), sha1_hash);
             memcpy(segment_hashes + i * sizeof(sha1_hash), sha1_hash, sizeof(sha1_hash));
             
             c += read;
@@ -688,7 +688,7 @@ void ps2_encrypt_image(u8 cfg_mode, const char* image_name, const char* data_fil
 		for(i=0;i<num_child_segments;i++)
 		{	
 			aes128cbc_enc(ps2_data_key, iv, data_buffer+(i*segment_size), segment_size, data_buffer+(i*segment_size));
-			sha1(data_buffer+(i*segment_size), segment_size, meta_buffer+(i*PS2_META_ENTRY_SIZE));
+			mbedtls_sha1(data_buffer+(i*segment_size), segment_size, meta_buffer+(i*PS2_META_ENTRY_SIZE));
 			wbe32(meta_buffer+(i*PS2_META_ENTRY_SIZE)+0x14, segment_number);
 			segment_number++;
 		}
