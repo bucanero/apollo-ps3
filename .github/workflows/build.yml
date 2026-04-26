@@ -50,7 +50,7 @@ jobs:
 
     - name: Install mbedTLS
       run: |
-        curl -sL https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-2.28.10/mbedtls-2.28.10.tar.bz2 | tar xvz -C ./
+        curl -sL https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-2.28.10/mbedtls-2.28.10.tar.bz2 | tar xvj -C ./
         curl -sL https://github.com/bucanero/ps3libraries/raw/refs/heads/master/patches/mbedtls-2.28.10.patch -o mbedtls-2.28.10.patch
         cd mbedtls-2.28.10
         patch -p1 < ../mbedtls-2.28.10.patch
