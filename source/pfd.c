@@ -1,40 +1,41 @@
 #include "pfd.h"
 #include "util.h"
 
-#include <polarssl/aes.h>
-#include <polarssl/sha1.h>
+#include <mbedtls/aes.h>
+#include <mbedtls/sha1.h>
+#include <mbedtls/md.h>
 #include <stdlib.h>
 #include "pfd_internal.h"
 #include "types.h"
 
 static int pfd_encrypt_with_portability(pfd_context_t *ctx, u8 key[16], u8 *data, u32 data_size) {
 	u8 iv[16];
-	aes_context aes;
+	mbedtls_aes_context aes;
 
 	if (!ctx)
 		return -1;
 
-	memset(&aes, 0, sizeof(aes_context));
+	mbedtls_aes_init(&aes);
 	memcpy(iv, key, 16);
 
-	aes_setkey_enc(&aes, ctx->config->syscon_manager_key, 128);
-	aes_crypt_cbc(&aes, AES_ENCRYPT, data_size, iv, data, data);
+	mbedtls_aes_setkey_enc(&aes, ctx->config->syscon_manager_key, 128);
+	mbedtls_aes_crypt_cbc(&aes, MBEDTLS_AES_ENCRYPT, data_size, iv, data, data);
 
 	return 0;
 }
 
 static int pfd_decrypt_with_portability(pfd_context_t *ctx, pfd_hash_key_t key, u8 *data, u32 data_size) {
 	u8 iv[16];
-	aes_context aes;
+	mbedtls_aes_context aes;
 
 	if (!ctx)
 		return -1;
 
-	memset(&aes, 0, sizeof(aes_context));
+	mbedtls_aes_init(&aes);
 	memcpy(iv, key, 16);
 
-	aes_setkey_dec(&aes, ctx->config->syscon_manager_key, 128);
-	aes_crypt_cbc(&aes, AES_DECRYPT, data_size, iv, data, data);
+	mbedtls_aes_setkey_dec(&aes, ctx->config->syscon_manager_key, 128);
+	mbedtls_aes_crypt_cbc(&aes, MBEDTLS_AES_DECRYPT, data_size, iv, data, data);
 
 	return 0;
 }
@@ -340,7 +341,7 @@ static int pfd_get_entry_key(pfd_context_t *ctx, pfd_entry_t *entry, pfd_entry_k
 }
 
 static int pfd_calculate_entry_hash(pfd_context_t *ctx, pfd_entry_t *entry, u8 hash[PFD_HASH_SIZE]) {
-	sha1_context sha1;
+	mbedtls_md_context_t sha1;
 	u64 hash_table_entry_index;
 	u64 current_entry_index;
 
@@ -354,20 +355,21 @@ static int pfd_calculate_entry_hash(pfd_context_t *ctx, pfd_entry_t *entry, u8 h
 	current_entry_index = SKIP64(ctx->hash_table->entries[hash_table_entry_index]);
 
 	if (current_entry_index < SKIP64(ctx->hash_table->num_reserved)) {
-		memset(&sha1, 0, sizeof(sha1_context));
+		mbedtls_md_init(&sha1);
+		mbedtls_md_setup(&sha1, mbedtls_md_info_from_type(MBEDTLS_MD_SHA1), 1);
 
-		sha1_hmac_starts(&sha1, ctx->real_hash_key, PFD_HASH_KEY_SIZE);
+		mbedtls_md_hmac_starts(&sha1, ctx->real_hash_key, PFD_HASH_KEY_SIZE);
 
 		while (current_entry_index < SKIP64(ctx->hash_table->num_reserved)) {
 			entry = &ctx->entry_table->entries[current_entry_index];
-			sha1_hmac_update(&sha1, (const u8 *)entry->file_name, PFD_ENTRY_NAME_SIZE);
-			sha1_hmac_update(&sha1, entry->key, PFD_ENTRY_DATA_SIZE);
+			mbedtls_md_hmac_update(&sha1, (const u8 *)entry->file_name, PFD_ENTRY_NAME_SIZE);
+			mbedtls_md_hmac_update(&sha1, entry->key, PFD_ENTRY_DATA_SIZE);
 			current_entry_index = SKIP64(entry->additional_index);
 		}
 
-		sha1_hmac_finish(&sha1, hash);
+		mbedtls_md_hmac_finish(&sha1, hash);
 
-		memset(&sha1, 0, sizeof(sha1_context));
+		mbedtls_md_free(&sha1);
 
 		return 0;
 	}
@@ -379,7 +381,7 @@ static int pfd_calculate_top_hash(pfd_context_t *ctx, u8 hash[PFD_HASH_SIZE]) {
 	if (!ctx)
 		return -1;
 
-	sha1_hmac(ctx->real_hash_key, PFD_HASH_KEY_SIZE, ctx->hash_table->buf, PFD_HASH_TABLE_SIZE(ctx->hash_table), hash);
+	mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA1), ctx->real_hash_key, PFD_HASH_KEY_SIZE, ctx->hash_table->buf, PFD_HASH_TABLE_SIZE(ctx->hash_table), hash);
 
 	return 0;
 }
@@ -388,7 +390,7 @@ static int pfd_calculate_bottom_hash(pfd_context_t *ctx, u8 hash[PFD_HASH_SIZE])
 	if (!ctx)
 		return -1;
 
-	sha1_hmac(ctx->real_hash_key, PFD_HASH_KEY_SIZE, ctx->entry_signature_table->buf, PFD_ENTRY_SIGNATURE_TABLE_SIZE(ctx->hash_table), hash);
+	mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA1), ctx->real_hash_key, PFD_HASH_KEY_SIZE, ctx->entry_signature_table->buf, PFD_ENTRY_SIGNATURE_TABLE_SIZE(ctx->hash_table), hash);
 
 	return 0;
 }
@@ -397,7 +399,7 @@ static int pfd_calculate_default_hash(pfd_context_t *ctx, u8 hash[PFD_HASH_SIZE]
 	if (!ctx)
 		return -1;
 
-	sha1_hmac(ctx->real_hash_key, PFD_HASH_KEY_SIZE, NULL, 0, hash);
+	mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA1), ctx->real_hash_key, PFD_HASH_KEY_SIZE, NULL, 0, hash);
 
 	return 0;
 }
@@ -422,7 +424,7 @@ static int pfd_calculate_entry_file_hash(pfd_context_t *ctx, pfd_entry_t *entry,
 
 static int pfd_encrypt_data(pfd_context_t *ctx, u8 key[PFD_ENTRY_KEY_SIZE], u8 *data, u64 data_size) {
 	u8 counter_key[16];
-	aes_context aes1, aes2;
+	mbedtls_aes_context aes1, aes2;
 	u64 block_len, num_blocks;
 	u8 *block_data;
 	u64 i, j;
@@ -433,8 +435,10 @@ static int pfd_encrypt_data(pfd_context_t *ctx, u8 key[PFD_ENTRY_KEY_SIZE], u8 *
 	block_len = 16;
 	num_blocks = data_size / block_len;
 
-	aes_setkey_enc(&aes1, key, 128);
-	aes_setkey_enc(&aes2, key, 128);
+	mbedtls_aes_init(&aes1);
+	mbedtls_aes_init(&aes2);
+	mbedtls_aes_setkey_enc(&aes1, key, 128);
+	mbedtls_aes_setkey_enc(&aes2, key, 128);
 
 	for (i = 0; i < num_blocks; ++i) {
 		block_data = data + i * block_len;
@@ -442,20 +446,23 @@ static int pfd_encrypt_data(pfd_context_t *ctx, u8 key[PFD_ENTRY_KEY_SIZE], u8 *
 		*(u64 *)(counter_key + 0) = SKIP64(i);
 		*(u64 *)(counter_key + 8) = 0;
 
-		aes_crypt_ecb(&aes1, AES_ENCRYPT, counter_key, counter_key);
+		mbedtls_aes_crypt_ecb(&aes1, MBEDTLS_AES_ENCRYPT, counter_key, counter_key);
 
 		for (j = 0; j < 16; ++j)
 			block_data[j] ^= counter_key[j];
 
-		aes_crypt_ecb(&aes2, AES_ENCRYPT, block_data, block_data);
+		mbedtls_aes_crypt_ecb(&aes2, MBEDTLS_AES_ENCRYPT, block_data, block_data);
 	}
+
+	mbedtls_aes_free(&aes1);
+	mbedtls_aes_free(&aes2);
 
 	return 0;
 }
 
 static int pfd_decrypt_data(pfd_context_t *ctx, u8 key[PFD_ENTRY_KEY_SIZE], u8 *data, u64 data_size) {
 	u8 counter_key[16];
-	aes_context aes1, aes2;
+	mbedtls_aes_context aes1, aes2;
 	u64 block_len, num_blocks;
 	u8 *block_data;
 	u64 i, j;
@@ -466,8 +473,10 @@ static int pfd_decrypt_data(pfd_context_t *ctx, u8 key[PFD_ENTRY_KEY_SIZE], u8 *
 	block_len = 16;
 	num_blocks = data_size / block_len;
 
-	aes_setkey_enc(&aes1, key, 128);
-	aes_setkey_dec(&aes2, key, 128);
+	mbedtls_aes_init(&aes1);
+	mbedtls_aes_init(&aes2);
+	mbedtls_aes_setkey_enc(&aes1, key, 128);
+	mbedtls_aes_setkey_dec(&aes2, key, 128);
 
 	for (i = 0; i < num_blocks; ++i) {
 		block_data = data + i * block_len;
@@ -475,12 +484,15 @@ static int pfd_decrypt_data(pfd_context_t *ctx, u8 key[PFD_ENTRY_KEY_SIZE], u8 *
 		*(u64 *)(counter_key + 0) = SKIP64(i);
 		*(u64 *)(counter_key + 8) = 0;
 
-		aes_crypt_ecb(&aes1, AES_ENCRYPT, counter_key, counter_key);
-		aes_crypt_ecb(&aes2, AES_DECRYPT, block_data, block_data);
+		mbedtls_aes_crypt_ecb(&aes1, MBEDTLS_AES_ENCRYPT, counter_key, counter_key);
+		mbedtls_aes_crypt_ecb(&aes2, MBEDTLS_AES_DECRYPT, block_data, block_data);
 
 		for (j = 0; j < 16; ++j)
 			block_data[j] ^= counter_key[j];
 	}
+
+	mbedtls_aes_free(&aes1);
+	mbedtls_aes_free(&aes2);
 
 	return 0;
 }
@@ -581,7 +593,7 @@ int pfd_import(pfd_context_t *ctx) {
 		return -1;
 
 	if (SKIP64(ctx->header->version) == PFD_VERSION_V4)
-		sha1_hmac(ctx->config->keygen_key, PFD_KEYGEN_KEY_SIZE, ctx->signature->hash_key, PFD_HASH_KEY_SIZE, ctx->real_hash_key);
+		mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA1), ctx->config->keygen_key, PFD_KEYGEN_KEY_SIZE, ctx->signature->hash_key, PFD_HASH_KEY_SIZE, ctx->real_hash_key);
 	else
 		memcpy(ctx->real_hash_key, ctx->signature->hash_key, PFD_HASH_KEY_SIZE);
 

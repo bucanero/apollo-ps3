@@ -1,4 +1,4 @@
-#include <polarssl/aes.h>
+#include <mbedtls/aes.h>
 #include <apollo.h>
 
 #include "saves.h"
@@ -292,7 +292,7 @@ static int _get_aes_details_pfd(const char* path, const char* filename, const u8
 	pfd_entry_t *entry;
 	size_t dsize;
 	u8 iv_hash_key[PFD_KEY_SIZE];
-	aes_context aes;
+	mbedtls_aes_context aes;
 	int i, j;
 
 	snprintf(file_path, sizeof(file_path), "%s" "PARAM.PFD", path);
@@ -336,10 +336,10 @@ static int _get_aes_details_pfd(const char* path, const char* filename, const u8
 	if (memcmp(secure_key, config.troptrns_dat_key, PFD_KEY_SIZE) == 0)
 		memcpy(iv_hash_key, secure_key, PFD_KEY_SIZE);
 
-	memset(&aes, 0, sizeof(aes_context));
+	mbedtls_aes_init(&aes);
 
-	aes_setkey_dec(&aes, config.syscon_manager_key, 128);
-	aes_crypt_cbc(&aes, AES_DECRYPT, PFD_ENTRY_KEY_SIZE, iv_hash_key, entry_key, entry_key);
+	mbedtls_aes_setkey_dec(&aes, config.syscon_manager_key, 128);
+	mbedtls_aes_crypt_cbc(&aes, MBEDTLS_AES_DECRYPT, PFD_ENTRY_KEY_SIZE, iv_hash_key, entry_key, entry_key);
 
 	return 1;
 }
@@ -391,7 +391,7 @@ int decrypt_save_file(const char* path, const char* fname, const char* outpath, 
 	u64 i, j;
 
 	u8 counter_key[PFD_KEY_SIZE];
-	aes_context aes1, aes2;
+	mbedtls_aes_context aes1, aes2;
 	u64 num_blocks;
 	u8 *block_data;
 
@@ -444,8 +444,10 @@ int decrypt_save_file(const char* path, const char* fname, const char* outpath, 
 
 	num_blocks = aligned_file_size / PFD_AES_BLOCK_LEN;
 
-	aes_setkey_enc(&aes1, entry_key, 128);
-	aes_setkey_dec(&aes2, entry_key, 128);
+	mbedtls_aes_init(&aes1);
+	mbedtls_aes_init(&aes2);
+	mbedtls_aes_setkey_enc(&aes1, entry_key, 128);
+	mbedtls_aes_setkey_dec(&aes2, entry_key, 128);
 
 	for (i = 0; i < num_blocks; ++i)
 	{
@@ -454,8 +456,8 @@ int decrypt_save_file(const char* path, const char* fname, const char* outpath, 
 		*(u64 *)(counter_key + 0) = i;
 		*(u64 *)(counter_key + 8) = 0;
 
-		aes_crypt_ecb(&aes1, AES_ENCRYPT, counter_key, counter_key);
-		aes_crypt_ecb(&aes2, AES_DECRYPT, block_data, block_data);
+		mbedtls_aes_crypt_ecb(&aes1, MBEDTLS_AES_ENCRYPT, counter_key, counter_key);
+		mbedtls_aes_crypt_ecb(&aes2, MBEDTLS_AES_DECRYPT, block_data, block_data);
 
 		for (j = 0; j < PFD_KEY_SIZE; ++j)
 			block_data[j] ^= counter_key[j];
@@ -482,7 +484,7 @@ int encrypt_save_file(const char* path, const char* fname, const u8* secure_file
 	u64 i, j;
 
 	u8 counter_key[PFD_KEY_SIZE];
-	aes_context aes1, aes2;
+	mbedtls_aes_context aes1, aes2;
 	u64 num_blocks;
 	u8 *block_data;
 
@@ -524,8 +526,10 @@ int encrypt_save_file(const char* path, const char* fname, const u8* secure_file
 
 	num_blocks = aligned_file_size / PFD_AES_BLOCK_LEN;
 
-	aes_setkey_enc(&aes1, entry_key, 128);
-	aes_setkey_enc(&aes2, entry_key, 128);
+	mbedtls_aes_init(&aes1);
+	mbedtls_aes_init(&aes2);
+	mbedtls_aes_setkey_enc(&aes1, entry_key, 128);
+	mbedtls_aes_setkey_enc(&aes2, entry_key, 128);
 
 	for (i = 0; i < num_blocks; ++i)
 	{
@@ -534,12 +538,12 @@ int encrypt_save_file(const char* path, const char* fname, const u8* secure_file
 		*(u64 *)(counter_key + 0) = i;
 		*(u64 *)(counter_key + 8) = 0;
 
-		aes_crypt_ecb(&aes1, AES_ENCRYPT, counter_key, counter_key);
+		mbedtls_aes_crypt_ecb(&aes1, MBEDTLS_AES_ENCRYPT, counter_key, counter_key);
 
 		for (j = 0; j < PFD_KEY_SIZE; ++j)
 			block_data[j] ^= counter_key[j];
 
-		aes_crypt_ecb(&aes2, AES_ENCRYPT, block_data, block_data);
+		mbedtls_aes_crypt_ecb(&aes2, MBEDTLS_AES_ENCRYPT, block_data, block_data);
 	}
 
 	// save encrypted data
