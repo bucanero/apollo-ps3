@@ -68,14 +68,14 @@ static u64 pfd_calculate_hash_table_entry_index(pfd_context_t *ctx, const char *
 
 	for (i = 0; i < len; ++i)
 		hash = (hash << 5) - hash + (u8)file_name[i];
-	return hash % SKIP64(ctx->hash_table->capacity);
+	return hash % (ctx->hash_table->capacity);
 }
 
 static pfd_entry_t * pfd_get_entry_by_index(pfd_context_t *ctx, u64 entry_index) {
 	if (!ctx)
 		return NULL;
 
-	if (entry_index == -1 || entry_index >= SKIP64(ctx->hash_table->num_used))
+	if (entry_index == -1 || entry_index >= (ctx->hash_table->num_used))
 		return NULL;
 
 	return &ctx->entry_table->entries[entry_index];
@@ -94,12 +94,12 @@ static int pfd_get_entry_by_name(pfd_context_t *ctx, const char *file_name, u64 
 		return -1;
 
 	hash_table_entry_index = pfd_calculate_hash_table_entry_index(ctx, file_name);
-	current_entry_idx = SKIP64(ctx->hash_table->entries[hash_table_entry_index]);
+	current_entry_idx = (ctx->hash_table->entries[hash_table_entry_index]);
 
-	if (current_entry_idx < SKIP64(ctx->hash_table->num_reserved)) {
-		while (current_entry_idx < SKIP64(ctx->hash_table->num_reserved)) {
+	if (current_entry_idx < (ctx->hash_table->num_reserved)) {
+		while (current_entry_idx < (ctx->hash_table->num_reserved)) {
 			entry = &ctx->entry_table->entries[current_entry_idx];
-			additional_entry_idx = SKIP64(entry->additional_index);
+			additional_entry_idx = (entry->additional_index);
 			if (strncasecmp(entry->file_name, file_name, PFD_ENTRY_NAME_SIZE) == 0) {
 				*entry_index = current_entry_idx;
 				return 0;
@@ -141,7 +141,7 @@ static int pfd_get_entry_aligned_size(pfd_context_t *ctx, pfd_entry_t *entry, u6
 	if (!entry || !file_size)
 		return -1;
 
-	*file_size = align_to_pow2(SKIP64(entry->file_size), PFD_FILE_SIZE_ALIGNMENT);
+	*file_size = align_to_pow2((entry->file_size), PFD_FILE_SIZE_ALIGNMENT);
 
 	return 0;
 }
@@ -153,7 +153,7 @@ static int pfd_get_entry_size(pfd_context_t *ctx, pfd_entry_t *entry, u64 *file_
 	if (!entry || !file_size)
 		return -1;
 
-	*file_size = SKIP64(entry->file_size);
+	*file_size = (entry->file_size);
 
 	return 0;
 }
@@ -352,19 +352,19 @@ static int pfd_calculate_entry_hash(pfd_context_t *ctx, pfd_entry_t *entry, u8 h
 		return -1;
 
 	hash_table_entry_index = pfd_calculate_hash_table_entry_index(ctx, entry->file_name);
-	current_entry_index = SKIP64(ctx->hash_table->entries[hash_table_entry_index]);
+	current_entry_index = (ctx->hash_table->entries[hash_table_entry_index]);
 
-	if (current_entry_index < SKIP64(ctx->hash_table->num_reserved)) {
+	if (current_entry_index < (ctx->hash_table->num_reserved)) {
 		mbedtls_md_init(&sha1);
 		mbedtls_md_setup(&sha1, mbedtls_md_info_from_type(MBEDTLS_MD_SHA1), 1);
 
 		mbedtls_md_hmac_starts(&sha1, ctx->real_hash_key, PFD_HASH_KEY_SIZE);
 
-		while (current_entry_index < SKIP64(ctx->hash_table->num_reserved)) {
+		while (current_entry_index < (ctx->hash_table->num_reserved)) {
 			entry = &ctx->entry_table->entries[current_entry_index];
 			mbedtls_md_hmac_update(&sha1, (const u8 *)entry->file_name, PFD_ENTRY_NAME_SIZE);
 			mbedtls_md_hmac_update(&sha1, entry->key, PFD_ENTRY_DATA_SIZE);
-			current_entry_index = SKIP64(entry->additional_index);
+			current_entry_index = (entry->additional_index);
 		}
 
 		mbedtls_md_hmac_finish(&sha1, hash);
@@ -443,7 +443,7 @@ static int pfd_encrypt_data(pfd_context_t *ctx, u8 key[PFD_ENTRY_KEY_SIZE], u8 *
 	for (i = 0; i < num_blocks; ++i) {
 		block_data = data + i * block_len;
 
-		*(u64 *)(counter_key + 0) = SKIP64(i);
+		*(u64 *)(counter_key + 0) = (i);
 		*(u64 *)(counter_key + 8) = 0;
 
 		mbedtls_aes_crypt_ecb(&aes1, MBEDTLS_AES_ENCRYPT, counter_key, counter_key);
@@ -481,7 +481,7 @@ static int pfd_decrypt_data(pfd_context_t *ctx, u8 key[PFD_ENTRY_KEY_SIZE], u8 *
 	for (i = 0; i < num_blocks; ++i) {
 		block_data = data + i * block_len;
 
-		*(u64 *)(counter_key + 0) = SKIP64(i);
+		*(u64 *)(counter_key + 0) = (i);
 		*(u64 *)(counter_key + 8) = 0;
 
 		mbedtls_aes_crypt_ecb(&aes1, MBEDTLS_AES_ENCRYPT, counter_key, counter_key);
@@ -586,18 +586,18 @@ int pfd_import(pfd_context_t *ctx) {
 	ctx->entry_table = (pfd_entry_table_t *)(ctx->data + PFD_ENTRY_TABLE_OFFSET(ctx->hash_table));
 	ctx->entry_signature_table = (pfd_entry_signature_table_t *)(ctx->data + PFD_ENTRY_SIGNATURE_TABLE_OFFSET(ctx->hash_table));
 
-	if (SKIP64(ctx->header->magic) != PFD_MAGIC || (SKIP64(ctx->header->version) != PFD_VERSION_V3 && SKIP64(ctx->header->version) != PFD_VERSION_V4))
+	if ((ctx->header->magic) != PFD_MAGIC || ((ctx->header->version) != PFD_VERSION_V3 && (ctx->header->version) != PFD_VERSION_V4))
 		return -1;
 
 	if (pfd_decrypt_with_portability(ctx, ctx->data + PFD_HEADER_KEY_OFFSET, ctx->data + PFD_SIGNATURE_OFFSET, PFD_SIGNATURE_SIZE) < 0)
 		return -1;
 
-	if (SKIP64(ctx->header->version) == PFD_VERSION_V4)
+	if ((ctx->header->version) == PFD_VERSION_V4)
 		mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA1), ctx->config->keygen_key, PFD_KEYGEN_KEY_SIZE, ctx->signature->hash_key, PFD_HASH_KEY_SIZE, ctx->real_hash_key);
 	else
 		memcpy(ctx->real_hash_key, ctx->signature->hash_key, PFD_HASH_KEY_SIZE);
 
-	for (i = 0; i < SKIP64(ctx->hash_table->num_used); ++i) {
+	for (i = 0; i < (ctx->hash_table->num_used); ++i) {
 		entry = pfd_get_entry_by_index(ctx, i);
 		if (!entry)
 			return -1;
@@ -640,10 +640,10 @@ int pfd_get_info(pfd_context_t *ctx, pfd_info_t *info) {
 
 	memset(info, 0, sizeof(pfd_info_t));
 
-	info->version = SKIP64(ctx->header->version);
-	info->capacity = SKIP64(ctx->hash_table->capacity);
-	info->num_used_entries = SKIP64(ctx->hash_table->num_used);
-	info->num_reserved_entries = SKIP64(ctx->hash_table->num_reserved);
+	info->version = (ctx->header->version);
+	info->capacity = (ctx->hash_table->capacity);
+	info->num_used_entries = (ctx->hash_table->num_used);
+	info->num_reserved_entries = (ctx->hash_table->num_reserved);
 	info->is_trophy = ctx->is_trophy;
 
 	return 0;
@@ -690,8 +690,8 @@ int pfd_validate(pfd_context_t *ctx, u32 type) {
 		if (pfd_calculate_default_hash(ctx, computed_hash) < 0)
 			return -1;
 
-		for (i = 0; i < SKIP64(ctx->hash_table->capacity); ++i) {
-			if (SKIP64(ctx->hash_table->entries[i]) < SKIP64(ctx->hash_table->capacity))
+		for (i = 0; i < (ctx->hash_table->capacity); ++i) {
+			if ((ctx->hash_table->entries[i]) < (ctx->hash_table->capacity))
 				continue;
 
 			memset(&info, 0, sizeof(pfd_validation_status_t));
@@ -703,7 +703,7 @@ int pfd_validate(pfd_context_t *ctx, u32 type) {
 				(*ctx->validate_callback)(ctx->user, PFD_VALIDATE_TYPE_ENTRY, &info);
 		}
 
-		for (i = 0; i < SKIP64(ctx->hash_table->num_used); ++i) {
+		for (i = 0; i < (ctx->hash_table->num_used); ++i) {
 			entry = pfd_get_entry_by_index(ctx, i);
 			if (!entry)
 				return -1;
@@ -725,7 +725,7 @@ int pfd_validate(pfd_context_t *ctx, u32 type) {
 	}
 
 	if ((type & PFD_VALIDATE_TYPE_FILE_ALL) != 0) {
-		for (i = 0; i < SKIP64(ctx->hash_table->num_used); ++i) {
+		for (i = 0; i < (ctx->hash_table->num_used); ++i) {
 			entry = pfd_get_entry_by_index(ctx, i);
 			if (!entry)
 				return -1;
@@ -792,7 +792,7 @@ int pfd_update(pfd_context_t *ctx, u32 type) {
 	result = 0;
 
 	if ((type & PFD_UPDATE_TYPE_ALL) != 0) {
-		for (i = 0; i < SKIP64(ctx->hash_table->num_used); ++i) {
+		for (i = 0; i < (ctx->hash_table->num_used); ++i) {
 			entry = pfd_get_entry_by_index(ctx, i);
 			if (!entry)
 				return -1;
@@ -826,14 +826,14 @@ int pfd_update(pfd_context_t *ctx, u32 type) {
 	if (pfd_calculate_default_hash(ctx, computed_hash) < 0)
 		return -1;
 
-	for (i = 0; i < SKIP64(ctx->hash_table->capacity); ++i) {
-		if (SKIP64(ctx->hash_table->entries[i]) < SKIP64(ctx->hash_table->capacity))
+	for (i = 0; i < (ctx->hash_table->capacity); ++i) {
+		if ((ctx->hash_table->entries[i]) < (ctx->hash_table->capacity))
 			continue;
 
 		memcpy(ctx->entry_signature_table->hashes[i], computed_hash, PFD_HASH_SIZE);
 	}
 
-	for (i = 0; i < SKIP64(ctx->hash_table->num_used); ++i) {
+	for (i = 0; i < (ctx->hash_table->num_used); ++i) {
 		entry = pfd_get_entry_by_index(ctx, i);
 		if (!entry)
 			return -1;
@@ -908,7 +908,7 @@ int pfd_encrypt_file(pfd_context_t *ctx, const char *file_name) {
 		return -1;
 	}
 
-	entry->file_size = SKIP64(file_size);
+	entry->file_size = (file_size);
 
 	free(file_data);
 				
@@ -981,12 +981,12 @@ int pfd_enumerate(pfd_context_t *ctx) {
 	if (!ctx)
 		return -1;
 
-	for (i = 0; i < SKIP64(ctx->hash_table->num_used); ++i) {
+	for (i = 0; i < (ctx->hash_table->num_used); ++i) {
 		memset(&entry_info, 0, sizeof(pfd_entry_info_t));
 
 		entry_info.index = i;
 		strncpy(entry_info.file_name, ctx->entry_table->entries[i].file_name, PFD_ENTRY_NAME_SIZE);
-		entry_info.file_size = SKIP64(ctx->entry_table->entries[i].file_size);
+		entry_info.file_size = (ctx->entry_table->entries[i].file_size);
 
 		if (ctx->enumerate_callback) {
 			status = (*ctx->enumerate_callback)(ctx->user, &entry_info);

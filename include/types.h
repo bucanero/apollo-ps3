@@ -57,7 +57,6 @@
 #define LE16(_val) ((_val) & 0xffffu)
 #define LE32(_val) ((_val) & 0xffffffffu)
 */
-#define SKIP64(_val) ((_val) & 0xffffffffffffffffu)
 
 #define countof(_array) (sizeof(_array) / sizeof(_array[0]))
 //#define offsetof(_type, _member) ((size_t)((char *)&((_type *)0)->_member - (char *)0))
