@@ -62,7 +62,7 @@ jobs:
 
     - name: Install cURL
       run: |
-        curl -sL https://gist.github.com/bucanero/c0b3e143657df54f28e2027abca13c71/raw/51a4decaee09d50b60738216bc372bd2d90e3846/curl-ps3-build.sh -o curl-ps3-build.sh
+        curl -sL https://gist.github.com/bucanero/c0b3e143657df54f28e2027abca13c71/raw/45288bf32043fbe589e59d1f922d765b221f3e3a/curl-ps3-build.sh -o curl-ps3-build.sh
         chmod +x curl-ps3-build.sh
         ./curl-ps3-build.sh
 

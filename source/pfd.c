@@ -454,9 +454,6 @@ static int pfd_encrypt_data(pfd_context_t *ctx, u8 key[PFD_ENTRY_KEY_SIZE], u8 *
 		mbedtls_aes_crypt_ecb(&aes2, MBEDTLS_AES_ENCRYPT, block_data, block_data);
 	}
 
-	mbedtls_aes_free(&aes1);
-	mbedtls_aes_free(&aes2);
-
 	return 0;
 }
 
@@ -490,9 +487,6 @@ static int pfd_decrypt_data(pfd_context_t *ctx, u8 key[PFD_ENTRY_KEY_SIZE], u8 *
 		for (j = 0; j < 16; ++j)
 			block_data[j] ^= counter_key[j];
 	}
-
-	mbedtls_aes_free(&aes1);
-	mbedtls_aes_free(&aes2);
 
 	return 0;
 }
