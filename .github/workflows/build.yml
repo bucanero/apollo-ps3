@@ -48,6 +48,18 @@ jobs:
         echo "PS3DEV=${GITHUB_WORKSPACE}/ps3dev" >> $GITHUB_ENV
         echo "PSL1GHT=${GITHUB_WORKSPACE}/ps3dev" >> $GITHUB_ENV
 
+    - name: Install mbedTLS
+      run: |
+        curl -sL https://github.com/Mbed-TLS/mbedtls/releases/download/mbedtls-2.28.10/mbedtls-2.28.10.tar.bz2 | tar xvz -C ./
+        curl -sL https://github.com/bucanero/ps3libraries/raw/refs/heads/master/patches/mbedtls-2.28.10.patch -o mbedtls-2.28.10.patch
+        cd mbedtls-2.28.10
+        patch -p1 < ../mbedtls-2.28.10.patch
+        cd library
+        chmod +x ps3-build.sh
+        ./ps3-build.sh
+        cp lib*.a $PS3DEV/portlibs/ppu/lib/
+        cp -R ../include/mbedtls $PS3DEV/portlibs/ppu/include/
+
     - name: Install dbglogger
       working-directory: dbglogger
       run: |
