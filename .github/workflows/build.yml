@@ -74,6 +74,7 @@ jobs:
     - name: Install apollo-lib
       working-directory: apollo-lib
       run: |
+        sed -i '40s/.*/MACHDEP := -DBIGENDIAN -D_USE_MBEDTLS/' Makefile
         make install
 
     - name: Install libxmp-lite
