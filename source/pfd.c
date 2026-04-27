@@ -381,27 +381,21 @@ static int pfd_calculate_top_hash(pfd_context_t *ctx, u8 hash[PFD_HASH_SIZE]) {
 	if (!ctx)
 		return -1;
 
-	mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA1), ctx->real_hash_key, PFD_HASH_KEY_SIZE, ctx->hash_table->buf, PFD_HASH_TABLE_SIZE(ctx->hash_table), hash);
-
-	return 0;
+	return mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA1), ctx->real_hash_key, PFD_HASH_KEY_SIZE, ctx->hash_table->buf, PFD_HASH_TABLE_SIZE(ctx->hash_table), hash);
 }
 
 static int pfd_calculate_bottom_hash(pfd_context_t *ctx, u8 hash[PFD_HASH_SIZE]) {
 	if (!ctx)
 		return -1;
 
-	mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA1), ctx->real_hash_key, PFD_HASH_KEY_SIZE, ctx->entry_signature_table->buf, PFD_ENTRY_SIGNATURE_TABLE_SIZE(ctx->hash_table), hash);
-
-	return 0;
+	return mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA1), ctx->real_hash_key, PFD_HASH_KEY_SIZE, ctx->entry_signature_table->buf, PFD_ENTRY_SIGNATURE_TABLE_SIZE(ctx->hash_table), hash);
 }
 
 static int pfd_calculate_default_hash(pfd_context_t *ctx, u8 hash[PFD_HASH_SIZE]) {
 	if (!ctx)
 		return -1;
 
-	mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA1), ctx->real_hash_key, PFD_HASH_KEY_SIZE, NULL, 0, hash);
-
-	return 0;
+	return mbedtls_md_hmac(mbedtls_md_info_from_type(MBEDTLS_MD_SHA1), ctx->real_hash_key, PFD_HASH_KEY_SIZE, NULL, 0, hash);
 }
 
 static int pfd_calculate_entry_file_hash(pfd_context_t *ctx, pfd_entry_t *entry, u8 *hash_key, u32 hash_key_size, u8 hash[PFD_HASH_SIZE]) {
