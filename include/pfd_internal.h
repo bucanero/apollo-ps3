@@ -24,13 +24,13 @@
 
 #define PFD_HASH_TABLE_OFFSET (PFD_SIGNATURE_OFFSET + PFD_SIGNATURE_SIZE)
 #define PFD_HASH_TABLE_HEADER_SIZE 24
-#define PFD_HASH_TABLE_SIZE(_hash_table) (PFD_HASH_TABLE_HEADER_SIZE + SKIP64(_hash_table->capacity) * PFD_ENTRY_INDEX_SIZE)
+#define PFD_HASH_TABLE_SIZE(_hash_table) (PFD_HASH_TABLE_HEADER_SIZE + (_hash_table->capacity) * PFD_ENTRY_INDEX_SIZE)
 
-#define PFD_ENTRY_TABLE_OFFSET(_hash_table) (PFD_HASH_TABLE_OFFSET + PFD_HASH_TABLE_HEADER_SIZE + SKIP64(_hash_table->capacity) * PFD_ENTRY_INDEX_SIZE)
-#define PFD_ENTRY_TABLE_SIZE(_hash_table) (SKIP64(_hash_table->capacity) * PFD_ENTRY_INDEX_SIZE)
+#define PFD_ENTRY_TABLE_OFFSET(_hash_table) (PFD_HASH_TABLE_OFFSET + PFD_HASH_TABLE_HEADER_SIZE + (_hash_table->capacity) * PFD_ENTRY_INDEX_SIZE)
+#define PFD_ENTRY_TABLE_SIZE(_hash_table) ((_hash_table->capacity) * PFD_ENTRY_INDEX_SIZE)
 
-#define PFD_ENTRY_SIGNATURE_TABLE_OFFSET(_hash_table) (PFD_ENTRY_TABLE_OFFSET(_hash_table) + SKIP64(_hash_table->num_reserved) * PFD_ENTRY_SIZE)
-#define PFD_ENTRY_SIGNATURE_TABLE_SIZE(_hash_table) (SKIP64(_hash_table->capacity) * PFD_HASH_SIZE)
+#define PFD_ENTRY_SIGNATURE_TABLE_OFFSET(_hash_table) (PFD_ENTRY_TABLE_OFFSET(_hash_table) + (_hash_table->num_reserved) * PFD_ENTRY_SIZE)
+#define PFD_ENTRY_SIGNATURE_TABLE_SIZE(_hash_table) ((_hash_table->capacity) * PFD_HASH_SIZE)
 
 #pragma pack(push, 1)
 

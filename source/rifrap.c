@@ -12,8 +12,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <polarssl/aes.h>
-#include <polarssl/sha1.h>
+#include <mbedtls/aes.h>
+#include <mbedtls/sha1.h>
 
 #include "util.h"
 #include "ecdsa.h"
@@ -72,16 +72,20 @@ static long search_data(const char* data, size_t size, const char* search, int l
 
 static void aesecb128_encrypt(const u8 *key, const u8 *in, u8 *out)
 {
-	aes_context ctx;
-	aes_setkey_enc(&ctx, key, 128);
-	aes_crypt_ecb(&ctx, AES_ENCRYPT, in, out);
+	mbedtls_aes_context ctx;
+
+	mbedtls_aes_init(&ctx);
+	mbedtls_aes_setkey_enc(&ctx, key, 128);
+	mbedtls_aes_crypt_ecb(&ctx, MBEDTLS_AES_ENCRYPT, in, out);
 }
 
 static void aesecb128_decrypt(const u8 *key, const u8 *in, u8 *out)
 {
-	aes_context ctx;
-	aes_setkey_dec(&ctx, key, 128);
-	aes_crypt_ecb(&ctx, AES_DECRYPT, in, out);
+	mbedtls_aes_context ctx;
+
+	mbedtls_aes_init(&ctx);
+	mbedtls_aes_setkey_dec(&ctx, key, 128);
+	mbedtls_aes_crypt_ecb(&ctx, MBEDTLS_AES_DECRYPT, in, out);
 }
 
 static int klicensee_to_rap(u8 *klicensee, u8 *rap_key)
@@ -237,7 +241,7 @@ int rap2rif(const u8* idps_key, const char* exdata_path, const char* rap_file, c
 	aesecb128_encrypt(act_dat_key, rif.key, rif.key);
 	aesecb128_encrypt(npdrm_rif_key, rif.padding, rif.padding);
 
-	sha1((uint8_t*) &rif, 0x70, sha1_digest);
+	mbedtls_sha1((uint8_t*) &rif, 0x70, sha1_digest);
 	ecdsa_set_curve(0);
 	ecdsa_set_pub(ec_Q_nm);
 	ecdsa_set_priv(ec_k_nm);
@@ -457,7 +461,7 @@ int create_actdat(const char* exdata_path, u64 account_id)
 	memset((u8*)&act_dat + 0x860, 0, 0x20);
 	memcpy((u8*)&act_dat + 0x872, "\x01\x2F\x3F\xFF", 4); // time data
 
-	sha1((u8*) &act_dat, sizeof(actdat_t) - 0x28, act_dat.sig_r);
+	mbedtls_sha1((u8*) &act_dat, sizeof(actdat_t) - 0x28, act_dat.sig_r);
 
 	ecdsa_set_curve(0);
 	ecdsa_set_pub(ec_Q_nm);

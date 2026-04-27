@@ -3,7 +3,7 @@
 #include <dirent.h>
 #include <net/netctl.h>
 #include <sysutil/sysutil.h>
-#include <polarssl/md5.h>
+#include <mbedtls/md5.h>
 #include <mini18n.h>
 
 #include "saves.h"
@@ -278,13 +278,14 @@ static int webReqHandler(dWebRequest_t* req, dWebResponse_t* out, void* list)
 	if (strcmp(req->resource, "/") == 0)
 	{
 		uint64_t hash[2];
-		md5_context ctx;
+		mbedtls_md5_context ctx;
 
-		md5_starts(&ctx);
+		mbedtls_md5_init(&ctx);
+		mbedtls_md5_starts(&ctx);
 		for (node = list_head(list); (item = list_get(node)); node = list_next(node))
-			md5_update(&ctx, (uint8_t*) item->name, strlen(item->name));
+			mbedtls_md5_update(&ctx, (uint8_t*) item->name, strlen(item->name));
 
-		md5_finish(&ctx, (uint8_t*) hash);
+		mbedtls_md5_finish(&ctx, (uint8_t*) hash);
 		asprintf(&out->data, APOLLO_LOCAL_CACHE "web%016lx%016lx.html", hash[0], hash[1]);
 
 		if (file_exists(out->data) == SUCCESS)
