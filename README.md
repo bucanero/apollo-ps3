@@ -204,7 +204,7 @@ You need to have installed:
 - [PSL1GHT](https://github.com/ps3dev/PSL1GHT) SDK
 - [Apollo](https://github.com/bucanero/apollo-lib) library
 - [Tiny3D](https://github.com/wargio/Tiny3D) library
-- [polarSSL](https://github.com/bucanero/ps3libraries/blob/master/scripts/015-polarssl-1.3.9.sh) library
+- [mbedTLS](https://github.com/bucanero/ps3libraries/blob/master/scripts/028-mbedTLS-2.28.10.sh) library
 - [libcurl](https://github.com/bucanero/ps3libraries/blob/master/scripts/016-libcurl-7.64.1.sh) library
 - [libxmp-lite](https://github.com/bucanero/libxmp-lite-ps4) library
 - [mini18n](https://github.com/bucanero/mini18n) library
