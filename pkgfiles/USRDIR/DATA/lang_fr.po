@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Apollo Save Tool\n"
-"POT-Creation-Date: 2025-10-17 16:54-0300\n"
+"POT-Creation-Date: 2026-05-02 13:49+0000\n"
 "PO-Revision-Date: 2025-10-17 17:46-0300\n"
 "Last-Translator: Algol\n"
 "Language-Team: github.com/bucanero\n"
@@ -14,9 +14,9 @@ msgstr ""
 "X-Poedit-KeywordsList: _;_i18n\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: exec_cmd.c:51 exec_cmd.c:128 exec_cmd.c:189 exec_cmd.c:212 exec_cmd.c:560
-#: exec_cmd.c:597 exec_cmd.c:630 exec_cmd.c:818 exec_cmd.c:844 exec_cmd.c:930
-#: exec_cmd.c:999 exec_cmd.c:1023 exec_cmd.c:1058
+#: exec_cmd.c:51 exec_cmd.c:128 exec_cmd.c:189 exec_cmd.c:212 exec_cmd.c:566
+#: exec_cmd.c:603 exec_cmd.c:636 exec_cmd.c:824 exec_cmd.c:850 exec_cmd.c:936
+#: exec_cmd.c:1005 exec_cmd.c:1029 exec_cmd.c:1064
 msgid "Error! Export folder is not available:"
 msgstr "Erreur ! Le dossier d'exportation n'est pas disponible :"
 
@@ -29,12 +29,12 @@ msgid "Error extracting save game!"
 msgstr "Erreur lors de l'extraction de la sauvegarde !"
 
 #: exec_cmd.c:82
-msgid "Save game already exists in:"
-msgstr "La sauvegarde existe déjà dans :"
-
-#: exec_cmd.c:82
 msgid "Overwrite?"
 msgstr "Écraser ?"
+
+#: exec_cmd.c:82
+msgid "Save game already exists in:"
+msgstr "La sauvegarde existe déjà dans :"
 
 #: exec_cmd.c:87
 msgid "Error creating save game folder!"
@@ -52,9 +52,13 @@ msgstr "Erreur ! Impossible d'exporter la Sauvegarde vers :"
 msgid "Zip file successfully saved to:"
 msgstr "Fichier ZIP enregistré avec succès sous :"
 
-#: exec_cmd.c:197 exec_cmd.c:1084 exec_cmd.c:1120
+#: exec_cmd.c:197 exec_cmd.c:1090 exec_cmd.c:1126
 msgid "Files successfully copied to:"
 msgstr "Fichiers copiés avec succès vers :"
+
+#: exec_cmd.c:216 exec_cmd.c:502
+msgid "Copying all saves..."
+msgstr ""
 
 #: exec_cmd.c:228
 msgid "Saves copied to USB"
@@ -80,301 +84,334 @@ msgstr "Sauvegarde de la partie %s copiée sur le Disque Dur"
 msgid "Error! Failed to copy Save-game %s"
 msgstr "Erreur ! Échec de la copie de la sauvegarde %s"
 
-#: exec_cmd.c:432
-msgid "Web Server listening on:"
-msgstr "Le Serveur Web écoute sur :"
-
-#: exec_cmd.c:432
+#: exec_cmd.c:433
 msgid "Press OK to stop the Server."
 msgstr "Appuyez sur OK pour arrêter le serveur."
 
-#: exec_cmd.c:435
+#: exec_cmd.c:433
+msgid "Web Server listening on:"
+msgstr "Le Serveur Web écoute sur :"
+
+#: exec_cmd.c:436
 msgid "Error starting Web Server!"
 msgstr "Erreur lors du démarrage du serveur Web !"
 
-#: exec_cmd.c:509
+#: exec_cmd.c:515
 msgid "Saves copied to HDD"
 msgstr "Sauvegardes copiées sur le Disque Dur"
 
-#: exec_cmd.c:545
+#: exec_cmd.c:551
 msgid "All files extracted to:"
 msgstr "Tous les fichiers extraits vers :"
 
-#: exec_cmd.c:547
+#: exec_cmd.c:553
 #, c-format
 msgid "Error: %s couldn't be extracted"
 msgstr "Erreur : %s n'a pas pu être extrait"
 
-#: exec_cmd.c:586
+#: exec_cmd.c:592
 msgid "Licenses successfully saved to:"
 msgstr "Licences enregistrées avec succès dans :"
 
-#: exec_cmd.c:616
+#: exec_cmd.c:622
 msgid "Files successfully saved to:"
 msgstr "Fichiers enregistrés avec succès dans :"
 
-#: exec_cmd.c:654
+#: exec_cmd.c:660
 msgid "Error! Failed to export Trophies to Zip"
 msgstr "Erreur ! Échec de l'exportation des trophées vers le fichier Zip"
 
-#: exec_cmd.c:658
+#: exec_cmd.c:664
 msgid "Trophies successfully saved to:"
 msgstr "Trophées enregistrés avec succès dans :"
 
-#: exec_cmd.c:669
+#: exec_cmd.c:675
 msgid "Error! Trophy folder is not available:"
 msgstr "Erreur ! Le dossier des Trophées n'est pas disponible :"
 
-#: exec_cmd.c:682
+#: exec_cmd.c:688
 msgid "Trophy successfully copied to:"
 msgstr "Trophée copié avec succès vers :"
 
-#: exec_cmd.c:715
+#: exec_cmd.c:701
+msgid "Exporting all VMC saves..."
+msgstr ""
+
+#: exec_cmd.c:721
 msgid "Saves exported to:"
 msgstr "Sauvegardes exportées vers :"
 
-#: exec_cmd.c:735 exec_cmd.c:1838
+#: exec_cmd.c:741 exec_cmd.c:1884
 msgid "Save successfully exported to:"
 msgstr "Sauvegardes réussies exporté vers :"
 
-#: exec_cmd.c:737 exec_cmd.c:1840
+#: exec_cmd.c:743 exec_cmd.c:1886
 msgid "Error exporting save:"
 msgstr "Erreur lors de l'exportation de la sauvegarde :"
 
-#: exec_cmd.c:746
+#: exec_cmd.c:752
 msgid "File successfully resigned!"
 msgstr "Fichier Ressigné avec succès !"
 
-#: exec_cmd.c:758
+#: exec_cmd.c:764
 msgid "Error! The account already has an act.dat"
 msgstr "Erreur ! Le compte possède déjà un fichier act.dat"
 
-#: exec_cmd.c:764
+#: exec_cmd.c:770
 msgid "Error! Folder is not available:"
 msgstr "Erreur ! Le dossier n'est pas disponible :"
 
-#: exec_cmd.c:770
+#: exec_cmd.c:776
 msgid "Enter the Account ID"
 msgstr "Entrez l'ID du compte"
 
-#: exec_cmd.c:773
+#: exec_cmd.c:779
 msgid "Error! Account ID is not valid"
 msgstr "Erreur ! L'identifiant de compte n'est pas valide"
 
-#: exec_cmd.c:781
+#: exec_cmd.c:787
 msgid "Error! Fake Account could not be assigned to xRegistry.sys"
 msgstr "Erreur ! Le Faux Compte n'a pas pu être attribué à xRegistry.sys"
 
-#: exec_cmd.c:790
+#: exec_cmd.c:796
 msgid "Error! Account could not be activated!"
 msgstr "Erreur ! Le Compte n'a pas pu être activé !"
 
-#: exec_cmd.c:807
-msgid "Account successfully activated!"
-msgstr "Compte activé avec succès !"
-
-#: exec_cmd.c:807
+#: exec_cmd.c:813
 msgid "A system reboot is required"
 msgstr "Un redémarrage du système est requis"
 
-#: exec_cmd.c:831 exec_cmd.c:883 exec_cmd.c:918 exec_cmd.c:942 exec_cmd.c:961
-#: exec_cmd.c:978 exec_cmd.c:1008
+#: exec_cmd.c:813
+msgid "Account successfully activated!"
+msgstr "Compte activé avec succès !"
+
+#: exec_cmd.c:837 exec_cmd.c:889 exec_cmd.c:924 exec_cmd.c:948 exec_cmd.c:967
+#: exec_cmd.c:984 exec_cmd.c:1014
 msgid "File successfully saved to:"
 msgstr "Fichier Sauvegardé avec succès sous :"
 
-#: exec_cmd.c:833
+#: exec_cmd.c:839
 #, c-format
 msgid "Error! Failed to export .%s file"
 msgstr "Erreur ! Échec de l'exportation du fichier .%s"
 
-#: exec_cmd.c:885
+#: exec_cmd.c:891
 msgid "Error! Failed to convert save file"
 msgstr "Erreur ! Échec de la conversion du fichier de sauvegarde"
 
-#: exec_cmd.c:900
+#: exec_cmd.c:906
 msgid "File successfully imported to:"
 msgstr "Fichier importé avec succès vers :"
 
-#: exec_cmd.c:902
+#: exec_cmd.c:908
 msgid "Error! Failed to import PS2 memory card"
 msgstr "Erreur ! Échec de l'importation de la carte mémoire PS2"
 
-#: exec_cmd.c:944
+#: exec_cmd.c:950
 msgid "Error! Failed to export PS2 memory card"
 msgstr "Erreur ! Échec de l'exportation de la carte mémoire PS2"
 
-#: exec_cmd.c:1040
+#: exec_cmd.c:963
+msgid "Encrypting PS2 CONFIG..."
+msgstr ""
+
+#: exec_cmd.c:980
+msgid "Encrypting PS2 ISO..."
+msgstr ""
+
+#: exec_cmd.c:1009
+msgid "Decrypting PS2 BIN.ENC..."
+msgstr ""
+
+#: exec_cmd.c:1033
+msgid "Copying trophies..."
+msgstr ""
+
+#: exec_cmd.c:1046
 msgid "Trophy Sets copied to:"
 msgstr "Ensembles de trophées copiés vers :"
 
-#: exec_cmd.c:1095
+#: exec_cmd.c:1101
 msgid "Error! Import folder is not available:"
 msgstr "Erreur ! Le dossier d'importation n'est pas disponible :"
 
-#: exec_cmd.c:1304 exec_cmd.c:1442
+#: exec_cmd.c:1310 exec_cmd.c:1448
 msgid "Error! Account changes couldn't be applied"
 msgstr "Erreur ! Les modifications de compte n'ont pas pu être appliquées"
 
-#: exec_cmd.c:1308
+#: exec_cmd.c:1314
 msgid "Error! Cheat codes couldn't be applied"
 msgstr "Erreur ! Les codes de Triche n'ont pas pu être appliqués"
 
-#: exec_cmd.c:1313
+#: exec_cmd.c:1319
 #, c-format
 msgid "Error! Save %s couldn't be resigned"
 msgstr "Erreur ! La Sauvegarde %s n'a pas pu être Ressignée"
 
-#: exec_cmd.c:1315
+#: exec_cmd.c:1321
 #, c-format
 msgid "Save %s successfully modified!"
 msgstr "Sauvegarde %s modifiée avec succès !"
 
-#: exec_cmd.c:1368
+#: exec_cmd.c:1346
+msgid "Resigning all saves..."
+msgstr ""
+
+#: exec_cmd.c:1374
 #, c-format
 msgid "Error: %d Saves couldn't be resigned"
 msgstr "Erreur : %d sauvegardes n'ont pas pu être Ressignée"
 
-#: exec_cmd.c:1370
+#: exec_cmd.c:1376
 msgid "All saves successfully resigned!"
 msgstr "Toutes les sauvegardes ont été Ressignée avec succès !"
 
-#: exec_cmd.c:1446
+#: exec_cmd.c:1452
 msgid "Error! Trophy changes couldn't be applied"
 msgstr "Erreur ! Les modifications de Trophée n'ont pas pu être Appliquées"
 
-#: exec_cmd.c:1459
+#: exec_cmd.c:1465
 #, c-format
 msgid "Error! Trophy %s couldn't be resigned"
 msgstr "Erreur ! Le Trophée %s n'a pas pu être Ressignée"
 
-#: exec_cmd.c:1461
+#: exec_cmd.c:1467
 #, c-format
 msgid "Trophy %s successfully modified!"
 msgstr "Trophée %s modifié avec succès !"
 
-#: exec_cmd.c:1465
+#: exec_cmd.c:1471
 msgid "Schedule Database rebuild on next boot?"
-msgstr "Planifier la Reconstruction de la Base de Données au prochain Démarrage ?"
+msgstr ""
+"Planifier la Reconstruction de la Base de Données au prochain Démarrage ?"
 
-#: exec_cmd.c:1492 exec_cmd.c:1522
-msgid "Save-game is not encrypted:"
-msgstr "La sauvegarde n'est pas Encryptée :"
-
-#: exec_cmd.c:1492
+#: exec_cmd.c:1498
 msgid "File was not decrypted:"
 msgstr "Le fichier n'a pas été décrypté :"
 
-#: exec_cmd.c:1501
+#: exec_cmd.c:1498 exec_cmd.c:1528
+msgid "Save-game is not encrypted:"
+msgstr "La sauvegarde n'est pas Encryptée :"
+
+#: exec_cmd.c:1507
 msgid "File successfully decrypted to:"
 msgstr "Fichier déchiffré avec succès en :"
 
-#: exec_cmd.c:1503
+#: exec_cmd.c:1509
 #, c-format
 msgid "Error! File %s couldn't be decrypted"
 msgstr "Erreur ! Le fichier %s n'a pas pu être décrypté"
 
-#: exec_cmd.c:1514
+#: exec_cmd.c:1520
 msgid "Error! Can't find decrypted save-game file:"
 msgstr "Erreur ! Impossible de trouver le fichier de sauvegarde décrypté :"
 
-#: exec_cmd.c:1522
+#: exec_cmd.c:1528
 msgid "File was not encrypted:"
 msgstr "Le fichier n'a pas été Encrypté :"
 
-#: exec_cmd.c:1532
+#: exec_cmd.c:1538
 msgid "File successfully encrypted to:"
 msgstr "Fichier Encrypté avec succès en :"
 
-#: exec_cmd.c:1534
+#: exec_cmd.c:1540
 #, c-format
 msgid "Error! File %s couldn't be encrypted"
 msgstr "Erreur ! Le fichier %s n'a pas pu être Encrypté"
 
-#: exec_cmd.c:1549
+#: exec_cmd.c:1555
 msgid "Download URL"
 msgstr "Téléchargement de l'URL"
 
-#: exec_cmd.c:1556
+#: exec_cmd.c:1562
 msgid "File successfully downloaded to:"
 msgstr "Fichier Téléchargé avec succès sur :"
 
-#: exec_cmd.c:1558
+#: exec_cmd.c:1564
 msgid "Error! File couldn't be downloaded"
 msgstr "Erreur ! Le fichier n'a pas pu être Téléchargé"
 
-#: exec_cmd.c:1565
+#: exec_cmd.c:1571
 #, c-format
 msgid "Do you want to delete %s?"
 msgstr "Voulez-vous supprimer %s ?"
 
-#: exec_cmd.c:1582
+#: exec_cmd.c:1588
 msgid "Save successfully deleted:"
 msgstr "Sauvegarde Supprimé avec succès :"
 
-#: exec_cmd.c:1584
+#: exec_cmd.c:1590
 msgid "Error! Couldn't delete save:"
 msgstr "Erreur ! Impossible de supprimer la Sauvegarde :"
 
-#: exec_cmd.c:1679
+#: exec_cmd.c:1784
 #, c-format
 msgid "Do you want to upload %s?"
 msgstr "Voulez-vous UpLoader %s ?"
 
-#: exec_cmd.c:1717
-msgid "Error! Couldn't zip save:"
-msgstr "Erreur ! Impossible de Zipper la Sauvegarde :"
-
-#: exec_cmd.c:1773
+#: exec_cmd.c:1793
 msgid "Save successfully uploaded:"
 msgstr "Enregistrement de la SAVE avec succès :"
 
-#: exec_cmd.c:1775
+#: exec_cmd.c:1795
 msgid "Error! Couldn't upload save:"
 msgstr "Erreur ! Impossible de UpLoader la Sauvegarde :"
 
-#: exec_cmd.c:1788
+#: exec_cmd.c:1805
+msgid "Do you want to upload the selected saves to FTP?"
+msgstr "Voulez-vous UpLoader les Sauvegardes sélectionnées sur FTP ?"
+
+#: exec_cmd.c:1821
+msgid "Saves uploaded to FTP"
+msgstr "Sauvegardes envoyées vers FTP"
+
+#: exec_cmd.c:1834
 msgid "Memory card successfully imported to:"
 msgstr "Carte mémoire Importée avec succès vers :"
 
-#: exec_cmd.c:1790
+#: exec_cmd.c:1836
 msgid "Error importing memory card:"
 msgstr "Erreur lors de l'importation de la Carte Mémoire :"
 
-#: exec_cmd.c:1802
+#: exec_cmd.c:1848
 msgid "Memory card successfully exported to:"
 msgstr "Carte Mémoire exportée avec succès vers :"
 
-#: exec_cmd.c:1804
+#: exec_cmd.c:1850
 msgid "Error exporting memory card:"
 msgstr "Erreur lors de l'exportation de la Carte Mémoire :"
 
-#: exec_cmd.c:1879
+#: exec_cmd.c:1925
 msgid "Successfully imported to VMC:"
 msgstr "Importé avec succès vers la VMC :"
 
-#: exec_cmd.c:1881
+#: exec_cmd.c:1927
 msgid "Error importing save:"
 msgstr "Erreur lors de l'Importation de la Sauvegarde :"
 
-#: exec_cmd.c:2040
+#: exec_cmd.c:2092
 msgid "Memory card successfully resigned:"
 msgstr "Carte mémoire Ressignée avec succès :"
 
-#: exec_cmd.c:2042
+#: exec_cmd.c:2094
 msgid "Error resigning memory card:"
 msgstr "Erreur lors de la Réécriture de la Carte Mémoire :"
 
-#: exec_cmd.c:2064
+#: exec_cmd.c:2116
 msgid "Save successfully imported:"
 msgstr "Sauvegarde Importé avec succès :"
 
-#: exec_cmd.c:2066
+#: exec_cmd.c:2118
 msgid "Error! Couldn't import save:"
 msgstr "Erreur ! Impossible d'importer la Sauvegarde :"
 
-#: main.c:194 main.c:198 main.c:203 main.c:213
-msgid "Select"
-msgstr "Sélectionner"
+#: http.c:154
+msgid "Downloading..."
+msgstr ""
+
+#: http.c:279
+msgid "Uploading..."
+msgstr ""
 
 #: main.c:194 main.c:198 main.c:203 main.c:209 main.c:213
 msgid "Back"
@@ -388,47 +425,55 @@ msgstr "Détails"
 msgid "Refresh"
 msgstr "Rafraîchir"
 
+#: main.c:194 main.c:198 main.c:203 main.c:213
+msgid "Select"
+msgstr "Sélectionner"
+
 #: main.c:213
 msgid "View Code"
 msgstr "Voir le Code"
 
 #: main.c:217
-msgid "Value Up"
-msgstr "Valeur augmentée"
+msgid "Exit"
+msgstr "Quitter"
+
+#: main.c:217
+msgid "Search"
+msgstr "Rechercher"
 
 #: main.c:217
 msgid "Value Down"
 msgstr "Valeur baissée"
 
 #: main.c:217
-msgid "Exit"
-msgstr "Quitter"
+msgid "Value Up"
+msgstr "Valeur augmentée"
 
-#: main.c:560
+#: main.c:559
 msgid "HDD Saves"
 msgstr "Sauvegardes sur Disque Dur"
 
-#: main.c:561
+#: main.c:560
 msgid "USB Saves"
 msgstr "Sauvegardes USB"
 
-#: main.c:562 saves.c:590
+#: main.c:561 saves.c:588
 msgid "Trophies"
 msgstr "Trophées"
 
-#: main.c:563
+#: main.c:562
 msgid "User Tools"
 msgstr "Outils utilisateur"
 
-#: main.c:564
+#: main.c:563
 msgid "Online Database"
 msgstr "Base de Données en ligne"
 
-#: main.c:565
+#: main.c:564
 msgid "PS1 Virtual Memory Card"
 msgstr "Carte mémoire virtuelle PS1"
 
-#: main.c:566
+#: main.c:565
 msgid "PS2 Virtual Memory Card"
 msgstr "Carte mémoire virtuelle PS2"
 
@@ -480,459 +525,475 @@ msgstr "Éditeur Hexadécimal"
 msgid "No save-games found"
 msgstr "Aucune Sauvegarde Trouvée"
 
-#: menu_main.c:554
+#: menu_main.c:462 menu_main.c:873
+msgid "Patch view"
+msgstr ""
+
+#: menu_main.c:578
 msgid "No data found in folder:"
 msgstr "Aucune donnée trouvée dans le dossier :"
 
-#: menu_main.c:609
+#: menu_main.c:633
 msgid "Exit to XMB?"
 msgstr "Quitter vers XMB ?"
 
-#: menu_main.c:760
+#: menu_main.c:784
 #, c-format
 msgid "Save changes to %s?"
 msgstr "Enregistrer les Modifications dans %s ?"
 
-#: menu_main.c:861
+#: menu_main.c:817
+msgid "Search bytes (hex)"
+msgstr "Rechercher octets (hex)"
+
+#: menu_main.c:833
+msgid "Value not found: 0x"
+msgstr "Valeur non trouvée : 0x"
+
+#: menu_main.c:911
 msgid "Failed to load:"
 msgstr "Échec du Chargement :"
 
-#: menu_options.c:77 menu_options.c:97
+#: menu_options.c:75 menu_options.c:95
 msgid "Settings"
 msgstr "Paramètres"
 
-#: saves.c:218
+#: saves.c:216
 msgid "Apply Changes & Resign"
 msgstr "Appliquer les Modifications et Ressigner"
 
-#: saves.c:221 saves.c:351 saves.c:756 saves.c:911
+#: saves.c:219 saves.c:349 saves.c:754 saves.c:909
 msgid "View Save Details"
 msgstr "Afficher les détails de Sauvegarde"
 
-#: saves.c:225
+#: saves.c:223
 msgid "File Backup"
 msgstr "Sauvegarde de fichiers"
 
-#: saves.c:230
+#: saves.c:228
 msgid "Copy save game to USB"
 msgstr "Copier la Sauvegarde sur USB"
 
-#: saves.c:231
+#: saves.c:229
 msgid "Copy Save to USB"
 msgstr "Copier Sauvegarde sur USB"
 
-#: saves.c:236 saves.c:768 saves.c:923
+#: saves.c:234 saves.c:766 saves.c:921
 msgid "Upload save backup to FTP"
 msgstr "UpLoader la Sauvegarde par FTP"
 
-#: saves.c:242
+#: saves.c:240
 msgid "Copy save game to HDD"
 msgstr "Copier la Sauvegarde sur le Disque Dur"
 
-#: saves.c:245
+#: saves.c:243
 msgid "Delete save game"
 msgstr "Supprimer la Sauvegarde"
 
-#: saves.c:249
+#: saves.c:247
 msgid "Export save game to Zip"
 msgstr "Exporter la Sauvegarde en fichier ZIP"
 
-#: saves.c:250
+#: saves.c:248
 msgid "Export Zip to USB"
 msgstr "Exporter le fichier ZIP vers une clé USB"
 
-#: saves.c:252
+#: saves.c:250
 msgid "Export Zip to HDD"
 msgstr "Exporter le fichier ZIP vers le Disque Dur"
 
-#: saves.c:257
+#: saves.c:255
 msgid "Decrypt save game files"
 msgstr "Décrypter les fichiers de Sauvegarde du jeu"
 
-#: saves.c:262
+#: saves.c:260
 msgid "Import decrypted save files"
 msgstr "Importer les Fichiers de Sauvegarde décryptés"
 
-#: saves.c:267
+#: saves.c:265
 msgid "Hex Edit save game files"
 msgstr "Éditer en Hexadécimal le Fichier de Sauvegarde du Jeu"
 
-#: saves.c:311
+#: saves.c:309
 msgid "SFO Patches"
 msgstr "Correctifs SFO"
 
-#: saves.c:314
+#: saves.c:312
 msgid "Change Account ID"
 msgstr "Modifier l'ID de Compte"
 
-#: saves.c:331
+#: saves.c:329
 msgid "Remove Console ID"
 msgstr "Supprimer l'ID de la Console"
 
-#: saves.c:336
+#: saves.c:334
 msgid "Remove copy protection"
 msgstr "Supprimer la Protection contre la Copie"
 
-#: saves.c:340
+#: saves.c:338
 msgid "Change Region Title ID"
 msgstr "Modifier l'ID Titre de la Région"
 
-#: saves.c:362 saves.c:2196
+#: saves.c:360 saves.c:2166
 msgid "Virtual Memory Card"
 msgstr "Carte Mémoire Virtuelle"
 
-#: saves.c:367
+#: saves.c:365
 msgid "Resign Memory Card"
 msgstr "Resigner la carte Mémoire"
 
-#: saves.c:371
+#: saves.c:369
 msgid "Export Memory Card to .VM1"
 msgstr "Exporter la Carte Mémoire vers .VM1"
 
-#: saves.c:375
+#: saves.c:373
 msgid "Import .VM1 file to"
 msgstr "Importer le fichier .VM1 vers"
 
-#: saves.c:418
+#: saves.c:416
 msgid "Cheats"
 msgstr "Tricheries"
 
-#: saves.c:421
+#: saves.c:419
 msgid "View Raw Patch File"
 msgstr "Afficher le fichier de correctif brut"
 
-#: saves.c:576
+#: saves.c:574
 msgid "Apply Changes & Resign Trophy Set"
 msgstr "Appliquer les modifications et Ressigner l'ensemble des Trophées"
 
-#: saves.c:579
+#: saves.c:577
 msgid "Backup Trophy Set to USB"
 msgstr "Sauvegarde du Trophée défini sur USB"
 
-#: saves.c:581
+#: saves.c:579
 msgid "Copy Trophy to USB"
 msgstr "Copier le Trophée sur USB"
 
-#: saves.c:584
+#: saves.c:582
 msgid "Export Trophy Set to Zip"
 msgstr "Exporter l'ensemble de trophées vers ZIP"
 
-#: saves.c:586 saves.c:1291 saves.c:2334
+#: saves.c:584 saves.c:1270 saves.c:2304
 msgid "Save .Zip to USB"
 msgstr "Enregistrer le fichier .Zip sur USB"
 
-#: saves.c:759 saves.c:914
+#: saves.c:757 saves.c:912
 msgid "Delete Save Game"
 msgstr "Supprimer la Sauvegarde"
 
-#: saves.c:763 saves.c:918
+#: saves.c:761 saves.c:916
 msgid "Save Game Backup"
 msgstr "Backup de la Sauvegarde"
 
-#: saves.c:772
+#: saves.c:770
 msgid "Export save game to .MCS format"
 msgstr "Exportation Sauvegarde au format .MCS"
 
-#: saves.c:773
+#: saves.c:771
 msgid "Copy .MCS Save to USB"
 msgstr "Copier Sauvegarde .MCS sur USB"
 
-#: saves.c:775
+#: saves.c:773
 msgid "Copy .MCS Save to HDD"
 msgstr "Copier le fichier .MCS sur le Disque Dur"
 
-#: saves.c:781 saves.c:936
+#: saves.c:779 saves.c:934
 msgid "Export save game to .PSV format"
 msgstr "Exporter la Sauvegarde au format .PSV"
 
-#: saves.c:782
+#: saves.c:780
 msgid "Copy .PSV Save to USB"
 msgstr "Copier la Sauvegarde .PSV sur USB"
 
-#: saves.c:784
+#: saves.c:782
 msgid "Copy .PSV Save to HDD"
 msgstr "Copier la Sauvegarde .PSV sur le Disque Dur"
 
-#: saves.c:790
+#: saves.c:788
 msgid "Export save game to .PSX format"
 msgstr "Exporter la sauvegarde au format .PSX"
 
-#: saves.c:791
+#: saves.c:789
 msgid "Copy .PSX Save to USB"
 msgstr "Copier la sauvegarde .PSX sur USB"
 
-#: saves.c:793
+#: saves.c:791
 msgid "Copy .PSX Save to HDD"
 msgstr "Copier la sauvegarde .PSX sur le Disque Dur"
 
-#: saves.c:927
+#: saves.c:925
 msgid "Export save game to .PSU format"
 msgstr "Exporter la sauvegarde au format .PSU"
 
-#: saves.c:928
+#: saves.c:926
 msgid "Export .PSU save to USB"
 msgstr "Exporter la sauvegarde .PSU vers USB"
 
-#: saves.c:930
+#: saves.c:928
 msgid "Export .PSU save to HDD"
 msgstr "Exporter la sauvegarde .PSU vers le Disque Dur"
 
-#: saves.c:937
+#: saves.c:935
 msgid "Export .PSV save to USB"
 msgstr "Exporter la sauvegarde .PSV vers USB"
 
-#: saves.c:939
+#: saves.c:937
 msgid "Export .PSV save to HDD"
 msgstr "Exporter la sauvegarde .PSV sur le disque dur"
 
-#: saves.c:1007
+#: saves.c:996
 msgid "Download to USB"
 msgstr "Télécharger vers USB"
 
-#: saves.c:1009
+#: saves.c:998
 msgid "Download to HDD"
 msgstr "Télécharger sur le Disque Dur"
 
-#: saves.c:1039
+#: saves.c:1018
 msgid "Export Licenses"
 msgstr "Exportation des Licences"
 
-#: saves.c:1045
+#: saves.c:1024
 msgid "Activate PS3 Account"
 msgstr "Activer le compte PS3"
 
-#: saves.c:1056
+#: saves.c:1035
 msgid "Import Licenses"
 msgstr "Importer des Licences"
 
-#: saves.c:1062 saves.c:1093
+#: saves.c:1041 saves.c:1072
 msgid "PS2 Classics: Import & Encrypt ISOs"
 msgstr "Classiques PS2 : Importer et Crypter les ISO"
 
-#: saves.c:1068
+#: saves.c:1047
 msgid "Import PS2 raw memory cards"
 msgstr "Importer des Cartes Mémoire brutes PS2"
 
-#: saves.c:1074
+#: saves.c:1053
 msgid "Convert PS1 saves to .PSV format"
 msgstr "Convertir les Sauvegardes PS1 au format .PSV"
 
-#: saves.c:1080
+#: saves.c:1059
 msgid "Convert PS2 saves to .PSV format"
 msgstr "Convertir les Sauvegardes PS2 au format .PSV"
 
-#: saves.c:1086
+#: saves.c:1065
 msgid "Convert/Resign .PSV saves"
 msgstr "Convertir/Ressigner les Sauvegardes .PSV"
 
-#: saves.c:1099
+#: saves.c:1078
 msgid "PS2 Classics: Export & Decrypt BIN.ENC images"
 msgstr "Classiques PS2 : Exporter et Décrypter les images BIN.ENC"
 
-#: saves.c:1105
+#: saves.c:1084
 msgid "Export /dev_flash2"
 msgstr "Exporter /dev_flash2"
 
-#: saves.c:1108
+#: saves.c:1087
 msgid "Backup /dev_flash2 to USB"
 msgstr "Sauvegarder /dev_flash2 sur USB"
 
-#: saves.c:1109
+#: saves.c:1088
 msgid "Save dev_flash2.zip to USB"
 msgstr "Enregistrer dev_flash2.zip sur USB"
 
-#: saves.c:1113
+#: saves.c:1092
 msgid "Extract Archives (RAR, Zip, 7z)"
 msgstr "Extraire les archives (RAR, Zip, 7z)"
 
-#: saves.c:1119
+#: saves.c:1098
 msgid "Network Tools (Downloader, Web Server)"
 msgstr "Outils réseau (Téléchargeur, serveur Web)"
 
-#: saves.c:1142
+#: saves.c:1121
 msgid "Encrypt: "
 msgstr "Crypter : "
 
-#: saves.c:1178
+#: saves.c:1157
 msgid "Decrypt: "
 msgstr "Décrypter : "
 
-#: saves.c:1180
+#: saves.c:1159
 msgid "Save .ISO to USB"
 msgstr "Enregistrer le fichier .ISO sur USB"
 
-#: saves.c:1182
+#: saves.c:1161
 msgid "Save .ISO to HDD"
 msgstr "Enregistrer l'ISO sur le Disque Dur"
 
-#: saves.c:1219
+#: saves.c:1198
 #, c-format
 msgid "Import '%s' to .VM2 (HDD)"
 msgstr "Importer '%s' vers .VM2 (HDD)"
 
-#: saves.c:1258
+#: saves.c:1237
 msgid "Extract:"
 msgstr "Extraire :"
 
-#: saves.c:1290
+#: saves.c:1269
 msgid "Backup All Licenses to .Zip"
 msgstr "Sauvegarder Toutes les Licences dans un fichier .Zip"
 
-#: saves.c:1294
+#: saves.c:1273
 msgid "Export All Licenses as .RAPs"
 msgstr "Exporter Toutes les Licences au format .RAP"
 
-#: saves.c:1295
+#: saves.c:1274
 msgid "Save .RAPs to USB"
 msgstr "Enregistrer les fichiers .RAP sur USB"
 
-#: saves.c:1297
+#: saves.c:1276
 msgid "Save .RAPs to HDD"
 msgstr "Enregistrer les fichiers .RAP sur le Disque Dur"
 
-#: saves.c:1305
+#: saves.c:1284
 msgid "Import All .RAPs as .RIF Licenses"
 msgstr "Importer tous les .RAP en tant que Licences .RIF"
 
-#: saves.c:1323
+#: saves.c:1302
 msgid "Save .RAP to USB"
 msgstr "Enregistrer .RAP sur USB"
 
-#: saves.c:1325
+#: saves.c:1304
 msgid "Save .RAP to HDD"
 msgstr "Enregistrer le fichier .RAP sur le Disque Dur"
 
-#: saves.c:1399
+#: saves.c:1378
 msgid "Export Save to .MCS format - USB"
 msgstr "Exporter la Sauvegarde au format .MCS - USB"
 
-#: saves.c:1404
+#: saves.c:1383
 msgid "Export Save to .PSU format - USB"
 msgstr "Exporter la Sauvegarde au format .PSU - USB"
 
-#: saves.c:1409
+#: saves.c:1388
 msgid "Resign .PSV Save"
 msgstr "Resigner la Sauvegarde .PSV"
 
-#: saves.c:1566
+#: saves.c:1545
 msgid "Activate PS3 Account (act.dat)"
 msgstr "Activer le compte PS3 (act.dat)"
 
-#: saves.c:1572
+#: saves.c:1551
 msgid "URL link Downloader (http, https, ftp, ftps)"
 msgstr "Téléchargeur de lien URL (http, https, ftp, ftps)"
 
-#: saves.c:1574
+#: saves.c:1553
 msgid "Local Web Server (full system access)"
 msgstr "Serveur Web local (accès complet au système)"
 
-#: saves.c:1888 saves.c:1936
+#: saves.c:1868 saves.c:1925
 msgid "Bulk Save Management"
 msgstr "Gestion des Sauvegardes en masse"
 
-#: saves.c:1896 saves.c:1944
+#: saves.c:1876 saves.c:1933
 msgid "Resign & Unlock all Saves"
 msgstr "Resigner et Déverrouiller toutes les Sauvegardes"
 
-#: saves.c:1899 saves.c:1947
+#: saves.c:1879 saves.c:1936
 msgid "Resign & Unlock selected Saves"
 msgstr "Resigner et Déverrouiller les Sauvegardes sélectionnées"
 
-#: saves.c:1902 saves.c:2107 saves.c:2191
+#: saves.c:1882 saves.c:2077 saves.c:2161
 msgid "Copy all Saves to USB"
 msgstr "Copier toutes les Sauvegardes sur USB"
 
-#: saves.c:1903 saves.c:1907
+#: saves.c:1883 saves.c:1887
 msgid "Copy Saves to USB"
 msgstr "Copier les Sauvegardes sur USB"
 
-#: saves.c:1906 saves.c:2104 saves.c:2188
+#: saves.c:1886 saves.c:2074 saves.c:2158
 msgid "Copy selected Saves to USB"
 msgstr "Copier les Sauvegardes Sélectionnées sur USB"
 
-#: saves.c:1910 saves.c:1956
+#: saves.c:1892
+msgid "Upload selected Saves to FTP"
+msgstr "UpLoader les Sauvegardes sélectionnées sur FTP"
+
+#: saves.c:1899 saves.c:1945
 msgid "Start local Web Server"
 msgstr "Démarrer le serveur Web local"
 
-#: saves.c:1950
+#: saves.c:1939
 msgid "Copy all Saves to HDD"
 msgstr "Copier toutes les Sauvegardes sur le disque dur"
 
-#: saves.c:1953
+#: saves.c:1942
 msgid "Copy selected Saves to HDD"
 msgstr "Copier les Sauvegardes Sélectionnées sur le disque dur"
 
-#: saves.c:2094 saves.c:2178
+#: saves.c:2064 saves.c:2148
 msgid "Memory Card Management"
 msgstr "Gestion de Carte Mémoire"
 
-#: saves.c:2103 saves.c:2187
+#: saves.c:2073 saves.c:2157
 msgid "Export selected Saves to USB"
 msgstr "Exporter les Sauvegardes sélectionnées vers USB"
 
-#: saves.c:2106 saves.c:2190
+#: saves.c:2076 saves.c:2160
 msgid "Export all Saves to USB"
 msgstr "Exporter Toutes les Sauvegardes vers USB"
 
-#: saves.c:2112 saves.c:2125 saves.c:2225 saves.c:2237
+#: saves.c:2082 saves.c:2095 saves.c:2195 saves.c:2207
 msgid "Import Saves to Virtual Card"
 msgstr "Importer les Sauvegardes sur Carte Virtuelle"
 
-#: saves.c:2201
+#: saves.c:2171
 msgid "Export Memory Card to .VM2 format"
 msgstr "Exporter Carte Mémoire au format .VM2"
 
-#: saves.c:2203
+#: saves.c:2173
 msgid "Save .VM2 Memory Card to USB"
 msgstr "Enregistrer Carte Mémoire .VM2 sur USB"
 
-#: saves.c:2205
+#: saves.c:2175
 msgid "Save .VM2 Memory Card to HDD"
 msgstr "Enregistrer Carte Mémoire .VM2 sur le disque dur"
 
-#: saves.c:2211
+#: saves.c:2181
 msgid "Export Memory Card to .VMC format (No ECC)"
 msgstr "Exporter la Carte Mémoire au format .VMC (sans ECC)"
 
-#: saves.c:2213
+#: saves.c:2183
 msgid "Save .VMC Memory Card to USB"
 msgstr "Enregistrer la carte mémoire .VMC sur USB"
 
-#: saves.c:2218
+#: saves.c:2188
 msgid "Import a .VM2 file to Memory Card"
 msgstr "Importer un fichier .VM2 sur la Carte Mémoire"
 
-#: saves.c:2319
+#: saves.c:2289
 msgid "Export Trophies"
 msgstr "Exporter les Trophées"
 
-#: saves.c:2327
+#: saves.c:2297
 msgid "Backup selected Trophies to USB"
 msgstr "Sauvegarder les Trophées sélectionnés sur USB"
 
-#: saves.c:2328 saves.c:2331
+#: saves.c:2298 saves.c:2301
 msgid "Save Trophies to USB"
 msgstr "Enregistrer les Trophées sur une clé USB"
 
-#: saves.c:2330
+#: saves.c:2300
 msgid "Backup All Trophies to USB"
 msgstr "Sauvegarder tous les Trophées sur USB"
 
-#: saves.c:2333
+#: saves.c:2303
 msgid "Export All Trophies to .Zip"
 msgstr "Exporter tous les Trophées vers .Zip"
 
-#: saves.c:2344
+#: saves.c:2314
 msgid "Import Trophies"
 msgstr "Importer les Trophées"
 
 #: settings.c:13
-msgid "Online DB"
-msgstr "Base de Donnée en ligne"
-
-#: settings.c:13
 msgid "FTP Server"
 msgstr "Serveur FTP"
+
+#: settings.c:13
+msgid "Online DB"
+msgstr "Base de Donnée en ligne"
 
 #: settings.c:14
 msgid "Disabled"
@@ -951,68 +1012,12 @@ msgid "by Type"
 msgstr "par Type"
 
 #: settings.c:15
-msgid "Fake USB"
-msgstr "Fausse clé USB"
-
-#: settings.c:15
 msgid "Auto-detect"
 msgstr "Détection automatique"
 
-#: settings.c:128
-msgid "Enter the Online Database URL"
-msgstr "Entrez l'URL de la Base de Données en Ligne"
-
-#: settings.c:134
-msgid "Online database URL changed to:"
-msgstr "L'URL de la Base de Données en ligne a été modifiée en :"
-
-#: settings.c:143
-msgid "Enter the FTP server URL"
-msgstr "Entrez l'URL du serveur FTP"
-
-#: settings.c:177
-msgid "FTP server URL changed to:"
-msgstr "L'URL du serveur FTP a été modifiée en :"
-
-#: settings.c:180
-msgid "Error! Couldn't connect to FTP server"
-msgstr "Erreur ! Impossible de se Connecter au Serveur FTP"
-
-#: settings.c:180
-msgid "Check debug logs for more information"
-msgstr "Consultez les journaux de débogage pour plus d'informations"
-
-#: settings.c:188
-msgid "Local cache folder cleaned:"
-msgstr "Dossier de Cache Local nettoyé :"
-
-#: settings.c:194
-msgid "Successfully installed local application data"
-msgstr "Données Application Locales installées avec succès"
-
-#: settings.c:271
-msgid "New version available! Download update?"
-msgstr "Nouvelle version disponible ! Télécharger la mise à jour ?"
-
-#: settings.c:274
-msgid "Update downloaded to:"
-msgstr "Mise à jour Téléchargée sur :"
-
-#: settings.c:276
-msgid "Download error!"
-msgstr "Erreur de téléchargement !"
-
-#: settings.c:298
-msgid "Debug Logging Disabled"
-msgstr "Journalisation de débogage Désactivée"
-
-#: settings.c:303
-msgid "Debug Logging Enabled!"
-msgstr "Journalisation de débogage Activée !"
-
-#: settings.c:312
-msgid "User IDs Updated!"
-msgstr "Identifiants Utilisateur mis à jour !"
+#: settings.c:15
+msgid "Fake USB"
+msgstr "Fausse clé USB"
 
 #: settings.c:29
 msgid "Background Music"
@@ -1038,26 +1043,89 @@ msgstr "Vérification de la mise à jour de la version"
 msgid "Set User FTP Server URL"
 msgstr "Définir l'URL du serveur FTP utilisateur"
 
-#: settings.c:65
+#: settings.c:66
 msgid "Online Saves Server"
 msgstr "Serveur de Sauvegardes en ligne"
 
-#: settings.c:71
+#: settings.c:72
 msgid "Update Application Data"
 msgstr "Mettre à jour les Données de l'application"
 
-#: settings.c:77
+#: settings.c:78
 msgid "Change Online Database URL"
 msgstr "Modifier la Base de Données en ligne URL"
 
-#: settings.c:83
+#: settings.c:84
 msgid "Clear Local Cache"
 msgstr "Vider le Cache Local"
 
-#: settings.c:89
+#: settings.c:91
 msgid "Update Account & Console IDs"
 msgstr "Mettre à jour Identifiants de compte et Console"
 
-#: settings.c:95
+#: settings.c:97
 msgid "Enable Debug Log"
 msgstr "Activer le Journal de Débogage"
+
+#: settings.c:130
+msgid "Enter the Online Database URL"
+msgstr "Entrez l'URL de la Base de Données en Ligne"
+
+#: settings.c:136
+msgid "Online database URL changed to:"
+msgstr "L'URL de la Base de Données en ligne a été modifiée en :"
+
+#: settings.c:145
+msgid "Enter the FTP server URL"
+msgstr "Entrez l'URL du serveur FTP"
+
+#: settings.c:179
+msgid "FTP server URL changed to:"
+msgstr "L'URL du serveur FTP a été modifiée en :"
+
+#: settings.c:182
+msgid "Check debug logs for more information"
+msgstr "Consultez les journaux de débogage pour plus d'informations"
+
+#: settings.c:182
+msgid "Error! Couldn't connect to FTP server"
+msgstr "Erreur ! Impossible de se Connecter au Serveur FTP"
+
+#: settings.c:190
+msgid "Local cache folder cleaned:"
+msgstr "Dossier de Cache Local nettoyé :"
+
+#: settings.c:196
+msgid "Successfully installed local application data"
+msgstr "Données Application Locales installées avec succès"
+
+#: settings.c:269
+msgid "New version available! Download update?"
+msgstr "Nouvelle version disponible ! Télécharger la mise à jour ?"
+
+#: settings.c:272
+msgid "Update downloaded to:"
+msgstr "Mise à jour Téléchargée sur :"
+
+#: settings.c:274
+msgid "Download error!"
+msgstr "Erreur de téléchargement !"
+
+#: settings.c:296
+msgid "Debug Logging Disabled"
+msgstr "Journalisation de débogage Désactivée"
+
+#: settings.c:301
+msgid "Debug Logging Enabled!"
+msgstr "Journalisation de débogage Activée !"
+
+#: settings.c:310
+msgid "User IDs Updated!"
+msgstr "Identifiants Utilisateur mis à jour !"
+
+#: zip_util.c:214 zip_util.c:297 zip_util.c:337
+msgid "Extracting files..."
+msgstr ""
+
+#~ msgid "Error! Couldn't zip save:"
+#~ msgstr "Erreur ! Impossible de Zipper la Sauvegarde :"
