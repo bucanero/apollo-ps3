@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Apollo Save Tool\n"
-"POT-Creation-Date: 2025-10-20 19:22-0300\n"
+"POT-Creation-Date: 2026-05-02 13:49+0000\n"
 "PO-Revision-Date: 2025-10-20 19:22-0300\n"
 "Last-Translator: chat.deepseek.com\n"
 "Language-Team: github.com/bucanero\n"
@@ -14,9 +14,9 @@ msgstr ""
 "X-Poedit-KeywordsList: _;_i18n\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: exec_cmd.c:51 exec_cmd.c:128 exec_cmd.c:189 exec_cmd.c:212 exec_cmd.c:560
-#: exec_cmd.c:597 exec_cmd.c:630 exec_cmd.c:818 exec_cmd.c:844 exec_cmd.c:930
-#: exec_cmd.c:999 exec_cmd.c:1023 exec_cmd.c:1058
+#: exec_cmd.c:51 exec_cmd.c:128 exec_cmd.c:189 exec_cmd.c:212 exec_cmd.c:566
+#: exec_cmd.c:603 exec_cmd.c:636 exec_cmd.c:824 exec_cmd.c:850 exec_cmd.c:936
+#: exec_cmd.c:1005 exec_cmd.c:1029 exec_cmd.c:1064
 msgid "Error! Export folder is not available:"
 msgstr "오류! 내보내기 폴더를 사용할 수 없습니다:"
 
@@ -29,12 +29,12 @@ msgid "Error extracting save game!"
 msgstr "세이브 게임 추출 중 오류 발생!"
 
 #: exec_cmd.c:82
-msgid "Save game already exists in:"
-msgstr "세이브 게임이 이미 존재합니다:"
-
-#: exec_cmd.c:82
 msgid "Overwrite?"
 msgstr "덮어쓰시겠습니까?"
+
+#: exec_cmd.c:82
+msgid "Save game already exists in:"
+msgstr "세이브 게임이 이미 존재합니다:"
 
 #: exec_cmd.c:87
 msgid "Error creating save game folder!"
@@ -52,11 +52,11 @@ msgstr "오류! 세이브 게임을 내보낼 수 없습니다:"
 msgid "Zip file successfully saved to:"
 msgstr "Zip 파일이 성공적으로 저장되었습니다:"
 
-#: exec_cmd.c:197 exec_cmd.c:1084 exec_cmd.c:1120
+#: exec_cmd.c:197 exec_cmd.c:1090 exec_cmd.c:1126
 msgid "Files successfully copied to:"
 msgstr "파일이 성공적으로 복사되었습니다:"
 
-#: exec_cmd.c:216 exec_cmd.c:496
+#: exec_cmd.c:216 exec_cmd.c:502
 msgid "Copying all saves..."
 msgstr "모든 세이브 복사 중..."
 
@@ -84,333 +84,333 @@ msgstr "세이브 게임 %s이(가) HDD에 복사됨"
 msgid "Error! Failed to copy Save-game %s"
 msgstr "오류! 세이브 게임 %s 복사 실패"
 
-#: exec_cmd.c:432
-msgid "Web Server listening on:"
-msgstr "웹 서버 수신 중:"
-
-#: exec_cmd.c:432
+#: exec_cmd.c:433
 msgid "Press OK to stop the Server."
 msgstr "서버를 중지하려면 OK를 누르세요."
 
-#: exec_cmd.c:435
+#: exec_cmd.c:433
+msgid "Web Server listening on:"
+msgstr "웹 서버 수신 중:"
+
+#: exec_cmd.c:436
 msgid "Error starting Web Server!"
 msgstr "웹 서버 시작 오류!"
 
-#: exec_cmd.c:509
+#: exec_cmd.c:515
 msgid "Saves copied to HDD"
 msgstr "세이브가 HDD에 복사됨"
 
-#: exec_cmd.c:545
+#: exec_cmd.c:551
 msgid "All files extracted to:"
 msgstr "모든 파일이 추출되었습니다:"
 
-#: exec_cmd.c:547
+#: exec_cmd.c:553
 #, c-format
 msgid "Error: %s couldn't be extracted"
 msgstr "오류: %s을(를) 추출할 수 없습니다"
 
-#: exec_cmd.c:586
+#: exec_cmd.c:592
 msgid "Licenses successfully saved to:"
 msgstr "라이선스가 성공적으로 저장되었습니다:"
 
-#: exec_cmd.c:616
+#: exec_cmd.c:622
 msgid "Files successfully saved to:"
 msgstr "파일이 성공적으로 저장되었습니다:"
 
-#: exec_cmd.c:654
+#: exec_cmd.c:660
 msgid "Error! Failed to export Trophies to Zip"
 msgstr "오류! 트로피를 Zip으로 내보내기 실패"
 
-#: exec_cmd.c:658
+#: exec_cmd.c:664
 msgid "Trophies successfully saved to:"
 msgstr "트로피가 성공적으로 저장되었습니다:"
 
-#: exec_cmd.c:669
+#: exec_cmd.c:675
 msgid "Error! Trophy folder is not available:"
 msgstr "오류! 트로피 폴더를 사용할 수 없습니다:"
 
-#: exec_cmd.c:682
+#: exec_cmd.c:688
 msgid "Trophy successfully copied to:"
 msgstr "트로피가 성공적으로 복사되었습니다:"
 
-#: exec_cmd.c:695
+#: exec_cmd.c:701
 msgid "Exporting all VMC saves..."
 msgstr "모든 VMC 세이브 내보내는 중..."
 
-#: exec_cmd.c:715
+#: exec_cmd.c:721
 msgid "Saves exported to:"
 msgstr "세이브가 내보내졌습니다:"
 
-#: exec_cmd.c:735 exec_cmd.c:1838
+#: exec_cmd.c:741 exec_cmd.c:1884
 msgid "Save successfully exported to:"
 msgstr "세이브가 성공적으로 내보내졌습니다:"
 
-#: exec_cmd.c:737 exec_cmd.c:1840
+#: exec_cmd.c:743 exec_cmd.c:1886
 msgid "Error exporting save:"
 msgstr "세이브 내보내기 오류:"
 
-#: exec_cmd.c:746
+#: exec_cmd.c:752
 msgid "File successfully resigned!"
 msgstr "파일이 성공적으로 재서명되었습니다!"
 
-#: exec_cmd.c:758
+#: exec_cmd.c:764
 msgid "Error! The account already has an act.dat"
 msgstr "오류! 계정에 이미 act.dat가 있습니다"
 
-#: exec_cmd.c:764
+#: exec_cmd.c:770
 msgid "Error! Folder is not available:"
 msgstr "오류! 폴더를 사용할 수 없습니다:"
 
-#: exec_cmd.c:770
+#: exec_cmd.c:776
 msgid "Enter the Account ID"
 msgstr "계정 ID를 입력하세요"
 
-#: exec_cmd.c:773
+#: exec_cmd.c:779
 msgid "Error! Account ID is not valid"
 msgstr "오류! 계정 ID가 유효하지 않습니다"
 
-#: exec_cmd.c:781
+#: exec_cmd.c:787
 msgid "Error! Fake Account could not be assigned to xRegistry.sys"
 msgstr "오류! 가짜 계정을 xRegistry.sys에 할당할 수 없습니다"
 
-#: exec_cmd.c:790
+#: exec_cmd.c:796
 msgid "Error! Account could not be activated!"
 msgstr "오류! 계정을 활성화할 수 없습니다!"
 
-#: exec_cmd.c:807
-msgid "Account successfully activated!"
-msgstr "계정이 성공적으로 활성화되었습니다!"
-
-#: exec_cmd.c:807
+#: exec_cmd.c:813
 msgid "A system reboot is required"
 msgstr "시스템 재부팅이 필요합니다"
 
-#: exec_cmd.c:831 exec_cmd.c:883 exec_cmd.c:918 exec_cmd.c:942 exec_cmd.c:961
-#: exec_cmd.c:978 exec_cmd.c:1008
+#: exec_cmd.c:813
+msgid "Account successfully activated!"
+msgstr "계정이 성공적으로 활성화되었습니다!"
+
+#: exec_cmd.c:837 exec_cmd.c:889 exec_cmd.c:924 exec_cmd.c:948 exec_cmd.c:967
+#: exec_cmd.c:984 exec_cmd.c:1014
 msgid "File successfully saved to:"
 msgstr "파일이 성공적으로 저장되었습니다:"
 
-#: exec_cmd.c:833
+#: exec_cmd.c:839
 #, c-format
 msgid "Error! Failed to export .%s file"
 msgstr "오류! .%s 파일 내보내기 실패"
 
-#: exec_cmd.c:885
+#: exec_cmd.c:891
 msgid "Error! Failed to convert save file"
 msgstr "오류! 세이브 파일 변환 실패"
 
-#: exec_cmd.c:900
+#: exec_cmd.c:906
 msgid "File successfully imported to:"
 msgstr "파일이 성공적으로 가져와졌습니다:"
 
-#: exec_cmd.c:902
+#: exec_cmd.c:908
 msgid "Error! Failed to import PS2 memory card"
 msgstr "오류! PS2 메모리 카드 가져오기 실패"
 
-#: exec_cmd.c:944
+#: exec_cmd.c:950
 msgid "Error! Failed to export PS2 memory card"
 msgstr "오류! PS2 메모리 카드 내보내기 실패"
 
-#: exec_cmd.c:957
+#: exec_cmd.c:963
 msgid "Encrypting PS2 CONFIG..."
 msgstr "PS2 CONFIG 암호화 중..."
 
-#: exec_cmd.c:974
+#: exec_cmd.c:980
 msgid "Encrypting PS2 ISO..."
 msgstr "PS2 ISO 암호화 중..."
 
-#: exec_cmd.c:1003
+#: exec_cmd.c:1009
 msgid "Decrypting PS2 BIN.ENC..."
 msgstr "PS2 BIN.ENC 복호화 중..."
 
-#: exec_cmd.c:1027
+#: exec_cmd.c:1033
 msgid "Copying trophies..."
 msgstr "트로피 복사 중..."
 
-#: exec_cmd.c:1040
+#: exec_cmd.c:1046
 msgid "Trophy Sets copied to:"
 msgstr "트로피 세트가 복사되었습니다:"
 
-#: exec_cmd.c:1095
+#: exec_cmd.c:1101
 msgid "Error! Import folder is not available:"
 msgstr "오류! 가져오기 폴더를 사용할 수 없습니다:"
 
-#: exec_cmd.c:1304 exec_cmd.c:1442
+#: exec_cmd.c:1310 exec_cmd.c:1448
 msgid "Error! Account changes couldn't be applied"
 msgstr "오류! 계정 변경 사항을 적용할 수 없습니다"
 
-#: exec_cmd.c:1308
+#: exec_cmd.c:1314
 msgid "Error! Cheat codes couldn't be applied"
 msgstr "오류! 치트 코드를 적용할 수 없습니다"
 
-#: exec_cmd.c:1313
+#: exec_cmd.c:1319
 #, c-format
 msgid "Error! Save %s couldn't be resigned"
 msgstr "오류! 세이브 %s을(를) 재서명할 수 없습니다"
 
-#: exec_cmd.c:1315
+#: exec_cmd.c:1321
 #, c-format
 msgid "Save %s successfully modified!"
 msgstr "세이브 %s이(가) 성공적으로 수정되었습니다!"
 
-#: exec_cmd.c:1340
+#: exec_cmd.c:1346
 msgid "Resigning all saves..."
 msgstr "모든 세이브 재서명 중..."
 
-#: exec_cmd.c:1368
+#: exec_cmd.c:1374
 #, c-format
 msgid "Error: %d Saves couldn't be resigned"
 msgstr "오류: %d개의 세이브를 재서명할 수 없습니다"
 
-#: exec_cmd.c:1370
+#: exec_cmd.c:1376
 msgid "All saves successfully resigned!"
 msgstr "모든 세이브가 성공적으로 재서명되었습니다!"
 
-#: exec_cmd.c:1446
+#: exec_cmd.c:1452
 msgid "Error! Trophy changes couldn't be applied"
 msgstr "오류! 트로피 변경 사항을 적용할 수 없습니다"
 
-#: exec_cmd.c:1459
+#: exec_cmd.c:1465
 #, c-format
 msgid "Error! Trophy %s couldn't be resigned"
 msgstr "오류! 트로피 %s을(를) 재서명할 수 없습니다"
 
-#: exec_cmd.c:1461
+#: exec_cmd.c:1467
 #, c-format
 msgid "Trophy %s successfully modified!"
 msgstr "트로피 %s이(가) 성공적으로 수정되었습니다!"
 
-#: exec_cmd.c:1465
+#: exec_cmd.c:1471
 msgid "Schedule Database rebuild on next boot?"
 msgstr "다음 부팅 시 데이터베이스 재구축을 예약하시겠습니까?"
 
-#: exec_cmd.c:1492 exec_cmd.c:1522
-msgid "Save-game is not encrypted:"
-msgstr "세이브 게임이 암호화되지 않았습니다:"
-
-#: exec_cmd.c:1492
+#: exec_cmd.c:1498
 msgid "File was not decrypted:"
 msgstr "파일이 복호화되지 않았습니다:"
 
-#: exec_cmd.c:1501
+#: exec_cmd.c:1498 exec_cmd.c:1528
+msgid "Save-game is not encrypted:"
+msgstr "세이브 게임이 암호화되지 않았습니다:"
+
+#: exec_cmd.c:1507
 msgid "File successfully decrypted to:"
 msgstr "파일이 성공적으로 복호화되었습니다:"
 
-#: exec_cmd.c:1503
+#: exec_cmd.c:1509
 #, c-format
 msgid "Error! File %s couldn't be decrypted"
 msgstr "오류! 파일 %s을(를) 복호화할 수 없습니다"
 
-#: exec_cmd.c:1514
+#: exec_cmd.c:1520
 msgid "Error! Can't find decrypted save-game file:"
 msgstr "오류! 복호화된 세이브 게임 파일을 찾을 수 없습니다:"
 
-#: exec_cmd.c:1522
+#: exec_cmd.c:1528
 msgid "File was not encrypted:"
 msgstr "파일이 암호화되지 않았습니다:"
 
-#: exec_cmd.c:1532
+#: exec_cmd.c:1538
 msgid "File successfully encrypted to:"
 msgstr "파일이 성공적으로 암호화되었습니다:"
 
-#: exec_cmd.c:1534
+#: exec_cmd.c:1540
 #, c-format
 msgid "Error! File %s couldn't be encrypted"
 msgstr "오류! 파일 %s을(를) 암호화할 수 없습니다"
 
-#: exec_cmd.c:1549
+#: exec_cmd.c:1555
 msgid "Download URL"
 msgstr "다운로드 URL"
 
-#: exec_cmd.c:1556
+#: exec_cmd.c:1562
 msgid "File successfully downloaded to:"
 msgstr "파일이 성공적으로 다운로드되었습니다:"
 
-#: exec_cmd.c:1558
+#: exec_cmd.c:1564
 msgid "Error! File couldn't be downloaded"
 msgstr "오류! 파일을 다운로드할 수 없습니다"
 
-#: exec_cmd.c:1565
+#: exec_cmd.c:1571
 #, c-format
 msgid "Do you want to delete %s?"
 msgstr "%s을(를) 삭제하시겠습니까?"
 
-#: exec_cmd.c:1582
+#: exec_cmd.c:1588
 msgid "Save successfully deleted:"
 msgstr "세이브가 성공적으로 삭제되었습니다:"
 
-#: exec_cmd.c:1584
+#: exec_cmd.c:1590
 msgid "Error! Couldn't delete save:"
 msgstr "오류! 세이브를 삭제할 수 없습니다:"
 
-#: exec_cmd.c:1679
+#: exec_cmd.c:1784
 #, c-format
 msgid "Do you want to upload %s?"
 msgstr "%s을(를) 업로드하시겠습니까?"
 
-#: exec_cmd.c:1717
-msgid "Error! Couldn't zip save:"
-msgstr "오류! 세이브를 압축할 수 없습니다:"
-
-#: exec_cmd.c:1773
+#: exec_cmd.c:1793
 msgid "Save successfully uploaded:"
 msgstr "세이브가 성공적으로 업로드되었습니다:"
 
-#: exec_cmd.c:1775
+#: exec_cmd.c:1795
 msgid "Error! Couldn't upload save:"
 msgstr "오류! 세이브를 업로드할 수 없습니다:"
 
-#: exec_cmd.c:1788
+#: exec_cmd.c:1805
+msgid "Do you want to upload the selected saves to FTP?"
+msgstr "선택한 세이브를 FTP에 업로드하시겠습니까?"
+
+#: exec_cmd.c:1821
+msgid "Saves uploaded to FTP"
+msgstr "세이브가 FTP에 업로드됨"
+
+#: exec_cmd.c:1834
 msgid "Memory card successfully imported to:"
 msgstr "메모리 카드가 성공적으로 가져와졌습니다:"
 
-#: exec_cmd.c:1790
+#: exec_cmd.c:1836
 msgid "Error importing memory card:"
 msgstr "메모리 카드 가져오기 오류:"
 
-#: exec_cmd.c:1802
+#: exec_cmd.c:1848
 msgid "Memory card successfully exported to:"
 msgstr "메모리 카드가 성공적으로 내보내졌습니다:"
 
-#: exec_cmd.c:1804
+#: exec_cmd.c:1850
 msgid "Error exporting memory card:"
 msgstr "메모리 카드 내보내기 오류:"
 
-#: exec_cmd.c:1879
+#: exec_cmd.c:1925
 msgid "Successfully imported to VMC:"
 msgstr "VMC로 성공적으로 가져왔습니다:"
 
-#: exec_cmd.c:1881
+#: exec_cmd.c:1927
 msgid "Error importing save:"
 msgstr "세이브 가져오기 오류:"
 
-#: exec_cmd.c:2040
+#: exec_cmd.c:2092
 msgid "Memory card successfully resigned:"
 msgstr "메모리 카드가 성공적으로 재서명되었습니다:"
 
-#: exec_cmd.c:2042
+#: exec_cmd.c:2094
 msgid "Error resigning memory card:"
 msgstr "메모리 카드 재서명 오류:"
 
-#: exec_cmd.c:2064
+#: exec_cmd.c:2116
 msgid "Save successfully imported:"
 msgstr "세이브가 성공적으로 가져와졌습니다:"
 
-#: exec_cmd.c:2066
+#: exec_cmd.c:2118
 msgid "Error! Couldn't import save:"
 msgstr "오류! 세이브를 가져올 수 없습니다:"
 
-#: http.c:233
+#: http.c:154
 msgid "Downloading..."
 msgstr "다운로드 중..."
 
-#: http.c:325
+#: http.c:279
 msgid "Uploading..."
 msgstr "업로드 중..."
-
-#: main.c:194 main.c:198 main.c:203 main.c:213
-msgid "Select"
-msgstr "선택"
 
 #: main.c:194 main.c:198 main.c:203 main.c:209 main.c:213
 msgid "Back"
@@ -424,21 +424,29 @@ msgstr "세부정보"
 msgid "Refresh"
 msgstr "새로고침"
 
+#: main.c:194 main.c:198 main.c:203 main.c:213
+msgid "Select"
+msgstr "선택"
+
 #: main.c:213
 msgid "View Code"
 msgstr "코드 보기"
 
 #: main.c:217
-msgid "Value Up"
-msgstr "값 증가"
+msgid "Exit"
+msgstr "종료"
+
+#: main.c:217
+msgid "Search"
+msgstr "검색"
 
 #: main.c:217
 msgid "Value Down"
 msgstr "값 감소"
 
 #: main.c:217
-msgid "Exit"
-msgstr "종료"
+msgid "Value Up"
+msgstr "값 증가"
 
 #: main.c:559
 msgid "HDD Saves"
@@ -448,7 +456,7 @@ msgstr "HDD 세이브"
 msgid "USB Saves"
 msgstr "USB 세이브"
 
-#: main.c:561 saves.c:590
+#: main.c:561 saves.c:588
 msgid "Trophies"
 msgstr "트로피"
 
@@ -516,463 +524,475 @@ msgstr "헥스 에디터"
 msgid "No save-games found"
 msgstr "세이브 게임을 찾을 수 없음"
 
-#: menu_main.c:439
+#: menu_main.c:462 menu_main.c:873
 msgid "Patch view"
 msgstr "패치 보기"
 
-#: menu_main.c:554
+#: menu_main.c:578
 msgid "No data found in folder:"
 msgstr "폴더에서 데이터를 찾을 수 없음:"
 
-#: menu_main.c:609
+#: menu_main.c:633
 msgid "Exit to XMB?"
 msgstr "XMB로 나가시겠습니까?"
 
-#: menu_main.c:760
+#: menu_main.c:784
 #, c-format
 msgid "Save changes to %s?"
 msgstr "%s에 변경 사항을 저장하시겠습니까?"
 
-#: menu_main.c:861
+#: menu_main.c:817
+msgid "Search bytes (hex)"
+msgstr "바이트 검색 (16진수)"
+
+#: menu_main.c:833
+msgid "Value not found: 0x"
+msgstr "값을 찾을 수 없음: 0x"
+
+#: menu_main.c:911
 msgid "Failed to load:"
 msgstr "로드 실패:"
 
-#: menu_options.c:69 menu_options.c:89
+#: menu_options.c:75 menu_options.c:95
 msgid "Settings"
 msgstr "설정"
 
-#: saves.c:218
+#: saves.c:216
 msgid "Apply Changes & Resign"
 msgstr "변경 사항 적용 및 재서명"
 
-#: saves.c:221 saves.c:351 saves.c:756 saves.c:911
+#: saves.c:219 saves.c:349 saves.c:754 saves.c:909
 msgid "View Save Details"
 msgstr "세이브 세부정보 보기"
 
-#: saves.c:225
+#: saves.c:223
 msgid "File Backup"
 msgstr "파일 백업"
 
-#: saves.c:230
+#: saves.c:228
 msgid "Copy save game to USB"
 msgstr "세이브 게임을 USB에 복사"
 
-#: saves.c:231
+#: saves.c:229
 msgid "Copy Save to USB"
 msgstr "세이브를 USB에 복사"
 
-#: saves.c:236 saves.c:768 saves.c:923
+#: saves.c:234 saves.c:766 saves.c:921
 msgid "Upload save backup to FTP"
 msgstr "세이브 백업을 FTP에 업로드"
 
-#: saves.c:242
+#: saves.c:240
 msgid "Copy save game to HDD"
 msgstr "세이브 게임을 HDD에 복사"
 
-#: saves.c:245
+#: saves.c:243
 msgid "Delete save game"
 msgstr "세이브 게임 삭제"
 
-#: saves.c:249
+#: saves.c:247
 msgid "Export save game to Zip"
 msgstr "세이브 게임을 Zip으로 내보내기"
 
-#: saves.c:250
+#: saves.c:248
 msgid "Export Zip to USB"
 msgstr "Zip을 USB로 내보내기"
 
-#: saves.c:252
+#: saves.c:250
 msgid "Export Zip to HDD"
 msgstr "Zip을 HDD로 내보내기"
 
-#: saves.c:257
+#: saves.c:255
 msgid "Decrypt save game files"
 msgstr "세이브 게임 파일 복호화"
 
-#: saves.c:262
+#: saves.c:260
 msgid "Import decrypted save files"
 msgstr "복호화된 세이브 파일 가져오기"
 
-#: saves.c:267
+#: saves.c:265
 msgid "Hex Edit save game files"
 msgstr "세이브 게임 파일 헥스 편집"
 
-#: saves.c:311
+#: saves.c:309
 msgid "SFO Patches"
 msgstr "SFO 패치"
 
-#: saves.c:314
+#: saves.c:312
 msgid "Change Account ID"
 msgstr "계정 ID 변경"
 
-#: saves.c:331
+#: saves.c:329
 msgid "Remove Console ID"
 msgstr "콘솔 ID 제거"
 
-#: saves.c:336
+#: saves.c:334
 msgid "Remove copy protection"
 msgstr "복사 방지 제거"
 
-#: saves.c:340
+#: saves.c:338
 msgid "Change Region Title ID"
 msgstr "지역 타이틀 ID 변경"
 
-#: saves.c:362 saves.c:2196
+#: saves.c:360 saves.c:2166
 msgid "Virtual Memory Card"
 msgstr "가상 메모리 카드"
 
-#: saves.c:367
+#: saves.c:365
 msgid "Resign Memory Card"
 msgstr "메모리 카드 재서명"
 
-#: saves.c:371
+#: saves.c:369
 msgid "Export Memory Card to .VM1"
 msgstr "메모리 카드를 .VM1으로 내보내기"
 
-#: saves.c:375
+#: saves.c:373
 msgid "Import .VM1 file to"
 msgstr ".VM1 파일 가져오기 대상"
 
-#: saves.c:418
+#: saves.c:416
 msgid "Cheats"
 msgstr "치트"
 
-#: saves.c:421
+#: saves.c:419
 msgid "View Raw Patch File"
 msgstr "원시 패치 파일 보기"
 
-#: saves.c:576
+#: saves.c:574
 msgid "Apply Changes & Resign Trophy Set"
 msgstr "변경 사항 적용 및 트로피 세트 재서명"
 
-#: saves.c:579
+#: saves.c:577
 msgid "Backup Trophy Set to USB"
 msgstr "트로피 세트를 USB에 백업"
 
-#: saves.c:581
+#: saves.c:579
 msgid "Copy Trophy to USB"
 msgstr "트로피를 USB에 복사"
 
-#: saves.c:584
+#: saves.c:582
 msgid "Export Trophy Set to Zip"
 msgstr "트로피 세트를 Zip으로 내보내기"
 
-#: saves.c:586 saves.c:1291 saves.c:2334
+#: saves.c:584 saves.c:1270 saves.c:2304
 msgid "Save .Zip to USB"
 msgstr ".Zip을 USB에 저장"
 
-#: saves.c:759 saves.c:914
+#: saves.c:757 saves.c:912
 msgid "Delete Save Game"
 msgstr "세이브 게임 삭제"
 
-#: saves.c:763 saves.c:918
+#: saves.c:761 saves.c:916
 msgid "Save Game Backup"
 msgstr "세이브 게임 백업"
 
-#: saves.c:772
+#: saves.c:770
 msgid "Export save game to .MCS format"
 msgstr "세이브 게임을 .MCS 형식으로 내보내기"
 
-#: saves.c:773
+#: saves.c:771
 msgid "Copy .MCS Save to USB"
 msgstr ".MCS 세이브를 USB에 복사"
 
-#: saves.c:775
+#: saves.c:773
 msgid "Copy .MCS Save to HDD"
 msgstr ".MCS 세이브를 HDD에 복사"
 
-#: saves.c:781 saves.c:936
+#: saves.c:779 saves.c:934
 msgid "Export save game to .PSV format"
 msgstr "세이브 게임을 .PSV 형식으로 내보내기"
 
-#: saves.c:782
+#: saves.c:780
 msgid "Copy .PSV Save to USB"
 msgstr ".PSV 세이브를 USB에 복사"
 
-#: saves.c:784
+#: saves.c:782
 msgid "Copy .PSV Save to HDD"
 msgstr ".PSV 세이브를 HDD에 복사"
 
-#: saves.c:790
+#: saves.c:788
 msgid "Export save game to .PSX format"
 msgstr "세이브 게임을 .PSX 형식으로 내보내기"
 
-#: saves.c:791
+#: saves.c:789
 msgid "Copy .PSX Save to USB"
 msgstr ".PSX 세이브를 USB에 복사"
 
-#: saves.c:793
+#: saves.c:791
 msgid "Copy .PSX Save to HDD"
 msgstr ".PSX 세이브를 HDD에 복사"
 
-#: saves.c:927
+#: saves.c:925
 msgid "Export save game to .PSU format"
 msgstr "세이브 게임을 .PSU 형식으로 내보내기"
 
-#: saves.c:928
+#: saves.c:926
 msgid "Export .PSU save to USB"
 msgstr ".PSU 세이브를 USB로 내보내기"
 
-#: saves.c:930
+#: saves.c:928
 msgid "Export .PSU save to HDD"
 msgstr ".PSU 세이브를 HDD로 내보내기"
 
-#: saves.c:937
+#: saves.c:935
 msgid "Export .PSV save to USB"
 msgstr ".PSV 세이브를 USB로 내보내기"
 
-#: saves.c:939
+#: saves.c:937
 msgid "Export .PSV save to HDD"
 msgstr ".PSV 세이브를 HDD로 내보내기"
 
-#: saves.c:1007
+#: saves.c:996
 msgid "Download to USB"
 msgstr "USB에 다운로드"
 
-#: saves.c:1009
+#: saves.c:998
 msgid "Download to HDD"
 msgstr "HDD에 다운로드"
 
-#: saves.c:1039
+#: saves.c:1018
 msgid "Export Licenses"
 msgstr "라이선스 내보내기"
 
-#: saves.c:1045
+#: saves.c:1024
 msgid "Activate PS3 Account"
 msgstr "PS3 계정 활성화"
 
-#: saves.c:1056
+#: saves.c:1035
 msgid "Import Licenses"
 msgstr "라이선스 가져오기"
 
-#: saves.c:1062 saves.c:1093
+#: saves.c:1041 saves.c:1072
 msgid "PS2 Classics: Import & Encrypt ISOs"
 msgstr "PS2 Classics: ISO 가져오기 및 암호화"
 
-#: saves.c:1068
+#: saves.c:1047
 msgid "Import PS2 raw memory cards"
 msgstr "PS2 원시 메모리 카드 가져오기"
 
-#: saves.c:1074
+#: saves.c:1053
 msgid "Convert PS1 saves to .PSV format"
 msgstr "PS1 세이브를 .PSV 형식으로 변환"
 
-#: saves.c:1080
+#: saves.c:1059
 msgid "Convert PS2 saves to .PSV format"
 msgstr "PS2 세이브를 .PSV 형식으로 변환"
 
-#: saves.c:1086
+#: saves.c:1065
 msgid "Convert/Resign .PSV saves"
 msgstr ".PSV 세이브 변환/재서명"
 
-#: saves.c:1099
+#: saves.c:1078
 msgid "PS2 Classics: Export & Decrypt BIN.ENC images"
 msgstr "PS2 Classics: BIN.ENC 이미지 내보내기 및 복호화"
 
-#: saves.c:1105
+#: saves.c:1084
 msgid "Export /dev_flash2"
 msgstr "/dev_flash2 내보내기"
 
-#: saves.c:1108
+#: saves.c:1087
 msgid "Backup /dev_flash2 to USB"
 msgstr "/dev_flash2를 USB에 백업"
 
-#: saves.c:1109
+#: saves.c:1088
 msgid "Save dev_flash2.zip to USB"
 msgstr "dev_flash2.zip을 USB에 저장"
 
-#: saves.c:1113
+#: saves.c:1092
 msgid "Extract Archives (RAR, Zip, 7z)"
 msgstr "아카이브 추출 (RAR, Zip, 7z)"
 
-#: saves.c:1119
+#: saves.c:1098
 msgid "Network Tools (Downloader, Web Server)"
 msgstr "네트워크 도구 (다운로더, 웹 서버)"
 
-#: saves.c:1142
+#: saves.c:1121
 msgid "Encrypt: "
 msgstr "암호화: "
 
-#: saves.c:1178
+#: saves.c:1157
 msgid "Decrypt: "
 msgstr "복호화: "
 
-#: saves.c:1180
+#: saves.c:1159
 msgid "Save .ISO to USB"
 msgstr ".ISO를 USB에 저장"
 
-#: saves.c:1182
+#: saves.c:1161
 msgid "Save .ISO to HDD"
 msgstr ".ISO를 HDD에 저장"
 
-#: saves.c:1219
+#: saves.c:1198
 #, c-format
 msgid "Import '%s' to .VM2 (HDD)"
 msgstr "'%s'을(를) .VM2로 가져오기 (HDD)"
 
-#: saves.c:1258
+#: saves.c:1237
 msgid "Extract:"
 msgstr "추출:"
 
-#: saves.c:1290
+#: saves.c:1269
 msgid "Backup All Licenses to .Zip"
 msgstr "모든 라이선스를 .Zip으로 백업"
 
-#: saves.c:1294
+#: saves.c:1273
 msgid "Export All Licenses as .RAPs"
 msgstr "모든 라이선스를 .RAP로 내보내기"
 
-#: saves.c:1295
+#: saves.c:1274
 msgid "Save .RAPs to USB"
 msgstr ".RAP를 USB에 저장"
 
-#: saves.c:1297
+#: saves.c:1276
 msgid "Save .RAPs to HDD"
 msgstr ".RAP를 HDD에 저장"
 
-#: saves.c:1305
+#: saves.c:1284
 msgid "Import All .RAPs as .RIF Licenses"
 msgstr "모든 .RAP를 .RIF 라이선스로 가져오기"
 
-#: saves.c:1323
+#: saves.c:1302
 msgid "Save .RAP to USB"
 msgstr ".RAP를 USB에 저장"
 
-#: saves.c:1325
+#: saves.c:1304
 msgid "Save .RAP to HDD"
 msgstr ".RAP를 HDD에 저장"
 
-#: saves.c:1399
+#: saves.c:1378
 msgid "Export Save to .MCS format - USB"
 msgstr "세이브를 .MCS 형식으로 내보내기 - USB"
 
-#: saves.c:1404
+#: saves.c:1383
 msgid "Export Save to .PSU format - USB"
 msgstr "세이브를 .PSU 형식으로 내보내기 - USB"
 
-#: saves.c:1409
+#: saves.c:1388
 msgid "Resign .PSV Save"
 msgstr ".PSV 세이브 재서명"
 
-#: saves.c:1566
+#: saves.c:1545
 msgid "Activate PS3 Account (act.dat)"
 msgstr "PS3 계정 활성화 (act.dat)"
 
-#: saves.c:1572
+#: saves.c:1551
 msgid "URL link Downloader (http, https, ftp, ftps)"
 msgstr "URL 링크 다운로더 (http, https, ftp, ftps)"
 
-#: saves.c:1574
+#: saves.c:1553
 msgid "Local Web Server (full system access)"
 msgstr "로컬 웹 서버 (전체 시스템 접근)"
 
-#: saves.c:1888 saves.c:1936
+#: saves.c:1868 saves.c:1925
 msgid "Bulk Save Management"
 msgstr "일괄 세이브 관리"
 
-#: saves.c:1896 saves.c:1944
+#: saves.c:1876 saves.c:1933
 msgid "Resign & Unlock all Saves"
 msgstr "모든 세이브 재서명 및 잠금 해제"
 
-#: saves.c:1899 saves.c:1947
+#: saves.c:1879 saves.c:1936
 msgid "Resign & Unlock selected Saves"
 msgstr "선택한 세이브 재서명 및 잠금 해제"
 
-#: saves.c:1902 saves.c:2107 saves.c:2191
+#: saves.c:1882 saves.c:2077 saves.c:2161
 msgid "Copy all Saves to USB"
 msgstr "모든 세이브를 USB에 복사"
 
-#: saves.c:1903 saves.c:1907
+#: saves.c:1883 saves.c:1887
 msgid "Copy Saves to USB"
 msgstr "세이브를 USB에 복사"
 
-#: saves.c:1906 saves.c:2104 saves.c:2188
+#: saves.c:1886 saves.c:2074 saves.c:2158
 msgid "Copy selected Saves to USB"
 msgstr "선택한 세이브를 USB에 복사"
 
-#: saves.c:1910 saves.c:1956
+#: saves.c:1892
+msgid "Upload selected Saves to FTP"
+msgstr "선택한 세이브를 FTP에 업로드"
+
+#: saves.c:1899 saves.c:1945
 msgid "Start local Web Server"
 msgstr "로컬 웹 서버 시작"
 
-#: saves.c:1950
+#: saves.c:1939
 msgid "Copy all Saves to HDD"
 msgstr "모든 세이브를 HDD에 복사"
 
-#: saves.c:1953
+#: saves.c:1942
 msgid "Copy selected Saves to HDD"
 msgstr "선택한 세이브를 HDD에 복사"
 
-#: saves.c:2094 saves.c:2178
+#: saves.c:2064 saves.c:2148
 msgid "Memory Card Management"
 msgstr "메모리 카드 관리"
 
-#: saves.c:2103 saves.c:2187
+#: saves.c:2073 saves.c:2157
 msgid "Export selected Saves to USB"
 msgstr "선택한 세이브를 USB로 내보내기"
 
-#: saves.c:2106 saves.c:2190
+#: saves.c:2076 saves.c:2160
 msgid "Export all Saves to USB"
 msgstr "모든 세이브를 USB로 내보내기"
 
-#: saves.c:2112 saves.c:2125 saves.c:2225 saves.c:2237
+#: saves.c:2082 saves.c:2095 saves.c:2195 saves.c:2207
 msgid "Import Saves to Virtual Card"
 msgstr "세이브를 가상 카드로 가져오기"
 
-#: saves.c:2201
+#: saves.c:2171
 msgid "Export Memory Card to .VM2 format"
 msgstr "메모리 카드를 .VM2 형식으로 내보내기"
 
-#: saves.c:2203
+#: saves.c:2173
 msgid "Save .VM2 Memory Card to USB"
 msgstr ".VM2 메모리 카드를 USB에 저장"
 
-#: saves.c:2205
+#: saves.c:2175
 msgid "Save .VM2 Memory Card to HDD"
 msgstr ".VM2 메모리 카드를 HDD에 저장"
 
-#: saves.c:2211
+#: saves.c:2181
 msgid "Export Memory Card to .VMC format (No ECC)"
 msgstr "메모리 카드를 .VMC 형식으로 내보내기 (ECC 없음)"
 
-#: saves.c:2213
+#: saves.c:2183
 msgid "Save .VMC Memory Card to USB"
 msgstr ".VMC 메모리 카드를 USB에 저장"
 
-#: saves.c:2218
+#: saves.c:2188
 msgid "Import a .VM2 file to Memory Card"
 msgstr ".VM2 파일을 메모리 카드로 가져오기"
 
-#: saves.c:2319
+#: saves.c:2289
 msgid "Export Trophies"
 msgstr "트로피 내보내기"
 
-#: saves.c:2327
+#: saves.c:2297
 msgid "Backup selected Trophies to USB"
 msgstr "선택한 트로피를 USB에 백업"
 
-#: saves.c:2328 saves.c:2331
+#: saves.c:2298 saves.c:2301
 msgid "Save Trophies to USB"
 msgstr "트로피를 USB에 저장"
 
-#: saves.c:2330
+#: saves.c:2300
 msgid "Backup All Trophies to USB"
 msgstr "모든 트로피를 USB에 백업"
 
-#: saves.c:2333
+#: saves.c:2303
 msgid "Export All Trophies to .Zip"
 msgstr "모든 트로피를 .Zip으로 내보내기"
 
-#: saves.c:2344
+#: saves.c:2314
 msgid "Import Trophies"
 msgstr "트로피 가져오기"
 
 #: settings.c:13
-msgid "Online DB"
-msgstr "온라인 DB"
-
-#: settings.c:13
 msgid "FTP Server"
 msgstr "FTP 서버"
+
+#: settings.c:13
+msgid "Online DB"
+msgstr "온라인 DB"
 
 #: settings.c:14
 msgid "Disabled"
@@ -991,12 +1011,12 @@ msgid "by Type"
 msgstr "유형별"
 
 #: settings.c:15
-msgid "Fake USB"
-msgstr "가짜 USB"
-
-#: settings.c:15
 msgid "Auto-detect"
 msgstr "자동 감지"
+
+#: settings.c:15
+msgid "Fake USB"
+msgstr "가짜 USB"
 
 #: settings.c:29
 msgid "Background Music"
@@ -1022,86 +1042,89 @@ msgstr "버전 업데이트 확인"
 msgid "Set User FTP Server URL"
 msgstr "사용자 FTP 서버 URL 설정"
 
-#: settings.c:65
+#: settings.c:66
 msgid "Online Saves Server"
 msgstr "온라인 세이브 서버"
 
-#: settings.c:71
+#: settings.c:72
 msgid "Update Application Data"
 msgstr "애플리케이션 데이터 업데이트"
 
-#: settings.c:77
+#: settings.c:78
 msgid "Change Online Database URL"
 msgstr "온라인 데이터베이스 URL 변경"
 
-#: settings.c:83
+#: settings.c:84
 msgid "Clear Local Cache"
 msgstr "로컬 캐시 지우기"
 
-#: settings.c:89
+#: settings.c:91
 msgid "Update Account & Console IDs"
 msgstr "계정 및 콘솔 ID 업데이트"
 
-#: settings.c:95
+#: settings.c:97
 msgid "Enable Debug Log"
 msgstr "디버그 로그 활성화"
 
-#: settings.c:128
+#: settings.c:130
 msgid "Enter the Online Database URL"
 msgstr "온라인 데이터베이스 URL을 입력하세요"
 
-#: settings.c:134
+#: settings.c:136
 msgid "Online database URL changed to:"
 msgstr "온라인 데이터베이스 URL이 변경되었습니다:"
 
-#: settings.c:143
+#: settings.c:145
 msgid "Enter the FTP server URL"
 msgstr "FTP 서버 URL을 입력하세요"
 
-#: settings.c:177
+#: settings.c:179
 msgid "FTP server URL changed to:"
 msgstr "FTP 서버 URL이 변경되었습니다:"
 
-#: settings.c:180
-msgid "Error! Couldn't connect to FTP server"
-msgstr "오류! FTP 서버에 연결할 수 없습니다"
-
-#: settings.c:180
+#: settings.c:182
 msgid "Check debug logs for more information"
 msgstr "자세한 정보는 디버그 로그를 확인하세요"
 
-#: settings.c:188
+#: settings.c:182
+msgid "Error! Couldn't connect to FTP server"
+msgstr "오류! FTP 서버에 연결할 수 없습니다"
+
+#: settings.c:190
 msgid "Local cache folder cleaned:"
 msgstr "로컬 캐시 폴더가 정리되었습니다:"
 
-#: settings.c:194
+#: settings.c:196
 msgid "Successfully installed local application data"
 msgstr "로컬 애플리케이션 데이터가 성공적으로 설치되었습니다"
 
-#: settings.c:271
+#: settings.c:269
 msgid "New version available! Download update?"
 msgstr "새 버전 사용 가능! 업데이트를 다운로드하시겠습니까?"
 
-#: settings.c:274
+#: settings.c:272
 msgid "Update downloaded to:"
 msgstr "업데이트가 다운로드되었습니다:"
 
-#: settings.c:276
+#: settings.c:274
 msgid "Download error!"
 msgstr "다운로드 오류!"
 
-#: settings.c:298
+#: settings.c:296
 msgid "Debug Logging Disabled"
 msgstr "디버그 로깅 비활성화됨"
 
-#: settings.c:303
+#: settings.c:301
 msgid "Debug Logging Enabled!"
 msgstr "디버그 로깅 활성화됨!"
 
-#: settings.c:312
+#: settings.c:310
 msgid "User IDs Updated!"
 msgstr "사용자 ID가 업데이트되었습니다!"
 
 #: zip_util.c:214 zip_util.c:297 zip_util.c:337
 msgid "Extracting files..."
 msgstr "파일 추출 중..."
+
+#~ msgid "Error! Couldn't zip save:"
+#~ msgstr "오류! 세이브를 압축할 수 없습니다:"
