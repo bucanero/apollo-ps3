@@ -303,8 +303,7 @@ msgstr "Erro! Arquivo %s não pôde ser descriptografado"
 
 #: exec_cmd.c:1520
 msgid "Error! Can't find decrypted save-game file:"
-msgstr ""
-"Erro! Não é possível encontrar o arquivo de jogo salvo descriptografado:"
+msgstr "Erro! Não é possível encontrar o arquivo de jogo salvo descriptografado:"
 
 #: exec_cmd.c:1528
 msgid "File was not encrypted:"
