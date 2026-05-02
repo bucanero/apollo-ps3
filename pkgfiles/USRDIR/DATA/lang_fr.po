@@ -58,7 +58,7 @@ msgstr "Fichiers copiés avec succès vers :"
 
 #: exec_cmd.c:216 exec_cmd.c:502
 msgid "Copying all saves..."
-msgstr ""
+msgstr "Copie de toutes les sauvegardes..."
 
 #: exec_cmd.c:228
 msgid "Saves copied to USB"
@@ -135,7 +135,7 @@ msgstr "Trophée copié avec succès vers :"
 
 #: exec_cmd.c:701
 msgid "Exporting all VMC saves..."
-msgstr ""
+msgstr "Exportation de toutes les sauvegardes VMC..."
 
 #: exec_cmd.c:721
 msgid "Saves exported to:"
@@ -213,19 +213,19 @@ msgstr "Erreur ! Échec de l'exportation de la carte mémoire PS2"
 
 #: exec_cmd.c:963
 msgid "Encrypting PS2 CONFIG..."
-msgstr ""
+msgstr "Chiffrement de PS2 CONFIG..."
 
 #: exec_cmd.c:980
 msgid "Encrypting PS2 ISO..."
-msgstr ""
+msgstr "Chiffrement de PS2 ISO..."
 
 #: exec_cmd.c:1009
 msgid "Decrypting PS2 BIN.ENC..."
-msgstr ""
+msgstr "Déchiffrement de PS2 BIN.ENC..."
 
 #: exec_cmd.c:1033
 msgid "Copying trophies..."
-msgstr ""
+msgstr "Copie des trophées..."
 
 #: exec_cmd.c:1046
 msgid "Trophy Sets copied to:"
@@ -255,7 +255,7 @@ msgstr "Sauvegarde %s modifiée avec succès !"
 
 #: exec_cmd.c:1346
 msgid "Resigning all saves..."
-msgstr ""
+msgstr "Resignature de toutes les sauvegardes..."
 
 #: exec_cmd.c:1374
 #, c-format
@@ -407,11 +407,11 @@ msgstr "Erreur ! Impossible d'importer la Sauvegarde :"
 
 #: http.c:154
 msgid "Downloading..."
-msgstr ""
+msgstr "Téléchargement..."
 
 #: http.c:279
 msgid "Uploading..."
-msgstr ""
+msgstr "Envoi..."
 
 #: main.c:194 main.c:198 main.c:203 main.c:209 main.c:213
 msgid "Back"
@@ -527,7 +527,7 @@ msgstr "Aucune Sauvegarde Trouvée"
 
 #: menu_main.c:462 menu_main.c:873
 msgid "Patch view"
-msgstr ""
+msgstr "Vue des patchs"
 
 #: menu_main.c:578
 msgid "No data found in folder:"
@@ -1125,7 +1125,7 @@ msgstr "Identifiants Utilisateur mis à jour !"
 
 #: zip_util.c:214 zip_util.c:297 zip_util.c:337
 msgid "Extracting files..."
-msgstr ""
+msgstr "Extraction des fichiers..."
 
 #~ msgid "Error! Couldn't zip save:"
 #~ msgstr "Erreur ! Impossible de Zipper la Sauvegarde :"

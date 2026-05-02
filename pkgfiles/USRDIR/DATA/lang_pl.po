@@ -58,7 +58,7 @@ msgstr "Pliki zostały zapisane w:"
 
 #: exec_cmd.c:216 exec_cmd.c:502
 msgid "Copying all saves..."
-msgstr ""
+msgstr "Kopiowanie wszystkich zapisów..."
 
 #: exec_cmd.c:228
 msgid "Saves copied to USB"
@@ -135,7 +135,7 @@ msgstr "Trofea zostały skopiowane do:"
 
 #: exec_cmd.c:701
 msgid "Exporting all VMC saves..."
-msgstr ""
+msgstr "Eksportowanie wszystkich zapisów VMC..."
 
 #: exec_cmd.c:721
 msgid "Saves exported to:"
@@ -213,19 +213,19 @@ msgstr "Błąd! Karta pamięci PS2 nie została wyeksportowana"
 
 #: exec_cmd.c:963
 msgid "Encrypting PS2 CONFIG..."
-msgstr ""
+msgstr "Szyfrowanie PS2 CONFIG..."
 
 #: exec_cmd.c:980
 msgid "Encrypting PS2 ISO..."
-msgstr ""
+msgstr "Szyfrowanie PS2 ISO..."
 
 #: exec_cmd.c:1009
 msgid "Decrypting PS2 BIN.ENC..."
-msgstr ""
+msgstr "Odszyfrowywanie PS2 BIN.ENC..."
 
 #: exec_cmd.c:1033
 msgid "Copying trophies..."
-msgstr ""
+msgstr "Kopiowanie trofeów..."
 
 #: exec_cmd.c:1046
 msgid "Trophy Sets copied to:"
@@ -255,7 +255,7 @@ msgstr "Zapis z gry %s został zmodyfikowany!"
 
 #: exec_cmd.c:1346
 msgid "Resigning all saves..."
-msgstr ""
+msgstr "Podpisywanie wszystkich zapisów..."
 
 #: exec_cmd.c:1374
 #, c-format
@@ -406,11 +406,11 @@ msgstr "Błąd! Zapis z gry nie mógł zostać zaimportowany:"
 
 #: http.c:154
 msgid "Downloading..."
-msgstr ""
+msgstr "Pobieranie..."
 
 #: http.c:279
 msgid "Uploading..."
-msgstr ""
+msgstr "Przesyłanie..."
 
 #: main.c:194 main.c:198 main.c:203 main.c:209 main.c:213
 msgid "Back"
@@ -526,7 +526,7 @@ msgstr "Nie znaleziono zapisów z gier"
 
 #: menu_main.c:462 menu_main.c:873
 msgid "Patch view"
-msgstr ""
+msgstr "Widok patchy"
 
 #: menu_main.c:578
 msgid "No data found in folder:"
@@ -1020,51 +1020,51 @@ msgstr "Fałszywe USB"
 
 #: settings.c:29
 msgid "Background Music"
-msgstr ""
+msgstr "Muzyka w tle"
 
 #: settings.c:35
 msgid "Menu Animations"
-msgstr ""
+msgstr "Animacje menu"
 
 #: settings.c:41
 msgid "Sort Saves"
-msgstr ""
+msgstr "Sortowanie zapisów"
 
 #: settings.c:47
 msgid "USB Saves Source"
-msgstr ""
+msgstr "Źródło zapisów USB"
 
 #: settings.c:53
 msgid "Version Update Check"
-msgstr ""
+msgstr "Sprawdzanie aktualizacji wersji"
 
 #: settings.c:59
 msgid "Set User FTP Server URL"
-msgstr ""
+msgstr "Ustaw URL serwera FTP użytkownika"
 
 #: settings.c:66
 msgid "Online Saves Server"
-msgstr ""
+msgstr "Serwer zapisów online"
 
 #: settings.c:72
 msgid "Update Application Data"
-msgstr ""
+msgstr "Aktualizuj dane aplikacji"
 
 #: settings.c:78
 msgid "Change Online Database URL"
-msgstr ""
+msgstr "Zmień URL bazy danych online"
 
 #: settings.c:84
 msgid "Clear Local Cache"
-msgstr ""
+msgstr "Wyczyść lokalny cache"
 
 #: settings.c:91
 msgid "Update Account & Console IDs"
-msgstr ""
+msgstr "Aktualizuj ID konta i konsoli"
 
 #: settings.c:97
 msgid "Enable Debug Log"
-msgstr ""
+msgstr "Włącz log debugowania"
 
 #: settings.c:130
 msgid "Enter the Online Database URL"
@@ -1124,7 +1124,7 @@ msgstr "Zaktualizowano identyfikatory User ID!"
 
 #: zip_util.c:214 zip_util.c:297 zip_util.c:337
 msgid "Extracting files..."
-msgstr ""
+msgstr "Wypakowywanie plików..."
 
 #~ msgid "Error! Couldn't zip save:"
 #~ msgstr "Błąd! Zapis z gry nie mógł zostać spakowany do ZIP:"
