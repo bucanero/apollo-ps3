@@ -1124,7 +1124,7 @@ msgstr "IDs de Usuario actualizados!"
 
 #: zip_util.c:214 zip_util.c:297 zip_util.c:337
 msgid "Extracting files..."
-msgstr ""
+msgstr "Extrayendo archivos..."
 
 #~ msgid "Error! Couldn't zip save:"
 #~ msgstr "¡Error! No se pudo comprimir partida:"

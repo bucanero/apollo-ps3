@@ -58,7 +58,7 @@ msgstr "Arquivos copiados com sucesso para:"
 
 #: exec_cmd.c:216 exec_cmd.c:502
 msgid "Copying all saves..."
-msgstr ""
+msgstr "Copiando todos os jogos salvos..."
 
 #: exec_cmd.c:228
 msgid "Saves copied to USB"
@@ -135,7 +135,7 @@ msgstr "Troféu copiado com sucesso para:"
 
 #: exec_cmd.c:701
 msgid "Exporting all VMC saves..."
-msgstr ""
+msgstr "Exportando todos os jogos salvos do VMC..."
 
 #: exec_cmd.c:721
 msgid "Saves exported to:"
@@ -213,19 +213,19 @@ msgstr "Erro! Falha ao exportar o memory card do PS2"
 
 #: exec_cmd.c:963
 msgid "Encrypting PS2 CONFIG..."
-msgstr ""
+msgstr "Criptografando PS2 CONFIG..."
 
 #: exec_cmd.c:980
 msgid "Encrypting PS2 ISO..."
-msgstr ""
+msgstr "Criptografando PS2 ISO..."
 
 #: exec_cmd.c:1009
 msgid "Decrypting PS2 BIN.ENC..."
-msgstr ""
+msgstr "Descriptografando PS2 BIN.ENC..."
 
 #: exec_cmd.c:1033
 msgid "Copying trophies..."
-msgstr ""
+msgstr "Copiando troféus..."
 
 #: exec_cmd.c:1046
 msgid "Trophy Sets copied to:"
@@ -255,7 +255,7 @@ msgstr "Jogo salvo %s modificado com sucesso!"
 
 #: exec_cmd.c:1346
 msgid "Resigning all saves..."
-msgstr ""
+msgstr "Reassinando todos os jogos salvos..."
 
 #: exec_cmd.c:1374
 #, c-format
@@ -303,8 +303,7 @@ msgstr "Erro! Arquivo %s não pôde ser descriptografado"
 
 #: exec_cmd.c:1520
 msgid "Error! Can't find decrypted save-game file:"
-msgstr ""
-"Erro! Não é possível encontrar o arquivo de jogo salvo descriptografado:"
+msgstr "Erro! Não é possível encontrar o arquivo de jogo salvo descriptografado:"
 
 #: exec_cmd.c:1528
 msgid "File was not encrypted:"
@@ -407,11 +406,11 @@ msgstr "Erro! Não foi possível importar jogo salvo:"
 
 #: http.c:154
 msgid "Downloading..."
-msgstr ""
+msgstr "Baixando..."
 
 #: http.c:279
 msgid "Uploading..."
-msgstr ""
+msgstr "Enviando..."
 
 #: main.c:194 main.c:198 main.c:203 main.c:209 main.c:213
 msgid "Back"
@@ -527,7 +526,7 @@ msgstr "Nenhum jogo salvo encontrado"
 
 #: menu_main.c:462 menu_main.c:873
 msgid "Patch view"
-msgstr ""
+msgstr "Visualização de patch"
 
 #: menu_main.c:578
 msgid "No data found in folder:"
@@ -1125,7 +1124,7 @@ msgstr "IDs de Usuário Atualizados!"
 
 #: zip_util.c:214 zip_util.c:297 zip_util.c:337
 msgid "Extracting files..."
-msgstr ""
+msgstr "Extraindo arquivos..."
 
 #~ msgid "Error! Couldn't zip save:"
 #~ msgstr "Erro! Não foi possível compactar o jogo salvo:"
