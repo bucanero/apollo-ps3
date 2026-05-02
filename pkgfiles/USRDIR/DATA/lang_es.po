@@ -58,7 +58,7 @@ msgstr "Archivos copiados exitosamente a:"
 
 #: exec_cmd.c:216 exec_cmd.c:502
 msgid "Copying all saves..."
-msgstr ""
+msgstr "Copiando todas las partidas..."
 
 #: exec_cmd.c:228
 msgid "Saves copied to USB"
@@ -135,7 +135,7 @@ msgstr "Trofeo copiado exitosamente a:"
 
 #: exec_cmd.c:701
 msgid "Exporting all VMC saves..."
-msgstr ""
+msgstr "Exportando todas las partidas VMC..."
 
 #: exec_cmd.c:721
 msgid "Saves exported to:"
@@ -213,19 +213,19 @@ msgstr "¡Error! Falló al exportar tarjeta de memoria PS2"
 
 #: exec_cmd.c:963
 msgid "Encrypting PS2 CONFIG..."
-msgstr ""
+msgstr "Encriptando PS2 CONFIG..."
 
 #: exec_cmd.c:980
 msgid "Encrypting PS2 ISO..."
-msgstr ""
+msgstr "Encriptando PS2 ISO..."
 
 #: exec_cmd.c:1009
 msgid "Decrypting PS2 BIN.ENC..."
-msgstr ""
+msgstr "Desencriptando PS2 BIN.ENC..."
 
 #: exec_cmd.c:1033
 msgid "Copying trophies..."
-msgstr ""
+msgstr "Copiando trofeos..."
 
 #: exec_cmd.c:1046
 msgid "Trophy Sets copied to:"
@@ -255,7 +255,7 @@ msgstr "¡Partida %s modificada exitosamente!"
 
 #: exec_cmd.c:1346
 msgid "Resigning all saves..."
-msgstr ""
+msgstr "Re-asignando todas las partidas..."
 
 #: exec_cmd.c:1374
 #, c-format
@@ -406,11 +406,11 @@ msgstr "¡Error! No se pudo importar partida:"
 
 #: http.c:154
 msgid "Downloading..."
-msgstr ""
+msgstr "Descargando..."
 
 #: http.c:279
 msgid "Uploading..."
-msgstr ""
+msgstr "Subiendo..."
 
 #: main.c:194 main.c:198 main.c:203 main.c:209 main.c:213
 msgid "Back"
