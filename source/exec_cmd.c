@@ -1262,7 +1262,7 @@ static int apply_cheat_patches(const save_entry_t *entry)
 			}
 		}
 
-		if (!apply_cheat_patch_code(tmpfile, code, &ps3_host_callback))
+		if (!apollo_apply_code(tmpfile, code, &ps3_host_callback))
 		{
 			LOG("Error: failed to apply (%s)", code->name);
 			ret = 0;
@@ -1286,7 +1286,7 @@ static int apply_cheat_patches(const save_entry_t *entry)
 	}
 
 	list_free(decrypted_files);
-	free_patch_var_list();
+	apollo_free_var_list();
 	stop_loading_screen();
 
 	return ret;
