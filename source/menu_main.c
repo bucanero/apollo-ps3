@@ -447,7 +447,7 @@ static void SetMenu(int id)
 				LoadVmcTexture(16, 16, getIconRGBA(selected_entry->blocks, 0));
 
 			if (selected_entry->flags & SAVE_FLAG_VMC && selected_entry->type == FILE_TYPE_PS2)
-				LoadVmcTexture(128, 128, getIconPS2(selected_entry->dir_name, strrchr(selected_entry->path, '\n')+1));
+				LoadVmcTexture(256, 256, getIconPS2(selected_entry->dir_name, strrchr(selected_entry->path, '\n')+1));
 
 			if (file_exists(iconfile) == SUCCESS)
 				LoadFileTexture(iconfile);
