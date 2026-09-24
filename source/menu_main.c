@@ -945,11 +945,7 @@ static void doSaveDetailsMenu(void)
 
 		if (paddata[0].BTN_CIRCLE)
 		{
-			if (selected_centry->name)
-				free(selected_centry->name);
-			if (selected_centry->codes)
-				free(selected_centry->codes);
-			free(selected_centry);
+			apollo_free_code_entry(selected_centry);
 
 			SetMenu(last_menu_id[MENU_SAVE_DETAILS]);
 			return;
