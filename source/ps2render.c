@@ -21,6 +21,7 @@
 #include <string.h>
 
 #include "ps2render.h"
+#include "util.h"
 
 #define TEX_SIZE   128
 #define MAX_SIZE   4096      /* a rendered icon larger than this is a mistake */
@@ -70,20 +71,15 @@ static void m_perspective(float fovy, float aspect, float near, float far, float
 
 /*
  * The light and colour fields are declared as byte arrays in ps2icon.h but
- * hold four little-endian values each. They are assembled byte by byte, so
- * the big-endian PS3 reads them the same as a little-endian host.
+ * hold four little-endian values each. read_le_uint32() assembles them byte
+ * by byte, so the big-endian PS3 reads them the same as a little-endian host.
  */
-static uint32_t read_le32(const uint8_t *p)
-{
-	return (uint32_t)p[0] | ((uint32_t)p[1] << 8) | ((uint32_t)p[2] << 16) | ((uint32_t)p[3] << 24);
-}
-
 static void read_vec4(const uint8_t *src, float *dst)
 {
 	int i;
 
 	for (i = 0; i < 4; i++) {
-		uint32_t u = read_le32(&src[i * 4]);
+		uint32_t u = read_le_uint32(&src[i * 4]);
 		memcpy(&dst[i], &u, sizeof(float));
 	}
 }
@@ -258,7 +254,7 @@ static void fill_gradient(const ps2_IconSys_t *sys, uint8_t *rgba, int w, int h)
 
 	for (i = 0; i < 4; i++) {
 		for (k = 0; k < 3; k++)
-			c[i][k] = clampf(read_le32(&corner[i][k * 4]) / 255.0f, 0.0f, 1.0f);
+			c[i][k] = clampf(read_le_uint32(&corner[i][k * 4]) / 255.0f, 0.0f, 1.0f);
 	}
 
 	for (y = 0; y < h; y++) {
