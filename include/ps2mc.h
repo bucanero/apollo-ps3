@@ -6,6 +6,9 @@
 *  - https://github.com/root670/CheatDevicePS2
 */
 
+#ifndef PS2MC_H
+#define PS2MC_H
+
 #include <inttypes.h>
 
 #define PSV_MAGIC       "\x00VSP"
@@ -184,3 +187,5 @@ typedef struct __attribute__((__packed__)) xpsEntry
     char title_sjis[64];
     char unk2[8];
 } xpsEntry_t;
+
+#endif
