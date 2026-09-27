@@ -66,6 +66,14 @@ This homebrew application allows you to download, unlock, patch and resign save-
 * **Import PS2 saves:** import saves to PS2 VMCs from other systems and consoles (`.PSU`, `.PSV`, `.XPS`, `.CBS`, `.MAX`, `.SPS` supported).
 * **Export PS2 saves:** allows the user export saves on VMC images to `.PSU` and `.PSV` formats.
 
+## Dreamcast VMU Memory Card Management
+
+* **VMU saves management:** quick access to all save files on Dreamcast VMU memory card images.
+  - Supported VMU formats: raw `.BIN`/`.VMU` and Nexus `.DCM` images
+* **Import DC saves:** import `.DCI` (Nexus) and `.VMI`/`.VMS` saves to VMU images.
+* **Export DC saves:** allows the user export saves on VMU images to `.DCI` and `.VMI`/`.VMS` formats.
+* **VMU image tools:** convert images between raw `.BIN` and Nexus `.DCM`.
+
 # Download
 
 Get the [latest version here][app_latest].
@@ -115,6 +123,14 @@ On first run, the application will detect and setup the required user settings.
 | **PSV saves** | `/dev_usb00x/PS3/EXPORT/PSV/` |
 | **HDD VM1 cards** | `/dev_hdd0/savedata/vmc/` |
 | **USB VMC cards** | `/dev_usb00x/PS1/VMC/` (`*.mcr`, `*.vm1`, `*.vmp`, `*.bin`, `*.vmc`, `*.gme`, `*.vgs`, `*.srm`, `*.mcd`) |
+
+### Dreamcast
+
+| DC | Folder |
+|-----|--------|
+| **USB saves** | `/dev_usb00x/DC/SAVEDATA/` (`*.dci`, `*.vmi` + `*.vms`) |
+| **HDD VMU cards** | `/dev_hdd0/savedata/vmu/` |
+| **USB VMU cards** | `/dev_usb00x/DC/VMC/` (`*.bin`, `*.vmu`, `*.dcm`) |
 
 # Usage
 
