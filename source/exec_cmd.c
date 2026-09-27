@@ -699,7 +699,7 @@ static void exportAllSavesVMC(const save_entry_t* save, int dev, int all)
 	list_t *list = ((void**)save->dir_name)[0];
 
 	init_progress_bar(_("Exporting all VMC saves..."), save->path);
-	_set_dest_path(outPath, dev, PS1_IMP_PATH_USB);
+	_set_dest_path(outPath, dev, PSV_SAVES_PATH_USB);
 	mkdirs(outPath);
 
 	LOG("Exporting all saves from '%s' to %s...", save->path, outPath);
@@ -710,7 +710,7 @@ static void exportAllSavesVMC(const save_entry_t* save, int dev, int all)
 			continue;
 
 		if (item->type == FILE_TYPE_PS1)
-			(saveSingleSave(outPath, save->blocks, PS1SAVE_PSV) ? done++ : err_count++);
+			(saveSingleSave(outPath, item->blocks, PS1SAVE_PSV) ? done++ : err_count++);
 
 		if (item->type == FILE_TYPE_PS2)
 			(vmc_export_psv(item->dir_name, outPath) ? done++ : err_count++);
