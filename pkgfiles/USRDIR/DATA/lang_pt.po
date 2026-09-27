@@ -1130,7 +1130,7 @@ msgstr "Extraindo arquivos..."
 #~ msgstr "Erro! Não foi possível compactar o jogo salvo:"
 
 #: main.c:581
-msgid "Dreamcast Virtual Memory Card"
+msgid "DC Virtual Memory Card"
 msgstr ""
 
 #: menu_cheats.c:545

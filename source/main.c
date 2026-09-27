@@ -578,7 +578,7 @@ static void initLocalization(void)
 	online_saves.title = _("Online Database");
 	vmc1_saves.title = _("PS1 Virtual Memory Card");
 	vmc2_saves.title = _("PS2 Virtual Memory Card");
-	vmu_saves.title = _("Dreamcast Virtual Memory Card");
+	vmu_saves.title = _("DC Virtual Memory Card");
 }
 
 static void registerSpecialChars(void)

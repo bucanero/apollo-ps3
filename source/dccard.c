@@ -145,7 +145,6 @@ int dccard_file_info(int idx, dccard_file_t* info)
 		info->has_header = 1;
 		strncpy(info->desc_vms, vms.desc_vms, sizeof(info->desc_vms) - 1);
 		strncpy(info->desc_dc, vms.desc_dc, sizeof(info->desc_dc) - 1);
-		strncpy(info->app_id, vms.app_id, sizeof(info->app_id) - 1);
 	}
 	free(data);
 

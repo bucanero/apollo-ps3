@@ -1130,7 +1130,7 @@ msgstr "Extrayendo archivos..."
 #~ msgstr "¡Error! No se pudo comprimir partida:"
 
 #: main.c:581
-msgid "Dreamcast Virtual Memory Card"
+msgid "DC Virtual Memory Card"
 msgstr ""
 
 #: menu_cheats.c:545

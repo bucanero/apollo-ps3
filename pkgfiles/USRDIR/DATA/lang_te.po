@@ -1130,7 +1130,7 @@ msgstr "ఫైల్స్‌ను సంగ్రహిస్తోంది..
 #~ msgstr "లోపం! సేవ్‌ను జిప్ (Zip) చేయలేకపోయింది:"
 
 #: main.c:581
-msgid "Dreamcast Virtual Memory Card"
+msgid "DC Virtual Memory Card"
 msgstr ""
 
 #: menu_cheats.c:545

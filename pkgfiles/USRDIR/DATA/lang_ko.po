@@ -1130,7 +1130,7 @@ msgstr "파일 추출 중..."
 #~ msgstr "오류! 세이브를 압축할 수 없습니다:"
 
 #: main.c:581
-msgid "Dreamcast Virtual Memory Card"
+msgid "DC Virtual Memory Card"
 msgstr ""
 
 #: menu_cheats.c:545

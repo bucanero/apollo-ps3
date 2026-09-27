@@ -1130,7 +1130,7 @@ msgstr "Εξαγωγή αρχείων..."
 #~ msgstr "Σφάλμα! Αποτυχία zip Αποθ.Δεδομένων"
 
 #: main.c:581
-msgid "Dreamcast Virtual Memory Card"
+msgid "DC Virtual Memory Card"
 msgstr ""
 
 #: menu_cheats.c:545

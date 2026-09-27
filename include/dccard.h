@@ -17,7 +17,6 @@ typedef struct {
 	vmu_dirent_t ent;
 	char desc_vms[17];          /* VMU LCD description, Shift-JIS */
 	char desc_dc[33];           /* Dreamcast file manager description, Shift-JIS */
-	char app_id[17];
 	int  has_header;            /* a VMS header was found */
 } dccard_file_t;
 

@@ -204,7 +204,6 @@ static code_entry_t* LoadSaveDetails(const save_entry_t* save)
 			"VMU Title: %s\n"
 			"File: %s\n"
 			"Type: %s%s\n"
-			"Application: %s\n"
 			"Size: %d blocks\n"
 			"Date: %02x%02x-%02x-%02x %02x:%02x:%02x\n",
 			save->path,
@@ -213,7 +212,6 @@ static code_entry_t* LoadSaveDetails(const save_entry_t* save)
 			info.ent.filename,
 			(info.ent.filetype == VMU_FILE_GAME) ? "Game" : "Data",
 			(info.ent.copyprotect == VMU_COPY_PROTECTED) ? " (Copy Protected)" : "",
-			info.app_id,
 			info.ent.filesize,
 			info.ent.timestamp.cent, info.ent.timestamp.year, info.ent.timestamp.month, info.ent.timestamp.day,
 			info.ent.timestamp.hour, info.ent.timestamp.min, info.ent.timestamp.sec);

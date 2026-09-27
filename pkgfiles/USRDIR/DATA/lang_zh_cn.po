@@ -1130,7 +1130,7 @@ msgstr "正在解压文件..."
 #~ msgstr "错误！无法压缩存档："
 
 #: main.c:581
-msgid "Dreamcast Virtual Memory Card"
+msgid "DC Virtual Memory Card"
 msgstr ""
 
 #: menu_cheats.c:545

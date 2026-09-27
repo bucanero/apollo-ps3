@@ -1127,7 +1127,7 @@ msgid "Extracting files..."
 msgstr ""
 
 #: main.c:581
-msgid "Dreamcast Virtual Memory Card"
+msgid "DC Virtual Memory Card"
 msgstr ""
 
 #: menu_cheats.c:545
