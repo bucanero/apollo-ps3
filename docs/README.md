@@ -130,7 +130,7 @@ On first run, the application will detect and setup the required user settings.
 |-----|--------|
 | **USB saves** | `/dev_usb00x/DC/SAVEDATA/` (`*.dci`, `*.vmi` + `*.vms`) |
 | **HDD VMU cards** | `/dev_hdd0/savedata/vmu/` |
-| **USB VMU cards** | `/dev_usb00x/DC/VMC/` (`*.bin`, `*.vmu`, `*.dcm`) |
+| **USB VMU cards** | `/dev_usb00x/DC/VMU/` (`*.bin`, `*.vmu`, `*.dcm`) |
 
 # Usage
 

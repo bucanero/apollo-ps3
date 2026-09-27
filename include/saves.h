@@ -40,7 +40,7 @@
 #define VMC_PS1_PATH_USB        "PS1/VMC/"
 #define VMC_PS2_PATH_USB        "PS2/VMC/"
 #define VMC_PS2_PATH_HDD        "/dev_hdd0/savedata/vmc/"
-#define VMC_DC_PATH_USB         "DC/VMC/"
+#define VMC_DC_PATH_USB         "DC/VMU/"
 #define VMC_DC_PATH_HDD         "/dev_hdd0/savedata/vmu/"
 
 #define IMP_PS2VMC_PATH_USB     USB_PATH VMC_PS2_PATH_USB
