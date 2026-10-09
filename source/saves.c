@@ -1,11 +1,6 @@
 #include <stdio.h>
-#include <malloc.h>
 #include <string.h>
-#include <assert.h>
 #include <unistd.h>
-#include <math.h>
-#include <assert.h>
-#include <sysutil/video.h>
 #include <time.h>
 #include <dirent.h>
 #include <libxml/parser.h>
