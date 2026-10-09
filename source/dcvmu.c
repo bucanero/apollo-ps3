@@ -133,6 +133,8 @@ static void read_root(vmu_card_t *card)
  */
 static int root_is_sane(const vmu_root_t *root)
 {
+	if (!root->formatted)
+		return 0;
 	if (root->fat_loc >= VMU_TOTAL_BLOCKS || root->fat_size < 1)
 		return 0;
 	if (root->dir_loc >= VMU_TOTAL_BLOCKS || root->dir_size < 1 ||

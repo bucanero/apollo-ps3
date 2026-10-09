@@ -329,8 +329,15 @@ static unsigned clamp(unsigned v, unsigned lo, unsigned hi)
 static void vmi_time(const uint8_t *t, vmu_timestamp_t *ts)
 {
 	unsigned year = read_le_uint16(t) % 10000;
+	int bcd = bcd_valid(t[0], 0, 99) && bcd_valid(t[1], 0, 99) && bcd_valid(t[2], 0, 12) &&
+		  bcd_valid(t[3], 0, 31) && bcd_valid(t[4], 0, 23) && bcd_valid(t[5], 0, 59) &&
+		  bcd_valid(t[6], 0, 59);
 
-	if (t[2] >= 1 && t[2] <= 12 && t[3] >= 1 && t[3] <= 31 &&
+	/* BCD bytes such as 20 03 06 08 also pass as a binary date (year 800),
+	 * so a binary date needs a plausible year, and BCD with a 19xx/20xx
+	 * century is taken as BCD. */
+	if (!(bcd && (t[0] == 0x19 || t[0] == 0x20)) && year >= 1980 && year <= 2099 &&
+	    t[2] >= 1 && t[2] <= 12 && t[3] >= 1 && t[3] <= 31 &&
 	    t[4] <= 23 && t[5] <= 59 && t[6] <= 59) {
 		ts->cent  = vmu_dec_to_bcd(year / 100);
 		ts->year  = vmu_dec_to_bcd(year % 100);
@@ -340,9 +347,7 @@ static void vmi_time(const uint8_t *t, vmu_timestamp_t *ts)
 		ts->min   = vmu_dec_to_bcd(t[5]);
 		ts->sec   = vmu_dec_to_bcd(t[6]);
 	}
-	else if (bcd_valid(t[0], 0, 99) && bcd_valid(t[1], 0, 99) && bcd_valid(t[2], 0, 12) &&
-		 bcd_valid(t[3], 0, 31) && bcd_valid(t[4], 0, 23) && bcd_valid(t[5], 0, 59) &&
-		 bcd_valid(t[6], 0, 59)) {
+	else if (bcd) {
 		/* a month or day of 0 means unset: make it the first */
 		ts->cent  = t[0];
 		ts->year  = t[1];

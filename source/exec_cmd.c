@@ -697,13 +697,12 @@ static void get_vmu_dci_path(char* path, const char* filename)
 	struct tm t;
 	char *p = strrchr(path, '/') + 1;
 
-	gmtime_r(&(time_t){time(NULL)}, &t);
-	sprintf(p, "%s_%d-%02d-%02d_%02d%02d%02d.dci", filename,
-		t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
+	for (; *filename; filename++)
+		*p++ = (isalnum((uint8_t)*filename) || *filename == '_' || *filename == '-') ? *filename : '_';
 
-	for (; *p && *p != '.'; p++)
-		if (!isalnum((uint8_t)*p) && *p != '_' && *p != '-')
-			*p = '_';
+	gmtime_r(&(time_t){time(NULL)}, &t);
+	sprintf(p, "_%d-%02d-%02d_%02d%02d%02d.dci",
+		t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
 }
 
 static void exportAllSavesVMC(const save_entry_t* save, int dev, int all)
