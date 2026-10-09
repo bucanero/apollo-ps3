@@ -322,9 +322,10 @@ static unsigned clamp(unsigned v, unsigned lo, unsigned hi)
  * A VMI stores the time in binary, with a 16-bit year and Sunday as day 0;
  * the card wants BCD and Monday as day 0. Not every tool followed that: some
  * wrote the time already in BCD ("20 03 06 28" for 2003-06-28), and some a
- * 0-based month. A time that is not valid binary but is valid BCD is taken as
- * BCD; anything else is clamped into range, so the card never holds a
- * month 16 or an hour 0x99.
+ * 0-based month. Valid BCD with a 19xx/20xx century is taken as BCD, valid
+ * binary with a plausible year as binary, then any other valid BCD as BCD;
+ * anything else is clamped into range, so the card never holds a month 16 or
+ * an hour 0x99.
  */
 static void vmi_time(const uint8_t *t, vmu_timestamp_t *ts)
 {
