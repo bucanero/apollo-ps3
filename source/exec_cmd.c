@@ -41,9 +41,10 @@ static void _set_dest_path(char* path, int dest, const char* folder)
 	}
 }
 
-static void downloadSave(const save_entry_t* entry, const char* file, int dst, const char* folder)
+static void downloadSave(const save_entry_t* entry, const char* file, int dst)
 {
 	char path[256];
+	const char* folder = (entry->flags & SAVE_FLAG_PS3) ? PS3_SAVES_PATH_USB : PSV_SAVES_PATH_USB;
 
 	_set_dest_path(path, dst, folder);
 	if (mkdirs(path) != SUCCESS)
@@ -1940,23 +1941,17 @@ void execCodeCommand(code_entry_t* code, const char* codecmd)
 			break;
 
 		case CMD_DOWNLOAD_USB:
-		case CMD_DOWNLOAD_HDD:
-			if (selected_entry->flags & SAVE_FLAG_PS3)
-				downloadSave(selected_entry, code->file, codecmd[1], PS3_SAVES_PATH_USB);
-			else
-				downloadSave(selected_entry, code->file, codecmd[1], PSV_SAVES_PATH_USB);
-			
+			downloadSave(selected_entry, code->file, codecmd[1]);
 			code->activated = 0;
 			break;
 
 		case CMD_EXPORT_ZIP_USB:
-		case CMD_EXPORT_ZIP_HDD:
 			zipSave(selected_entry, codecmd[1]);
 			code->activated = 0;
 			break;
 
 		case CMD_COPY_SAVE_USB:
-			copySave(selected_entry, codecmd[1], PS3_SAVES_PATH_USB);
+			copySave(selected_entry, codecmd[1], (selected_entry->flags & SAVE_FLAG_PS3) ? PS3_SAVES_PATH_USB : PSP_SAVES_PATH_USB);
 			code->activated = 0;
 			break;
 
