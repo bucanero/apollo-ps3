@@ -1128,3 +1128,43 @@ msgstr "正在解压文件..."
 
 #~ msgid "Error! Couldn't zip save:"
 #~ msgstr "错误！无法压缩存档："
+
+#: main.c:581
+msgid "DC Virtual Memory Card"
+msgstr "DC 虚拟存储卡"
+
+#: menu_cheats.c:545
+msgid "Dreamcast Saves"
+msgstr "Dreamcast 存档"
+
+#: saves.c:1057
+msgid "Export save game to .DCI format"
+msgstr "导出 .DCI 格式存档"
+
+#: saves.c:1057
+msgid "Copy .DCI Save to USB"
+msgstr "将 .DCI 存档复制到 USB"
+
+#: saves.c:1057
+msgid "Copy .DCI Save to HDD"
+msgstr "将 .DCI 存档复制到硬盘"
+
+#: saves.c:1058
+msgid "Export save game to .VMI/.VMS format"
+msgstr "导出 .VMI/.VMS 格式存档"
+
+#: saves.c:1058
+msgid "Copy .VMI/.VMS Save to USB"
+msgstr "将 .VMI/.VMS 存档复制到 USB"
+
+#: saves.c:1058
+msgid "Copy .VMI/.VMS Save to HDD"
+msgstr "将 .VMI/.VMS 存档复制到硬盘"
+
+#: saves.c:2418
+msgid "Export Memory Card to raw .BIN"
+msgstr "将存储卡导出为原始 .BIN 文件"
+
+#: saves.c:2418
+msgid "Export Memory Card to Nexus .DCM"
+msgstr "将存储卡导出为 Nexus .DCM"

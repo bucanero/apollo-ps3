@@ -1128,3 +1128,43 @@ msgstr "파일 추출 중..."
 
 #~ msgid "Error! Couldn't zip save:"
 #~ msgstr "오류! 세이브를 압축할 수 없습니다:"
+
+#: main.c:581
+msgid "DC Virtual Memory Card"
+msgstr "DC 가상 메모리 카드"
+
+#: menu_cheats.c:545
+msgid "Dreamcast Saves"
+msgstr "Dreamcast 세이브"
+
+#: saves.c:1057
+msgid "Export save game to .DCI format"
+msgstr "세이브를 .DCI 형식으로 내보내기"
+
+#: saves.c:1057
+msgid "Copy .DCI Save to USB"
+msgstr ".DCI 세이브를 USB로 복사"
+
+#: saves.c:1057
+msgid "Copy .DCI Save to HDD"
+msgstr ".DCI 세이브를 HDD로 복사"
+
+#: saves.c:1058
+msgid "Export save game to .VMI/.VMS format"
+msgstr "세이브를 .VMI/.VMS 형식으로 내보내기"
+
+#: saves.c:1058
+msgid "Copy .VMI/.VMS Save to USB"
+msgstr ".VMI/.VMS 세이브를 USB로 복사"
+
+#: saves.c:1058
+msgid "Copy .VMI/.VMS Save to HDD"
+msgstr ".VMI/.VMS 세이브를 HDD로 복사"
+
+#: saves.c:2418
+msgid "Export Memory Card to raw .BIN"
+msgstr "메모리 카드를 raw .BIN으로 내보내기"
+
+#: saves.c:2418
+msgid "Export Memory Card to Nexus .DCM"
+msgstr "메모리 카드를 Nexus .DCM으로 내보내기"

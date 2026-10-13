@@ -1128,3 +1128,43 @@ msgstr "Извлечение файлов..."
 
 #~ msgid "Error! Couldn't zip save:"
 #~ msgstr "Ошибка! Не удалось архивировать сохранение:"
+
+#: main.c:581
+msgid "DC Virtual Memory Card"
+msgstr "Виртуальная карта памяти DC"
+
+#: menu_cheats.c:545
+msgid "Dreamcast Saves"
+msgstr "Сохранения Dreamcast"
+
+#: saves.c:1057
+msgid "Export save game to .DCI format"
+msgstr "Экспортировать сохранение в формате .DCI"
+
+#: saves.c:1057
+msgid "Copy .DCI Save to USB"
+msgstr "Скопировать сохранение .DCI на USB"
+
+#: saves.c:1057
+msgid "Copy .DCI Save to HDD"
+msgstr "Скопировать сохранение .DCI на HDD"
+
+#: saves.c:1058
+msgid "Export save game to .VMI/.VMS format"
+msgstr "Экспортировать сохранение в формате .VMI/.VMS"
+
+#: saves.c:1058
+msgid "Copy .VMI/.VMS Save to USB"
+msgstr "Скопировать сохранение .VMI/.VMS на USB"
+
+#: saves.c:1058
+msgid "Copy .VMI/.VMS Save to HDD"
+msgstr "Скопировать сохранение .VMI/.VMS на HDD"
+
+#: saves.c:2418
+msgid "Export Memory Card to raw .BIN"
+msgstr "Экспортировать карту памяти в необработанный файл .BIN"
+
+#: saves.c:2418
+msgid "Export Memory Card to Nexus .DCM"
+msgstr "Экспортировать карту памяти в Nexus .DCM"

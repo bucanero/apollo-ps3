@@ -1128,3 +1128,43 @@ msgstr "Wypakowywanie plików..."
 
 #~ msgid "Error! Couldn't zip save:"
 #~ msgstr "Błąd! Zapis z gry nie mógł zostać spakowany do ZIP:"
+
+#: main.c:581
+msgid "DC Virtual Memory Card"
+msgstr "Wirtualna karta pamięci DC"
+
+#: menu_cheats.c:545
+msgid "Dreamcast Saves"
+msgstr "Zapisy z gier z Dreamcast"
+
+#: saves.c:1057
+msgid "Export save game to .DCI format"
+msgstr "Eksportuj zapis z gry do formatu DCI"
+
+#: saves.c:1057
+msgid "Copy .DCI Save to USB"
+msgstr "Skopiuj zapis z gry w formacie DCI na USB"
+
+#: saves.c:1057
+msgid "Copy .DCI Save to HDD"
+msgstr "Skopiuj zapis z gry w formacie DCI na HDD"
+
+#: saves.c:1058
+msgid "Export save game to .VMI/.VMS format"
+msgstr "Eksportuj zapis z gry do formatu VMI/VMS"
+
+#: saves.c:1058
+msgid "Copy .VMI/.VMS Save to USB"
+msgstr "Skopiuj zapis z gry w formacie VMI/VMS na USB"
+
+#: saves.c:1058
+msgid "Copy .VMI/.VMS Save to HDD"
+msgstr "Skopiuj zapis z gry w formacie VMI/VMS na HDD"
+
+#: saves.c:2418
+msgid "Export Memory Card to raw .BIN"
+msgstr "Eksportuj kartę pamięci do surowego formatu BIN"
+
+#: saves.c:2418
+msgid "Export Memory Card to Nexus .DCM"
+msgstr "Eksportuj kartę pamięci do formatu Nexus DCM"
