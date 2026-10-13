@@ -1131,40 +1131,40 @@ msgstr "Extraindo arquivos..."
 
 #: main.c:581
 msgid "DC Virtual Memory Card"
-msgstr ""
+msgstr "Cartão de memória virtual DC"
 
 #: menu_cheats.c:545
 msgid "Dreamcast Saves"
-msgstr ""
+msgstr "Saves do Dreamcast"
 
 #: saves.c:1057
 msgid "Export save game to .DCI format"
-msgstr ""
+msgstr "Exportar jogo salvo no formato .DCI"
 
 #: saves.c:1057
 msgid "Copy .DCI Save to USB"
-msgstr ""
+msgstr "Copiar save .DCI para USB"
 
 #: saves.c:1057
 msgid "Copy .DCI Save to HDD"
-msgstr ""
+msgstr "Copiar save .DCI para HDD"
 
 #: saves.c:1058
 msgid "Export save game to .VMI/.VMS format"
-msgstr ""
+msgstr "Exportar jogo salvo no formato .VMI/.VMS"
 
 #: saves.c:1058
 msgid "Copy .VMI/.VMS Save to USB"
-msgstr ""
+msgstr "Copiar save .VMI/.VMS para USB"
 
 #: saves.c:1058
 msgid "Copy .VMI/.VMS Save to HDD"
-msgstr ""
+msgstr "Copiar save .VMI/.VMS para HDD"
 
 #: saves.c:2418
 msgid "Export Memory Card to raw .BIN"
-msgstr ""
+msgstr "Exportar cartão de memória em .BIN bruto"
 
 #: saves.c:2418
 msgid "Export Memory Card to Nexus .DCM"
-msgstr ""
+msgstr "Exportar cartão de memória para Nexus .DCM"
