@@ -1381,7 +1381,7 @@ static int Card_ReadDirEntry(int32_t cluster, int32_t fsindex, struct MCFsEntry 
 	if ((cluster == 0) && (index != 0)) {
 		if (index < maxent) {
 			i = index;
-			if ((read_le_uint32((uint8_t *)&fci->entry[index])) >= 0 )
+			if (((int32_t)read_le_uint32((uint8_t *)&fci->entry[index])) >= 0 )
 				clust = read_le_uint32((uint8_t *)&fci->entry[index]);
 		}
 		i = 0;
@@ -1389,7 +1389,7 @@ static int Card_ReadDirEntry(int32_t cluster, int32_t fsindex, struct MCFsEntry 
 			do {
 				if (i >= maxent)
 					break;
-				if (read_le_uint32((uint8_t *)&fci->entry[i]) < 0)
+				if ((int32_t)read_le_uint32((uint8_t *)&fci->entry[i]) < 0)
 					break;
 				clust = read_le_uint32((uint8_t *)&fci->entry[i]);
 			} while (++i < index);
@@ -1812,7 +1812,7 @@ static int Card_GetDirEntryCluster(int32_t cluster, int32_t fsindex)
 	if ((cluster == 0) && (index != 0)) {
 		if (index < maxent) {
 			i = index;
-			if ((read_le_uint32((uint8_t *)&fci->entry[index])) >= 0 )
+			if (((int32_t)read_le_uint32((uint8_t *)&fci->entry[index])) >= 0 )
 				clust = read_le_uint32((uint8_t *)&fci->entry[index]);
 		}
 		i = 0;
@@ -1820,7 +1820,7 @@ static int Card_GetDirEntryCluster(int32_t cluster, int32_t fsindex)
 			do {
 				if (i >= maxent)
 					break;
-				if (read_le_uint32((uint8_t *)&fci->entry[i]) < 0)
+				if ((int32_t)read_le_uint32((uint8_t *)&fci->entry[i]) < 0)
 					break;
 				clust = read_le_uint32((uint8_t *)&fci->entry[i]);
 			} while (++i < index);
@@ -2108,10 +2108,10 @@ static int Card_Unformat(void)
 
 	for (i = 1; i < blocks_on_card; i++) {
 		page = i * blocksize;
-		if (read_le_uint32((uint8_t *)&mcdi->cardform) > 0) {
+		if ((int32_t)read_le_uint32((uint8_t *)&mcdi->cardform) > 0) {
 			j = 0;
 			for (j = 0; j < 16; j++) {
-				if (read_le_uint32((uint8_t *)&mcdi->bad_block_list[j]) <= 0) {
+				if ((int32_t)read_le_uint32((uint8_t *)&mcdi->bad_block_list[j]) <= 0) {
 					j = 16;
 					goto lbl1;
 				}
@@ -2658,7 +2658,7 @@ static int Card_FileOpen(const char *filename, int flags)
 			i = fsindex;
 
 			if ((dircache_cluster == 0) && (i >= 2)) {
-				if (read_le_uint32((uint8_t *)&mcio_fatcache.entry[i-1]) >= 0) {
+				if ((int32_t)read_le_uint32((uint8_t *)&mcio_fatcache.entry[i-1]) >= 0) {
 					fat_index = read_le_uint32((uint8_t *)&mcio_fatcache.entry[i-1]);
 					i = 1;
 				}
