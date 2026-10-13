@@ -1128,3 +1128,43 @@ msgstr "Εξαγωγή αρχείων..."
 
 #~ msgid "Error! Couldn't zip save:"
 #~ msgstr "Σφάλμα! Αποτυχία zip Αποθ.Δεδομένων"
+
+#: main.c:581
+msgid "DC Virtual Memory Card"
+msgstr "Εικονική κάρτα μνήμης DC"
+
+#: menu_cheats.c:545
+msgid "Dreamcast Saves"
+msgstr "Αποθηκεύσεις Dreamcast"
+
+#: saves.c:1057
+msgid "Export save game to .DCI format"
+msgstr "Εξαγωγή αποθηκευμένου παιχνιδιού σε μορφή .DCI"
+
+#: saves.c:1057
+msgid "Copy .DCI Save to USB"
+msgstr "Αντιγραφή αποθήκευσης .DCI σε USB"
+
+#: saves.c:1057
+msgid "Copy .DCI Save to HDD"
+msgstr "Αντιγραφή αποθήκευσης .DCI στον σκληρό δίσκο"
+
+#: saves.c:1058
+msgid "Export save game to .VMI/.VMS format"
+msgstr "Εξαγωγή αποθηκευμένου παιχνιδιού σε μορφή .VMI/.VMS"
+
+#: saves.c:1058
+msgid "Copy .VMI/.VMS Save to USB"
+msgstr "Αντιγραφή αποθήκευσης .VMI/.VMS σε USB"
+
+#: saves.c:1058
+msgid "Copy .VMI/.VMS Save to HDD"
+msgstr "Αντιγραφή αποθήκευσης .VMI/.VMS στον σκληρό δίσκο"
+
+#: saves.c:2418
+msgid "Export Memory Card to raw .BIN"
+msgstr "Εξαγωγή κάρτας μνήμης σε ακατέργαστο .BIN"
+
+#: saves.c:2418
+msgid "Export Memory Card to Nexus .DCM"
+msgstr "Εξαγωγή κάρτας μνήμης σε Nexus .DCM"

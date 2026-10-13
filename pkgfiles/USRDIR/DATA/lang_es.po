@@ -1128,3 +1128,43 @@ msgstr "Extrayendo archivos..."
 
 #~ msgid "Error! Couldn't zip save:"
 #~ msgstr "¡Error! No se pudo comprimir partida:"
+
+#: main.c:581
+msgid "DC Virtual Memory Card"
+msgstr "Tarjeta de memoria virtual de DC"
+
+#: menu_cheats.c:545
+msgid "Dreamcast Saves"
+msgstr "Partidas de Dreamcast"
+
+#: saves.c:1057
+msgid "Export save game to .DCI format"
+msgstr "Exportar partida guardada en formato .DCI"
+
+#: saves.c:1057
+msgid "Copy .DCI Save to USB"
+msgstr "Copiar partida .DCI a USB"
+
+#: saves.c:1057
+msgid "Copy .DCI Save to HDD"
+msgstr "Copiar partida .DCI al HDD"
+
+#: saves.c:1058
+msgid "Export save game to .VMI/.VMS format"
+msgstr "Exportar partida guardada en formato .VMI/.VMS"
+
+#: saves.c:1058
+msgid "Copy .VMI/.VMS Save to USB"
+msgstr "Copiar partida .VMI/.VMS a USB"
+
+#: saves.c:1058
+msgid "Copy .VMI/.VMS Save to HDD"
+msgstr "Copiar partida .VMI/.VMS al HDD"
+
+#: saves.c:2418
+msgid "Export Memory Card to raw .BIN"
+msgstr "Exportar tarjeta de memoria como .BIN sin procesar"
+
+#: saves.c:2418
+msgid "Export Memory Card to Nexus .DCM"
+msgstr "Exportar tarjeta de memoria a Nexus .DCM"

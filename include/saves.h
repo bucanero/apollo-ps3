@@ -28,6 +28,7 @@
 
 #define PS1_IMP_PATH_USB        "PS1/SAVEDATA/"
 #define PS2_IMP_PATH_USB        "PS2/SAVEDATA/"
+#define DC_IMP_PATH_USB         "DC/SAVEDATA/"
 
 #define SAVES_PATH_HDD          USER_PATH_HDD PS3_SAVES_PATH_HDD
 #define TROPHY_PATH_HDD         USER_PATH_HDD "trophy/"
@@ -39,6 +40,8 @@
 #define VMC_PS1_PATH_USB        "PS1/VMC/"
 #define VMC_PS2_PATH_USB        "PS2/VMC/"
 #define VMC_PS2_PATH_HDD        "/dev_hdd0/savedata/vmc/"
+#define VMC_DC_PATH_USB         "DC/VMU/"
+#define VMC_DC_PATH_HDD         "/dev_hdd0/savedata/vmu/"
 
 #define IMP_PS2VMC_PATH_USB     USB_PATH VMC_PS2_PATH_USB
 #define IMPORT_RAP_PATH_USB     USB_PATH PS3_LICENSE_PATH
@@ -120,6 +123,8 @@ enum cmd_code_enum
     CMD_EXP_VMC1SAVE,
     CMD_EXP_VMC2SAVE,
     CMD_EXP_VMP2MCR,
+    CMD_EXP_VMUSAVE,
+    CMD_EXP_VMU_IMAGE,
 
 // Import commands
     CMD_IMP_EXDATA_USB,
@@ -130,6 +135,7 @@ enum cmd_code_enum
     CMD_IMP_VMC1SAVE,
     CMD_IMP_VMC2SAVE,
     CMD_IMP_MCR2VMP,
+    CMD_IMP_VMUSAVE,
     CMD_CREATE_ACT_DAT,
     CMD_EXTRACT_ARCHIVE,
     CMD_URL_DOWNLOAD,
@@ -155,6 +161,7 @@ enum cmd_code_enum
 #define SAVE_FLAG_SELECTED      512
 #define SAVE_FLAG_VMC           1024
 #define SAVE_FLAG_UPDATED       2048
+#define SAVE_FLAG_DC            4096
 
 enum save_type_enum
 {
@@ -177,6 +184,11 @@ enum save_type_enum
     FILE_TYPE_CBS,
     FILE_TYPE_XPS,
     FILE_TYPE_PS2RAW,
+
+    // Dreamcast File Types
+    FILE_TYPE_DC,
+    FILE_TYPE_DCI,
+    FILE_TYPE_VMI,
 
     // License Files
     FILE_TYPE_RIF,
@@ -217,6 +229,7 @@ enum char_flag_enum
     CHAR_TRP_GOLD,
     CHAR_TRP_PLATINUM,
     CHAR_TRP_SYNC,
+    CHAR_TAG_DC,
 };
 
 enum code_type_enum
@@ -269,6 +282,7 @@ list_t * ReadBackupList(const char* userPath);
 list_t * ReadTrophyList(const char* userPath);
 list_t * ReadVmc1List(const char* userPath);
 list_t * ReadVmc2List(const char* userPath);
+list_t * ReadVmuList(const char* userPath);
 void UnloadGameList(list_t * list);
 char * readTextFile(const char * path);
 int sortSaveList_Compare(const void* A, const void* B);
@@ -281,6 +295,7 @@ int ReadOnlineSaves(save_entry_t * game);
 int ReadBackupCodes(save_entry_t * bup);
 int ReadVmc1Codes(save_entry_t * save);
 int ReadVmc2Codes(save_entry_t * save);
+int ReadVmuCodes(save_entry_t * save);
 
 int http_init(void);
 void http_end(void);

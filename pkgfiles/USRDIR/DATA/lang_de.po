@@ -1128,3 +1128,43 @@ msgstr "Extrahiere Dateien..."
 
 #~ msgid "Error! Couldn't zip save:"
 #~ msgstr "Fehler! Spielstand konnte nicht gezippt werden:"
+
+#: main.c:581
+msgid "DC Virtual Memory Card"
+msgstr "Virtuelle DC-Speicherkarte"
+
+#: menu_cheats.c:545
+msgid "Dreamcast Saves"
+msgstr "Dreamcast-Spielstände"
+
+#: saves.c:1057
+msgid "Export save game to .DCI format"
+msgstr "Spielstand im .DCI-Format exportieren"
+
+#: saves.c:1057
+msgid "Copy .DCI Save to USB"
+msgstr ".DCI-Spielstand auf USB kopieren"
+
+#: saves.c:1057
+msgid "Copy .DCI Save to HDD"
+msgstr ".DCI-Spielstand auf HDD kopieren"
+
+#: saves.c:1058
+msgid "Export save game to .VMI/.VMS format"
+msgstr "Spielstand im .VMI/.VMS-Format exportieren"
+
+#: saves.c:1058
+msgid "Copy .VMI/.VMS Save to USB"
+msgstr ".VMI/.VMS-Spielstand auf USB kopieren"
+
+#: saves.c:1058
+msgid "Copy .VMI/.VMS Save to HDD"
+msgstr ".VMI/.VMS-Spielstand auf HDD kopieren"
+
+#: saves.c:2418
+msgid "Export Memory Card to raw .BIN"
+msgstr "Speicherkarte als rohes .BIN exportieren"
+
+#: saves.c:2418
+msgid "Export Memory Card to Nexus .DCM"
+msgstr "Speicherkarte als Nexus .DCM exportieren"

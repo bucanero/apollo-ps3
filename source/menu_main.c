@@ -13,6 +13,7 @@
 #include "ttf_render.h"
 #include "ps1card.h"
 #include "mcio.h"
+#include "dccard.h"
 
 #include <tiny3d.h>
 #include <libfont.h>
@@ -24,6 +25,7 @@ extern save_list_t online_saves;
 extern save_list_t user_backup;
 extern save_list_t vmc1_saves;
 extern save_list_t vmc2_saves;
+extern save_list_t vmu_saves;
 
 extern int close_app;
 extern padData paddata[];
@@ -188,6 +190,36 @@ static code_entry_t* LoadSaveDetails(const save_entry_t* save)
 		return(centry);
 	}
 
+	if(save->type == FILE_TYPE_DC)
+	{
+		dccard_file_t info;
+
+		if (!dccard_file_info(save->blocks, &info))
+			return(centry);
+
+		char* desc_vms = sjis2utf8(info.desc_vms);
+		char* desc_dc = sjis2utf8(info.desc_dc);
+		asprintf(&centry->codes, "%s\n\n----- Dreamcast VMU Save -----\n"
+			"Game: %s\n"
+			"VMU Title: %s\n"
+			"File: %s\n"
+			"Type: %s%s\n"
+			"Size: %d blocks\n"
+			"Date: %02x%02x-%02x-%02x %02x:%02x:%02x\n",
+			save->path,
+			desc_dc,
+			desc_vms,
+			info.ent.filename,
+			(info.ent.filetype == VMU_FILE_GAME) ? "Game" : "Data",
+			(info.ent.copyprotect == VMU_COPY_PROTECTED) ? " (Copy Protected)" : "",
+			info.ent.filesize,
+			info.ent.timestamp.cent, info.ent.timestamp.year, info.ent.timestamp.month, info.ent.timestamp.day,
+			info.ent.timestamp.hour, info.ent.timestamp.min, info.ent.timestamp.sec);
+		free(desc_vms);
+		free(desc_dc);
+		return(centry);
+	}
+
 	if(save->type == FILE_TYPE_VMC)
 	{
 		asprintf(&centry->codes, "%s\n\n----- Virtual Memory Card -----\n"
@@ -285,6 +317,14 @@ static void SetMenu(int id)
 			}
 			break;
 
+		case MENU_DCVMC_SAVES:
+			if (id == MENU_MAIN_SCREEN)
+			{
+				UnloadGameList(vmu_saves.list);
+				vmu_saves.list = NULL;
+			}
+			break;
+
 		case MENU_ONLINE_DB: //Cheats Online Menu
 			if (apollo_config.online_opt && id == MENU_MAIN_SCREEN)
 			{
@@ -322,6 +362,11 @@ static void SetMenu(int id)
 				
 				case MENU_PS2VMC_SAVES:
 					ReloadUserSaves(&vmc2_saves);
+					break;
+
+				case MENU_DCVMC_SAVES:
+					dccard_save(vmu_saves.path);
+					ReloadUserSaves(&vmu_saves);
 					break;
 
 				case MENU_USB_SAVES:
@@ -410,6 +455,14 @@ static void SetMenu(int id)
 				Draw_UserCheatsMenu_Ani(&vmc2_saves);
 			break;
 
+		case MENU_DCVMC_SAVES: //DC VMU Menu
+			if (!vmu_saves.list && !ReloadUserSaves(&vmu_saves))
+				return;
+
+			if (apollo_config.doAni)
+				Draw_UserCheatsMenu_Ani(&vmu_saves);
+			break;
+
 		case MENU_CREDITS: //About Menu
 			if (apollo_config.doAni)
 				Draw_AboutMenu_Ani();
@@ -431,7 +484,7 @@ static void SetMenu(int id)
 		case MENU_PATCHES: //Cheat Selection Menu
 			//if entering from game list, don't keep index, otherwise keep
 			if (menu_id == MENU_USB_SAVES || menu_id == MENU_HDD_SAVES || menu_id == MENU_ONLINE_DB || menu_id == MENU_USER_BACKUP ||
-				menu_id == MENU_TROPHIES || menu_id == MENU_PS1VMC_SAVES || menu_id == MENU_PS2VMC_SAVES)
+				menu_id == MENU_TROPHIES || menu_id == MENU_PS1VMC_SAVES || menu_id == MENU_PS2VMC_SAVES || menu_id == MENU_DCVMC_SAVES)
 				menu_old_sel[MENU_PATCHES] = 0;
 
 			char iconfile[256];
@@ -451,6 +504,9 @@ static void SetMenu(int id)
 
 			if (selected_entry->flags & SAVE_FLAG_VMC && selected_entry->type == FILE_TYPE_PS2)
 				LoadVmcTexture(256, 256, getIconPS2(selected_entry->dir_name, strrchr(selected_entry->path, '\n')+1));
+
+			if (selected_entry->flags & SAVE_FLAG_VMC && selected_entry->type == FILE_TYPE_DC)
+				LoadVmcTexture(32, 32, dccard_get_icon(selected_entry->blocks));
 
 			if (file_exists(iconfile) == SUCCESS)
 				LoadFileTexture(iconfile);
@@ -567,6 +623,11 @@ static void doSaveMenu(save_list_t * save_list)
 					strncpy(vmc1_saves.path, selected_entry->path, sizeof(vmc1_saves.path));
 					SetMenu(MENU_PS1VMC_SAVES);
 				}
+				else if (selected_entry->flags & SAVE_FLAG_DC)
+				{
+					strncpy(vmu_saves.path, selected_entry->path, sizeof(vmu_saves.path));
+					SetMenu(MENU_DCVMC_SAVES);
+				}
 				else
 				{
 					strncpy(vmc2_saves.path, selected_entry->path, sizeof(vmc2_saves.path));
@@ -604,7 +665,7 @@ static void doSaveMenu(save_list_t * save_list)
 			selected_entry = list_get_item(save_list->list, menu_sel);
 			if (save_list->id != MENU_ONLINE_DB && save_list->id != MENU_USER_BACKUP &&
 				selected_entry->type != FILE_TYPE_MENU && selected_entry->type != FILE_TYPE_VMC &&
-				(selected_entry->flags & (SAVE_FLAG_PS3|SAVE_FLAG_PS2|SAVE_FLAG_PS1)))
+				(selected_entry->flags & (SAVE_FLAG_PS3|SAVE_FLAG_PS2|SAVE_FLAG_PS1|SAVE_FLAG_DC)))
 				selected_entry->flags ^= SAVE_FLAG_SELECTED;
 		}
 		else if (paddata[0].BTN_SQUARE)
@@ -1111,6 +1172,10 @@ void drawScene(void)
 
 		case MENU_PS2VMC_SAVES: //PS2 VMC Menu
 			doSaveMenu(&vmc2_saves);
+			break;
+
+		case MENU_DCVMC_SAVES: //DC VMU Menu
+			doSaveMenu(&vmu_saves);
 			break;
 	}
 }
