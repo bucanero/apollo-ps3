@@ -695,7 +695,7 @@ static void add_vmc_import_saves(list_t* list, const char* path, const char* fol
 	closedir(d);
 }
 
-static void read_vmc1_files(const char* vmcPath, list_t* list)
+static void read_vmc1_files(const char* vmcPath, list_t* list, int flags)
 {
 	save_entry_t *item;
 	DIR *d;
@@ -712,7 +712,7 @@ static void read_vmc1_files(const char* vmcPath, list_t* list)
 			!endsWith(dir->d_name, ".VMC") && !endsWith(dir->d_name, ".BIN") && !endsWith(dir->d_name, ".SRM"))
 			continue;
 
-		item = _createSaveEntry(SAVE_FLAG_PS1 | SAVE_FLAG_VMC, "", dir->d_name);
+		item = _createSaveEntry(SAVE_FLAG_PS1 | SAVE_FLAG_VMC | flags, "", dir->d_name);
 		item->type = FILE_TYPE_VMC;
 		item->title_id = strdup("VMC");
 		item->dir_name = strdup(VMC_PS1_PATH_USB);
@@ -1859,7 +1859,7 @@ static void read_savegames(const char* userPath, const char* folder, list_t *lis
 	closedir(d);
 }
 
-static void read_vmc2_files(const char* userPath, list_t *list)
+static void read_vmc2_files(const char* userPath, list_t *list, int flags)
 {
 	DIR *d;
 	struct dirent *dir;
@@ -1885,7 +1885,7 @@ static void read_vmc2_files(const char* userPath, list_t *list)
 		if (size % 0x840000 != 0 && size % 0x800000 != 0)
 			continue;
 
-		item = _createSaveEntry(SAVE_FLAG_PS2 | SAVE_FLAG_VMC, "", dir->d_name);
+		item = _createSaveEntry(SAVE_FLAG_PS2 | SAVE_FLAG_VMC | flags, "", dir->d_name);
 		item->type = FILE_TYPE_VMC;
 		item->path = strdup(psvPath);
 		item->title_id = strdup("VMC");
@@ -1898,7 +1898,7 @@ static void read_vmc2_files(const char* userPath, list_t *list)
 	closedir(d);
 }
 
-static void read_vmu_files(const char* userPath, list_t *list)
+static void read_vmu_files(const char* userPath, list_t *list, int flags)
 {
 	DIR *d;
 	FILE *fp;
@@ -1931,7 +1931,7 @@ static void read_vmu_files(const char* userPath, list_t *list)
 		if (memcmp(sig, "UUUUUUUUUUUUUUUU", sizeof(sig)) != 0)
 			continue;
 
-		item = _createSaveEntry(SAVE_FLAG_DC | SAVE_FLAG_VMC, "", dir->d_name);
+		item = _createSaveEntry(SAVE_FLAG_DC | SAVE_FLAG_VMC | flags, "", dir->d_name);
 		item->type = FILE_TYPE_VMC;
 		item->path = strdup(vmuPath);
 		item->title_id = strdup("VMU");
@@ -2003,9 +2003,9 @@ list_t * ReadUserList(const char* userPath)
 	read_savegames(userPath, PS2_SAVES_PATH_HDD, list, SAVE_FLAG_PS2 | SAVE_FLAG_HDD);
 	read_savegames(userPath, PSP_SAVES_PATH_HDD, list, SAVE_FLAG_PSP | SAVE_FLAG_HDD);
 
-	read_vmc1_files(VMC_PS2_PATH_HDD, list);
-	read_vmc2_files(VMC_PS2_PATH_HDD, list);
-	read_vmu_files(VMC_DC_PATH_HDD, list);
+	read_vmc1_files(VMC_PS2_PATH_HDD, list, SAVE_FLAG_HDD);
+	read_vmc2_files(VMC_PS2_PATH_HDD, list, SAVE_FLAG_HDD);
+	read_vmu_files(VMC_DC_PATH_HDD, list, SAVE_FLAG_HDD);
 
 	return list;
 }
@@ -2051,16 +2051,16 @@ list_t * ReadUsbList(const char* userPath)
 	read_savegames(userPath, PSP_SAVES_PATH_USB, list, SAVE_FLAG_PSP);
 
 	snprintf(savePath, sizeof(savePath), "%s%s", userPath, VMC_PS1_PATH_USB);
-	read_vmc1_files(savePath, list);
+	read_vmc1_files(savePath, list, 0);
 
 	snprintf(savePath, sizeof(savePath), "%s%s", userPath, VMC_PS2_PATH_USB);
-	read_vmc2_files(savePath, list);
+	read_vmc2_files(savePath, list, 0);
 
 	snprintf(savePath, sizeof(savePath), "%s%s", userPath, "VMC/");
-	read_vmc2_files(savePath, list);
+	read_vmc2_files(savePath, list, 0);
 
 	snprintf(savePath, sizeof(savePath), "%s%s", userPath, VMC_DC_PATH_USB);
-	read_vmu_files(savePath, list);
+	read_vmu_files(savePath, list, 0);
 
 	return list;
 }
