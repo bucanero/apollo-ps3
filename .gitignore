@@ -54,3 +54,4 @@ Mkfile.old
 dkms.conf
 
 obj/
+pkgfiles/USRDIR/CACHE/appdata.zip

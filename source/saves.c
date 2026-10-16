@@ -224,6 +224,10 @@ static void _addBackupCommands(save_entry_t* item)
 	{
 		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Copy save game to USB"), CMD_CODE_NULL);
 		_createOptions(cmd, _("Copy Save to USB"), CMD_COPY_SAVE_USB);
+		optval = malloc(sizeof(option_value_t));
+		asprintf(&optval->name, "%s", _("Copy Save to HDD (Fake USB)"));
+		asprintf(&optval->value, "%c%c", CMD_COPY_SAVE_USB, STORAGE_HDD);
+		list_append(cmd->options[0].opts, optval);
 		list_append(item->codes, cmd);
 	
 		if (apollo_config.ftp_url[0])
@@ -245,7 +249,7 @@ static void _addBackupCommands(save_entry_t* item)
 	_createOptions(cmd, _("Export Zip to USB"), CMD_EXPORT_ZIP_USB);
 	optval = malloc(sizeof(option_value_t));
 	asprintf(&optval->name, "%s", _("Export Zip to HDD"));
-	asprintf(&optval->value, "%c%c", CMD_EXPORT_ZIP_HDD, STORAGE_HDD);
+	asprintf(&optval->value, "%c%c", CMD_EXPORT_ZIP_USB, STORAGE_HDD);
 	list_append(cmd->options[0].opts, optval);
 	list_append(item->codes, cmd);
 
@@ -345,6 +349,22 @@ static int set_psp_codes(save_entry_t* item)
 
 	cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_USER " ", _("View Save Details"), CMD_VIEW_DETAILS);
 	list_append(item->codes, cmd);
+
+	cmd = _createCmdCode(PATCH_NULL, NULL, NULL, CMD_CODE_NULL);
+	asprintf(&cmd->name, "----- " UTF8_CHAR_STAR " %s " UTF8_CHAR_STAR " -----", _("File Backup"));
+	list_append(item->codes, cmd);
+
+	if (item->flags & SAVE_FLAG_HDD)
+	{
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_COPY " ", _("Copy save game to USB"), CMD_CODE_NULL);
+		_createOptions(cmd, _("Copy Save to USB"), CMD_COPY_SAVE_USB);
+		list_append(item->codes, cmd);
+	}
+	else
+	{
+		cmd = _createCmdCode(PATCH_COMMAND, CHAR_ICON_WARN " ", _("Delete save game"), CMD_DELETE_SAVE);
+		list_append(item->codes, cmd);
+	}
 
 	return list_count(item->codes);
 }
@@ -1108,7 +1128,7 @@ int ReadOnlineSaves(save_entry_t * game)
 		_createOptions(item, _("Download to USB"), CMD_DOWNLOAD_USB);
 		optval = malloc(sizeof(option_value_t));
 		asprintf(&optval->name, "%s", _("Download to HDD"));
-		asprintf(&optval->value, "%c%c", CMD_DOWNLOAD_HDD, STORAGE_HDD);
+		asprintf(&optval->value, "%c%c", CMD_DOWNLOAD_USB, STORAGE_HDD);
 		list_append(item->options[0].opts, optval);
 		list_append(game->codes, item);
 
@@ -1734,10 +1754,12 @@ static int parseTypeFlags(int flags)
 		return 2;
 	else if (flags & SAVE_FLAG_PS2)
 		return 3;
-	else if (flags & SAVE_FLAG_DC)
+	else if (flags & SAVE_FLAG_PSP)
 		return 4;
-	else if (flags & SAVE_FLAG_VMC)
+	else if (flags & SAVE_FLAG_DC)
 		return 5;
+	else if (flags & SAVE_FLAG_VMC)
+		return 6;
 
 	return 0;
 }
