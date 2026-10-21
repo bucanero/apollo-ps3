@@ -346,31 +346,50 @@ static void SetMenu(int id)
 			break;
 
 		case MENU_PATCHES: //Cheat Selection Menu
-			if (selected_entry->flags & SAVE_FLAG_UPDATED)
+			// The patch menu's own screens (code options, hex editor, details)
+			// come back to it: keep the flag until we leave to the save list
+			if (selected_entry->flags & SAVE_FLAG_UPDATED &&
+				id != MENU_PATCH_VIEW && id != MENU_CODE_OPTIONS && id != MENU_SAVE_DETAILS && id != MENU_HEX_EDITOR)
 			{
-				// Clear the flag first: reloading the list below frees every
-				// entry, selected_entry included, and writing to it afterwards
-				// corrupts whatever the new list allocated in its place.
-				selected_entry->flags ^= SAVE_FLAG_UPDATED;
-
+				// Clear the flag before reloading: reloading the list frees
+				// every entry, selected_entry included, and writing to it
+				// afterwards corrupts whatever the new list allocated in its place.
+				// A card that fails to save keeps the flag, and its changes in
+				// memory, so leaving the save again retries.
 				switch (id)
 				{
 				case MENU_PS1VMC_SAVES:
-					saveMemoryCard(vmc1_saves.path, 0, 0);
+					if (!saveMemoryCard(vmc1_saves.path, 0, 0))
+					{
+						show_message("%s\n%s", _("Error! Couldn't save changes to:"), vmc1_saves.path);
+						break;
+					}
+					selected_entry->flags ^= SAVE_FLAG_UPDATED;
 					ReloadUserSaves(&vmc1_saves);
 					break;
 				
 				case MENU_PS2VMC_SAVES:
+					selected_entry->flags ^= SAVE_FLAG_UPDATED;
 					ReloadUserSaves(&vmc2_saves);
 					break;
 
 				case MENU_DCVMC_SAVES:
-					dccard_save(vmu_saves.path);
+					if (!dccard_save(vmu_saves.path))
+					{
+						show_message("%s\n%s", _("Error! Couldn't save changes to:"), vmu_saves.path);
+						break;
+					}
+					selected_entry->flags ^= SAVE_FLAG_UPDATED;
 					ReloadUserSaves(&vmu_saves);
 					break;
 
 				case MENU_USB_SAVES:
+					selected_entry->flags ^= SAVE_FLAG_UPDATED;
 					ReloadUserSaves(&usb_saves);
+					break;
+
+				default:
+					selected_entry->flags ^= SAVE_FLAG_UPDATED;
 					break;
 				}
 			}

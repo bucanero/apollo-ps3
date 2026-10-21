@@ -459,7 +459,10 @@ static int _vmc2_write_file(const char* path, const uint8_t* data, size_t size, 
 		return 0;
 
 	r = mcio_mcWrite(fd, (void*) data, size);
-	mcio_mcClose(fd);
+
+	// Closing flushes the card cache, which can fail on its own
+	if (mcio_mcClose(fd) != sceMcResSucceed)
+		return 0;
 
 	return (r == (int) size);
 }
@@ -505,6 +508,7 @@ int vmc_write_save_file(const save_entry_t* save, const char* filename, const ui
 			memcpy(&newent.stat.ctime, &dirent.stat.ctime, sizeof(struct sceMcStDateTime));
 			memcpy(&newent.stat.mtime, &dirent.stat.mtime, sizeof(struct sceMcStDateTime));
 			newent.stat.mode = dirent.stat.mode;
+			newent.stat.attr = dirent.stat.attr;
 			mcio_mcSetStat(path, &newent);
 		}
 		return ret;
@@ -552,9 +556,10 @@ static option_entry_t* _getVmc2FileOptions(const char* save_dir, const char* mas
 
 	if ((dd = mcio_mcDopen(save_dir)) >= 0)
 	{
-		do {
-			r = mcio_mcDread(dd, &dirent);
-			if (r && strcmp(dirent.name, ".") != 0 && strcmp(dirent.name, "..") != 0 &&
+		// mcio_mcDread returns 1 per entry, 0 at the end, or a negative error
+		while ((r = mcio_mcDread(dd, &dirent)) > 0)
+		{
+			if (strcmp(dirent.name, ".") != 0 && strcmp(dirent.name, "..") != 0 &&
 				!(dirent.stat.mode & sceMcFileAttrSubdir) && wildcard_match_icase(dirent.name, mask))
 			{
 				LOG("Adding '%s' (%s)", dirent.name, mask);
@@ -568,7 +573,10 @@ static option_entry_t* _getVmc2FileOptions(const char* save_dir, const char* mas
 
 				list_append(opt[0].opts, optval);
 			}
-		} while (r);
+		}
+
+		if (r < 0)
+			LOG("Error: can't list 'VMC:/%s' (%d)", save_dir, r);
 
 		mcio_mcDclose(dd);
 	}
@@ -2663,9 +2671,8 @@ list_t * ReadVmc2List(const char* userPath)
 
 	struct io_dirent dirent;
 
-	do {
-		r = mcio_mcDread(dd, &dirent);
-		if ((r) && (strcmp(dirent.name, ".")) && (strcmp(dirent.name, "..")))
+	while ((r = mcio_mcDread(dd, &dirent)) > 0) {
+		if ((strcmp(dirent.name, ".")) && (strcmp(dirent.name, "..")))
 		{
 			snprintf(filePath, sizeof(filePath), "%s/icon.sys", dirent.name);
 			LOG("Reading %s...", filePath);
@@ -2704,7 +2711,10 @@ list_t * ReadVmc2List(const char* userPath)
 			LOG("[%s] F(%X) name '%s'", item->title_id, item->flags, item->name);
 			list_append(list, item);
 		}
-	} while (r);
+	}
+
+	if (r < 0)
+		LOG("mcio Dread Error %d", r);
 
 	mcio_mcDclose(dd);
 

@@ -385,6 +385,24 @@ int vmu_read_file(const vmu_card_t *card, int idx, uint8_t **out, size_t *len)
 	return VMU_OK;
 }
 
+/*
+ * Whether a block can hold file data: inside the user area files are
+ * allocated from, and not the root, FAT or directory. A damaged chain can
+ * point anywhere, so a write checks every block before touching any.
+ */
+static int is_data_block(const vmu_card_t *card, int blk)
+{
+	const vmu_root_t *root = &card->root;
+
+	if (blk < 0 || blk >= root->user_blocks || blk == VMU_ROOT_BLOCK)
+		return 0;
+	if (blk >= root->fat_loc && blk < root->fat_loc + root->fat_size)
+		return 0;
+	if (blk <= root->dir_loc && blk > root->dir_loc - root->dir_size)
+		return 0;
+	return 1;
+}
+
 int vmu_overwrite_file(vmu_card_t *card, int idx, const uint8_t *data, size_t len)
 {
 	vmu_dirent_t ent;
@@ -402,6 +420,10 @@ int vmu_overwrite_file(vmu_card_t *card, int idx, const uint8_t *data, size_t le
 
 	if ((r = walk_chain(card, &ent, blocks)) < 0)
 		return r;
+
+	for (int i = 0; i < ent.filesize; i++)
+		if (!is_data_block(card, blocks[i]))
+			return VMU_ERR_CHAIN;
 
 	for (int i = 0; i < ent.filesize; i++)
 		memcpy(card->img + blocks[i] * VMU_BLOCK_SIZE, data + i * VMU_BLOCK_SIZE, VMU_BLOCK_SIZE);
