@@ -652,6 +652,25 @@ uint8_t* getSaveBytes(int slotNumber, uint32_t* saveLen)
     return saveBytes;
 }
 
+//Overwrite the save data (no header) of an existing save
+int setRawSaveBytes(int slotNumber, const uint8_t* saveBytes, uint32_t saveLen)
+{
+    int saveSlots_Length;
+    int saveSlots[PS1CARD_MAX_SLOTS];
+
+    saveSlots_Length = findSaveLinks(slotNumber, saveSlots);
+
+    //Patched data must fit exactly in the save's linked blocks
+    if (saveLen != (uint32_t)(saveSlots_Length * PS1CARD_BLOCK_SIZE))
+        return false;
+
+    for (int sNumber = 0; sNumber < saveSlots_Length; sNumber++)
+        memcpy(ps1saves[saveSlots[sNumber]].saveData, &saveBytes[sNumber * PS1CARD_BLOCK_SIZE], PS1CARD_BLOCK_SIZE);
+
+    changedFlag = true;
+    return true;
+}
+
 //Input given bytes back to the Memory Card
 int setSaveBytes(const uint8_t* saveBytes, int saveBytes_Length, int* reqSlots)
 {
