@@ -385,6 +385,30 @@ int vmu_read_file(const vmu_card_t *card, int idx, uint8_t **out, size_t *len)
 	return VMU_OK;
 }
 
+int vmu_overwrite_file(vmu_card_t *card, int idx, const uint8_t *data, size_t len)
+{
+	vmu_dirent_t ent;
+	uint16_t blocks[VMU_TOTAL_BLOCKS];
+	int r;
+
+	if ((r = vmu_dir_get(card, idx, &ent)) != 1)
+		return r < 0 ? r : VMU_ERR_NOENT;
+
+	if (ent.filesize > VMU_TOTAL_BLOCKS)
+		return VMU_ERR_CHAIN;
+
+	if (len != (size_t)ent.filesize * VMU_BLOCK_SIZE)
+		return VMU_ERR_ARG;
+
+	if ((r = walk_chain(card, &ent, blocks)) < 0)
+		return r;
+
+	for (int i = 0; i < ent.filesize; i++)
+		memcpy(card->img + blocks[i] * VMU_BLOCK_SIZE, data + i * VMU_BLOCK_SIZE, VMU_BLOCK_SIZE);
+
+	return VMU_OK;
+}
+
 int vmu_write_file(vmu_card_t *card, vmu_dirent_t *ent, const uint8_t *data, size_t len)
 {
 	uint16_t blocks[VMU_TOTAL_BLOCKS];

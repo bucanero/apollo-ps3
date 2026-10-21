@@ -845,7 +845,18 @@ static void doHexEditor(void)
 
 		else if (paddata[0].BTN_CIRCLE)
 		{
-			if (show_dialog(DIALOG_TYPE_YESNO, _("Save changes to %s?"), strrchr(hex_data.filepath, '/') + 1) &&
+			if (selected_entry->flags & SAVE_FLAG_VMC)
+			{
+				// Write the changes straight to the memory card save
+				if (show_dialog(DIALOG_TYPE_YESNO, _("Save changes to %s?"), strrchr(hex_data.filepath, '/') + 1))
+				{
+					if (vmc_write_save_file(selected_entry, strrchr(hex_data.filepath, '/') + 1, hex_data.data, hex_data.size))
+						selected_entry->flags |= SAVE_FLAG_UPDATED;
+					else
+						show_message("%s\n%s", _("Error! Couldn't save changes to:"), hex_data.filepath);
+				}
+			}
+			else if (show_dialog(DIALOG_TYPE_YESNO, _("Save changes to %s?"), strrchr(hex_data.filepath, '/') + 1) &&
 				(write_buffer(hex_data.filepath, hex_data.data, hex_data.size) == SUCCESS))
 			{
 				option_value_t* optval = list_get_item(selected_centry->options[option_index].opts, menu_sel);
@@ -963,6 +974,23 @@ static void doCodeOptionsMenu(void)
 			{
 				option_value_t* optval = list_get_item(code->options[option_index].opts, menu_sel);
 
+				if (optval->value[0] == CMD_HEX_EDIT_FILE && selected_entry->flags & SAVE_FLAG_VMC)
+				{
+					// Edit the save file directly from the memory card
+					memset(&hex_data, 0, sizeof(hex_data));
+					snprintf(hex_data.filepath, sizeof(hex_data.filepath), "VMC:/%s/%s", selected_entry->dir_name, optval->name);
+					if (!vmc_read_save_file(selected_entry, optval->name, &hex_data.data, &hex_data.size))
+					{
+						show_message("%s\n%s", _("Failed to load:"), hex_data.filepath);
+						SetMenu(last_menu_id[MENU_CODE_OPTIONS]);
+						return;
+					}
+					code->activated = 0;
+
+					SetMenu(MENU_HEX_EDITOR);
+					return;
+				}
+
 				if (optval->value[0] == CMD_HEX_EDIT_FILE)
 				{
 					optval->value[1] = CMD_DECRYPT_FILE;
@@ -1036,7 +1064,7 @@ static void doPatchMenu(void)
 		{
 			selected_centry = list_get_item(selected_entry->codes, menu_sel);
 
-			if (selected_centry->type != PATCH_NULL)
+			if (selected_centry->type != PATCH_NULL && !(selected_centry->flags & APOLLO_CODE_FLAG_DISABLED))
 				selected_centry->activated = !selected_centry->activated;
 
 			if (selected_centry->type == PATCH_COMMAND)
@@ -1051,7 +1079,7 @@ static void doPatchMenu(void)
 					list_node_t* node;
 
 					for (node = list_head(selected_entry->codes); (code = list_get(node)); node = list_next(node))
-						if (code->flags & APOLLO_CODE_FLAG_REQUIRED && code->options_count == 0)
+						if (code->flags & APOLLO_CODE_FLAG_REQUIRED && !(code->flags & APOLLO_CODE_FLAG_DISABLED) && code->options_count == 0)
 							code->activated = 1;
 				}
 				
