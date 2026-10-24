@@ -998,8 +998,12 @@ static void doCodeOptionsMenu(void)
 					// Edit the save file directly from the memory card
 					memset(&hex_data, 0, sizeof(hex_data));
 					snprintf(hex_data.filepath, sizeof(hex_data.filepath), "VMC:/%s/%s", selected_entry->dir_name, optval->name);
-					if (!vmc_read_save_file(selected_entry, optval->name, &hex_data.data, &hex_data.size))
+					// The editor needs at least one byte to put its cursor on
+					if (!vmc_read_save_file(selected_entry, optval->name, &hex_data.data, &hex_data.size) || !hex_data.size)
 					{
+						if (hex_data.data && !hex_data.size)
+							free(hex_data.data);
+
 						show_message("%s\n%s", _("Failed to load:"), hex_data.filepath);
 						SetMenu(last_menu_id[MENU_CODE_OPTIONS]);
 						return;
@@ -1017,8 +1021,11 @@ static void doCodeOptionsMenu(void)
 
 					memset(&hex_data, 0, sizeof(hex_data));
 					snprintf(hex_data.filepath, sizeof(hex_data.filepath), APOLLO_TMP_PATH "%s/%s", selected_entry->dir_name, optval->name);
-					if (read_buffer(hex_data.filepath, &hex_data.data, &hex_data.size) < 0)
+					if (read_buffer(hex_data.filepath, &hex_data.data, &hex_data.size) < 0 || !hex_data.size)
 					{
+						if (hex_data.data && !hex_data.size)
+							free(hex_data.data);
+
 						show_message("%s\n%s", _("Failed to load:"), hex_data.filepath);
 						SetMenu(last_menu_id[MENU_CODE_OPTIONS]);
 						return;

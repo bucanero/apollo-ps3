@@ -663,8 +663,11 @@ static void _addVmcCheatCodes(save_entry_t* save)
 	for (node = list_next(node); (cmd = list_get(node)); node = list_next(node))
 		if (!_vmc_code_matches(save, cmd->file))
 		{
+			// [DEFAULT:...] codes load activated: PS1 and DC apply every code to
+			// the save itself, so a rejected one must not stay active
 			LOG("(%s) Disabled code '%s'", cmd->file, cmd->name);
 			cmd->flags |= (APOLLO_CODE_FLAG_ALERT | APOLLO_CODE_FLAG_DISABLED);
+			cmd->activated = 0;
 		}
 }
 

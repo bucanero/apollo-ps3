@@ -385,6 +385,8 @@ int vmu_read_file(const vmu_card_t *card, int idx, uint8_t **out, size_t *len)
 	return VMU_OK;
 }
 
+static void mark_chain(const vmu_card_t *card, const vmu_dirent_t *ent, uint8_t *used);
+
 /*
  * Whether a block can hold file data: inside the user area files are
  * allocated from, and not the root, FAT or directory. A damaged chain can
@@ -405,8 +407,9 @@ static int is_data_block(const vmu_card_t *card, int blk)
 
 int vmu_overwrite_file(vmu_card_t *card, int idx, const uint8_t *data, size_t len)
 {
-	vmu_dirent_t ent;
+	vmu_dirent_t ent, other;
 	uint16_t blocks[VMU_TOTAL_BLOCKS];
+	uint8_t theirs[VMU_TOTAL_BLOCKS] = {0};
 	int r;
 
 	if ((r = vmu_dir_get(card, idx, &ent)) != 1)
@@ -421,8 +424,14 @@ int vmu_overwrite_file(vmu_card_t *card, int idx, const uint8_t *data, size_t le
 	if ((r = walk_chain(card, &ent, blocks)) < 0)
 		return r;
 
+	/* A damaged card can have two files sharing blocks: writing one would
+	 * silently change the other */
+	for (int i = 0; i < vmu_dir_count(card); i++)
+		if (i != idx && vmu_dir_get(card, i, &other) == 1)
+			mark_chain(card, &other, theirs);
+
 	for (int i = 0; i < ent.filesize; i++)
-		if (!is_data_block(card, blocks[i]))
+		if (!is_data_block(card, blocks[i]) || theirs[blocks[i]])
 			return VMU_ERR_CHAIN;
 
 	for (int i = 0; i < ent.filesize; i++)

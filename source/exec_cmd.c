@@ -2001,6 +2001,8 @@ static void import_mcr2vmp(const save_entry_t* save, const char* src)
 		show_message("%s\n%s", _("Memory card successfully imported to:"), save->path);
 	else
 		show_message("%s\n%s", _("Error importing memory card:"), mcrPath);
+
+	free(data);
 }
 
 static void export_vmp2mcr(const save_entry_t* save)
