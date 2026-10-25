@@ -560,6 +560,7 @@ static option_entry_t* _getVmc2FileOptions(const char* save_dir, const char* mas
 		while ((r = mcio_mcDread(dd, &dirent)) > 0)
 		{
 			if (strcmp(dirent.name, ".") != 0 && strcmp(dirent.name, "..") != 0 &&
+				strcmp(dirent.name, "icon.sys") != 0 &&
 				!(dirent.stat.mode & sceMcFileAttrSubdir) && wildcard_match_icase(dirent.name, mask))
 			{
 				LOG("Adding '%s' (%s)", dirent.name, mask);

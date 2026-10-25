@@ -983,10 +983,7 @@ int saveMemoryCard(const char* fileName, int memoryCardType, int fixData)
 {
     FILE* binWriter = NULL;
 
-    if (!memoryCardType)
-        return false;
-
-    if (!changedFlag)
+    if (!changedFlag && !memoryCardType && !fixData)
         return true;
 
     binWriter = fopen(fileName, "wb");
