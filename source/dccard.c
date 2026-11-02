@@ -198,8 +198,6 @@ int dccard_delete(int idx)
 	return (vmu_delete_file(&card, idx) == VMU_OK);
 }
 
-/* Write a file to the card, replacing one with the same name. On failure the
- * card is left as it was. */
 int dccard_read_file(int idx, uint8_t** data, size_t* len)
 {
 	return (vmu_read_file(&card, idx, data, len) == VMU_OK);
@@ -244,6 +242,8 @@ int dccard_write_file(int idx, const uint8_t* data, size_t len)
 	return (r == VMU_OK);
 }
 
+/* Write a file to the card, replacing one with the same name. On failure the
+ * card is left as it was. */
 static int add_file(vmu_dirent_t *ent, const uint8_t *data, size_t len)
 {
 	uint8_t *backup;
