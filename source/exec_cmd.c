@@ -46,7 +46,8 @@ static void _set_dest_path(char* path, int dest, const char* folder)
 static void downloadSave(const save_entry_t* entry, const char* file, int dst)
 {
 	char path[256];
-	const char* folder = (entry->flags & SAVE_FLAG_PS3) ? PS3_SAVES_PATH_USB : PSV_SAVES_PATH_USB;
+	const char* folder = (entry->flags & SAVE_FLAG_PS3) ? PS3_SAVES_PATH_USB :
+		(entry->flags & SAVE_FLAG_DC) ? DC_IMP_PATH_USB : PSV_SAVES_PATH_USB;
 
 	_set_dest_path(path, dst, folder);
 	if (mkdirs(path) != SUCCESS)

@@ -2487,6 +2487,10 @@ list_t * ReadOnlineList(const char* urlPath)
 	snprintf(url, sizeof(url), "%s" "PS1/", urlPath);
 	_ReadOnlineListEx(url, SAVE_FLAG_PS1, list);
 
+	// DC save-games (Zip VMI/VMS)
+	snprintf(url, sizeof(url), "%s" "DC/", urlPath);
+	_ReadOnlineListEx(url, SAVE_FLAG_DC, list);
+
 	if (!list_count(list))
 	{
 		list_free(list);
