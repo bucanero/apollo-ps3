@@ -53,6 +53,7 @@
 #define ONLINE_URL				"https://bucanero.github.io/apollo-saves/"
 #define ONLINE_PATCH_URL		"https://bucanero.github.io/apollo-patches/PS3/"
 #define ONLINE_CACHE_TIMEOUT    24*3600     // 1-day local cache
+#define ONLINE_FILTER_COUNT     5           // Online DB filters: all, PS3, PS2, PS1, DC
 
 #define OWNER_XML_FILE          "owners.xml"
 
@@ -229,6 +230,7 @@ enum char_flag_enum
     CHAR_TRP_PLATINUM,
     CHAR_TRP_SYNC,
     CHAR_TAG_DC,
+    CHAR_BTN_SELECT,
 };
 
 enum code_type_enum
@@ -277,6 +279,8 @@ typedef struct
 list_t * ReadUserList(const char* userPath);
 list_t * ReadUsbList(const char* userPath);
 list_t * ReadOnlineList(const char* urlPath);
+list_t * ReadOnlineListFiltered(const char* urlPath, int filter);
+const char * online_filter_name(int filter);
 list_t * ReadBackupList(const char* userPath);
 list_t * ReadTrophyList(const char* userPath);
 list_t * ReadVmc1List(const char* userPath);

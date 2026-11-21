@@ -13,6 +13,7 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
   - DC patches are matched by VMU file name through `dctitleid.txt`, so a single patch can cover a game's slot files and regional names
   - The DC VMS header CRC is updated automatically after a change
 * Online Database: Dreamcast saves (`.VMI/VMS`), downloaded to the DC import folder
+* Online Database and FTP backups: press `SELECT` to filter the list by platform (All, PS3, PS2, PS1, DC). The filter is remembered.
 
 ### Fixed
 

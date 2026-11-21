@@ -201,11 +201,14 @@ static const char* get_button_prompts(char* prompt)
 		case MENU_TROPHIES:
 		case MENU_USB_SAVES:
 		case MENU_HDD_SAVES:
-		case MENU_ONLINE_DB:
 		case MENU_PS1VMC_SAVES:
 		case MENU_PS2VMC_SAVES:
 		case MENU_DCVMC_SAVES:
-			snprintf(prompt, 0xFF, "\x10 %s    \x13 %s    \x12 %s    \x11 %s", _("Select"), _("Back"), _("Details"), _("Refresh"));
+			snprintf(prompt, 0xFF, "\x10 %s    \x13 %s    \x12 %s    \x11 %s    %c %s", _("Open"), _("Back"), _("Details"), _("Refresh"), CHAR_BTN_SELECT, _("Select"));
+			break;
+
+		case MENU_ONLINE_DB:
+			snprintf(prompt, 0xFF, "\x10 %s    \x13 %s    \x12 %s    \x11 %s    %c %s", _("Open"), _("Back"), _("Details"), _("Refresh"), CHAR_BTN_SELECT, _("Filter"));
 			break;
 
 		case MENU_USER_BACKUP:
@@ -361,6 +364,7 @@ static void LoadTextures_Menu(void)
 	load_menu_texture(footer_ico_cross, png);
 	load_menu_texture(footer_ico_square, png);
 	load_menu_texture(footer_ico_triangle, png);
+	load_menu_texture(footer_ico_select, png);
 	load_menu_texture(header_dot, png);
 	load_menu_texture(header_line, png);
 
@@ -603,6 +607,8 @@ static void registerSpecialChars(void)
 	RegisterSpecialCharacter(ps3PadCrossOk() ? CHAR_BTN_X : CHAR_BTN_O, 0, 1.2, &menu_textures[footer_ico_cross_png_index]);
 	RegisterSpecialCharacter(CHAR_BTN_S, 0, 1.2, &menu_textures[footer_ico_square_png_index]);
 	RegisterSpecialCharacter(CHAR_BTN_T, 0, 1.2, &menu_textures[footer_ico_triangle_png_index]);
+	// 64x32 badge: glyphs keep their aspect inside the font cell, so it needs a larger scale to match the round icons' height
+	RegisterSpecialCharacter(CHAR_BTN_SELECT, 0, 2.1, &menu_textures[footer_ico_select_png_index]);
 	RegisterSpecialCharacter(ps3PadCrossOk() ? CHAR_BTN_O : CHAR_BTN_X, 0, 1.2, &menu_textures[footer_ico_circle_png_index]);
 
 	// Register trophy icons
