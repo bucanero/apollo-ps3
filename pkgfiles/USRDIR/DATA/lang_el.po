@@ -424,7 +424,7 @@ msgstr "Λεπτομέρειες"
 msgid "Refresh"
 msgstr "Ανανεώση"
 
-#: main.c:194 main.c:198 main.c:203 main.c:213
+#: main.c:207 main.c:215 main.c:220 main.c:230
 msgid "Select"
 msgstr "Επιλογή"
 
@@ -1168,3 +1168,19 @@ msgstr "Εξαγωγή κάρτας μνήμης σε ακατέργαστο .BI
 #: saves.c:2418
 msgid "Export Memory Card to Nexus .DCM"
 msgstr "Εξαγωγή κάρτας μνήμης σε Nexus .DCM"
+
+#: main.c:211
+msgid "Filter"
+msgstr "Φίλτρο"
+
+#: saves.c:1083 saves.c:1244 saves.c:1386
+msgid "Apply Changes"
+msgstr "Εφαρμογή αλλαγών"
+
+#: menu_main.c:376 menu_main.c:391 menu_main.c:924
+msgid "Error! Couldn't save changes to:"
+msgstr "Σφάλμα! Αποτυχία αποθήκευσης αλλαγών σε:"
+
+#: main.c:207 main.c:211
+msgid "Open"
+msgstr "Άνοιγμα"

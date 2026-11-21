@@ -14,6 +14,8 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
   - The DC VMS header CRC is updated automatically after a change
 * Online Database: Dreamcast saves (`.VMI/VMS`), downloaded to the DC import folder
 * Online Database and FTP backups: press `SELECT` to filter the list by platform (All, PS3, PS2, PS1, DC). The filter is remembered.
+* Footer help shows the `SELECT` button on save lists
+  - `SELECT` selects saves on the Trophies, USB, HDD and Virtual Memory Card lists, and filters the Online Database
 
 ### Fixed
 
@@ -24,6 +26,11 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 * Crash when a PS2 `.PSU` export failed to write
 * Cheat codes meant for another save or region could still be selected and applied
 * Crash in the Hex editor when opening an empty file
+* Centered text with button icons, such as the footer help, was shifted to the right
+
+### Misc
+
+* Add missing translation strings (`Open`, `Filter`, `Apply Changes`)
 
 ---
 

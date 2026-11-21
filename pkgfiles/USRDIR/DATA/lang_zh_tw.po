@@ -424,7 +424,7 @@ msgstr "詳情"
 msgid "Refresh"
 msgstr "重新整理"
 
-#: main.c:194 main.c:198 main.c:203 main.c:213
+#: main.c:207 main.c:215 main.c:220 main.c:230
 msgid "Select"
 msgstr "選擇"
 
@@ -1168,3 +1168,19 @@ msgstr "將記憶卡匯出為原始 .BIN 檔案"
 #: saves.c:2418
 msgid "Export Memory Card to Nexus .DCM"
 msgstr "將記憶卡匯出為 Nexus .DCM"
+
+#: main.c:211
+msgid "Filter"
+msgstr "篩選"
+
+#: saves.c:1083 saves.c:1244 saves.c:1386
+msgid "Apply Changes"
+msgstr "套用修改"
+
+#: menu_main.c:376 menu_main.c:391 menu_main.c:924
+msgid "Error! Couldn't save changes to:"
+msgstr "錯誤！無法儲存修改至："
+
+#: main.c:207 main.c:211
+msgid "Open"
+msgstr "開啟"
