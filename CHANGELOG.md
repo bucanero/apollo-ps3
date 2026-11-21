@@ -4,9 +4,25 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+### Added
+
+* Apply cheat codes to saves inside Virtual Memory Cards (PS1 VMC, PS2 VMC, DC VMU)
+  - New `Apply Changes` command for VMC saves
+  - Hex edit save files directly on the memory card
+  - Load `.savepatch` cheats for PS1, PS2 and DC saves
+  - DC patches are matched by VMU file name through `dctitleid.txt`, so a single patch can cover a game's slot files and regional names
+  - The DC VMS header CRC is updated automatically after a change
+* Online Database: Dreamcast saves (`.VMI/VMS`), downloaded to the DC import folder
+
 ### Fixed
 
 * Crash when listing a PS2 VMC with a save whose `icon.sys` has an invalid title line break (e.g. No One Lives Forever)
+* PS2 VMC saves were missing from the list after a save with an unreadable `icon.sys`
+* PS2 VMC saves show their list icon instead of the copy icon
+* PS2 VMC listing, export and delete no longer hang or report success on a memory card read error
+* Crash when a PS2 `.PSU` export failed to write
+* Cheat codes meant for another save or region could still be selected and applied
+* Crash in the Hex editor when opening an empty file
 
 ---
 
