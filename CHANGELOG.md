@@ -4,6 +4,10 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 
 ## [Unreleased]()
 
+### Fixed
+
+* Crash when listing a PS2 VMC with a save whose `icon.sys` has an invalid title line break (e.g. No One Lives Forever)
+
 ---
 
 ## [v2.4.0](https://github.com/bucanero/apollo-ps3/releases/tag/v2.4.0) - 2026-10-17
