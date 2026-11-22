@@ -424,7 +424,7 @@ msgstr "세부정보"
 msgid "Refresh"
 msgstr "새로고침"
 
-#: main.c:194 main.c:198 main.c:203 main.c:213
+#: main.c:207 main.c:215 main.c:220 main.c:230
 msgid "Select"
 msgstr "선택"
 
@@ -1168,3 +1168,19 @@ msgstr "메모리 카드를 raw .BIN으로 내보내기"
 #: saves.c:2418
 msgid "Export Memory Card to Nexus .DCM"
 msgstr "메모리 카드를 Nexus .DCM으로 내보내기"
+
+#: main.c:211
+msgid "Filter"
+msgstr "필터"
+
+#: saves.c:1083 saves.c:1244 saves.c:1386
+msgid "Apply Changes"
+msgstr "변경 사항 적용"
+
+#: menu_main.c:376 menu_main.c:391 menu_main.c:924
+msgid "Error! Couldn't save changes to:"
+msgstr "오류! 변경 사항을 저장할 수 없습니다:"
+
+#: main.c:207 main.c:211
+msgid "Open"
+msgstr "열기"

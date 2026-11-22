@@ -522,7 +522,10 @@ static void get_subtitle(int type, size_t count, char* sub)
             break;
 
         case MENU_ONLINE_DB:
-            sprintf(sub, "%ld %s", count, _("Games"));
+            if (online_filter_name(apollo_config.online_filter))
+                sprintf(sub, "%ld %s (%s)", count, _("Games"), online_filter_name(apollo_config.online_filter));
+            else
+                sprintf(sub, "%ld %s", count, _("Games"));
             break;
 
         case MENU_TROPHIES:

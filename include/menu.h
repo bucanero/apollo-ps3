@@ -84,6 +84,7 @@ enum texture_index
 	footer_ico_cross_png_index,
 	footer_ico_square_png_index,
 	footer_ico_triangle_png_index,
+	footer_ico_select_png_index,
 	footer_ico_lt_png_index,
 	footer_ico_rt_png_index,
 	opt_off_png_index,

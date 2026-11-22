@@ -1,5 +1,5 @@
 #define APOLLO_PLATFORM         "PS3"       //Apollo platform
-#define APOLLO_VERSION          "2.4.0"     //Apollo PS3 version (about menu)
+#define APOLLO_VERSION          "2.5.0"     //Apollo PS3 version (about menu)
 
 #define MENU_TITLE_OFF          30          //Offset of menu title text from menu mini icon
 #define MENU_ICON_OFF           70          //X Offset to start printing menu mini icon
@@ -37,6 +37,7 @@ typedef struct
     uint8_t online_opt;
     uint8_t dbglog;
     uint8_t usb_dev;
+    uint8_t online_filter;      // Online DB platform (0 = all); sits in what was padding, so saved settings still load
     uint32_t user_id;
     uint64_t idps[2];
     uint64_t psid[2];
