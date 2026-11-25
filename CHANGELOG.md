@@ -27,6 +27,7 @@ All notable changes to the `apollo-ps3` project will be documented in this file.
 * Cheat codes meant for another save or region could still be selected and applied
 * Crash in the Hex editor when opening an empty file
 * Centered text with button icons, such as the footer help, was shifted to the right
+* USB Saves showed the old device's saves after changing "USB Saves Source" in Settings
 
 ### Misc
 
